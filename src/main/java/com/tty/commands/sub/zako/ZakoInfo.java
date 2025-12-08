@@ -1,5 +1,6 @@
 package com.tty.commands.sub.zako;
 
+import com.google.common.reflect.TypeToken;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
 import com.tty.enumType.FilePath;
@@ -13,6 +14,7 @@ import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.TimeFormatUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -64,7 +66,13 @@ public class ZakoInfo extends ZakoBase<String> {
                 map.put(LangType.PLAYER_WORLD.getType(), ComponentUtils.text(player == null ? Ari.C_INSTANCE.getValue("base.no-record", FilePath.LANG):player.getWorld().getName()));
                 map.put(LangType.PLAYER_LOCATION.getType(), ComponentUtils.text(player == null ? Ari.C_INSTANCE.getValue("base.no-record", FilePath.LANG): FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())));
 
-                sender.sendMessage(ConfigUtils.t("server.player.info", map));
+                List<String> list = Ari.C_INSTANCE.getValue("server.player.info", FilePath.LANG, new TypeToken<List<String>>(){}.getType(), List.of());
+                Component component = Component.join(
+                        JoinConfiguration.separator(Component.newline()),
+                        list.stream().map(s -> ComponentUtils.text(s, map)).toList()
+                );
+
+                sender.sendMessage(component);
             }).exceptionally(i -> {
                 Log.error(i, "error");
                 return null;
