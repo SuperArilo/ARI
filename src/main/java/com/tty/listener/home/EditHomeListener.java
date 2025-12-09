@@ -117,18 +117,18 @@ public class EditHomeListener extends BaseEditFunctionGuiListener {
                 homeEditor.baseInstance.getFunctionItems().forEach((k, v) -> {
                     if (v.getType().equals(FunctionType.TOP_SLOT)) {
                         List<String> lore = v.getLore();
-                        List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ConfigUtils.t(homeEditor.currentHome.isTopSlot() ? "base.yes_re" : "base.no_re")))).toList();
+                        List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.instance.dataService.getValue(homeEditor.currentHome.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
                         clickMeta.lore(list);
                         clickItem.setItemMeta(clickMeta);
                     }
                 });
             }
             case SAVE -> {
-                clickMeta.lore(List.of(ConfigUtils.t("base.save.ing")));
+                clickMeta.lore(List.of(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.ing"))));
                 clickItem.setItemMeta(clickMeta);
                 CompletableFuture<Boolean> future = homeManager.modify(homeEditor.currentHome);
                 future.thenAccept(status -> {
-                    clickMeta.lore(List.of(ConfigUtils.t(status ? "base.save.done":"base.save.error")));
+                    clickMeta.lore(List.of(ComponentUtils.text(Ari.instance.dataService.getValue(status ? "base.save.done":"base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
                     Lib.Scheduler.runAsyncDelayed(Ari.instance, e -> {
                         clickMeta.lore(List.of());
@@ -136,9 +136,9 @@ public class EditHomeListener extends BaseEditFunctionGuiListener {
                     }, 20);
                 }).exceptionally(i -> {
                     Log.error(i, "save home error");
-                    clickMeta.lore(List.of(ConfigUtils.t("base.save.error")));
+                    clickMeta.lore(List.of(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
-                    player.sendMessage(ConfigUtils.t("base.on-error"));
+                    player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
                     return null;
                 });
             }
@@ -157,11 +157,11 @@ public class EditHomeListener extends BaseEditFunctionGuiListener {
                         }.getType(),
                         List.of());
         if(!FormatUtils.checkName(message) || checkList.contains(message)) {
-            player.sendMessage(ConfigUtils.t("base.on-edit.rename.name-error"));
+            player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-edit.rename.name-error")));
             return false;
         }
         if(message.length() > Ari.C_INSTANCE.getValue("main.name-length", FilePath.HOME_CONFIG, Integer.class, 15)) {
-            player.sendMessage(ConfigUtils.t("base.on-edit.rename.name-too-long"));
+            player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-edit.rename.name-too-long")));
             return false;
         }
         HomeEditor editor = this.getGui(holder.meta(), HomeEditor.class);

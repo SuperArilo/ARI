@@ -6,6 +6,7 @@ import com.tty.function.WhitelistManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.SuperHandsomeCommand;
+import com.tty.lib.tool.ComponentUtils;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -46,12 +47,12 @@ public class ZakoRemove extends ZakoBase<String> {
         }).thenAccept(status -> {
             Player player = Bukkit.getPlayer(uuid);
             if(player != null) {
-                Lib.Scheduler.runAtEntity(Ari.instance, player, (i)->player.kick(ConfigUtils.t("base.on-player.data-changed")), () -> player.sendMessage(ConfigUtils.t("on-error")));
+                Lib.Scheduler.runAtEntity(Ari.instance, player, (i)->player.kick(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.data-changed"))), () -> player.sendMessage(ConfigUtils.t("on-error")));
             }
             sender.sendMessage(ConfigUtils.t("function.zako.remove-" + (status ? "success":"failure")));
         }).exceptionally(i -> {
             Log.error(i, "remove zako error");
-            sender.sendMessage(ConfigUtils.t("base.on-error"));
+            sender.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
             return null;
         });
     }

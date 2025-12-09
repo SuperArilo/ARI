@@ -5,9 +5,9 @@ import com.tty.dto.state.player.PlayerEditGuiState;
 import com.tty.enumType.GuiType;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.FunctionType;
+import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.states.GuiEditStateService;
-import com.tty.tool.ConfigUtils;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -44,7 +44,7 @@ public abstract class BaseEditFunctionGuiListener extends BaseGuiListener {
         if (FunctionType.CANCEL.name().equals(message.toUpperCase())) {
             first.setOver(true);
             player.clearTitle();
-            player.sendMessage(ConfigUtils.t("base.on-edit.cancel"));
+            player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-edit.cancel")));
             return;
         }
 

@@ -10,6 +10,7 @@ import com.tty.lib.Log;
 import com.tty.lib.command.BaseCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.dto.Page;
+import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PermissionUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -75,11 +76,11 @@ public class sethome extends BaseCommand<String> {
                     if (status) {
                         sender.sendMessage(ConfigUtils.t("function.home.create-success", player));
                     } else {
-                        sender.sendMessage(ConfigUtils.t("base.save.on-error", player));
+                        sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.on-error")));
                     }
                 }).exceptionally(i -> {
                     Log.error(i, "create home error");
-                    player.sendMessage(ConfigUtils.t("base.on-error"));
+                    player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
                     return null;
                 });
         } else {

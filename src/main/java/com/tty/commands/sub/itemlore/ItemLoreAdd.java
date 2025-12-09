@@ -1,10 +1,10 @@
 package com.tty.commands.sub.itemlore;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.tty.Ari;
 import com.tty.lib.command.BaseCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.ComponentUtils;
-import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -35,7 +35,7 @@ public class ItemLoreAdd extends BaseCommand<String> {
         Player player = (Player) sender;
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         if (mainHand.isEmpty()) {
-            player.sendMessage(ConfigUtils.t("base.on-player.hand-no-item"));
+            player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.hand-no-item")));
             return;
         }
         ItemMeta itemMeta = mainHand.getItemMeta();

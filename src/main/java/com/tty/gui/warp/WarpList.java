@@ -16,7 +16,6 @@ import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.enum_type.IconKeyType;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
-import com.tty.tool.ConfigUtils;
 import com.tty.lib.tool.EconomyUtils;
 import com.tty.lib.tool.PermissionUtils;
 import net.kyori.adventure.text.Component;
@@ -34,7 +33,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class WarpList extends BaseDataItemInventory<ServerWarp> {
 
-    private final String baseFree = Ari.C_INSTANCE.getValue("base.free", FilePath.LANG);
+    private final String baseFree = Ari.instance.dataService.getValue("base.free");
 
     public WarpList(Player player) {
         super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.WARP_LIST_GUI.name()).saveToString(), BaseDataMenu.class), player);
@@ -59,7 +58,7 @@ public class WarpList extends BaseDataItemInventory<ServerWarp> {
             } catch (Exception e) {
                 Log.warn("There is a problem with the warpID: [%s] of the player: [%s]", serverWarp.getWarpId(), this.player.getName());
                 Log.error(e, "Skip the rendering warpId [%s] process...", serverWarp.getWarpId());
-                this.player.sendMessage(ConfigUtils.t("base.on-error"));
+                this.player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
                 continue;
             }
 
@@ -96,8 +95,8 @@ public class WarpList extends BaseDataItemInventory<ServerWarp> {
                             Double cost = serverWarp.getCost();
                             replacements.put(keyType.getKey(), ComponentUtils.text(cost == null || cost == 0 ? baseFree : cost + EconomyUtils.getNamePlural()));
                         }
-                        case TOP_SLOT -> replacements.put(keyType.getKey(), ComponentUtils.text(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re"));
-                        case PERMISSION -> replacements.put(keyType.getKey(), ConfigUtils.t(hasPermission ? "base.yes_re":"base.no_re"));
+                        case TOP_SLOT -> replacements.put(keyType.getKey(), ComponentUtils.text(Ari.instance.dataService.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
+                        case PERMISSION -> replacements.put(keyType.getKey(), ComponentUtils.text(Ari.instance.dataService.getValue(hasPermission ? "base.yes_re":"base.no_re")));
                     }
                 }
 

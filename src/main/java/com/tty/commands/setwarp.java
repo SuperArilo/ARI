@@ -9,6 +9,7 @@ import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
+import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PermissionUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -80,12 +81,12 @@ public class setwarp extends BaseCommand<String> {
                     if (status) {
                         player.sendMessage(ConfigUtils.t("function.warp.create-success"));
                     } else {
-                        player.sendMessage(ConfigUtils.t("base.save.on-error"));
+                        player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.on-error")));
                     }
                 })
                 .exceptionally(i -> {
                     Log.error(i, "create warp error");
-                    player.sendMessage(ConfigUtils.t("base.on-error"));
+                    player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
                     return null;
                 });
     }

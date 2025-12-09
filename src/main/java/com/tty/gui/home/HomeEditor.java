@@ -48,7 +48,7 @@ public class HomeEditor extends BaseInventory {
                         m.put(IconKeyType.Z.getKey(), FormatUtils.formatTwoDecimalPlaces(location.getZ()));
                         item.setName(this.replaceKey(item.getName(), m));
                     }
-                    case TOP_SLOT -> item.setLore(item.getLore().stream().map(lore -> this.replaceKey(lore, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.C_INSTANCE.getValue(this.currentHome.isTopSlot() ? "base.yes_re":"base.no_re", FilePath.LANG)))).toList());
+                    case TOP_SLOT -> item.setLore(item.getLore().stream().map(lore -> this.replaceKey(lore, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.instance.dataService.getValue(this.currentHome.isTopSlot() ? "base.yes_re":"base.no_re")))).toList());
                 }
             }
         }

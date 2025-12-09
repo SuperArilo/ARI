@@ -62,7 +62,7 @@ public class WarpEditor extends BaseInventory {
                             item.setName(cost == null ? "":cost.toString());
                         }
                     }
-                    case TOP_SLOT -> item.setLore(item.getLore().stream().map(lore -> this.replaceKey(lore, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.C_INSTANCE.getValue(this.currentWarp.isTopSlot() ? "base.yes_re":"base.no_re", FilePath.LANG)))).toList());
+                    case TOP_SLOT -> item.setLore(item.getLore().stream().map(lore -> this.replaceKey(lore, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.instance.dataService.getValue(this.currentWarp.isTopSlot() ? "base.yes_re":"base.no_re")))).toList());
                 }
             }
         }

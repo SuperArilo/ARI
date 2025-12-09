@@ -63,8 +63,8 @@ public class ZakoInfo extends ZakoBase<String> {
                 map.put(LangType.LAST_LOGIN_SERVER_TIME.getType(), ComponentUtils.text(TimeFormatUtils.format(instance.getLastLoginOffTime(), PATTERN_DATETIME)));
                 map.put(LangType.TOTAL_ON_SERVER.getType(), ComponentUtils.text(TimeFormatUtils.format(instance.getTotalOnlineTime())));
                 Player player = Bukkit.getPlayer(UUID.fromString(instance.getPlayerUUID()));
-                map.put(LangType.PLAYER_WORLD.getType(), ComponentUtils.text(player == null ? Ari.C_INSTANCE.getValue("base.no-record", FilePath.LANG):player.getWorld().getName()));
-                map.put(LangType.PLAYER_LOCATION.getType(), ComponentUtils.text(player == null ? Ari.C_INSTANCE.getValue("base.no-record", FilePath.LANG): FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())));
+                map.put(LangType.PLAYER_WORLD.getType(), ComponentUtils.text(player == null ? Ari.instance.dataService.getValue("base.no-record"):player.getWorld().getName()));
+                map.put(LangType.PLAYER_LOCATION.getType(), ComponentUtils.text(player == null ? Ari.instance.dataService.getValue("base.no-record"): FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())));
 
                 List<String> list = Ari.C_INSTANCE.getValue("server.player.info", FilePath.LANG, new TypeToken<List<String>>(){}.getType(), List.of());
                 Component component = Component.join(

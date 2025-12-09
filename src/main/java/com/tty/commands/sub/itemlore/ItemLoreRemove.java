@@ -1,9 +1,10 @@
 package com.tty.commands.sub.itemlore;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.tty.Ari;
 import com.tty.lib.command.BaseCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.tool.ConfigUtils;
+import com.tty.lib.tool.ComponentUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -35,7 +36,7 @@ public class ItemLoreRemove extends BaseCommand<Integer> {
         String content = args[2];
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         if (mainHand.isEmpty()) {
-            player.sendMessage(ConfigUtils.t("base.on-player.hand-no-item"));
+            player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.hand-no-item")));
             return;
         }
         ItemMeta itemMeta = mainHand.getItemMeta();
@@ -50,7 +51,7 @@ public class ItemLoreRemove extends BaseCommand<Integer> {
             }
             lore.remove(index);
         } catch (Exception e) {
-            player.sendMessage(ConfigUtils.t("base.on-edit.input-error"));
+            player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-edit.input-error")));
         }
         itemMeta.lore(lore);
         mainHand.setItemMeta(itemMeta);

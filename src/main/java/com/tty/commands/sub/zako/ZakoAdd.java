@@ -1,6 +1,7 @@
 package com.tty.commands.sub.zako;
 
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.tty.Ari;
 import com.tty.entity.sql.WhitelistInstance;
 import com.tty.function.WhitelistManager;
 import com.tty.lib.Log;
@@ -47,12 +48,12 @@ public class ZakoAdd extends ZakoBase<String> {
                             sender.sendMessage(ConfigUtils.t("function.zako.add-" + (status ? "success":"failure"))))
                     .exceptionally(n -> {
                         Log.error(n, "add zako error");
-                        sender.sendMessage(ConfigUtils.t("base.on-error"));
+                        sender.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
                         return null;
                     });
         }).exceptionally(i -> {
             Log.error(i, "query zako error");
-            sender.sendMessage(ConfigUtils.t("base.on-error"));
+            sender.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
             return null;
         });
     }

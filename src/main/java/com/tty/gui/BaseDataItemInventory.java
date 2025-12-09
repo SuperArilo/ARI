@@ -1,8 +1,8 @@
 package com.tty.gui;
 
+import com.tty.Ari;
 import com.tty.entity.menu.BaseDataMenu;
 import com.tty.lib.Log;
-import com.tty.tool.ConfigUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -39,7 +39,7 @@ public abstract class BaseDataItemInventory<T> extends BaseInventory {
         if (this.closed.get()) return;
         this.pageNum--;
         if(this.pageNum <= 0) {
-            this.player.sendMessage(ConfigUtils.t("base.page-change.none-prev"));
+            this.player.sendMessage(Ari.instance.dataService.getValue("base.page-change.none-prev"));
             this.pageNum = 1;
             return;
         }
@@ -57,7 +57,7 @@ public abstract class BaseDataItemInventory<T> extends BaseInventory {
         this.pageNum++;
         this.requestAndAccept(list -> {
             if (list.isEmpty()) {
-                this.player.sendMessage(ConfigUtils.t("base.page-change.none-next"));
+                this.player.sendMessage(Ari.instance.dataService.getValue("base.page-change.none-next"));
                 this.pageNum--;
             } else {
                 this.data = list;

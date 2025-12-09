@@ -117,11 +117,11 @@ public class EditWarpListener extends BaseEditFunctionGuiListener {
             }
             case SAVE -> {
                 Log.debug("start saving warp id: %s", warpEditor.currentWarp.getWarpId());
-                clickMeta.lore(List.of(ConfigUtils.t("base.save.ing")));
+                clickMeta.lore(List.of(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.ing"))));
                 clickItem.setItemMeta(clickMeta);
                 CompletableFuture<Boolean> future = warpManager.modify(warpEditor.currentWarp);
                 future.thenAccept(status -> {
-                    clickMeta.lore(List.of(ConfigUtils.t(status ? "base.save.done":"base.save.error")));
+                    clickMeta.lore(List.of(ComponentUtils.text(Ari.instance.dataService.getValue(status ? "base.save.done":"base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
                     if(status) {
                         Lib.Scheduler.runAsyncDelayed(Ari.instance, e ->{
@@ -129,12 +129,12 @@ public class EditWarpListener extends BaseEditFunctionGuiListener {
                             clickItem.setItemMeta(clickMeta);
                         }, 20L);
                     } else {
-                        clickMeta.lore(List.of(ConfigUtils.t("base.save.error")));
+                        clickMeta.lore(List.of(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.error"))));
                         clickItem.setItemMeta(clickMeta);
                     }
                 }).exceptionally(i -> {
                     Log.error(i, "saving warp error");
-                    clickMeta.lore(List.of(ConfigUtils.t("base.save.error")));
+                    clickMeta.lore(List.of(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
                     return null;
                 });
@@ -144,7 +144,7 @@ public class EditWarpListener extends BaseEditFunctionGuiListener {
                 warpEditor.baseInstance.getFunctionItems().forEach((k, v) -> {
                     if (v.getType().equals(FunctionType.TOP_SLOT)) {
                         List<String> lore = v.getLore();
-                        List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ConfigUtils.t(warpEditor.currentWarp.isTopSlot() ? "base.yes_re" : "base.no_re")))).toList();
+                        List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.instance.dataService.getValue(warpEditor.currentWarp.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
                         clickMeta.lore(list);
                         clickItem.setItemMeta(clickMeta);
                     }
@@ -161,25 +161,25 @@ public class EditWarpListener extends BaseEditFunctionGuiListener {
         List<String> value = Ari.C_INSTANCE.getValue("main.name-check", FilePath.WARP_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
         if(value == null) {
             Log.error("name-check list is null, check config");
-            player.sendMessage(ConfigUtils.t("base.on-error"));
+            player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
             return false;
         }
         WarpEditor warpEditor = this.getGui(holder.meta(), WarpEditor.class);
         switch (type) {
             case RENAME -> {
                 if(!FormatUtils.checkName(message) || value.contains(message) || !FormatUtils.checkName(message)) {
-                    player.sendMessage(ConfigUtils.t("base.on-edit.rename.name-error"));
+                    player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-edit.rename.name-error")));
                     return false;
                 }
                 if(message.length() > Ari.C_INSTANCE.getValue("main.name-length", FilePath.WARP_CONFIG, new TypeToken<Integer>(){}.getType(), 15)) {
-                    player.sendMessage(ConfigUtils.t("base.on-edit.rename.name-too-long"));
+                    player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-edit.rename.name-too-long")));
                     return false;
                 }
                 warpEditor.currentWarp.setWarpName(message);
             }
             case PERMISSION -> {
                 if(!FormatUtils.isValidPermissionNode(message)) {
-                    player.sendMessage(ConfigUtils.t("base.on-edit.permission.permission-error"));
+                    player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-edit.permission.permission-error")));
                     return false;
                 }
                 warpEditor.currentWarp.setPermission(message);
@@ -189,7 +189,7 @@ public class EditWarpListener extends BaseEditFunctionGuiListener {
                     Double i = Double.parseDouble(message);
                     warpEditor.currentWarp.setCost(i);
                 } catch (NumberFormatException e) {
-                    player.sendMessage(ConfigUtils.t("base.on-edit.cost.format-error"));
+                    player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-edit.cost.format-error")));
                     return false;
                 }
             }
