@@ -70,9 +70,10 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
      * @param asyncMode 保存模式。同步和异步
      */
     public void savePlayerData(PlayerSaveState state, boolean asyncMode) {
-        if (state.isRunning() || state.isOver()) return;
-
-        state.setRunning(true);
+        synchronized (state) {
+            if (state.isRunning() || state.isOver()) return;
+            state.setRunning(true);
+        }
 
         Player player = (Player) state.getOwner();
         this.manager.setExecutionMode(asyncMode);
