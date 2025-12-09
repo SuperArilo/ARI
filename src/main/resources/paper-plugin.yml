@@ -5,6 +5,7 @@ api-version: '1.21'
 authors:
   - Arilo007
 folia-supported: true
+loader: com.tty.Loader
 dependencies:
   server:
     arilib:
