@@ -2,20 +2,22 @@ package com.tty.tool;
 
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.handler.TableNameHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.tty.Ari;
-import com.tty.enumType.Mapper;
 import com.tty.enumType.SqlTable;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.SQLType;
+import com.tty.mapper.HomeMapper;
+import com.tty.mapper.PlayersMapper;
+import com.tty.mapper.WarpMapper;
+import com.tty.mapper.WhitelistMapper;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.SneakyThrows;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -51,11 +53,13 @@ public class SQLInstance {
         }
 
     }
+
     public void reconnect() {
         Log.debug("Connection is closing...");
         close();
         this.start();
     }
+
     protected void createMysql() {
         FileConfiguration config = Ari.instance.getConfig();
         HikariDataSource hikariDataSource = new HikariDataSource();
@@ -69,6 +73,7 @@ public class SQLInstance {
         hikariDataSource.setKeepaliveTime(config.getLong("data.keepalive-time"));
         this.setLiteFactory(hikariDataSource);
     }
+
     protected void createSQLite() {
         HikariDataSource hikariDataSource = new HikariDataSource();
         hikariDataSource.setDriverClassName(sqlType.getDriver());
@@ -76,35 +81,26 @@ public class SQLInstance {
         this.setLiteFactory(hikariDataSource);
     }
 
+    @SneakyThrows
     protected void setLiteFactory(HikariDataSource dataSource) {
-        TransactionFactory transactionFactory = new JdbcTransactionFactory();
-        Environment environment = new Environment("dev", transactionFactory, dataSource);
 
         MybatisConfiguration configuration = new MybatisConfiguration();
-        configuration.setEnvironment(environment);
+        configuration.setEnvironment(new Environment(Ari.DEBUG ? "dev":"prod", new JdbcTransactionFactory(), dataSource));
 
-        // 注册 Mapper
-        for (Mapper value : Mapper.values()) {
-            configuration.addMapper(value.getMapperClass());
-        }
+        configuration.addMapper(PlayersMapper.class);
+        configuration.addMapper(WarpMapper.class);
+        configuration.addMapper(HomeMapper.class);
+        configuration.addMapper(WhitelistMapper.class);
 
-        // 动态表名前缀
-        TableNameHandler handler = (sql, original) -> {
-            String prefix = Ari.instance.getConfig().getString("data.table-prefix", "ari_");
-            return prefix + original;
-        };
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        DynamicTableNameInnerInterceptor dtni = new DynamicTableNameInnerInterceptor(handler);
-        interceptor.addInnerInterceptor(dtni);
+        DynamicTableNameInnerInterceptor innerInterceptor = new DynamicTableNameInnerInterceptor((sql, original) -> Ari.instance.getConfig().getString("data.table-prefix", "ari_") + original);
+        interceptor.addInnerInterceptor(innerInterceptor);
 
-        // 分页插件
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
         configuration.addInterceptor(interceptor);
 
-        // 构建 SqlSessionFactory
         SESSION_FACTORY = new SqlSessionFactoryBuilder().build(configuration);
     }
-
 
     public static String getTablePrefix() {
         return Ari.instance.getConfig().getString("data.table-prefix", "ari");
