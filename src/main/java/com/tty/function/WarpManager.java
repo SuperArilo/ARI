@@ -40,7 +40,7 @@ public class WarpManager extends BaseManager<ServerWarp> {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.selectOne(new LambdaQueryWrapper<ServerWarp>().eq(ServerWarp::getId, warpId));
+                return mapper.selectOne(new LambdaQueryWrapper<ServerWarp>().eq(ServerWarp::getWarpId, warpId));
             }
         });
     }
