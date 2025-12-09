@@ -11,7 +11,6 @@ import com.tty.enumType.GuiType;
 import com.tty.function.HomeManager;
 import com.tty.gui.BaseDataItemInventory;
 import com.tty.lib.Log;
-import com.tty.lib.dto.Page;
 import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.enum_type.IconKeyType;
 import com.tty.lib.tool.ComponentUtils;
@@ -43,7 +42,7 @@ public class HomeList extends BaseDataItemInventory<ServerHome> {
     @Override
     public CompletableFuture<List<ServerHome>> requestData() {
         return new HomeManager(this.player, true)
-                .getList(Page.create(this.pageNum, this.baseDataInstance.getDataItems().getSlot().size()));
+                .getList(this.pageNum, this.baseDataInstance.getDataItems().getSlot().size());
     }
 
     @Override

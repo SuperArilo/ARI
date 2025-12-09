@@ -9,7 +9,6 @@ import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.dto.Page;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PermissionUtils;
@@ -46,7 +45,7 @@ public class sethome extends BaseCommand<String> {
         if(FormatUtils.checkIdName(homeId)) {
             Player player = (Player) sender;
             HomeManager homeManager = new HomeManager(player, true);
-            homeManager.getList(Page.create(1, Integer.MAX_VALUE))
+            homeManager.getList(0, Integer.MAX_VALUE)
                     .thenCompose(serverHomes -> {
                         if (serverHomes.size() + 1 > PermissionUtils.getMaxCountInPermission(player, "home")) {
                             sender.sendMessage(ConfigUtils.t("function.home.exceeds"));

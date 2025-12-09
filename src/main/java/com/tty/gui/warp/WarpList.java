@@ -11,7 +11,6 @@ import com.tty.enumType.GuiType;
 import com.tty.function.WarpManager;
 import com.tty.gui.BaseDataItemInventory;
 import com.tty.lib.Log;
-import com.tty.lib.dto.Page;
 import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.enum_type.IconKeyType;
 import com.tty.lib.tool.ComponentUtils;
@@ -41,7 +40,7 @@ public class WarpList extends BaseDataItemInventory<ServerWarp> {
 
     @Override
     public CompletableFuture<List<ServerWarp>> requestData() {
-        return new WarpManager(true).getList(Page.create(this.pageNum, this.pageSize));
+        return new WarpManager(true).getList(this.pageNum, this.pageSize);
     }
 
     @Override

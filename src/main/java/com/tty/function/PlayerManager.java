@@ -1,9 +1,10 @@
 package com.tty.function;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.entity.sql.ServerPlayer;
-import com.tty.lib.dto.Page;
+import com.tty.mapper.PlayersMapper;
 import com.tty.tool.SQLInstance;
-import org.sql2o.Connection;
+import org.apache.ibatis.session.SqlSession;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -15,19 +16,15 @@ public class PlayerManager extends BaseManager<ServerPlayer> {
     }
 
     @Override
-    public CompletableFuture<List<ServerPlayer>> getList(Page page) {
+    public CompletableFuture<List<ServerPlayer>> getList(int pageNum, int pageSize) {
         return null;
     }
 
     public CompletableFuture<ServerPlayer> getInstance(String uuid) {
         return this.executeTask(() -> {
-            try (Connection connection = SQLInstance.SESSION_FACTORY.open()) {
-                return connection.createQuery("""
-                                    select * from %splayers
-                                    where player_uuid = :uuid
-                                """.formatted(SQLInstance.getTablePrefix())).addParameter("uuid", uuid)
-                        .executeAndFetchFirst(ServerPlayer.class);
-
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
+                PlayersMapper mapper = session.getMapper(PlayersMapper.class);
+                return mapper.selectOne(new LambdaQueryWrapper<ServerPlayer>().eq(ServerPlayer::getPlayerUUID, uuid));
             }
         });
     }
@@ -38,15 +35,9 @@ public class PlayerManager extends BaseManager<ServerPlayer> {
     @Override
     public CompletableFuture<Boolean> createInstance(ServerPlayer instance) {
         return this.executeTask(() -> {
-            try (Connection connection = SQLInstance.SESSION_FACTORY.open()) {
-                int result = connection.createQuery("""
-                                    insert into %splayers
-                                    (player_name, player_uuid, first_login_time, last_login_off_time, total_online_time, name_prefix, name_suffix)
-                                    values
-                                    (:playerName, :playerUUID, :firstLoginTime, :lastLoginOffTime, :totalOnlineTime, :namePrefix, :nameSuffix)
-                                """.formatted(SQLInstance.getTablePrefix()))
-                        .bind(instance).executeUpdate().getResult();
-                return result == 1;
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
+                PlayersMapper mapper = session.getMapper(PlayersMapper.class);
+                return mapper.insert(instance) == 1;
             }
         });
     }
@@ -59,20 +50,10 @@ public class PlayerManager extends BaseManager<ServerPlayer> {
     @Override
     public CompletableFuture<Boolean> modify(ServerPlayer instance) {
         return this.executeTask(() -> {
-            try (Connection connection = SQLInstance.SESSION_FACTORY.open()) {
-                int result = connection.createQuery("""
-                                    update %splayers set
-                                        first_login_time = :firstLoginTime,
-                                        last_login_off_time = :lastLoginOffTime,
-                                        total_online_time = :totalOnlineTime,
-                                        name_prefix = :namePrefix,
-                                        name_suffix = :nameSuffix
-                                    where player_uuid  = :playerUUID
-                                """.formatted(SQLInstance.getTablePrefix()))
-                        .bind(instance)
-                        .executeUpdate()
-                        .getResult();
-                return result == 1;
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
+                PlayersMapper mapper = session.getMapper(PlayersMapper.class);
+                int update = mapper.update(instance, new LambdaQueryWrapper<ServerPlayer>().eq(ServerPlayer::getPlayerUUID, instance.getPlayerUUID()));
+                return update == 1;
             }
         });
     }

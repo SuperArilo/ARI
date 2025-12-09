@@ -1,9 +1,14 @@
 package com.tty.entity.sql;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
+@TableName("warps")
 public class ServerWarp {
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     private String warpId;
     private String warpName;

@@ -86,7 +86,7 @@ public class setwarp extends BaseCommand<String> {
                 })
                 .exceptionally(i -> {
                     Log.error(i, "create warp error");
-                    player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
+                    player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-error")));
                     return null;
                 });
     }

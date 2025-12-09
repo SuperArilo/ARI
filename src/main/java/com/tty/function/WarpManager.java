@@ -1,11 +1,11 @@
 package com.tty.function;
 
-import com.tty.Ari;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tty.entity.sql.ServerWarp;
-import com.tty.lib.Lib;
-import com.tty.lib.dto.Page;
+import com.tty.mapper.WarpMapper;
 import com.tty.tool.SQLInstance;
-import org.sql2o.Connection;
+import org.apache.ibatis.session.SqlSession;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -17,106 +17,60 @@ public class WarpManager extends BaseManager<ServerWarp> {
     }
 
     @Override
-    public CompletableFuture<List<ServerWarp>> getList(Page page) {
+    public CompletableFuture<List<ServerWarp>> getList(int pageNum, int pageSize) {
         return this.executeTask(() -> {
-            try (Connection connection = SQLInstance.SESSION_FACTORY.open()) {
-                return connection.createQuery("""
-                                    select * from %swarps
-                                    order by top_slot desc
-                                    limit :limit offset :offset
-                                """.formatted(SQLInstance.getTablePrefix()))
-                        .addParameter("limit", page.getLimit())
-                        .addParameter("offset", page.getOffset())
-                        .executeAndFetch(ServerWarp.class);
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
+                Page<ServerWarp> page = new Page<>(pageNum, pageSize);
+                WarpMapper mapper = session.getMapper(WarpMapper.class);
+                return mapper.selectList(page, new LambdaQueryWrapper<ServerWarp>().orderByDesc(ServerWarp::isTopSlot));
             }
         });
     }
 
     public CompletableFuture<List<ServerWarp>> getCountByPlayer(String uuid) {
         return this.executeTask(() -> {
-            try (Connection connection = SQLInstance.SESSION_FACTORY.open()) {
-                return connection.createQuery("""
-                                    select * from %swarps
-                                    where create_by = :uuid
-                                """.formatted(SQLInstance.getTablePrefix()))
-                        .addParameter("uuid", uuid)
-                        .executeAndFetch(ServerWarp.class);
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
+                WarpMapper mapper = session.getMapper(WarpMapper.class);
+                return mapper.selectList(new Page<>(0, Integer.MAX_VALUE), new LambdaQueryWrapper<ServerWarp>().eq(ServerWarp::getCreateBy, uuid));
             }
         });
     }
 
     public CompletableFuture<ServerWarp> getInstance(String warpId) {
         return this.executeTask(() -> {
-            try (Connection connection = SQLInstance.SESSION_FACTORY.open()) {
-                return connection.createQuery("""
-                                    select * from %swarps
-                                    where warp_id = :warpId
-                                """.formatted(SQLInstance.getTablePrefix()))
-                        .addParameter("warpId", warpId)
-                        .executeAndFetchFirst(ServerWarp.class);
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
+                WarpMapper mapper = session.getMapper(WarpMapper.class);
+                return mapper.selectOne(new LambdaQueryWrapper<ServerWarp>().eq(ServerWarp::getId, warpId));
             }
         });
     }
 
     @Override
     public CompletableFuture<Boolean> createInstance(ServerWarp instance) {
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
-        Lib.Scheduler.runAsync(Ari.instance, i -> {
-            try (Connection connection = SQLInstance.SESSION_FACTORY.open()) {
-                int result = connection.createQuery("""
-                                    insert into %swarps
-                                    (warp_id, warp_name, create_by, location, show_material, permission, cost)
-                                    values
-                                    (:warpId, :warpName, :createBy, :location, :showMaterial, :permission, :cost)
-                                """.formatted(SQLInstance.getTablePrefix()))
-                        .bind(instance)
-                        .executeUpdate()
-                        .getResult();
-                future.complete(result == 1);
-            } catch (Exception e) {
-                future.completeExceptionally(e);
+        return this.executeTask(() -> {
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
+                WarpMapper mapper = session.getMapper(WarpMapper.class);
+                return mapper.insert(instance) == 1;
             }
         });
-        return future;
     }
 
     @Override
     public CompletableFuture<Boolean> deleteInstance(ServerWarp instance) {
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
-        Lib.Scheduler.runAsync(Ari.instance, i -> {
-            try (Connection connection = SQLInstance.SESSION_FACTORY.open()) {
-                int result = connection.createQuery("""
-                                    delete from %swarps where create_by = :createBy and warp_id = :warpId
-                                """.formatted(SQLInstance.getTablePrefix()))
-                        .bind(instance)
-                        .executeUpdate()
-                        .getResult();
-                future.complete(result == 1);
-            } catch (Exception e) {
-                future.completeExceptionally(e);
+        return this.executeTask(() -> {
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
+                WarpMapper mapper = session.getMapper(WarpMapper.class);
+                return mapper.delete(new LambdaQueryWrapper<ServerWarp>().eq(ServerWarp::getCreateBy, instance.getCreateBy()).eq(ServerWarp::getId, instance.getId())) == 1;
             }
         });
-        return future;
     }
 
     @Override
     public CompletableFuture<Boolean> modify(ServerWarp instance) {
         return this.executeTask(() -> {
-            try (Connection connection = SQLInstance.SESSION_FACTORY.open()) {
-                int update = connection.createQuery("""
-                                    update %swarps set
-                                        warp_name = :warpName,
-                                        location = :location,
-                                        show_material = :showMaterial,
-                                        permission = :permission,
-                                        cost = :cost,
-                                        top_slot = :topSlot
-                                    where warp_id = :warpId and create_by = :createBy
-                                """.formatted(SQLInstance.getTablePrefix()))
-                        .bind(instance)
-                        .executeUpdate()
-                        .getResult();
-                return update == 1;
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
+                WarpMapper mapper = session.getMapper(WarpMapper.class);
+                return mapper.update(instance, new LambdaQueryWrapper<ServerWarp>().eq(ServerWarp::getId, instance.getId()).eq(ServerWarp::getCreateBy, instance.getCreateBy())) == 1;
             }
         });
     }

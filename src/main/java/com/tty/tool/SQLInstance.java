@@ -1,22 +1,30 @@
 package com.tty.tool;
 
+import com.baomidou.mybatisplus.core.MybatisConfiguration;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.handler.TableNameHandler;
+import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.tty.Ari;
+import com.tty.enumType.Mapper;
 import com.tty.enumType.SqlTable;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.SQLType;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.ibatis.mapping.Environment;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.transaction.TransactionFactory;
+import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.sql2o.Connection;
-import org.sql2o.Sql2o;
 
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Statement;
 
 public class SQLInstance {
 
     public static SQLType sqlType;
-    public static Sql2o SESSION_FACTORY;
+    public static SqlSessionFactory SESSION_FACTORY;
 
     public void start() {
         Log.debug("Start connecting");
@@ -32,9 +40,11 @@ public class SQLInstance {
             case SQLITE -> this.createSQLite();
         }
 
-        try (Connection connection = SESSION_FACTORY.open()) {
+        try (SqlSession connection = SESSION_FACTORY.openSession()) {
             for (SqlTable value : SqlTable.values()) {
-                connection.createQuery(value.getSql()).executeUpdate();
+                try (Statement statement = connection.getConnection().createStatement()) {
+                    statement.execute(value.getSql());
+                }
             }
         } catch (Exception e) {
             Log.error(e, "sql error");
@@ -67,41 +77,43 @@ public class SQLInstance {
     }
 
     protected void setLiteFactory(HikariDataSource dataSource) {
-        SESSION_FACTORY = new Sql2o(dataSource);
-        Map<String, String> colMaps = new HashMap<>();
-        colMaps.put("player_name", "playerName");
-        colMaps.put("player_uuid", "playerUUID");
-        colMaps.put("first_login_time", "firstLoginTime");
-        colMaps.put("last_login_off_time", "lastLoginOffTime");
-        colMaps.put("total_online_time", "totalOnlineTime");
-        colMaps.put("name_prefix", "namePrefix");
-        colMaps.put("name_suffix", "nameSuffix");
-        colMaps.put("home_id", "homeId");
-        colMaps.put("home_name", "homeName");
-        colMaps.put("show_material", "showMaterial");
-        colMaps.put("top_slot", "topSlot");
-        colMaps.put("warp_id", "warpId");
-        colMaps.put("warp_name", "warpName");
-        colMaps.put("create_by", "createBy");
-        colMaps.put("create_time", "createTime");
-        colMaps.put("spawn_id", "spawnId");
-        colMaps.put("spawn_name", "spawnName");
-        colMaps.put("add_time", "addTime");
-        SESSION_FACTORY.setDefaultColumnMappings(colMaps);
+        TransactionFactory transactionFactory = new JdbcTransactionFactory();
+        Environment environment = new Environment("dev", transactionFactory, dataSource);
+
+        MybatisConfiguration configuration = new MybatisConfiguration();
+        configuration.setEnvironment(environment);
+
+        // 注册 Mapper
+        for (Mapper value : Mapper.values()) {
+            configuration.addMapper(value.getMapperClass());
+        }
+
+        // 动态表名前缀
+        TableNameHandler handler = (sql, original) -> {
+            String prefix = Ari.instance.getConfig().getString("data.table-prefix", "ari_");
+            return prefix + original;
+        };
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        DynamicTableNameInnerInterceptor dtni = new DynamicTableNameInnerInterceptor(handler);
+        interceptor.addInnerInterceptor(dtni);
+
+        // 分页插件
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        configuration.addInterceptor(interceptor);
+
+        // 构建 SqlSessionFactory
+        SESSION_FACTORY = new SqlSessionFactoryBuilder().build(configuration);
     }
+
 
     public static String getTablePrefix() {
         return Ari.instance.getConfig().getString("data.table-prefix", "ari");
     }
 
     public static void close() {
-        try {
-            if (SQLInstance.SESSION_FACTORY != null) {
-                SQLInstance.SESSION_FACTORY.getConnectionSource().getConnection().close();
-                Log.debug("Connection closed successfully");
-            }
-        } catch (SQLException e) {
-            Log.error(e, "close sql connection error");
+        if (SQLInstance.SESSION_FACTORY != null) {
+            SQLInstance.SESSION_FACTORY = null;
+            Log.debug("Connection closed successfully");
         }
         SQLInstance.SESSION_FACTORY = null;
     }

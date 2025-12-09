@@ -1,6 +1,5 @@
 package com.tty.function;
 
-import com.tty.lib.dto.Page;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -37,13 +36,7 @@ public abstract class BaseManager<T> {
         }
     }
 
-    /**
-     * 获取保存的列表
-     * @param page 分页对象
-     * @return 列表数组
-     */
-
-    public abstract CompletableFuture<List<T>> getList(Page page);
+    public abstract CompletableFuture<List<T>> getList(int pageNum, int pageSize);
 
     public abstract CompletableFuture<Boolean> createInstance(T instance);
 
