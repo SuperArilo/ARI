@@ -67,9 +67,9 @@ public class Ari extends JavaPlugin {
 
         this.printLogo();
 
-        PublicFunctionUtils.loadPlugin("Vault", Economy.class, EconomyUtils::setInstance, () -> Log.warn("Failed to load plugin: Vault, Economy may not be available!"));
-        PublicFunctionUtils.loadPlugin("Vault", Permission.class, PermissionUtils::setInstance, () -> Log.warn("Failed to load plugin: Vault, Permission use server default!"));
-        PublicFunctionUtils.loadPlugin("arilib", ConfigDataService.class, i -> this.dataService = i, () -> Log.warn("Failed to load data service"));
+        PublicFunctionUtils.loadPlugin("Vault", Economy.class, EconomyUtils::setInstance);
+        PublicFunctionUtils.loadPlugin("Vault", Permission.class, PermissionUtils::setInstance);
+        PublicFunctionUtils.loadPlugin("arilib", ConfigDataService.class, i -> this.dataService = i);
 
         this.stateMachineManager = new StateMachineManager(this);
         this.stateMachineManager.initDefaultStateMachines();
