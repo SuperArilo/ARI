@@ -10,7 +10,7 @@ import lombok.Data;
 @TableName("whitelist")
 public class WhitelistInstance {
     @TableId(value = "id", type = IdType.AUTO)
-    private long id;
+    private Long id;
     @TableField("player_uuid")
     private String playerUUID;
     private double addTime;
