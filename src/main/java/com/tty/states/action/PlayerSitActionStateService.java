@@ -8,9 +8,7 @@ import com.tty.enumType.FilePath;
 import com.tty.lib.Lib;
 import com.tty.lib.services.StateService;
 import com.tty.tool.ConfigUtils;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
@@ -25,6 +23,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
+import org.bukkit.util.VoxelShape;
 
 import java.util.List;
 
@@ -54,14 +53,14 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         //如果为楼梯
         if (blockData instanceof Stairs stairs) {
             //如果为倒放楼梯，不允许
-            if (!this.checkBlockTop(owner, sitBlock) || stairs.getHalf().equals(Bisected.Half.TOP)) {
+            if (this.checkBlockTopIsNotAllow(owner, sitBlock) || stairs.getHalf().equals(Bisected.Half.TOP)) {
                 owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
                 return false;
             }
             return sitBlockName.endsWith("_STAIRS");
             //如果为半砖
         } else if (blockData instanceof Slab) {
-            if (!this.checkBlockTop(owner, sitBlock)) {
+            if (this.checkBlockTopIsNotAllow(owner, sitBlock)) {
                 owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
                 return false;
             }
@@ -103,7 +102,6 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
 
     @Override
     protected void passAddState(PlayerSitActionState state) {
-
         Player player = (Player) state.getOwner();
         Block sitBlock = state.getSitBlock();
         Log.debug("create sit entity to player %s", player.getName());
@@ -119,6 +117,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                                 cloud.setInvulnerable(true);
                                 cloud.setGravity(false);
                                 cloud.setInvisible(true);
+                                cloud.setParticle(Particle.DUST, new Particle.DustOptions(Color.fromRGB(0, 0, 0), 0f));
                                 cloud.addPassenger(player);
                             }
                         }
@@ -155,7 +154,6 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
 
     }
 
-    //计算正确 sit 的 location
     private Location locationRecalculate(Player player, Block sitBlock) {
         Location location = sitBlock.getLocation();
         BlockData blockData = sitBlock.getBlockData();
@@ -175,30 +173,67 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         return location;
     }
 
-    private boolean checkBlockTop(Player p, Block actionBlock) {
+    private boolean checkBlockTopIsNotAllow(Player p, Block actionBlock) {
+        if (actionBlock == null) return true;
         Location location = actionBlock.getLocation();
         World world = location.getWorld();
-
-        if (!location.clone().add(0, 2, 0).getBlock().isEmpty()) {
-            return false;
-        }
+        if (world == null) return true;
 
         double x = location.getX();
         double y = location.getY();
         double z = location.getZ();
+
         BoundingBox seatBox = BoundingBox.of(
-                new Vector(x + 0.1, y + 1, z + 0.1),
+                new Vector(x + 0.1, y + 1.0, z + 0.1),
                 new Vector(x + 0.9, y + 1.8, z + 0.9)
         );
 
-        for (Entity entity : world.getNearbyEntities(seatBox)) {
-            if (entity instanceof Player player &&
-                    !player.equals(p) &&
-                    player.getGameMode() != GameMode.SPECTATOR) {
-                return false;
+        int minX = (int) Math.floor(x + 0.1);
+        int maxX = (int) Math.floor(x + 0.9);
+        int minZ = (int) Math.floor(z + 0.1);
+        int maxZ = (int) Math.floor(z + 0.9);
+        int minY = (int) Math.floor(y + 1.0);
+        int maxY = (int) Math.floor(y + 2.0);
+
+        for (int bx = minX; bx <= maxX; bx++) {
+            for (int by = minY; by <= maxY; by++) {
+                for (int bz = minZ; bz <= maxZ; bz++) {
+                    Block b = world.getBlockAt(bx, by, bz);
+                    Material type = b.getType();
+                    VoxelShape shape = b.getCollisionShape();
+                    if (shape.overlaps(seatBox)) {
+                        return true;
+                    }
+                    String name = type.name();
+                    if (name.endsWith("_CARPET")
+                            || name.endsWith("_BUTTON")
+                            || name.endsWith("_PRESSURE_PLATE")
+                            || name.endsWith("_LILY_PAD")
+                            || name.endsWith("_RAIL")
+                            || name.contains("TORCH")
+                            || name.contains("SIGN")
+                            || type == Material.DRAGON_EGG
+                            || type == Material.FIRE
+                            || type == Material.LAVA) {
+                        return true;
+                    }
+
+                    if (!b.isEmpty() && !b.isPassable()) {
+                        return true;
+                    }
+                }
             }
         }
-        return true;
+
+        for (Entity entity : world.getNearbyEntities(seatBox)) {
+            if (entity instanceof Player other &&
+                    !other.equals(p) &&
+                    other.getGameMode() != GameMode.SPECTATOR) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private List<String> getDisableList() {
