@@ -122,7 +122,6 @@ server:
       fall:
         - '&2<victim> &7落地过猛'
         - '&2<victim> &7从高处摔了下来'
-        - '&2<victim> &7坠机了, &4Man!'
       fire:
         - '&2<victim> &7浴火焚身'
         - '&2<victim> &7被烧死了'
