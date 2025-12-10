@@ -19,10 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ZakoInfo extends ZakoBase<String> {
 
@@ -37,7 +34,13 @@ public class ZakoInfo extends ZakoBase<String> {
 
     @Override
     public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        return List.of("<name or uuid (string)>");
+        Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+        if (onlinePlayers.isEmpty()) return List.of("<name or uuid (string)>");
+        List<String> list = new ArrayList<>();
+        for (Player player : onlinePlayers) {
+            list.add(player.getName());
+        }
+        return list;
     }
 
     @Override
