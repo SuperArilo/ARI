@@ -83,7 +83,7 @@ public class CustomPlayerDeathListener implements Listener {
                 sb.append(PlayerDeathInfoCollector.getRandomOfList(BASE_PREFIX + "falling-blocks." + key));
             }
             case FALL -> sb.append(PlayerDeathInfoCollector.getRandomOfList(BASE_PREFIX + "player.fall"));
-            case FIRE, FIRE_TICK -> sb.append(PlayerDeathInfoCollector.getRandomOfList(BASE_PREFIX + "player.fire"));
+            case FIRE, FIRE_TICK, CAMPFIRE -> sb.append(PlayerDeathInfoCollector.getRandomOfList(BASE_PREFIX + "player.fire"));
             case LIGHTNING -> sb.append(PlayerDeathInfoCollector.getRandomOfList(BASE_PREFIX + "player.lightning"));
             case SUFFOCATION -> sb.append(PlayerDeathInfoCollector.getRandomOfList(BASE_PREFIX + "player.suffocation"));
             case DROWNING -> sb.append(PlayerDeathInfoCollector.getRandomOfList(BASE_PREFIX + "player.drowning"));
