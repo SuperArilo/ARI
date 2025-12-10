@@ -62,6 +62,7 @@
 - Folia 1.21.x 服务器核心
 - Java 17 或更高版本
 - [Vault](https://github.com/MilkBowl/Vault) 前置插件
+- [ARILIB](https://github.com/SuperArilo/ARILIB) 前置插件
 
 ### 安装步骤
 1. 将插件和前置Lib放入 `plugins/` 目录
