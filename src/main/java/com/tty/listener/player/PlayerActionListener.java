@@ -20,7 +20,7 @@ public class PlayerActionListener implements Listener {
     @EventHandler
     public void onPlayInteract(PlayerInteractEvent event) {
         //未开启
-        if (this.isNotEnableSit()) return;
+        if (!this.isNotEnableSit()) return;
         Player player = event.getPlayer();
         //动作不匹配
         if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || player.getGameMode().equals(GameMode.SPECTATOR)) return;
@@ -41,7 +41,7 @@ public class PlayerActionListener implements Listener {
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         //未开启
-        if (this.isNotEnablePlayerSitPlayer()) return;
+        if (!this.isNotEnablePlayerSitPlayer()) return;
         //发起骑乘的玩家
         Player player = event.getPlayer();
         //右手必须为空才能骑乘
