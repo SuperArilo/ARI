@@ -16,6 +16,7 @@ import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.enum_type.IconKeyType;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
+import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.listener.BaseEditFunctionGuiListener;
 import com.tty.states.GuiEditStateService;
 import com.tty.tool.ConfigUtils;
@@ -99,7 +100,7 @@ public class EditWarpListener extends BaseEditFunctionGuiListener {
                                                 inventory,
                                                 GuiType.WARP_EDIT,
                                                 new WarpEditor(
-                                                        (ServerWarp) warpEditor.currentWarp.deepClone(),
+                                                        PublicFunctionUtils.deepCopy(warpEditor.currentWarp, ServerWarp.class),
                                                         player
                                                 )
                                         ),

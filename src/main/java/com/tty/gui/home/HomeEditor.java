@@ -1,5 +1,6 @@
 package com.tty.gui.home;
 
+import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.dto.CustomInventoryHolder;
 import com.tty.entity.menu.BaseMenu;
@@ -34,7 +35,7 @@ public class HomeEditor extends BaseInventory {
 
     @Override
     protected Map<String, FunctionItems> renderCustomFunctionItems() {
-        Map<String, FunctionItems> functionItems = PublicFunctionUtils.deepCopyBySerialization(this.baseInstance.getFunctionItems());
+        Map<String, FunctionItems> functionItems = PublicFunctionUtils.deepCopy(this.baseInstance.getFunctionItems(), new TypeToken<Map<String, FunctionItems>>(){}.getType());
         if (functionItems != null) {
             for (FunctionItems item : functionItems.values()) {
                 switch (item.getType()) {

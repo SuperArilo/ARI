@@ -5,12 +5,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("player_home")
-public class ServerHome extends BaseEntity {
+public class ServerHome {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     private String homeId;

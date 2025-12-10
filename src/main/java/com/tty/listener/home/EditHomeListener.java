@@ -16,6 +16,7 @@ import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.enum_type.IconKeyType;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
+import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.listener.BaseEditFunctionGuiListener;
 import com.tty.states.GuiEditStateService;
 import com.tty.tool.ConfigUtils;
@@ -92,7 +93,7 @@ public class EditHomeListener extends BaseEditFunctionGuiListener {
                                         inventory,
                                         GuiType.HOME_EDIT,
                                         new HomeEditor(
-                                                (ServerHome) homeEditor.currentHome.deepClone(),
+                                                PublicFunctionUtils.deepCopy(homeEditor.currentHome, ServerHome.class),
                                                 player
                                         )
                                 ),
