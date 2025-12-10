@@ -6,6 +6,8 @@ import com.tty.dto.state.action.PlayerRideActionState;
 import com.tty.lib.Lib;
 import com.tty.lib.services.StateService;
 import lombok.SneakyThrows;
+import org.bukkit.Color;
+import org.bukkit.Particle;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -78,6 +80,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
                         cloud.setRadius(0);
                         cloud.setInvulnerable(true);
                         cloud.setGravity(false);
+                        cloud.setParticle(Particle.DUST, new Particle.DustOptions(Color.fromRGB(0, 0, 0), 0f));
                         cloud.setInvisible(true);
                         beRidePlayer.addPassenger(cloud);
                     }
