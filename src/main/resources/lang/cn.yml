@@ -106,7 +106,6 @@ server:
       - "&f所在世界：&8<player_world>"
       - "&f当前位置: <player_location>"
 
-  # 以下不支持十六进制颜色
   custom-death:
     running-away:
       - ' &7试图逃离 &2<killer>&7 时'
