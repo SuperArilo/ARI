@@ -104,9 +104,4 @@ public abstract class BaseDataItemInventory<T> extends BaseInventory {
     protected void onCleanup() {
         this.data = null;
     }
-
-    @Override
-    public void cleanup() {
-        super.cleanup();
-    }
 }
