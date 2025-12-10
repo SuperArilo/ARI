@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.dto.CustomInventoryHolder;
 import com.tty.dto.state.player.PlayerEditGuiState;
+import com.tty.entity.sql.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
 import com.tty.function.WarpManager;
@@ -48,7 +49,7 @@ public class EditWarpListener extends BaseEditFunctionGuiListener {
         assert clickItem != null;
         CustomInventoryHolder holder = (CustomInventoryHolder) inventory.getHolder();
         assert holder != null;
-        Player player = holder.player();
+        Player player = (Player) event.getWhoClicked();
 
         ItemMeta clickMeta = clickItem.getItemMeta();
         NamespacedKey icon_type = new NamespacedKey(Ari.instance, "type");
@@ -90,9 +91,22 @@ public class EditWarpListener extends BaseEditFunctionGuiListener {
                     warpEditor.currentWarp.setPermission(null);
                     return;
                 }
-                inventory.close();
                 Ari.instance.stateMachineManager.get(GuiEditStateService.class)
-                        .addState(new PlayerEditGuiState(player, holder, type));
+                        .addState(new PlayerEditGuiState(
+                                        player,
+                                        new CustomInventoryHolder(
+                                                player,
+                                                inventory,
+                                                GuiType.WARP_EDIT,
+                                                new WarpEditor(
+                                                        (ServerWarp) warpEditor.currentWarp.deepClone(),
+                                                        player
+                                                )
+                                        ),
+                                        type
+                                )
+                        );
+                inventory.close();
             }
             case LOCATION -> {
                 Location newLocation = player.getLocation();
@@ -155,16 +169,15 @@ public class EditWarpListener extends BaseEditFunctionGuiListener {
 
     @Override
     public boolean onTitleEditStatus(String message, PlayerEditGuiState state) {
-        CustomInventoryHolder holder = state.getHolder();
         FunctionType type = state.getFunctionType();
-        Player player = holder.player();
+        Player player = (Player) state.getOwner();
         List<String> value = Ari.C_INSTANCE.getValue("main.name-check", FilePath.WARP_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
         if(value == null) {
             Log.error("name-check list is null, check config");
             player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
             return false;
         }
-        WarpEditor warpEditor = this.getGui(holder.meta(), WarpEditor.class);
+        WarpEditor warpEditor = this.getGui(state.getHolder().meta(), WarpEditor.class);
         switch (type) {
             case RENAME -> {
                 if(!FormatUtils.checkName(message) || value.contains(message) || !FormatUtils.checkName(message)) {

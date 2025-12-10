@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class WarpEditor extends BaseInventory {
 
-    public final ServerWarp currentWarp;
+    public ServerWarp currentWarp;
 
     public WarpEditor(ServerWarp serverWarp, Player player) {
         super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.WARP_EDIT_GUI.name()).saveToString(), BaseMenu.class), player);
@@ -74,4 +74,9 @@ public class WarpEditor extends BaseInventory {
         return new CustomInventoryHolder(player, this.inventory, GuiType.WARP_EDIT, this);
     }
 
+    @Override
+    public void onCleanup() {
+        super.onCleanup();
+        this.currentWarp = null;
+    }
 }

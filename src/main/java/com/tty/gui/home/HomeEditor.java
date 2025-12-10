@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class HomeEditor extends BaseInventory {
 
-    public final ServerHome currentHome;
+    public ServerHome currentHome;
 
     public HomeEditor(ServerHome serverHome, Player player) {
         super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_EDIT_GUI.name()).saveToString(), BaseMenu.class), player);
@@ -60,4 +60,9 @@ public class HomeEditor extends BaseInventory {
         return new CustomInventoryHolder(player, this.inventory, GuiType.HOME_EDIT, this);
     }
 
+    @Override
+    protected void onCleanup() {
+        super.onCleanup();
+        this.currentHome = null;
+    }
 }

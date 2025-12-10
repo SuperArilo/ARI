@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.dto.CustomInventoryHolder;
 import com.tty.dto.state.player.PlayerEditGuiState;
+import com.tty.entity.sql.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
 import com.tty.function.HomeManager;
@@ -46,7 +47,7 @@ public class EditHomeListener extends BaseEditFunctionGuiListener {
         CustomInventoryHolder holder = (CustomInventoryHolder) inventory.getHolder();
         assert holder != null;
 
-        Player player = holder.player();
+        Player player = (Player) event.getWhoClicked();
         ItemStack clickItem = event.getCurrentItem();
         assert clickItem != null;
 
@@ -86,8 +87,17 @@ public class EditHomeListener extends BaseEditFunctionGuiListener {
                         .get(GuiEditStateService.class)
                         .addState(new PlayerEditGuiState(
                                 player,
-                                holder,
-                                type));
+                                new CustomInventoryHolder(
+                                        player,
+                                        inventory,
+                                        GuiType.HOME_EDIT,
+                                        new HomeEditor(
+                                                (ServerHome) homeEditor.currentHome.deepClone(),
+                                                player
+                                        )
+                                ),
+                                type)
+                        );
                 inventory.close();
             }
             case LOCATION -> {
@@ -147,8 +157,7 @@ public class EditHomeListener extends BaseEditFunctionGuiListener {
 
     @Override
     public boolean onTitleEditStatus(String message, PlayerEditGuiState state) {
-        CustomInventoryHolder holder = state.getHolder();
-        Player player = holder.player();
+        Player player = (Player) state.getOwner();
         List<Object> checkList = Ari.C_INSTANCE
                 .getValue(
                         "main.name-check",
@@ -164,10 +173,9 @@ public class EditHomeListener extends BaseEditFunctionGuiListener {
             player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-edit.rename.name-too-long")));
             return false;
         }
-        HomeEditor editor = this.getGui(holder.meta(), HomeEditor.class);
-        if (editor == null) return false;
-        editor.currentHome.setHomeName(message);
-        Lib.Scheduler.runAtEntity(Ari.instance, player, p -> editor.open(), () -> {});
+        HomeEditor homeEditor = this.getGui(state.getHolder().meta(), HomeEditor.class);
+        homeEditor.currentHome.setHomeName(message);
+        Lib.Scheduler.runAtEntity(Ari.instance, player, p -> homeEditor.open(), () -> {});
         return true;
     }
 
