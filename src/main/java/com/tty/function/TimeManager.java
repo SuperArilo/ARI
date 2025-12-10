@@ -48,7 +48,7 @@ public class TimeManager {
                         this.cancelTask();
                     }
                     long nowTime = currentTime + add;
-                    this.world.setTime(nowTime);
+                    this.world.setFullTime(nowTime);
                     if (consumer != null) {
                         consumer.accept(nowTime);
                     }
@@ -68,7 +68,7 @@ public class TimeManager {
                 Ari.instance,
                 t -> {
                     long newTime = this.world.getTime() + this.addTick;
-                    this.world.setTime(newTime);
+                    this.world.setFullTime(newTime);
                     consumer.accept(newTime);
                 },
                 1L,
