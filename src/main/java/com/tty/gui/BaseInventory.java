@@ -17,11 +17,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class BaseInventory {
 
@@ -31,8 +29,6 @@ public abstract class BaseInventory {
     public CustomInventoryHolder holder;
 
     private final NamespacedKey renderType = new NamespacedKey(Ari.instance, "type");
-
-    private final AtomicBoolean closed = new AtomicBoolean(false);
 
     public BaseInventory(BaseMenu instance, Player player) {
         this.baseInstance = instance;
@@ -105,22 +101,7 @@ public abstract class BaseInventory {
 
     protected abstract CustomInventoryHolder createHolder();
 
-    protected void clearItem(int index) {
-        if (this.inventory != null) {
-            this.inventory.clear(index);
-        }
-    }
-
-    protected void setItem(int index, @NotNull ItemStack itemStack) {
-        if (this.inventory != null) {
-            this.inventory.setItem(index, itemStack);
-        }
-    }
-
     public void cleanup() {
-        if (!this.closed.compareAndSet(false, true)) {
-            return;
-        }
         if (this.inventory != null) {
             this.inventory.clear();
         }

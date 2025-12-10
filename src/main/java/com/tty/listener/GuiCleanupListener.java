@@ -10,7 +10,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 
-import java.lang.ref.WeakReference;
 
 public class GuiCleanupListener implements Listener {
 
@@ -28,12 +27,8 @@ public class GuiCleanupListener implements Listener {
 
     private void clean(Inventory inv) {
         if (inv.getHolder() instanceof CustomInventoryHolder holder) {
-            Object meta = holder.meta();
-            if (meta instanceof WeakReference<?> wr) {
-                Object o = wr.get();
-                if (o instanceof BaseInventory bi) {
-                    bi.cleanup();
-                }
+            if (holder.meta() instanceof BaseInventory baseInventory) {
+                baseInventory.cleanup();
             }
         }
     }
