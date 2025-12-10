@@ -120,7 +120,7 @@ public class WarpListListener extends BaseGuiListener {
                         }
                     }
                 }).exceptionally(i -> {
-                   Log.error(i, "error");
+                   Log.error(i, "get warp id %s error", warpId);
                    return null;
                 });
             }
