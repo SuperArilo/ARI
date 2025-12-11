@@ -178,7 +178,7 @@ server:
         public:
           - '&2<victim> &7被 &2<killer>&7 杀死了'
         zombie:
-          - '&2<victim> &7被 &2<killer>&7 给侵犯了'
+          - '&2<victim> &7被 &2<killer>&7 给杀死了'
       item:
         public:
           - '&2<victim> &7被 &2<killer>&7 用 &2<killer_item>&7 杀死了'
