@@ -112,68 +112,100 @@ server:
       - ' &7与 &2<killer>&7 战斗时'
     player:
       air:
-        - '&2<victim> &7死于 &2<killer>'
-        - '&2<victim> &7死于 &2<killer> &7强大的手下'
-        - '&2<victim> &7被 &2<killer> &7一拳打死'
+        public:
+          - '&2<victim> &7死于 &2<killer>'
+          - '&2<victim> &7死于 &2<killer> &7强大的手下'
+          - '&2<victim> &7被 &2<killer> &7一拳打死'
       item:
-        - '&2<victim> &7被 &2<killer> &7用 &2<killer_item> &7杀死了'
+        public:
+          - '&2<victim> &7被 &2<killer> &7用 &2<killer_item> &7杀死了'
       projectile:
-        - '&2<victim> &7被 &2<killer> &7用 &2<killer_item> &7射杀'
+        public:
+          - '&2<victim> &7被 &2<killer> &7用 &2<killer_item> &7射杀'
       fall:
-        - '&2<victim> &7落地过猛'
-        - '&2<victim> &7从高处摔了下来'
+        public:
+          - '&2<victim> &7落地过猛'
+          - '&2<victim> &7从高处摔了下来'
       fire:
-        - '&2<victim> &7浴火焚身'
-        - '&2<victim> &7被烧死了'
+        public:
+          - '&2<victim> &7浴火焚身'
+          - '&2<victim> &7被烧死了'
       lightning:
-        - '&2<victim> &7被闪电击中'
-        - '&2<victim> &7渡劫失败'
+        public:
+          - '&2<victim> &7被闪电击中'
+          - '&2<victim> &7渡劫失败'
       suffocation:
-        - '&2<victim> &7在墙里窒息而亡'
+        public:
+          - '&2<victim> &7在墙里窒息而亡'
       drowning:
-        - '&2<victim> &7淹死了'
+        public:
+          - '&2<victim> &7淹死了'
       freeze:
-        - '&2<victim> &7被冻死了'
+        public:
+          - '&2<victim> &7被冻死了'
       suicide:
-        - '&2<victim> &7结束了自己的生命'
+        public:
+          - '&2<victim> &7结束了自己的生命'
       void:
-        - '&2<victim> &7掉出了这个世界'
-        - '&2<victim> &7去往了二刺螈'
+        public:
+          - '&2<victim> &7掉出了这个世界'
+          - '&2<victim> &7去往了二刺螈'
       wither:
-        - '&2<victim> &7凋零了'
+        public:
+          - '&2<victim> &7凋零了'
       fly_into_wall:
-        - '&2<victim> &7感受到了动能'
-        - '&2<victim> &7学会了什么是动量守恒'
+        public:
+          - '&2<victim> &7感受到了动能'
+          - '&2<victim> &7学会了什么是动量守恒'
       kill:
-        - '&2<victim> &7自杀了'
+        public:
+          - '&2<victim> &7自杀了'
       starvation:
-        - '&2<victim> &7饿死了'
+        public:
+          - '&2<victim> &7饿死了'
       sonic_boom:
-        - '&2<victim> &7被 &2<killer> &7抹除了'
+        public:
+          - '&2<victim> &7被 &2<killer> &7抹除了'
       magic:
-        - '&2<victim> &7被 &2<killer> &7用魔法杀死了'
+        public:
+          - '&2<victim> &7被 &2<killer> &7用魔法杀死了'
+      explosion:
+        public:
+          - '&2<victim> &7被 &2<killer> &7炸死了'
+          - '&2<victim> &7想和 &2<killer> &7进行亲密接触'
     mob:
       air:
-        - '&2<victim> &7被 &2<killer>&7 杀死了'
+        public:
+          - '&2<victim> &7被 &2<killer>&7 杀死了'
+        zombie:
+          - '&2<victim> &7被 &2<killer>&7 给侵犯了'
       item:
-        - '&2<victim> &7被 &2<killer>&7 用 &2<killer_item>&7 杀死了'
+        public:
+          - '&2<victim> &7被 &2<killer>&7 用 &2<killer_item>&7 杀死了'
       projectile:
-        - '&2<victim> &7被 &2<killer> &7用 &2<killer_item> &7射杀'
+        public:
+          - '&2<victim> &7被 &2<killer> &7用 &2<killer_item> &7射杀'
     falling-blocks:
       anvil:
-        - '&2<victim> &7被坠落的铁砧压扁了'
-        - '&2<victim> &7被铁砧碾碎'
-        - '&2<victim> &7用头撞击铁砧'
-        - '&2<victim> &7尝试亲吻铁砧'
+        public:
+          - '&2<victim> &7被 &2<killer> 压扁了'
+          - '&2<victim> &7被 &2<killer> 碾碎'
+          - '&2<victim> &7用头撞击 &2<killer>'
+          - '&2<victim> &7尝试亲吻 &2<killer>'
     block:
       cactus:
-        - '&2<victim> &7被戳死了'
-        - '&2<victim> &7试图 曰 仙人掌被反杀'
+        public:
+          - '&2<victim> &7被戳死了'
+          - '&2<victim> &7试图 曰 仙人掌被反杀'
       magma_block:
-        - '&2<victim> &7发现了地板是熔岩做的'
+        public:
+          - '&2<victim> &7发现了地板是熔岩做的'
       sweet_berry_bush:
-        - '&2<victim> &7被甜浆果丛刺死了'
+        public:
+          - '&2<victim> &7被甜浆果丛刺死了'
       lava:
-        - '&2<victim> &7试图在熔岩里游泳'
+        public:
+          - '&2<victim> &7试图在熔岩里游泳'
       pointed_dripstone:
-        - '&2<victim> &7被石笋刺穿了'
+        public:
+          - '&2<victim> &7被石笋刺穿了'

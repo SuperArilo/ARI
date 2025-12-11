@@ -11,6 +11,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,29 @@ public class PlayerDeathInfoCollector {
                     ", killer=" + (killer != null ? killer.getName() : "null") +
                     ", weapon=" + (weapon != null ? weapon.getType().name() : "null") +
                     '}';
+        }
+
+        public String getRandomOfList(String keyPath) {
+            String killerName = this.killer == null ? "null":this.killer.getType().name();
+            Type type = new TypeToken<List<String>>() {}.getType();
+
+            List<String> list = Ari.C_INSTANCE.getValue(keyPath + "." + killerName.toLowerCase(), FilePath.LANG, type, List.of());
+            if (list.isEmpty()) {
+                list = Ari.C_INSTANCE.getValue(keyPath + ".public", FilePath.LANG, type, List.of());
+                if (list.isEmpty()) {
+                    list = Ari.C_INSTANCE.getValue(keyPath, FilePath.LANG, type, List.of());
+                }
+            }
+
+            int size = list.size();
+            if (size == 0) {
+                return "";
+            }
+            int i = PublicFunctionUtils.randomGenerator(0, list.size());
+            if(i == list.size() && i != 0) {
+                i--;
+            }
+            return list.get(i);
         }
     }
 
@@ -96,17 +120,4 @@ public class PlayerDeathInfoCollector {
         return info;
     }
 
-    public static String getRandomOfList(String keyPath) {
-        List<String> many = Ari.C_INSTANCE.getValue(keyPath, FilePath.LANG, new TypeToken<List<String>>() {
-        }.getType(), List.of());
-        int size = many.size();
-        if (size == 0) {
-            return "";
-        }
-        int i = PublicFunctionUtils.randomGenerator(0, many.size());
-        if(i == many.size() && i != 0) {
-            i--;
-        }
-        return many.get(i);
-    }
 }
