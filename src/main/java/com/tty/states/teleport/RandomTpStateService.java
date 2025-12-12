@@ -60,15 +60,6 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             return false;
         }
 
-        Ari.instance.stateMachineManager
-                .get(TeleportStateService.class)
-                .addState(new EntityToLocationState(
-                        owner,
-                        Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.RTP_CONFIG, Integer.class, 3),
-                        state.getTrueLocation(),
-                        TeleportType.RTP));
-
-
         return true;
     }
 
@@ -96,7 +87,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
         int x = (int) Math.min(PublicFunctionUtils.randomGenerator((int) rtpConfig.getMin(), (int) rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
         int z = (int) Math.min(PublicFunctionUtils.randomGenerator((int) rtpConfig.getMin(), (int) rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
-        Log.debug("player %s search count %s.", state.getOwner().getName(), state.getCount());
+        Log.debug("player %s search count %s. total %s.", state.getOwner().getName(), state.getCount(), state.getMax_count());
         synchronized (state) {
             if (state.getTrueLocation() != null || state.isRunning() || state.isOver()) return;
             state.setRunning(true);
