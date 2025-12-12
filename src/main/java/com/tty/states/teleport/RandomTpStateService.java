@@ -20,7 +20,6 @@ import com.tty.tool.StateMachineManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -81,8 +80,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 || owner.isDeeplySleeping()
                 || owner.isFlying()
                 || owner.isGliding()
-                || owner.isInsideVehicle()
-                || owner.getGameMode() == GameMode.SPECTATOR) {
+                || owner.isInsideVehicle()) {
             owner.sendMessage(ConfigUtils.t("teleport.break"));
             state.setOver(true);
             return;
@@ -126,6 +124,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     @Override
     protected void onEarlyExit(RandomTpState state) {
+        if (state.getTrueLocation() == null) return;
         Entity owner = state.getOwner();
         owner.clearTitle();
         owner.sendMessage(ConfigUtils.t("function.rtp.location-found"));
