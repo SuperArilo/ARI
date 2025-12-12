@@ -53,7 +53,8 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
     @Override
     protected void onFinished(PlayerSaveState state) {
-
+        Log.debug("player %s exit server. save.", state.getOwner().getName());
+        this.savePlayerData(state, true);
     }
 
     @Override

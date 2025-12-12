@@ -127,7 +127,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 .get(PlayerSaveStateService.class)
                 .getStates(player);
         if (!states.isEmpty()) {
-            states.getFirst().setOver(true);
+            states.getFirst().setCount(Integer.MAX_VALUE);
         }
     }
 
