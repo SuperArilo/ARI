@@ -1,21 +1,21 @@
-package com.tty.commands;
+package com.tty.commands.sub.zako;
 
-import com.tty.commands.args.tpa.TpaArgs;
+import com.tty.commands.args.zako.ban.ZakoBanPlayer;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class tpa extends BaseLiteralArgumentLiteralCommand {
+public class ZakoBan extends BaseLiteralArgumentLiteralCommand {
 
-    public tpa() {
-        super(false, 2);
+    public ZakoBan(boolean allowConsole) {
+        super(allowConsole, 3);
     }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new TpaArgs(this.name(), this.permission()));
+        return List.of(new ZakoBanPlayer());
     }
 
     @Override
@@ -25,11 +25,11 @@ public class tpa extends BaseLiteralArgumentLiteralCommand {
 
     @Override
     public String name() {
-        return "tpa";
+        return "ban";
     }
 
     @Override
     public String permission() {
-        return "ari.command.tpa";
+        return "ari.command.zako.ban";
     }
 }

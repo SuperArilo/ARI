@@ -1,9 +1,8 @@
 package com.tty.commands.sub;
 
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
 import com.tty.dto.state.teleport.RandomTpState;
-import com.tty.lib.command.BaseCommand;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.states.teleport.RandomTpStateService;
 import com.tty.tool.ConfigUtils;
@@ -14,19 +13,14 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 
-public class RtpCancel extends BaseCommand<String> {
+public class RtpCancel extends BaseLiteralArgumentLiteralCommand {
 
-    public RtpCancel(boolean allowConsole, ArgumentType<String> type) {
-        super(allowConsole, type, 2);
+    public RtpCancel(boolean allowConsole) {
+        super(allowConsole, 2);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
-        return List.of();
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
+    public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
     }
 

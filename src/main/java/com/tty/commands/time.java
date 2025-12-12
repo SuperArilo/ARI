@@ -1,10 +1,9 @@
 package com.tty.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.enumType.FilePath;
 import com.tty.function.TimeManager;
-import com.tty.lib.command.BaseCommand;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.enum_type.TimePeriod;
@@ -15,28 +14,18 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class time extends BaseCommand<String> {
+public class time extends BaseLiteralArgumentLiteralCommand {
 
     public time() {
-        super(false, StringArgumentType.word(), 2);
+        super(false, 2);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
+    public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        List<String> list = new ArrayList<>();
-        for (TimePeriod value : TimePeriod.values()) {
-            list.add(value.getDescription());
-        }
-        return list;
     }
 
     @Override

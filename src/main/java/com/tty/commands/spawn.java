@@ -1,12 +1,11 @@
 package com.tty.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.TeleportType;
 import com.tty.lib.Log;
-import com.tty.lib.command.BaseCommand;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.states.teleport.TeleportStateService;
 import com.tty.tool.ConfigUtils;
@@ -16,19 +15,14 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class spawn extends BaseCommand<String> {
+public class spawn extends BaseLiteralArgumentLiteralCommand {
 
     public spawn() {
-        super(false, StringArgumentType.string(), 1);
+        super(false, 1);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
-        return List.of();
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
+    public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
     }
 

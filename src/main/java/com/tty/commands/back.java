@@ -1,10 +1,9 @@
 package com.tty.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
-import com.tty.lib.command.BaseCommand;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.TeleportType;
 import com.tty.states.teleport.TeleportStateService;
@@ -17,19 +16,14 @@ import java.util.List;
 
 import static com.tty.listener.teleport.RecordLastLocationListener.TELEPORT_LAST_LOCATION;
 
-public class back extends BaseCommand<String> {
+public class back extends BaseLiteralArgumentLiteralCommand {
 
     public back() {
-        super(false, StringArgumentType.string(), 1);
+        super(false, 1);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
-        return List.of();
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
+    public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
     }
 

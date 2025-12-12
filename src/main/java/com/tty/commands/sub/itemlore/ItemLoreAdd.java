@@ -1,50 +1,27 @@
 package com.tty.commands.sub.itemlore;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.tty.Ari;
-import com.tty.lib.command.BaseCommand;
+import com.tty.commands.args.itemlore.ItemloreAddArgs;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.tool.ComponentUtils;
-import net.kyori.adventure.text.Component;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
+import org.bukkit.command.CommandSender;
+
 import java.util.List;
 
-public class ItemLoreAdd extends BaseCommand<String> {
+public class ItemLoreAdd extends BaseLiteralArgumentLiteralCommand {
 
-    public ItemLoreAdd(boolean allowConsole) {
-        super(allowConsole, StringArgumentType.string(), 3);
+    public ItemLoreAdd() {
+        super(false, 3);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
-        return List.of();
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        return List.of("<\"content\" (string)>");
+    public List<SuperHandsomeCommand> thenCommands() {
+        return List.of(new ItemloreAddArgs());
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        Player player = (Player) sender;
-        ItemStack mainHand = player.getInventory().getItemInMainHand();
-        if (mainHand.isEmpty()) {
-            player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.hand-no-item")));
-            return;
-        }
-        ItemMeta itemMeta = mainHand.getItemMeta();
-        List<Component> lore = itemMeta.lore();
-        if (lore == null) {
-            lore = new ArrayList<>();
-        }
-        lore.add(ComponentUtils.text(args[2]));
-        mainHand.setItemMeta(itemMeta);
+
     }
 
     @Override

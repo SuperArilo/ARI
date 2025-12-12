@@ -1,12 +1,14 @@
 package com.tty.commands.sub.tpa;
 
-import com.mojang.brigadier.arguments.ArgumentType;
+
 import com.tty.Ari;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
-import com.tty.lib.command.BaseCommand;
+import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.enum_type.TeleportType;
 import com.tty.states.teleport.PreTeleportStateService;
 import com.tty.tool.ConfigUtils;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,10 +16,15 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class TpaBase<T> extends BaseCommand<T> {
+public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgumentLiteralCommand<PlayerSelectorArgumentResolver> {
 
-    protected TpaBase(boolean allowConsole, ArgumentType<T> type, int correctArgsLength) {
-        super(allowConsole, type, correctArgsLength);
+    protected final String name;
+    protected final String permission;
+
+    public TpaBaseLiteralLiteralArgument(String name, String permission) {
+        super(ArgumentTypes.player(), true);
+        this.name = name;
+        this.permission = permission;
     }
 
     /**

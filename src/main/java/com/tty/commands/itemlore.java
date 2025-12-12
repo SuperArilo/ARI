@@ -1,35 +1,30 @@
 package com.tty.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.commands.sub.itemlore.ItemLoreAdd;
 import com.tty.commands.sub.itemlore.ItemLoreRemove;
-import com.tty.lib.command.BaseCommand;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class itemlore extends BaseCommand<String> {
+public class itemlore extends BaseLiteralArgumentLiteralCommand {
 
     public itemlore() {
-        super(false, StringArgumentType.string(), 2);
+        super(false, 2);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
-        return List.of(new ItemLoreAdd(false),
-                new ItemLoreRemove(false));
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        return List.of();
+    public List<SuperHandsomeCommand> thenCommands() {
+        return List.of(new ItemLoreAdd(),
+                new ItemLoreRemove());
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
 
     }
+
 
     @Override
     public String name() {

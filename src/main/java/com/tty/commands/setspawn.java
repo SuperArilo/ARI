@@ -1,9 +1,8 @@
 package com.tty.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.enumType.FilePath;
-import com.tty.lib.command.BaseCommand;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.Location;
@@ -12,19 +11,14 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class setspawn extends BaseCommand<String> {
+public class setspawn extends BaseLiteralArgumentLiteralCommand {
 
     public setspawn() {
-        super(false, StringArgumentType.string(), 1);
+        super(false, 1);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
-        return List.of();
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
+    public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
     }
 

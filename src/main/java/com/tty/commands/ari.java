@@ -1,21 +1,20 @@
 package com.tty.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.commands.sub.Reload;
-import com.tty.lib.command.BaseCommand;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class ari extends BaseCommand<String> {
+public class ari extends BaseLiteralArgumentLiteralCommand {
 
     public ari() {
-        super(true, StringArgumentType.word(), 2);
+        super(true, 2);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
+    public List<SuperHandsomeCommand> thenCommands() {
         return List.of(
             new back(),
             new home(),
@@ -33,13 +32,8 @@ public class ari extends BaseCommand<String> {
             new tparefuse(),
             new warp(),
             new zako(),
-            new Reload(true, StringArgumentType.word(),  1)
+            new Reload(true,  1)
         );
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        return List.of();
     }
 
     @Override

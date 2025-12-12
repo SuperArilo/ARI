@@ -1,29 +1,23 @@
 package com.tty.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.enumType.FilePath;
 import com.tty.gui.warp.WarpList;
-import com.tty.lib.command.BaseCommand;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class warp extends BaseCommand<String> {
+public class warp extends BaseLiteralArgumentLiteralCommand {
 
     public warp() {
-        super(false, StringArgumentType.string(), 1);
+        super(false, 1);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
-        return List.of();
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
+    public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
     }
 

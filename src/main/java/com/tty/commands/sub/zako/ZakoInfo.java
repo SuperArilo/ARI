@@ -1,11 +1,12 @@
 package com.tty.commands.sub.zako;
 
 import com.google.common.reflect.TypeToken;
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
+import com.tty.commands.args.zako.ZakoInfoPlayer;
 import com.tty.enumType.FilePath;
 import com.tty.function.PlayerManager;
 import com.tty.lib.Log;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.services.ConfigDataService;
@@ -21,26 +22,15 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class ZakoInfo extends ZakoBase<String> {
+public class ZakoInfo extends BaseLiteralArgumentLiteralCommand {
 
-    public ZakoInfo(boolean allowConsole, ArgumentType<String> type) {
-        super(allowConsole, type, 3);
+    public ZakoInfo(boolean allowConsole) {
+        super(allowConsole, 3);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
-        return List.of();
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-        if (onlinePlayers.isEmpty()) return List.of("<name or uuid (string)>");
-        List<String> list = new ArrayList<>();
-        for (Player player : onlinePlayers) {
-            list.add(player.getName());
-        }
-        return list;
+    public List<SuperHandsomeCommand> thenCommands() {
+        return List.of(new ZakoInfoPlayer());
     }
 
     @Override

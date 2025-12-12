@@ -1,10 +1,10 @@
 package com.tty.commands.sub.zako;
 
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
 import com.tty.function.WhitelistManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.tool.ConfigUtils;
@@ -16,20 +16,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public class ZakoRemove extends ZakoBase<String> {
+public class ZakoRemove extends BaseLiteralArgumentLiteralCommand {
 
-    public ZakoRemove(boolean allowConsole, ArgumentType<String> type) {
-        super(allowConsole, type, 3);
+    public ZakoRemove(boolean allowConsole) {
+        super(allowConsole, 3);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
+    public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        return List.of("<name or uuid (string)>");
     }
 
     @Override

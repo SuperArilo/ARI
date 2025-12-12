@@ -5,7 +5,7 @@ import com.tty.tool.SQLInstance;
 
 public enum SqlTable {
 
-    Players("""
+    PLAYER("""
                 CREATE TABLE IF NOT EXISTS %splayers (
                 id INTEGER PRIMARY KEY %s,
                 player_name varchar(64) NOT NULL,
@@ -16,7 +16,7 @@ public enum SqlTable {
                 name_prefix varchar(128) DEFAULT NULL,
                 name_suffix varchar(128) DEFAULT NULL);
             """),
-    Homes("""
+    HOME("""
                 CREATE TABLE IF NOT EXISTS %splayer_home (
                 id INTEGER PRIMARY KEY %s,
                 home_id VARCHAR(128) NOT NULL,
@@ -26,7 +26,7 @@ public enum SqlTable {
                 show_material VARCHAR(128) NOT NULL,
                 top_slot boolean NOT NULL DEFAULT 0);
             """),
-    Warps("""
+    WARP("""
                 CREATE TABLE IF NOT EXISTS %swarps (
                 id INTEGER PRIMARY KEY %s,
                 warp_id VARCHAR(128) NOT NULL,
@@ -38,11 +38,20 @@ public enum SqlTable {
                 cost INTEGER default 0,
                 top_slot boolean NOT NULL DEFAULT 0);
              """),
-    Whitelist("""
+    WHITELIST("""
                 CREATE TABLE IF NOT EXISTS %swhitelist (
                 id INTEGER PRIMARY KEY %s,
                 player_uuid VARCHAR(128) NOT NULL,
                 add_time INTEGER NULL DEFAULT 0);
+            """),
+    BAN_LIST("""
+            CREATE TABLE IF NOT EXISTS %sbad_list (
+            id INTEGER PRIMARY KEY %s,
+            player_uuid varchar(128) NOT NULL,
+            operator varchar(128) NOT NULL,
+            start_time INTEGER NULL DEFAULT 0,
+            end_time INTEGER NULL DEFAULT 0,
+            reason varchar(128) NOT NULL);
             """);
     private final String sql;
 

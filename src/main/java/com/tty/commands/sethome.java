@@ -1,13 +1,12 @@
 package com.tty.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.sql.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.function.HomeManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
-import com.tty.lib.command.BaseCommand;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
@@ -21,20 +20,15 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class sethome extends BaseCommand<String> {
+public class sethome extends BaseLiteralArgumentLiteralCommand {
 
     public sethome() {
-        super(false, StringArgumentType.string(), 2);
+        super(false, 2);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
+    public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        return List.of("<home id (string)>");
     }
 
     @Override

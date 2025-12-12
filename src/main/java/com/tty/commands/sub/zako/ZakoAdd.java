@@ -1,10 +1,10 @@
 package com.tty.commands.sub.zako;
 
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
 import com.tty.entity.sql.WhitelistInstance;
 import com.tty.function.WhitelistManager;
 import com.tty.lib.Log;
+import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;
@@ -12,20 +12,17 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 import java.util.UUID;
 
-public class ZakoAdd extends ZakoBase<String> {
+public class ZakoAdd extends BaseLiteralArgumentLiteralCommand {
 
-    public ZakoAdd(boolean allowConsole, ArgumentType<String> type) {
-        super(allowConsole, type, 3);
+    private final WhitelistManager manager = new WhitelistManager(true);
+
+    public ZakoAdd(boolean allowConsole) {
+        super(allowConsole, 3);
     }
 
     @Override
-    public List<SuperHandsomeCommand> getSubCommands() {
+    public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        return List.of("<name or uuid (string)>");
     }
 
     @Override
@@ -38,7 +35,6 @@ public class ZakoAdd extends ZakoBase<String> {
         instance.setPlayerUUID(uuid.toString());
         instance.setAddTime(System.currentTimeMillis());
 
-        WhitelistManager manager = new WhitelistManager(true);
         manager.getInstance(uuid.toString()).thenAccept(i -> {
             if (i != null) {
                 sender.sendMessage(ConfigUtils.t("function.zako.player-exist"));
