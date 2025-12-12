@@ -16,18 +16,17 @@ import java.util.List;
 public class rtp extends BaseLiteralArgumentLiteralCommand {
 
     public rtp() {
-        super(false, 1);
+        super(false, 1, true);
     }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new RtpCancel(false));
+        return List.of(new RtpCancel());
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.RTP_CONFIG.name()))) return;
-
         Player player = (Player) sender;
         Ari.instance.stateMachineManager
                 .get(RandomTpStateService.class)

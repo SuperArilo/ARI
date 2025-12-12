@@ -11,8 +11,8 @@ import java.util.List;
 
 public class Reload extends BaseLiteralArgumentLiteralCommand {
 
-    public Reload(boolean allowConsole, int correctArgsLength) {
-        super(allowConsole, correctArgsLength);
+    public Reload() {
+        super(false, 1);
     }
 
     @Override

@@ -9,8 +9,8 @@ import java.util.List;
 
 public class ZakoBan extends BaseLiteralArgumentLiteralCommand {
 
-    public ZakoBan(boolean allowConsole) {
-        super(allowConsole, 3);
+    public ZakoBan() {
+        super(true, 2);
     }
 
     @Override

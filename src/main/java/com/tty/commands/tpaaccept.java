@@ -15,7 +15,7 @@ public class tpaaccept extends BaseLiteralArgumentLiteralCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new TpaAcceptArgs(this.name(), this.permission()));
+        return List.of(new TpaAcceptArgs());
     }
 
     @Override

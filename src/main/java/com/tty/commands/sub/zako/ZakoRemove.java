@@ -1,55 +1,26 @@
 package com.tty.commands.sub.zako;
 
-import com.tty.Ari;
-import com.tty.function.WhitelistManager;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
+import com.tty.commands.args.zako.ZakoRemoveArgs;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.tool.ComponentUtils;
-import com.tty.tool.ConfigUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public class ZakoRemove extends BaseLiteralArgumentLiteralCommand {
 
-    public ZakoRemove(boolean allowConsole) {
-        super(allowConsole, 3);
+    public ZakoRemove() {
+        super(true, 2);
     }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of();
+        return List.of(new ZakoRemoveArgs());
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        String value = args[2];
-        UUID uuid = this.parseUUID(value);
-        if (uuid == null) return;
 
-        WhitelistManager manager = new WhitelistManager(true);
-        manager.getInstance(uuid.toString()).thenCompose(instance -> {
-            if (instance == null) {
-                return CompletableFuture.completedFuture(false);
-            }
-            return manager.deleteInstance(instance);
-        }).thenAccept(status -> {
-            Player player = Bukkit.getPlayer(uuid);
-            if(player != null) {
-                Lib.Scheduler.runAtEntity(Ari.instance, player, (i)->player.kick(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.data-changed"))), () -> player.sendMessage(ConfigUtils.t("on-error")));
-            }
-            sender.sendMessage(ConfigUtils.t("function.zako.remove-" + (status ? "success":"failure")));
-        }).exceptionally(i -> {
-            Log.error(i, "remove zako error");
-            sender.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
-            return null;
-        });
     }
 
     @Override

@@ -10,7 +10,7 @@ import java.util.List;
 public class ari extends BaseLiteralArgumentLiteralCommand {
 
     public ari() {
-        super(true, 2);
+        super(true, 1);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ari extends BaseLiteralArgumentLiteralCommand {
             new tparefuse(),
             new warp(),
             new zako(),
-            new Reload(true,  1)
+            new Reload()
         );
     }
 

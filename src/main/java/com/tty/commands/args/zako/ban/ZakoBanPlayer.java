@@ -12,7 +12,7 @@ import java.util.List;
 public class ZakoBanPlayer extends BaseRequiredArgumentLiteralCommand<String> {
 
     public ZakoBanPlayer() {
-        super(StringArgumentType.string(), false);
+        super(true, 3, StringArgumentType.string(), false);
     }
 
     @Override
@@ -21,7 +21,7 @@ public class ZakoBanPlayer extends BaseRequiredArgumentLiteralCommand<String> {
     }
 
     @Override
-    public List<String> tabSuggestions() {
+    public List<String> tabSuggestions(CommandSender sender) {
         return List.of();
     }
 

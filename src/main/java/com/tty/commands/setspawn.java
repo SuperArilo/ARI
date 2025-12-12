@@ -14,7 +14,7 @@ import java.util.List;
 public class setspawn extends BaseLiteralArgumentLiteralCommand {
 
     public setspawn() {
-        super(false, 1);
+        super(false, 1, true);
     }
 
     @Override

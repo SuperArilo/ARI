@@ -12,11 +12,11 @@ import java.util.List;
 public class ZakoBanDay extends BaseRequiredArgumentLiteralCommand<Integer> {
 
     protected ZakoBanDay() {
-        super(IntegerArgumentType.integer(), false);
+        super(true, 4, IntegerArgumentType.integer(), false);
     }
 
     @Override
-    public List<String> tabSuggestions() {
+    public List<String> tabSuggestions(CommandSender sender) {
         return List.of();
     }
 

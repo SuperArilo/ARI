@@ -15,7 +15,7 @@ public class tparefuse extends BaseLiteralArgumentLiteralCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new TpaRefuseArgs(this.name(), this.permission()));
+        return List.of(new TpaRefuseArgs());
     }
 
     @Override

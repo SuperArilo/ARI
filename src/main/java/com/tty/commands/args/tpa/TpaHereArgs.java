@@ -7,7 +7,6 @@ import com.tty.enumType.FilePath;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.TeleportType;
 import com.tty.states.teleport.PreTeleportStateService;
-import com.tty.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,13 +14,13 @@ import java.util.List;
 
 public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
 
-    public TpaHereArgs(String name, String permission) {
-        super(name, permission);
+    public TpaHereArgs() {
+        super(false, 2);
     }
 
     @Override
-    public List<String> tabSuggestions() {
-        return List.of();
+    public List<String> tabSuggestions(CommandSender sender) {
+        return this.getOnlinePlayers(sender);
     }
 
     @Override
@@ -31,24 +30,20 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
 
     @Override
     public String name() {
-        return "";
+        return "name (string)";
     }
 
     @Override
     public String permission() {
-        return "";
+        return "ari.command.tpahere";
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.TPA_CONFIG.name()))) return;
+        if (!this.preCheck(sender, args)) return;
 
         Player owner = (Player) sender;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
-        if (player == null) {
-            sender.sendMessage(ConfigUtils.t("teleport.unable-player"));
-            return;
-        }
 
         Ari.instance.stateMachineManager
                 .get(PreTeleportStateService.class)

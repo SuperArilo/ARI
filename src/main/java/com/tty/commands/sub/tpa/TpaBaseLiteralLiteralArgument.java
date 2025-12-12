@@ -3,6 +3,7 @@ package com.tty.commands.sub.tpa;
 
 import com.tty.Ari;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
+import com.tty.enumType.FilePath;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.enum_type.TeleportType;
 import com.tty.states.teleport.PreTeleportStateService;
@@ -18,13 +19,9 @@ import java.util.stream.Collectors;
 
 public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgumentLiteralCommand<PlayerSelectorArgumentResolver> {
 
-    protected final String name;
-    protected final String permission;
 
-    public TpaBaseLiteralLiteralArgument(String name, String permission) {
-        super(ArgumentTypes.player(), true);
-        this.name = name;
-        this.permission = permission;
+    public TpaBaseLiteralLiteralArgument(boolean allowConsole, Integer correctArgsLength) {
+        super(allowConsole, correctArgsLength, ArgumentTypes.player(), true);
     }
 
     /**
@@ -78,4 +75,13 @@ public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgument
         return anElse;
     }
 
+    public boolean preCheck(CommandSender sender, String[] args) {
+        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.TPA_CONFIG.name()))) return false;
+        Player player = Ari.instance.getServer().getPlayerExact(args[1]);
+        if (player == null) {
+            sender.sendMessage(ConfigUtils.t("teleport.unable-player"));
+            return false;
+        }
+        return true;
+    }
 }

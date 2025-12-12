@@ -15,8 +15,8 @@ import java.util.List;
 
 public class RtpCancel extends BaseLiteralArgumentLiteralCommand {
 
-    public RtpCancel(boolean allowConsole) {
-        super(allowConsole, 2);
+    public RtpCancel() {
+        super(false, 2);
     }
 
     @Override

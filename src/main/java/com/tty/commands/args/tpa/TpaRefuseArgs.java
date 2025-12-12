@@ -1,8 +1,6 @@
 package com.tty.commands.args.tpa;
 
-import com.tty.Ari;
 import com.tty.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
-import com.tty.enumType.FilePath;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.LangType;
 import com.tty.tool.ConfigUtils;
@@ -16,13 +14,13 @@ import java.util.Map;
 
 public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
 
-    public TpaRefuseArgs(String name, String permission) {
-        super(name, permission);
+    public TpaRefuseArgs() {
+        super(false, 2);
     }
 
     @Override
-    public List<String> tabSuggestions() {
-        return List.of();
+    public List<String> tabSuggestions(CommandSender sender) {
+        return this.getResponseList(sender);
     }
 
     @Override
@@ -32,17 +30,17 @@ public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
 
     @Override
     public String name() {
-        return "";
+        return "name (string)";
     }
 
     @Override
     public String permission() {
-        return "";
+        return "ari.command.tparefuse";
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.TPA_CONFIG.name()))) return;
+        if (!this.preCheck(sender, args)) return;
 
         Player player = (Player) sender;
         Player target = Bukkit.getPlayerExact(args[1]);

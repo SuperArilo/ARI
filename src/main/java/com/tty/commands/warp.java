@@ -13,7 +13,7 @@ import java.util.List;
 public class warp extends BaseLiteralArgumentLiteralCommand {
 
     public warp() {
-        super(false, 1);
+        super(false, 1, true);
     }
 
     @Override
@@ -24,7 +24,6 @@ public class warp extends BaseLiteralArgumentLiteralCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.WARP_CONFIG.name()))) return;
-
         new WarpList((Player) sender).open();
     }
 

@@ -13,7 +13,7 @@ import java.util.List;
 public class home extends BaseLiteralArgumentLiteralCommand {
 
     public home() {
-        super(false, 1);
+        super(false, 1, true);
     }
 
     @Override

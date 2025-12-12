@@ -17,7 +17,7 @@ import java.util.List;
 public class ItemloreAddArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public ItemloreAddArgs() {
-        super(StringArgumentType.string(), false);
+        super(false, 3, StringArgumentType.string(), false);
     }
 
     @Override
@@ -26,13 +26,13 @@ public class ItemloreAddArgs extends BaseRequiredArgumentLiteralCommand<String> 
     }
 
     @Override
-    public List<String> tabSuggestions() {
+    public List<String> tabSuggestions(CommandSender sender) {
         return List.of();
     }
 
     @Override
     public String name() {
-        return "<\"content\" (string)>";
+        return "\"content\" (string)";
     }
 
     @Override
@@ -54,6 +54,7 @@ public class ItemloreAddArgs extends BaseRequiredArgumentLiteralCommand<String> 
             lore = new ArrayList<>();
         }
         lore.add(ComponentUtils.text(args[2]));
+        itemMeta.lore(lore);
         mainHand.setItemMeta(itemMeta);
     }
 }

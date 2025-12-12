@@ -1,21 +1,11 @@
 package com.tty.commands;
 
-import com.tty.Ari;
-import com.tty.enumType.FilePath;
-import com.tty.function.TimeManager;
+import com.tty.commands.args.TimeArgs;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.enum_type.LangType;
-import com.tty.lib.enum_type.TimePeriod;
-import com.tty.lib.tool.ComponentUtils;
-import com.tty.tool.ConfigUtils;
-import net.kyori.adventure.text.Component;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Map;
 
 public class time extends BaseLiteralArgumentLiteralCommand {
 
@@ -25,32 +15,12 @@ public class time extends BaseLiteralArgumentLiteralCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of();
+        return List.of(new TimeArgs());
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        Player player = (Player) sender;
-        String timePeriod = args[1];
-        TimePeriod period;
-        try {
-            period = TimePeriod.valueOf(timePeriod.toUpperCase());
-        } catch (Exception e) {
-            player.sendMessage(ConfigUtils.t("server.time.not-exist-period", Map.of(LangType.PERIOD.getType(), Component.text(timePeriod))));
-            return;
-        }
-        World world = player.getWorld();
-        if (!world.isBedWorks()) {
-            player.sendMessage(ConfigUtils.t("server.time.not-allowed-world"));
-            return;
-        }
-        TimeManager.build(world).timeSet(period.getStart());
-        String value = Ari.C_INSTANCE.getValue("server.time.tips", FilePath.LANG);
-        if (value == null) {
-            player.sendMessage("no content " + timePeriod + "in lang");
-            return;
-        }
-        player.sendMessage(ComponentUtils.text(value, Map.of(LangType.TIME.getType(), ConfigUtils.t("server.time.name." + period.getDescription()))));
+
     }
 
     @Override

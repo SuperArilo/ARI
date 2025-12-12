@@ -13,15 +13,15 @@ import java.util.List;
 public class zako extends BaseLiteralArgumentLiteralCommand {
 
     public zako() {
-        super(true, 2);
+        super(false, 2);
     }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new ZakoAdd(true),
-                new ZakoInfo(true),
-                new ZakoBan(true),
-                new ZakoRemove(true));
+        return List.of(new ZakoAdd(),
+                new ZakoInfo(),
+                new ZakoBan(),
+                new ZakoRemove());
     }
 
     @Override

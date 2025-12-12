@@ -25,7 +25,7 @@ public class setwarp extends BaseLiteralArgumentLiteralCommand {
     private final WarpManager warpManager = new WarpManager(true);
 
     public setwarp() {
-        super(false, 2);
+        super(false, 2, true);
     }
 
     @Override
