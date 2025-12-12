@@ -14,7 +14,7 @@ tparefuse:
   enable: true
   usage: '/tparefuse <玩家>'
 home:
-  enable: false
+  enable: true
   usage: '/home 打开家列表'
 sethome:
   enable: true
