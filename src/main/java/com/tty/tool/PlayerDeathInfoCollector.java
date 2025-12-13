@@ -12,6 +12,7 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,26 +52,34 @@ public class PlayerDeathInfoCollector {
         }
 
         public String getRandomOfList(String keyPath) {
-            String killerName = this.killer == null ? "null":this.killer.getType().name();
+            String killerName = this.killer == null ? "null" : this.killer.getType().name();
             Type type = new TypeToken<List<String>>() {}.getType();
 
-            List<String> list = Ari.C_INSTANCE.getValue(keyPath + "." + killerName.toLowerCase(), FilePath.LANG, type, List.of());
-            if (list.isEmpty()) {
-                list = Ari.C_INSTANCE.getValue(keyPath + ".public", FilePath.LANG, type, List.of());
-                if (list.isEmpty()) {
-                    list = Ari.C_INSTANCE.getValue(keyPath, FilePath.LANG, type, List.of());
+            List<String> publicList = Ari.C_INSTANCE.getValue(keyPath + ".public", FilePath.LANG, type, List.of());
+            List<String> pool = new ArrayList<>();
+
+            if (!publicList.isEmpty()) {
+                pool.addAll(publicList);
+
+                List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName.toLowerCase(), FilePath.LANG, type, List.of());
+                if (!killerList.isEmpty()) {
+                    pool.addAll(killerList);
+                }
+            } else {
+                List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName.toLowerCase(), FilePath.LANG, type, List.of());
+                if (!killerList.isEmpty()) {
+                    pool.addAll(killerList);
+                } else {
+                    List<String> fallbackList = Ari.C_INSTANCE.getValue(keyPath, FilePath.LANG, type, List.of());
+                    if (!fallbackList.isEmpty()) {
+                        pool.addAll(fallbackList);
+                    }
                 }
             }
-
-            int size = list.size();
-            if (size == 0) {
+            if (pool.isEmpty()) {
                 return "";
             }
-            int i = PublicFunctionUtils.randomGenerator(0, list.size());
-            if(i == list.size() && i != 0) {
-                i--;
-            }
-            return list.get(i);
+            return pool.get(PublicFunctionUtils.randomGenerator(0, pool.size()));
         }
     }
 
