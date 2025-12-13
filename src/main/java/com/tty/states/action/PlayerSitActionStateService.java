@@ -5,7 +5,6 @@ import com.tty.Ari;
 import com.tty.lib.Log;
 import com.tty.dto.state.action.PlayerSitActionState;
 import com.tty.enumType.FilePath;
-import com.tty.lib.Lib;
 import com.tty.lib.services.StateService;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.*;
@@ -131,27 +130,17 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
     protected void onEarlyExit(PlayerSitActionState state) {
         String playerName = state.getOwner().getName();
         Log.debug("player %s sit check status fail, remove tool entity", playerName);
-        Entity toolEntity = state.getTool_entity();
-        if (toolEntity != null) {
-            Lib.Scheduler.runAtEntity(
-                    Ari.instance,
-                    toolEntity,
-                    i -> {
-                        state.getTool_entity().remove();
-                        state.setTool_entity(null);
-                    },
-                    () -> Log.error("error on player %s sit when remove tool entity", playerName));
-        }
+        state.removeToolEntity();
     }
 
     @Override
     protected void onFinished(PlayerSitActionState state) {
-
+        state.removeToolEntity();
     }
 
     @Override
     protected void onServiceAbort(PlayerSitActionState state) {
-
+        state.removeToolEntity();
     }
 
     private Location locationRecalculate(Player player, Block sitBlock) {

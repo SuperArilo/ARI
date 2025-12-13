@@ -64,12 +64,10 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
 
     @Override
     protected void abortAddState(PlayerRideActionState state) {
-
     }
 
     @Override
     protected void passAddState(PlayerRideActionState state) {
-
         Player beRidePlayer = state.getBeRidePlayer();
         Entity entity = beRidePlayer.getWorld().spawnEntity(
                 beRidePlayer.getEyeLocation(),
@@ -91,29 +89,17 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
 
     @Override
     protected void onEarlyExit(PlayerRideActionState state) {
-        Player owner = (Player) state.getOwner();
-        Entity toolEntity = state.getTool_entity();
-        owner.eject();
-        Log.debug("player %s eject to player %s, remove tool entity", owner.getName(), state.getBeRidePlayer().getName());
-        if (toolEntity != null) {
-            Lib.Scheduler.runAtEntity(
-                    Ari.instance,
-                    toolEntity,
-                    i -> {
-                        toolEntity.remove();
-                        state.setTool_entity(null);
-                    },
-                    () -> Log.error("error on player %s sit when remove tool entity", owner.getName()));
-        }
+        state.removeToolEntity();
     }
 
     @Override
     protected void onFinished(PlayerRideActionState state) {
-
+        state.removeToolEntity();
     }
 
     @Override
     protected void onServiceAbort(PlayerRideActionState state) {
-
+        state.removeToolEntity();
+        Log.info("ejected player %s", state.getOwner().getName());
     }
 }
