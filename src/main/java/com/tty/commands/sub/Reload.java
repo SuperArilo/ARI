@@ -12,7 +12,7 @@ import java.util.List;
 public class Reload extends BaseLiteralArgumentLiteralCommand {
 
     public Reload() {
-        super(false, 1);
+        super(false, 2);
     }
 
     @Override
