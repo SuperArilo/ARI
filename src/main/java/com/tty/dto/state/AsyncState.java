@@ -9,7 +9,7 @@ public class AsyncState extends State {
 
     @Getter
     @Setter
-    private boolean isRunning;
+    private volatile boolean isRunning;
 
     public AsyncState(Entity owner, int max_count) {
         super(owner, max_count);

@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
@@ -81,8 +82,24 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
         String uuid = player.getUniqueId().toString();
 
         long now = System.currentTimeMillis();
-        long onlineDuration = now - state.getLoginTime();
+        long loginTime = state.getLoginTime();
+
+        if (loginTime <= 0 || loginTime > now) {
+            Log.warn("Invalid loginTime for %s: %d", player.getName(), loginTime);
+            state.setLoginTime(now);
+            state.setRunning(false);
+            return;
+        }
+
+        long onlineDuration = now - loginTime;
+
+        if (onlineDuration > TimeUnit.DAYS.toMillis(1)) {
+            Log.warn("Abnormal onlineDuration %d ms for %s", onlineDuration, player.getName());
+            onlineDuration = TimeUnit.DAYS.toMillis(1);
+        }
+
         state.setLoginTime(now);
+        long finalOnlineDuration = onlineDuration;
 
         this.manager.getInstance(uuid)
                 .thenCompose(serverPlayer -> {
@@ -90,7 +107,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
                         Log.error("Player data not found: %s", uuid);
                         return CompletableFuture.completedFuture(false);
                     }
-                    serverPlayer.setTotalOnlineTime(serverPlayer.getTotalOnlineTime() + onlineDuration);
+                    serverPlayer.setTotalOnlineTime(serverPlayer.getTotalOnlineTime() + finalOnlineDuration);
                     return this.manager.modify(serverPlayer);
                 })
                 .thenAccept(success -> {
