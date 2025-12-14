@@ -1,6 +1,7 @@
 package com.tty.listener.player;
 
 import com.tty.Ari;
+import com.tty.dto.event.OnZakoSavedEvent;
 import com.tty.dto.state.player.PlayerSaveState;
 import com.tty.entity.sql.ServerPlayer;
 import com.tty.entity.sql.WhitelistInstance;
@@ -28,8 +29,10 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 
+@SuppressWarnings("deprecation")
 public class OnPlayerJoinAndLeaveListener implements Listener {
 
+    private final PlayerManager manager = new PlayerManager(true);
 
     @EventHandler
     public void whitelist(PlayerLoginEvent event) {
@@ -38,32 +41,32 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         WhitelistManager manager = new WhitelistManager(false);
         PlayerManager playerManager = new PlayerManager(true);
         manager.getInstance(player.getUniqueId().toString())
-                .thenCompose(instance -> {
-                    if (instance == null) {
-                        if(player.isOp()) {
-                            WhitelistInstance n = new WhitelistInstance();
-                            n.setAddTime(System.currentTimeMillis());
-                            n.setPlayerUUID(player.getUniqueId().toString());
-                            manager.createInstance(n);
-                        } else {
-                            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ConfigUtils.t("server.message.on-whitelist-login"));
-                        }
-                        return CompletableFuture.completedFuture(null);
+            .thenCompose(instance -> {
+                if (instance == null) {
+                    if(player.isOp()) {
+                        WhitelistInstance n = new WhitelistInstance();
+                        n.setAddTime(System.currentTimeMillis());
+                        n.setPlayerUUID(player.getUniqueId().toString());
+                        manager.createInstance(n);
                     } else {
-                        return playerManager.getInstance(instance.getPlayerUUID());
+                        event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ConfigUtils.t("server.message.on-whitelist-login"));
                     }
-                })
-                .thenAccept(instance -> {
-                    if (instance == null) return;
-                    if (instance.getPlayerName().equals(player.getName())) return;
-                    Log.debug("layer changed name. old: %s, new: %s", instance.getPlayerName(), player.getName());
-                    instance.setPlayerName(player.getName());
-                    playerManager.modify(instance);
-                }).exceptionally(i -> {
-                    Log.error(i, "whitelist error");
-                    event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ComponentUtils.text(i.getMessage()));
-                    return null;
-                });
+                    return CompletableFuture.completedFuture(null);
+                } else {
+                    return playerManager.getInstance(instance.getPlayerUUID());
+                }
+            })
+            .thenAccept(instance -> {
+                if (instance == null) return;
+                if (instance.getPlayerName().equals(player.getName())) return;
+                Log.debug("layer changed name. old: %s, new: %s", instance.getPlayerName(), player.getName());
+                instance.setPlayerName(player.getName());
+                playerManager.modify(instance);
+            }).exceptionally(i -> {
+                Log.error(i, "whitelist error");
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ComponentUtils.text(i.getMessage()));
+                return null;
+            });
     }
 
     @EventHandler
@@ -73,46 +76,49 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         boolean first = Ari.instance.getConfig().getBoolean("server.message.on-first-login", false);
         boolean login = Ari.instance.getConfig().getBoolean("server.message.on-login", false);
 
-        PlayerManager manager = new PlayerManager(true);
         if (first || login) {
             event.joinMessage(null);
         }
         long nowLoginTime = System.currentTimeMillis();
-        manager.getInstance(player.getUniqueId().toString())
-                .thenAccept(i -> {
-                    if(!player.hasPlayedBefore()) {
-                        if (Ari.C_INSTANCE.getValue("main.first-join", FilePath.SPAWN_CONFIG, Boolean.class, false) &&
-                                Ari.C_INSTANCE.getValue("main.enable", FilePath.SPAWN_CONFIG, Boolean.class, false)) {
-                            Location value = Ari.C_INSTANCE.getValue("main.location", FilePath.SPAWN_CONFIG, Location.class);
-                            if (value != null) {
-                                Teleporting.create(player, value).teleport();
-                            }
+        this.manager.getInstance(player.getUniqueId().toString())
+            .thenCompose(i -> {
+                if(i == null) {
+                    ServerPlayer serverPlayer = new ServerPlayer();
+                    serverPlayer.setPlayerName(player.getName());
+                    serverPlayer.setPlayerUUID(player.getUniqueId().toString());
+                    serverPlayer.setFirstLoginTime(System.currentTimeMillis());
+                    this.manager.createInstance(serverPlayer);
+                } else {
+                    i.setLastLoginOffTime(nowLoginTime);
+                    this.manager.modify(i);
+                }
+                return CompletableFuture.completedFuture(null);
+            })
+            .whenComplete((i, ex) -> {
+                if (ex != null) {
+                    Log.error("player %s login in server error.", player.getName());
+                    player.kick(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-error")));
+                    return;
+                }
+                if(!player.hasPlayedBefore()) {
+                    if (Ari.C_INSTANCE.getValue("main.first-join", FilePath.SPAWN_CONFIG, Boolean.class, false) &&
+                            Ari.C_INSTANCE.getValue("main.enable", FilePath.SPAWN_CONFIG, Boolean.class, false)) {
+                        Location value = Ari.C_INSTANCE.getValue("main.location", FilePath.SPAWN_CONFIG, Location.class);
+                        if (value != null) {
+                            Teleporting.create(player, value).teleport();
                         }
-                        if(first) {
-                            Bukkit.broadcast(ConfigUtils.t("server.message.on-first-login", Map.of(LangType.PLAYER_NAME.getType(), Component.text(player.getName()))));
-                        }
                     }
-                    if(i == null) {
-                        ServerPlayer serverPlayer = new ServerPlayer();
-                        serverPlayer.setPlayerName(player.getName());
-                        serverPlayer.setPlayerUUID(player.getUniqueId().toString());
-                        serverPlayer.setFirstLoginTime(System.currentTimeMillis());
-                        manager.createInstance(serverPlayer);
-                    } else {
-                        i.setLastLoginOffTime(nowLoginTime);
-                        manager.modify(i);
+                    if(first) {
+                        Bukkit.broadcast(ConfigUtils.t("server.message.on-first-login", Map.of(LangType.PLAYER_NAME.getType(), Component.text(player.getName()))));
                     }
-                    if(login) {
-                        Bukkit.broadcast(ConfigUtils.t("server.message.on-login", Map.of(LangType.PLAYER_NAME.getType(), Component.text(player.getName()))));
-                    }
-
-                    Ari.instance.stateMachineManager
-                            .get(PlayerSaveStateService.class)
-                            .addState(new PlayerSaveState(player, nowLoginTime));
-                }).exceptionally(i -> {
-                   Log.error(i, "get player data error");
-                   return null;
-                });
+                }
+                if(login) {
+                    Bukkit.broadcast(ConfigUtils.t("server.message.on-login", Map.of(LangType.PLAYER_NAME.getType(), Component.text(player.getName()))));
+                }
+                Ari.instance.stateMachineManager
+                        .get(PlayerSaveStateService.class)
+                        .addState(new PlayerSaveState(player, nowLoginTime));
+            });
     }
 
     @EventHandler
@@ -127,6 +133,17 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         if (!states.isEmpty()) {
             states.getFirst().setCount(Integer.MAX_VALUE);
         }
+    }
+
+    @EventHandler
+    public void onSave(OnZakoSavedEvent event) {
+        Player player = event.getPlayer();
+        PlayerSaveStateService service = Ari.instance.stateMachineManager.get(PlayerSaveStateService.class);
+        if (!service.isNotHaveState(player)) return;
+
+        Ari.instance.stateMachineManager
+                .get(PlayerSaveStateService.class)
+                .addState(new PlayerSaveState(player, System.currentTimeMillis()));
     }
 
 }
