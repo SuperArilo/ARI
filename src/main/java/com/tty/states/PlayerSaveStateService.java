@@ -133,6 +133,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
         PlayerSaveStateService service = Ari.instance.stateMachineManager.get(PlayerSaveStateService.class);
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerSaveState state = new PlayerSaveState(player);
+            state.setLoginTime(System.currentTimeMillis());
             service.addState(state);
         }
     }
