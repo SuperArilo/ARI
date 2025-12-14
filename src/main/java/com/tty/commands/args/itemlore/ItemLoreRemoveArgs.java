@@ -21,7 +21,7 @@ public class ItemLoreRemoveArgs extends BaseRequiredArgumentLiteralCommand<Integ
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender) {
+    public List<String> tabSuggestions(CommandSender sender, String[] args) {
         return List.of();
     }
 

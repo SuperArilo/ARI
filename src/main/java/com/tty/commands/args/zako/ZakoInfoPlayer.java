@@ -12,6 +12,7 @@ import com.tty.lib.enum_type.LangType;
 import com.tty.lib.services.ConfigDataService;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
+import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.lib.tool.TimeFormatUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
@@ -34,14 +35,11 @@ public class ZakoInfoPlayer extends BaseRequiredArgumentLiteralCommand  <String>
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender) {
+    public List<String> tabSuggestions(CommandSender sender, String[] args) {
         Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-        if (onlinePlayers.isEmpty()) return List.of("<name or uuid (string)>");
-        List<String> list = new ArrayList<>();
-        for (Player player : onlinePlayers) {
-            list.add(player.getName());
-        }
-        return list;
+        List<String> strings = onlinePlayers.stream().map(Player::getName).toList();
+        if (onlinePlayers.isEmpty() || args.length != 3) return strings;
+        return PublicFunctionUtils.tabList(args[2], strings);
     }
 
     @Override

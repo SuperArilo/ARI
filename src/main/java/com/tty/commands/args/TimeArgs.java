@@ -26,7 +26,7 @@ public class TimeArgs extends BaseRequiredArgumentLiteralCommand<String> {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender) {
+    public List<String> tabSuggestions(CommandSender sender, String[] args) {
         List<String> list = new ArrayList<>();
         for (TimePeriod value : TimePeriod.values()) {
             list.add(value.getDescription());

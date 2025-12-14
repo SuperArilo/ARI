@@ -3,6 +3,7 @@ package com.tty.commands.args.tpa;
 import com.tty.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.LangType;
+import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -19,8 +20,10 @@ public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender) {
-        return this.getResponseList(sender);
+    public List<String> tabSuggestions(CommandSender sender, String[] args) {
+        List<String> strings = this.getOnlinePlayers(sender);
+        if (args.length != 2) return strings;
+        return PublicFunctionUtils.tabList(args[1], strings);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.tty.dto.state.teleport.PlayerToPlayerState;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
 import com.tty.enumType.FilePath;
 import com.tty.lib.command.SuperHandsomeCommand;
+import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.states.teleport.TeleportStateService;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;
@@ -20,8 +21,10 @@ public class TpaAcceptArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender) {
-        return this.getResponseList(sender);
+    public List<String> tabSuggestions(CommandSender sender, String[] args) {
+        List<String> strings = this.getOnlinePlayers(sender);
+        if (args.length != 2) return strings;
+        return PublicFunctionUtils.tabList(args[1], strings);
     }
 
     @Override

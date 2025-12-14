@@ -16,7 +16,7 @@ public class ZakoBanDay extends BaseRequiredArgumentLiteralCommand<Integer> {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender) {
+    public List<String> tabSuggestions(CommandSender sender, String[] args) {
         return List.of();
     }
 

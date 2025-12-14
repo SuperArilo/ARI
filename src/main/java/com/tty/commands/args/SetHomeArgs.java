@@ -28,7 +28,7 @@ public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender) {
+    public List<String> tabSuggestions(CommandSender sender, String[] args) {
         return List.of();
     }
 
