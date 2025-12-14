@@ -75,13 +75,14 @@ public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgument
         return anElse;
     }
 
-    public boolean preCheck(CommandSender sender, String[] args) {
-        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.TPA_CONFIG.name()))) return false;
+
+    public boolean preCheckIsNotPass(CommandSender sender, String[] args) {
+        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.TPA_CONFIG.name()))) return true;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
-        if (player == null) {
+        if (player == null || sender.getName().equals(player.getName())) {
             sender.sendMessage(ConfigUtils.t("teleport.unable-player"));
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }

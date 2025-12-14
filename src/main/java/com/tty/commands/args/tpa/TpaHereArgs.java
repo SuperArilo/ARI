@@ -43,7 +43,7 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!this.preCheck(sender, args)) return;
+        if (this.preCheckIsNotPass(sender, args)) return;
 
         Player owner = (Player) sender;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);

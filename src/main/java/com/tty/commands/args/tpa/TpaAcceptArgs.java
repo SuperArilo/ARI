@@ -22,7 +22,7 @@ public class TpaAcceptArgs extends TpaBaseLiteralLiteralArgument {
 
     @Override
     public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        List<String> strings = this.getOnlinePlayers(sender);
+        List<String> strings = this.getResponseList(sender);
         if (args.length != 2) return strings;
         return PublicFunctionUtils.tabList(args[1], strings);
     }
@@ -44,7 +44,7 @@ public class TpaAcceptArgs extends TpaBaseLiteralLiteralArgument {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if(!this.preCheck(sender, args)) return;
+        if(this.preCheckIsNotPass(sender, args)) return;
 
         Player player = (Player) sender;
         Player target = Ari.instance.getServer().getPlayerExact(args[1]);
