@@ -10,14 +10,15 @@ public class PlayerSaveState extends AsyncState {
 
     @Getter
     @Setter
-    private long loginTime = 0;
+    private long loginTime;
 
     @Getter
     @Setter
     private CancellableTask task;
 
-    public PlayerSaveState(Entity owner) {
+    public PlayerSaveState(Entity owner, long loginTime) {
         super(owner, Integer.MAX_VALUE);
+        this.loginTime = loginTime;
     }
 
 }

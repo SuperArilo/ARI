@@ -123,18 +123,19 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
                     }
                     state.setRunning(false);
                     state.setTask(Lib.Scheduler.runAsyncDelayed(
-                            Ari.instance,
-                            i -> state.setPending(false),
-                            Ari.instance.getConfig().getInt("server.save-interval", 300) * 20L));
+                        Ari.instance,
+                        i -> {
+                            state.setPending(false);
+                            state.setTask(null);
+                        },
+                        Ari.instance.getConfig().getInt("server.save-interval", 300) * 20L));
                 });
     }
 
     public static void addPlayerState() {
         PlayerSaveStateService service = Ari.instance.stateMachineManager.get(PlayerSaveStateService.class);
         for (Player player : Bukkit.getOnlinePlayers()) {
-            PlayerSaveState state = new PlayerSaveState(player);
-            state.setLoginTime(System.currentTimeMillis());
-            service.addState(state);
+            service.addState(new PlayerSaveState(player, System.currentTimeMillis()));
         }
     }
 

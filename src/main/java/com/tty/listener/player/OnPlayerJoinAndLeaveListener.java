@@ -106,11 +106,9 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                         Bukkit.broadcast(ConfigUtils.t("server.message.on-login", Map.of(LangType.PLAYER_NAME.getType(), Component.text(player.getName()))));
                     }
 
-                    PlayerSaveState state = new PlayerSaveState(player);
-                    state.setLoginTime(nowLoginTime);
                     Ari.instance.stateMachineManager
                             .get(PlayerSaveStateService.class)
-                            .addState(state);
+                            .addState(new PlayerSaveState(player, nowLoginTime));
                 }).exceptionally(i -> {
                    Log.error(i, "get player data error");
                    return null;
