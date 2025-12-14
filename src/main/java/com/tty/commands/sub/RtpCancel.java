@@ -16,7 +16,7 @@ import java.util.List;
 public class RtpCancel extends BaseLiteralArgumentLiteralCommand {
 
     public RtpCancel() {
-        super(false, 2);
+        super(false, 2, true);
     }
 
     @Override
