@@ -5,11 +5,13 @@ import com.tty.Ari;
 import com.tty.entity.sql.WhitelistInstance;
 import com.tty.lib.Log;
 import com.tty.lib.command.SuperHandsomeCommand;
+import com.tty.lib.enum_type.Operator;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class ZakoAddArgs extends ZakoBaseArgs<String> {
 
@@ -43,26 +45,30 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
         UUID uuid = this.parseUUID(value);
         if (uuid == null) return;
 
-        WhitelistInstance instance = new WhitelistInstance();
-        instance.setPlayerUUID(uuid.toString());
-        instance.setAddTime(System.currentTimeMillis());
+        this.whitelistManager.getInstance(uuid.toString())
+            .thenCompose(s -> {
+                if (s != null) {
+                    sender.sendMessage(ConfigUtils.t("function.zako.player-exist"));
+                    return CompletableFuture.completedFuture(false);
+                }
+                return CompletableFuture.completedFuture(true);
+            })
+            .thenCompose(i -> {
+                if (!i) return null;
 
-        this.whitelistManager.getInstance(uuid.toString()).thenAccept(i -> {
-            if (i != null) {
-                sender.sendMessage(ConfigUtils.t("function.zako.player-exist"));
-                return;
-            }
-            this.whitelistManager.createInstance(instance).thenAccept(status ->
-                            sender.sendMessage(ConfigUtils.t("function.zako.add-" + (status ? "success":"failure"))))
-                    .exceptionally(n -> {
-                        Log.error(n, "add zako error");
-                        sender.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
-                        return null;
-                    });
-        }).exceptionally(i -> {
-            Log.error(i, "query zako error");
-            sender.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
-            return null;
-        });
+                WhitelistInstance instance = new WhitelistInstance();
+                instance.setPlayerUUID(uuid.toString());
+                instance.setAddTime(System.currentTimeMillis());
+                instance.setOperator(Operator.getOperator(sender).toString());
+
+                return this.whitelistManager.createInstance(instance);
+            })
+            .thenAccept(status -> sender.sendMessage(ConfigUtils.t("function.zako.add-" + (status ? "success":"failure"))))
+            .whenComplete((v, ex) -> {
+                if (ex != null) {
+                    Log.error(ex, "add zako error.");
+                    sender.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
+                }
+            });
     }
 }

@@ -14,6 +14,7 @@ import com.tty.function.Teleporting;
 import com.tty.function.WhitelistManager;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.LangType;
+import com.tty.lib.enum_type.Operator;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.TimeFormatUtils;
 import com.tty.states.PlayerSaveStateService;
@@ -41,7 +42,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     private final WhitelistManager whitelistManager = new WhitelistManager(true);
     private final BanPlayerManager banPlayerManager = new BanPlayerManager(true);
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void banCheck(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
         BanPlayer banPlayer;
@@ -86,7 +87,13 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 WhitelistInstance n = new WhitelistInstance();
                 n.setAddTime(System.currentTimeMillis());
                 n.setPlayerUUID(uuid.toString());
-                this.whitelistManager.createInstance(n);
+                n.setOperator(Operator.CONSOLE.getUuid());
+                this.whitelistManager.createInstance(n)
+                    .exceptionally(i -> {
+                        Log.error(i, "player uuid %s login error.", uuid.toString());
+                        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(i.getMessage()));
+                        return null;
+                    });
             } else {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, ConfigUtils.t("server.message.on-whitelist-login"));
                 return;

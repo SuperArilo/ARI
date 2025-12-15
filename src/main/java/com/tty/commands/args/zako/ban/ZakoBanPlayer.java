@@ -2,14 +2,16 @@ package com.tty.commands.args.zako.ban;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.lib.command.SuperHandsomeCommand;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
 public class ZakoBanPlayer extends ZakoBanBase<String> {
 
     public ZakoBanPlayer() {
-        super(true, 3, StringArgumentType.string(), false);
+        super(true, 4, StringArgumentType.string(), true);
     }
 
     @Override
@@ -19,7 +21,9 @@ public class ZakoBanPlayer extends ZakoBanBase<String> {
 
     @Override
     public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        return List.of();
+        List<String> list = Bukkit.getOnlinePlayers().stream().map(Player::getName).filter(name -> !name.equals(sender.getName())).toList();
+        if (list.isEmpty()) return List.of("<player name or uuid (string)>");
+        return list;
     }
 
     @Override
