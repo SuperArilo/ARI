@@ -30,7 +30,7 @@ public class ItemNameArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     @Override
     public String name() {
-        return "content (string)";
+        return "\"content\" (string)";
     }
 
     @Override
