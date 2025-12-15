@@ -70,6 +70,8 @@ public abstract class ZakoBanBase <T> extends ZakoBaseArgs<T> {
                 banPlayer.setEndTime(now + total);
 
                 this.banPlayerManager.createInstance(banPlayer);
+                //同时移除白名单
+                this.whitelistManager.getInstance(uuid.toString()).thenCompose(this.whitelistManager::deleteInstance);
 
                 Player player = Bukkit.getPlayer(uuid);
                 if (player != null) {
