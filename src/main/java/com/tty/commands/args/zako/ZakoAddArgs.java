@@ -47,12 +47,12 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
         instance.setPlayerUUID(uuid.toString());
         instance.setAddTime(System.currentTimeMillis());
 
-        this.manager.getInstance(uuid.toString()).thenAccept(i -> {
+        this.whitelistManager.getInstance(uuid.toString()).thenAccept(i -> {
             if (i != null) {
                 sender.sendMessage(ConfigUtils.t("function.zako.player-exist"));
                 return;
             }
-            this.manager.createInstance(instance).thenAccept(status ->
+            this.whitelistManager.createInstance(instance).thenAccept(status ->
                             sender.sendMessage(ConfigUtils.t("function.zako.add-" + (status ? "success":"failure"))))
                     .exceptionally(n -> {
                         Log.error(n, "add zako error");

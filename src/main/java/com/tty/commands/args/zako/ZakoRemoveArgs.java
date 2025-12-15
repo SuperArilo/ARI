@@ -47,11 +47,11 @@ public class ZakoRemoveArgs extends ZakoBaseArgs<String> {
         UUID uuid = this.parseUUID(value);
         if (uuid == null) return;
 
-        this.manager.getInstance(uuid.toString()).thenCompose(instance -> {
+        this.whitelistManager.getInstance(uuid.toString()).thenCompose(instance -> {
             if (instance == null) {
                 return CompletableFuture.completedFuture(false);
             }
-            return this.manager.deleteInstance(instance);
+            return this.whitelistManager.deleteInstance(instance);
         }).thenAccept(status -> {
             Player player = Bukkit.getPlayer(uuid);
             if(player != null) {

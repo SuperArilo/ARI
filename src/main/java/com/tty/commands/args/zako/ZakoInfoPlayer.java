@@ -4,9 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.enumType.FilePath;
-import com.tty.function.PlayerManager;
 import com.tty.lib.Log;
-import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.services.ConfigDataService;
@@ -23,7 +21,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class ZakoInfoPlayer extends BaseRequiredArgumentLiteralCommand  <String> {
+public class ZakoInfoPlayer extends ZakoBaseArgs<String> {
 
     public ZakoInfoPlayer() {
         super(true, 3, StringArgumentType.string(), true);
@@ -58,8 +56,7 @@ public class ZakoInfoPlayer extends BaseRequiredArgumentLiteralCommand  <String>
         UUID uuid = this.parseUUID(value);
         if (uuid == null) return;
 
-        PlayerManager manager = new PlayerManager(true);
-        manager.getInstance(uuid.toString())
+        this.playerManager.getInstance(uuid.toString())
             .thenAccept(instance -> {
                 if(instance == null) {
                     sender.sendMessage(ConfigUtils.t("function.zako.not-exist"));
