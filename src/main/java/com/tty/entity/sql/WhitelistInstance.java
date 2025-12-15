@@ -13,6 +13,8 @@ public class WhitelistInstance {
     private Long id;
     @TableField("player_uuid")
     private String playerUUID;
+    @TableField("add_time")
     private double addTime;
-
+    @TableField("operator")
+    private String operator;
 }

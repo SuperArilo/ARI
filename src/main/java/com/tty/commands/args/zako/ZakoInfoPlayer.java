@@ -14,7 +14,6 @@ import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.lib.tool.TimeFormatUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -76,12 +75,8 @@ public class ZakoInfoPlayer extends ZakoBaseArgs<String> {
                 map.put(LangType.PLAYER_LOCATION.getType(), ComponentUtils.text(player == null ? Ari.instance.dataService.getValue("base.no-record"): FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())));
 
                 List<String> list = Ari.C_INSTANCE.getValue("server.player.info", FilePath.LANG, new TypeToken<List<String>>(){}.getType(), List.of());
-                Component component = Component.join(
-                        JoinConfiguration.separator(Component.newline()),
-                        list.stream().map(s -> ComponentUtils.text(s, map)).toList()
-                );
 
-                sender.sendMessage(component);
+                sender.sendMessage(ComponentUtils.textList(list, map));
             }).exceptionally(i -> {
                 Log.error(i, "error");
                 return null;
