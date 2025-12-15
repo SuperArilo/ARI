@@ -42,7 +42,8 @@ public enum SqlTable {
                 CREATE TABLE IF NOT EXISTS %swhitelist (
                 id INTEGER PRIMARY KEY %s,
                 player_uuid VARCHAR(128) NOT NULL,
-                add_time INTEGER NULL DEFAULT 0);
+                add_time INTEGER NULL DEFAULT 0,
+                operator VARCHAR(128) NOT NULL);
             """),
     BAN_LIST("""
             CREATE TABLE IF NOT EXISTS %sbad_list (

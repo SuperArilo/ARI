@@ -1,15 +1,15 @@
 package com.tty.commands.args.zako.ban;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class ZakoBanDay extends ZakoBanBase<Integer> {
+public class ZakoBanReason extends ZakoBanBase<String> {
 
-    protected ZakoBanDay() {
-        super(true, 5, IntegerArgumentType.integer(), false);
+    public ZakoBanReason() {
+        super(true, 5, StringArgumentType.string(), false);
     }
 
     @Override
@@ -19,12 +19,12 @@ public class ZakoBanDay extends ZakoBanBase<Integer> {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new ZakoBanHour());
+        return List.of(new ZakoBanDay());
     }
 
     @Override
     public String name() {
-        return "day (int)";
+        return "\"reason\" (string)";
     }
 
     @Override

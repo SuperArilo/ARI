@@ -1,9 +1,6 @@
 package com.tty.commands;
 
-import com.tty.commands.sub.zako.ZakoAdd;
-import com.tty.commands.sub.zako.ZakoBan;
-import com.tty.commands.sub.zako.ZakoInfo;
-import com.tty.commands.sub.zako.ZakoRemove;
+import com.tty.commands.sub.zako.*;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
@@ -21,6 +18,7 @@ public class zako extends BaseLiteralArgumentLiteralCommand {
         return List.of(new ZakoAdd(),
                 new ZakoInfo(),
                 new ZakoBan(),
+                new ZakoUnBan(),
                 new ZakoRemove());
     }
 

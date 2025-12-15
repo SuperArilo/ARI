@@ -6,10 +6,10 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class ZakoBanDay extends ZakoBanBase<Integer> {
+public class ZakoBanMinute extends ZakoBanBase<Integer>{
 
-    protected ZakoBanDay() {
-        super(true, 5, IntegerArgumentType.integer(), false);
+    public ZakoBanMinute() {
+        super(true, 7, IntegerArgumentType.integer(), false);
     }
 
     @Override
@@ -19,12 +19,12 @@ public class ZakoBanDay extends ZakoBanBase<Integer> {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new ZakoBanHour());
+        return List.of(new ZakoBanSecond());
     }
 
     @Override
     public String name() {
-        return "day (int)";
+        return "minute (int)";
     }
 
     @Override

@@ -70,9 +70,12 @@ function:
     add-success: '&a✔ 白名单添加成功'
     add-failure: '&c✖ 添加失败，请查看控制台'
     player-exist: '&c✖ 添加失败，玩家已经存在'
+    player-not-exist: '&c✖ 添加失败，玩家不存在'
     remove-success: '&a✔ 白名单移除成功'
     remove-failure: '&c✖ 白名单移除失败，不存在或者存在错误'
-    not-exist: '&c✖ 查询失败，被查询的对象不存在'
+    ban-remove-success: '&a✔ 黑名单移除成功'
+    had_baned: '&c✖ 添加失败，该玩家已经被封禁'
+    baned: '&a✔ 已将该玩家进行封禁！封禁时长为<ban_total_time>'
   unknown: '&c未知指令，请重新输入'
 server:
   time:
@@ -105,7 +108,10 @@ server:
       - "&f累计在线时间: &6<total_on_server>"
       - "&f所在世界：&8<player_world>"
       - "&f当前位置: <player_location>"
-
+    baned:
+      - "&4你已经被此服务器封禁！"
+      - "&3原因&f: <ban_reason>"
+      - "&3剩余时间&f: &6<ban_end_time>"
   custom-death:
     running-away:
       - ' &7试图逃离 &2<killer>&7 时'

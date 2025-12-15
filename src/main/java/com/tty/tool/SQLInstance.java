@@ -8,10 +8,7 @@ import com.tty.Ari;
 import com.tty.enumType.SqlTable;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.SQLType;
-import com.tty.mapper.HomeMapper;
-import com.tty.mapper.PlayersMapper;
-import com.tty.mapper.WarpMapper;
-import com.tty.mapper.WhitelistMapper;
+import com.tty.mapper.*;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.ibatis.mapping.Environment;
@@ -91,6 +88,7 @@ public class SQLInstance {
         configuration.addMapper(WarpMapper.class);
         configuration.addMapper(HomeMapper.class);
         configuration.addMapper(WhitelistMapper.class);
+        configuration.addMapper(BanPlayerMapper.class);
 
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         DynamicTableNameInnerInterceptor innerInterceptor = new DynamicTableNameInnerInterceptor((sql, original) -> Ari.instance.getConfig().getString("data.table-prefix", "ari_") + original);
