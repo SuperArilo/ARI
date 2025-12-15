@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgumentLiteralCommand<PlayerSelectorArgumentResolver> {
 
 
-    public TpaBaseLiteralLiteralArgument(boolean allowConsole, Integer correctArgsLength) {
-        super(allowConsole, correctArgsLength, ArgumentTypes.player(), true);
+    public TpaBaseLiteralLiteralArgument(Integer correctArgsLength) {
+        super(false, correctArgsLength, ArgumentTypes.player(), true);
     }
 
     /**

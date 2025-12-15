@@ -16,7 +16,7 @@ import java.util.List;
 public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
 
     public TpaHereArgs() {
-        super(false, 2);
+        super(2);
     }
 
     @Override

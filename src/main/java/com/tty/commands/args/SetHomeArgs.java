@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public SetHomeArgs() {
-        super(false, 2, StringArgumentType.string(), false);
+        super(2, StringArgumentType.string());
     }
 
     @Override

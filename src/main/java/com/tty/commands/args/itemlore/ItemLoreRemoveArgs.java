@@ -17,7 +17,7 @@ import java.util.List;
 public class ItemLoreRemoveArgs extends BaseRequiredArgumentLiteralCommand<Integer> {
 
     public ItemLoreRemoveArgs() {
-        super(false, 3, IntegerArgumentType.integer(), false);
+        super(3, IntegerArgumentType.integer());
     }
 
     @Override

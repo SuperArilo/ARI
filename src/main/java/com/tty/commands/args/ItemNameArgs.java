@@ -15,7 +15,7 @@ import java.util.List;
 public class ItemNameArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public ItemNameArgs() {
-        super(false, 2, StringArgumentType.string(), false);
+        super(2, StringArgumentType.string());
     }
 
     @Override

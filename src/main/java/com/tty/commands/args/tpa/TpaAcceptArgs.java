@@ -17,7 +17,7 @@ import java.util.List;
 public class TpaAcceptArgs extends TpaBaseLiteralLiteralArgument {
 
     public TpaAcceptArgs() {
-        super(false, 2);
+        super(2);
     }
 
     @Override

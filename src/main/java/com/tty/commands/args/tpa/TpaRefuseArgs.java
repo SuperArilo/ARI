@@ -16,7 +16,7 @@ import java.util.Map;
 public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
 
     public TpaRefuseArgs() {
-        super(false, 2);
+        super(2);
     }
 
     @Override

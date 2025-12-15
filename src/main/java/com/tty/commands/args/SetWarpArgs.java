@@ -26,7 +26,7 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
     private final WarpManager warpManager = new WarpManager(true);
 
     public SetWarpArgs() {
-        super(false, 2, StringArgumentType.string(), false);
+        super(2, StringArgumentType.string());
     }
 
     @Override

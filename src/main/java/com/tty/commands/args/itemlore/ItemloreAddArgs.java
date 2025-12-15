@@ -17,7 +17,7 @@ import java.util.List;
 public class ItemloreAddArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public ItemloreAddArgs() {
-        super(false, 3, StringArgumentType.string(), false);
+        super(3, StringArgumentType.string());
     }
 
     @Override
