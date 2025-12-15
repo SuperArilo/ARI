@@ -55,22 +55,22 @@ public class PlayerDeathInfoCollector {
             String killerName = this.killer == null ? "null" : this.killer.getType().name();
             Type type = new TypeToken<List<String>>() {}.getType();
 
-            List<String> publicList = Ari.C_INSTANCE.getValue(keyPath + ".public", FilePath.LANG, type, List.of());
+            List<String> publicList = Ari.C_INSTANCE.getValue(keyPath + ".public", FilePath.DEATH_MESSAGE, type, List.of());
             List<String> pool = new ArrayList<>();
 
             if (!publicList.isEmpty()) {
                 pool.addAll(publicList);
 
-                List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName.toLowerCase(), FilePath.LANG, type, List.of());
+                List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName.toLowerCase(), FilePath.DEATH_MESSAGE, type, List.of());
                 if (!killerList.isEmpty()) {
                     pool.addAll(killerList);
                 }
             } else {
-                List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName.toLowerCase(), FilePath.LANG, type, List.of());
+                List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName.toLowerCase(), FilePath.DEATH_MESSAGE, type, List.of());
                 if (!killerList.isEmpty()) {
                     pool.addAll(killerList);
                 } else {
-                    List<String> fallbackList = Ari.C_INSTANCE.getValue(keyPath, FilePath.LANG, type, List.of());
+                    List<String> fallbackList = Ari.C_INSTANCE.getValue(keyPath, FilePath.DEATH_MESSAGE, type, List.of());
                     if (!fallbackList.isEmpty()) {
                         pool.addAll(fallbackList);
                     }

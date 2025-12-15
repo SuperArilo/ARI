@@ -124,10 +124,7 @@ public class Ari extends JavaPlugin {
         C_INSTANCE.clearConfigs();
         FileConfiguration pluginConfig = Ari.instance.getConfig();
         for (FilePath filePath : FilePath.values()) {
-            String path = filePath.getPath();
-            if(filePath.equals(FilePath.LANG)) {
-                path = path.replace("[lang]", Ari.instance.getConfig().getString("lang", "cn"));
-            }
+            String path = filePath.getPath().replace("[lang]", Ari.instance.getConfig().getString("lang", "cn"));
             File file = new File(Ari.instance.getDataFolder(), path);
             if (!file.exists()) {
                 Ari.instance.saveResource(path, true);
@@ -139,6 +136,7 @@ public class Ari extends JavaPlugin {
     }
 
 
+    @SuppressWarnings("deprecation")
     private void printLogo() {
         String pluginInfo;
         if (ServerPlatform.isFolia()) {

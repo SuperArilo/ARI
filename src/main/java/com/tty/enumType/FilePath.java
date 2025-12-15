@@ -21,7 +21,8 @@ public enum FilePath implements FilePathEnum {
     WARP_CONFIG("warp", "module/warp/setting.yml"),
     WARP_EDIT_GUI("warp-edit-gui", "module/warp/warp-edit-gui.yml"),
     FUNCTION_CONFIG("function", "module/function/setting.yml"),
-    SPAWN_CONFIG("spawn", "module/spawn/setting.yml");
+    SPAWN_CONFIG("spawn", "module/spawn/setting.yml"),
+    DEATH_MESSAGE("death-message", "lang/death-message/[lang].yml");
 
     @Getter
     private final String nickName;

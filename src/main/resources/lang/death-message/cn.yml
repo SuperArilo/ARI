@@ -1,0 +1,104 @@
+custom-death:
+  running-away:
+    public:
+      - ' &7试图逃离 &2<killer>&7 时'
+      - ' &7与 &2<killer>&7 战斗时'
+  player:
+    air:
+      public:
+        - '&2<victim> &7死于 &2<killer>'
+        - '&2<victim> &7死于 &2<killer> &7强大的手下'
+        - '&2<victim> &7被 &2<killer> &7一拳打死'
+    item:
+      public:
+        - '&2<victim> &7被 &2<killer> &7用 &2<killer_item> &7杀死了'
+    projectile:
+      public:
+        - '&2<victim> &7被 &2<killer> &7用 &2<killer_item> &7射杀'
+    fall:
+      public:
+        - '&2<victim> &7落地过猛'
+        - '&2<victim> &7从高处摔了下来'
+    fire:
+      public:
+        - '&2<victim> &7浴火焚身'
+        - '&2<victim> &7被烧死了'
+    lightning:
+      public:
+        - '&2<victim> &7被闪电击中'
+        - '&2<victim> &7渡劫失败'
+    suffocation:
+      public:
+        - '&2<victim> &7在墙里窒息而亡'
+    drowning:
+      public:
+        - '&2<victim> &7淹死了'
+    freeze:
+      public:
+        - '&2<victim> &7被冻死了'
+    suicide:
+      public:
+        - '&2<victim> &7结束了自己的生命'
+    void:
+      public:
+        - '&2<victim> &7掉出了这个世界'
+        - '&2<victim> &7去往了二刺螈'
+    wither:
+      public:
+        - '&2<victim> &7凋零了'
+    fly_into_wall:
+      public:
+        - '&2<victim> &7感受到了动能'
+        - '&2<victim> &7学会了什么是动量守恒'
+    kill:
+      public:
+        - '&2<victim> &7自杀了'
+    starvation:
+      public:
+        - '&2<victim> &7饿死了'
+    sonic_boom:
+      public:
+        - '&2<victim> &7被 &2<killer> &7抹除了'
+    magic:
+      public:
+        - '&2<victim> &7被 &2<killer> &7用魔法杀死了'
+    explosion:
+      public:
+        - '&2<victim> &7被 &2<killer> &7炸死了'
+        - '&2<victim> &7想和 &2<killer> &7进行亲密接触'
+  mob:
+    air:
+      public:
+        - '&2<victim> &7被 &2<killer>&7 杀死了'
+      zombie:
+        - '&2<victim> &7被 &2<killer>&7 给杀死了'
+    item:
+      public:
+        - '&2<victim> &7被 &2<killer>&7 用 &2<killer_item>&7 杀死了'
+    projectile:
+      public:
+        - '&2<victim> &7被 &2<killer> &7用 &2<killer_item> &7射杀'
+  falling-blocks:
+    anvil:
+      public:
+        - '&2<victim> &7被 &2<killer> 压扁了'
+        - '&2<victim> &7被 &2<killer> 碾碎'
+        - '&2<victim> &7用头撞击 &2<killer>'
+        - '&2<victim> &7尝试亲吻 &2<killer>'
+  block:
+    cactus:
+      public:
+        - '&2<victim> &7被戳死了'
+        - '&2<victim> &7试图 曰 仙人掌被反杀'
+    magma_block:
+      public:
+        - '&2<victim> &7发现了地板是熔岩做的'
+    sweet_berry_bush:
+      public:
+        - '&2<victim> &7被甜浆果丛刺死了'
+    lava:
+      public:
+        - '&2<victim> &7试图在熔岩里游泳'
+    pointed_dripstone:
+      public:
+        - '&2<victim> &7被石笋刺穿了'

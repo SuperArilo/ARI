@@ -29,7 +29,7 @@ public class CustomPlayerDeathListener implements Listener {
         if (!Ari.instance.getConfig().getBoolean("server.custom-death", false)) return;
         PlayerDeathInfoCollector.DeathInfo collect = PlayerDeathInfoCollector.collect(event);
         Log.debug(collect.toString());
-        String BASE_PREFIX = "server.custom-death.";
+        String BASE_PREFIX = "custom-death.";
         Map<String, Component> placeholders = new HashMap<>();
         placeholders.put(LangType.VICTIM.getType(), ComponentUtils.setEntityHoverText(collect.victim));
         placeholders.put(LangType.KILLER.getType(), ComponentUtils.setEntityHoverText(collect.killer));
