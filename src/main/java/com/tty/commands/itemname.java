@@ -10,7 +10,7 @@ import java.util.List;
 public class itemname extends BaseLiteralArgumentLiteralCommand {
 
     public itemname() {
-        super(false);
+        super(2);
     }
 
     @Override
