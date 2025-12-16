@@ -52,34 +52,38 @@ public class PlayerDeathInfoCollector {
         }
 
         public String getRandomOfList(String keyPath) {
-            String killerName = this.killer == null ? "null" : this.killer.getType().name();
+            String killerName = this.killer == null ? null : this.killer.getType().name().toLowerCase();
             Type type = new TypeToken<List<String>>() {}.getType();
 
-            List<String> publicList = Ari.C_INSTANCE.getValue(keyPath + ".public", FilePath.DEATH_MESSAGE, type, List.of());
             List<String> pool = new ArrayList<>();
 
-            if (!publicList.isEmpty()) {
-                pool.addAll(publicList);
+            List<String> publicList = Ari.C_INSTANCE.getValue(keyPath + ".public", FilePath.DEATH_MESSAGE, type, null);
 
-                List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName.toLowerCase(), FilePath.DEATH_MESSAGE, type, List.of());
-                if (!killerList.isEmpty()) {
-                    pool.addAll(killerList);
+            if (publicList != null && !publicList.isEmpty()) {
+                pool.addAll(publicList);
+                if (killerName != null) {
+                    List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName, FilePath.DEATH_MESSAGE, type, null);
+                    if (killerList != null && !killerList.isEmpty()) {
+                        pool.addAll(killerList);
+                    }
                 }
             } else {
-                List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName.toLowerCase(), FilePath.DEATH_MESSAGE, type, List.of());
-                if (!killerList.isEmpty()) {
-                    pool.addAll(killerList);
-                } else {
-                    List<String> fallbackList = Ari.C_INSTANCE.getValue(keyPath, FilePath.DEATH_MESSAGE, type, List.of());
-                    if (!fallbackList.isEmpty()) {
-                        pool.addAll(fallbackList);
+                if (killerName != null) {
+                    List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName, FilePath.DEATH_MESSAGE, type,null);
+                    if (killerList != null && !killerList.isEmpty()) {
+                        pool.addAll(killerList);
+                    } else {
+                        List<String> fallbackList = Ari.C_INSTANCE.getValue(keyPath, FilePath.DEATH_MESSAGE, type, null);
+                        if (fallbackList != null && !fallbackList.isEmpty()) {
+                            pool.addAll(fallbackList);
+                        }
                     }
                 }
             }
-            if (pool.isEmpty()) {
-                return "";
-            }
-            return pool.get(PublicFunctionUtils.randomGenerator(0, pool.size()));
+
+
+            return pool.isEmpty() ? "" :
+                    pool.get(PublicFunctionUtils.randomGenerator(0, pool.size()));
         }
     }
 
