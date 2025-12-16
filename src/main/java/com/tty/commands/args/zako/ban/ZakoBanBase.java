@@ -73,14 +73,18 @@ public abstract class ZakoBanBase <T> extends ZakoBaseArgs<T> {
                 //同时移除白名单
                 this.whitelistManager.getInstance(uuid.toString()).thenCompose(this.whitelistManager::deleteInstance);
 
-                Player player = Bukkit.getPlayer(uuid);
-                if (player != null) {
-                    Lib.Scheduler.runAtEntity(Ari.instance, player, i -> player.kick(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.data-changed"))), null);
-                }
-
                 String string = TimeFormatUtils.format(total);
-                sender.sendMessage(ConfigUtils.t("function.zako.baned", Map.of(LangType.BAN_T0TAL_TIME.getType(), Component.text(string))));
-                Log.debug("baned player uuid %s. total %s", uuid.toString(), string);
+                Lib.Scheduler.run(Ari.instance, i -> {
+                    Player player = Bukkit.getPlayer(uuid);
+                    if (player != null) {
+                        player.kick(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.data-changed")));
+
+                        Bukkit.getServer().broadcast(ConfigUtils.t("function.zako.baned", Map.of(LangType.BAN_T0TAL_TIME.getType(), Component.text(string))));
+                        Log.debug("baned player uuid %s. total %s", uuid.toString(), string);
+                    }
+
+                });
+
             }).exceptionally(e -> {
                 Log.error(e, Ari.C_INSTANCE.getValue("function.zako.add-failure", FilePath.Lang));
                 return null;
