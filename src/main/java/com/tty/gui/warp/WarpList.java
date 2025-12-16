@@ -20,9 +20,7 @@ import com.tty.lib.tool.PermissionUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.*;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -51,12 +49,11 @@ public class WarpList extends BaseDataItemInventory<ServerWarp> {
 
         for (int i = 0; i < this.data.size(); i++) {
             ServerWarp serverWarp = this.data.get(i);
-            ItemStack itemStack;
-            try {
-                itemStack = new ItemStack(Material.valueOf(serverWarp.getShowMaterial().toUpperCase()));
-            } catch (Exception e) {
+
+            ItemStack itemStack = this.createItemStack(serverWarp.getShowMaterial());
+            if (itemStack == null) {
                 Log.warn("There is a problem with the warpID: [%s] of the player: [%s]", serverWarp.getWarpId(), this.player.getName());
-                Log.error(e, "Skip the rendering warpId [%s] process...", serverWarp.getWarpId());
+                Log.error("Skip the rendering warpId [%s] process...", serverWarp.getWarpId());
                 this.player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
                 continue;
             }
@@ -105,11 +102,12 @@ public class WarpList extends BaseDataItemInventory<ServerWarp> {
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.displayName(ComponentUtils.text(serverWarp.getWarpName(), this.player));
             itemMeta.lore(textComponents);
-            itemMeta.getPersistentDataContainer().set(new NamespacedKey(Ari.instance, "warp_id"), PersistentDataType.STRING, serverWarp.getWarpId());
-            itemMeta.getPersistentDataContainer().set(new NamespacedKey(Ari.instance, "type"), PersistentDataType.STRING, FunctionType.DATA.name());
+
+            this.setNBT(itemMeta, "warp_id", PersistentDataType.STRING, serverWarp.getWarpId());
+            this.setNBT(itemMeta, "type", PersistentDataType.STRING, FunctionType.DATA.name());
+
             if (serverWarp.isTopSlot()) {
-                itemMeta.addEnchant(Enchantment.UNBREAKING, 1, true);
-                itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                this.setHighlight(itemMeta);
             }
             itemStack.setItemMeta(itemMeta);
             map.put(dataSlot.get(i), itemStack);

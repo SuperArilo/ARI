@@ -17,6 +17,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -113,5 +114,17 @@ public abstract class BaseInventory {
 
     protected void onCleanup() {
 
+    }
+
+    /**
+     * 给指定的 ItemStack 的 ItemMeta 设置 NBT
+     * @param itemMeta ItemStack 的 ItemMeta
+     * @param key key 名
+     * @param type 类型
+     * @param value 值
+     * @param <T> 类型 T
+     */
+    protected <T> void setNBT(@NotNull ItemMeta itemMeta, String key, PersistentDataType<T, T> type, T value) {
+        itemMeta.getPersistentDataContainer().set(new NamespacedKey(Ari.instance, key), type, value);
     }
 }

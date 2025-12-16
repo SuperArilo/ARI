@@ -18,14 +18,10 @@ import com.tty.lib.tool.FormatUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.enchantments.Enchantment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,12 +48,11 @@ public class HomeList extends BaseDataItemInventory<ServerHome> {
         List<String> rawLore = this.baseDataInstance.getDataItems().getLore();
         for (int i = 0; i < this.data.size(); i++) {
             ServerHome ph = this.data.get(i);
-            ItemStack itemStack;
-            try {
-                itemStack = new ItemStack(Material.valueOf(ph.getShowMaterial().toUpperCase()));
-            } catch (Exception e) {
+            ItemStack itemStack = this.createItemStack(ph.getShowMaterial());
+            if (itemStack == null) {
                 Log.error("There is a problem with the homeID: [%s] of the player: [%s]", ph.getHomeId(), this.player.getName());
                 Log.warn("Skip the rendering homeId [%s] process...", ph.getHomeId());
+                this.player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
                 continue;
             }
 
@@ -82,11 +77,12 @@ public class HomeList extends BaseDataItemInventory<ServerHome> {
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.displayName(ComponentUtils.text(ph.getHomeName(), this.player));
             itemMeta.lore(textComponents);
-            itemMeta.getPersistentDataContainer().set(new NamespacedKey(Ari.instance, "home_id"), PersistentDataType.STRING, ph.getHomeId());
-            itemMeta.getPersistentDataContainer().set(new NamespacedKey(Ari.instance, "type"), PersistentDataType.STRING, FunctionType.DATA.name());
+
+            this.setNBT(itemMeta, "home_id", PersistentDataType.STRING, ph.getHomeId());
+            this.setNBT(itemMeta, "type", PersistentDataType.STRING, FunctionType.DATA.name());
+
             if (ph.isTopSlot()) {
-                itemMeta.addEnchant(Enchantment.UNBREAKING, 1, true);
-                itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                this.setHighlight(itemMeta);
             }
             itemStack.setItemMeta(itemMeta);
             map.put(dataSlot.get(i), itemStack);

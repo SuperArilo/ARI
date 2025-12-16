@@ -4,9 +4,15 @@ import com.tty.Ari;
 import com.tty.entity.menu.BaseDataMenu;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -98,6 +104,33 @@ public abstract class BaseDataItemInventory<T> extends BaseInventory {
                     null);
         }
         Log.debug("%s: submit render task time: %sms", this.holder != null ? this.holder.type().name() : "UNKNOWN", (System.currentTimeMillis() - l));
+    }
+
+    /**
+     * 根据材质字符串来创建对于的 ItemStack
+     * @param showMaterial 材质字符串
+     * @return ItemStack 如果不存在则是 null
+     */
+    protected ItemStack createItemStack(@Nullable String showMaterial) {
+        if (showMaterial == null) return null;
+        ItemStack itemStack = null;
+        try {
+            itemStack = new ItemStack(Material.valueOf(showMaterial.toUpperCase()));
+            return itemStack;
+        } catch (Exception e) {
+            Log.error(e, "create ItemStack error. material %s", showMaterial);
+            return itemStack;
+        }
+
+    }
+
+    /**
+     * 将指定的 ItemStack 的 ItemMeta 设置为高亮模式
+     * @param itemMeta ItemStack 的 ItemMeta
+     */
+    protected void setHighlight(@NotNull ItemMeta itemMeta) {
+        itemMeta.addEnchant(Enchantment.UNBREAKING, 1, true);
+        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
     }
 
     @Override
