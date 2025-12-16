@@ -48,7 +48,7 @@ public abstract class ZakoBanBase <T> extends ZakoBaseArgs<T> {
                 if (!s) return;
                 long now = System.currentTimeMillis();
 
-                TimeUnit[] units = {TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES};
+                TimeUnit[] units = {TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS};
 
                 long total = 0;
                 for (int i = 0; i < units.length; i++) {
