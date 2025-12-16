@@ -45,7 +45,7 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
                         owner,
                         player,
                         TeleportType.TPA,
-                        Ari.C_INSTANCE.getValue("main.teleport.cooldown", FilePath.TPA_CONFIG, Integer.class, 10)
+                        Ari.C_INSTANCE.getValue("main.teleport.request-expired-time", FilePath.TPA_CONFIG, Integer.class, 10)
                 ));
     }
 
