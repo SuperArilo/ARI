@@ -96,7 +96,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
 
     @Override
     protected void abortAddState(PlayerSitActionState state) {
-        Log.debug("player %s try sit block %s fail", state.getOwner().getName(), state.getSitBlock().getType().name());
+
     }
 
     @Override
@@ -106,24 +106,25 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         Log.debug("create sit entity to player %s", player.getName());
         Location location = this.locationRecalculate(player, sitBlock);
         Entity entity = player.getWorld()
-                .spawnEntity(
-                        location,
-                        EntityType.AREA_EFFECT_CLOUD,
-                        CreatureSpawnEvent.SpawnReason.CUSTOM,
-                        e -> {
-                            if (e instanceof AreaEffectCloud cloud) {
-                                cloud.setRadius(0);
-                                cloud.setInvulnerable(true);
-                                cloud.setGravity(false);
-                                cloud.setInvisible(true);
-                                cloud.setParticle(Particle.DUST, new Particle.DustOptions(Color.fromRGB(0, 0, 0), 0f));
-                                cloud.addPassenger(player);
-                            }
-                        }
-                );
+            .spawnEntity(
+                location,
+                EntityType.AREA_EFFECT_CLOUD,
+                CreatureSpawnEvent.SpawnReason.CUSTOM,
+                e -> {
+                    if (e instanceof AreaEffectCloud cloud) {
+                        cloud.setRadius(0);
+                        cloud.setInvulnerable(true);
+                        cloud.setGravity(false);
+                        cloud.setInvisible(true);
+                        cloud.setParticle(Particle.DUST, new Particle.DustOptions(Color.fromRGB(0, 0, 0), 0f));
+                        cloud.addPassenger(player);
+                    }
+                }
+            );
         player.setRotation(location.getYaw(), 0);
         player.sendActionBar(ConfigUtils.t("function.sit.tips"));
         state.setTool_entity(entity);
+        Log.debug("player %s sit block %s.", state.getOwner().getName(), sitBlock.getType().name());
     }
 
     @Override
