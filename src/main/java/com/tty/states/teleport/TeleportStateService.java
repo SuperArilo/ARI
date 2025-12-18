@@ -35,7 +35,6 @@ public class TeleportStateService extends StateService<State> {
     @Override
     protected void loopExecution(State state) {
         Entity owner = state.getOwner();
-        this.addEntityInitData(owner);
 
         if (owner instanceof Player player && !player.isOnline()) {
             state.setOver(true);
@@ -59,8 +58,10 @@ public class TeleportStateService extends StateService<State> {
             }
         }
 
+        int maxCount = state.getMax_count();
+        int count = state.getCount();
         Map<String, Component> p = new HashMap<>();
-        p.put(LangType.TELEPORT_DELAY.getType(), Component.text(state.getMax_count() - state.getCount()));
+        p.put(LangType.TELEPORT_DELAY.getType(), Component.text(maxCount - count));
         owner.showTitle(ComponentUtils.setPlayerTitle(
                 Ari.C_INSTANCE.getValue("teleport.title.main", FilePath.LANG),
                 Ari.C_INSTANCE.getValue("teleport.title.sub-title", FilePath.LANG),
@@ -70,7 +71,7 @@ public class TeleportStateService extends StateService<State> {
                 200
         ));
         state.setPending(false);
-        Log.debug("checking entity %s teleporting", owner.getName());
+        Log.debug("checking entity %s teleporting. count %s, max_count %s", owner.getName(), count, maxCount);
     }
 
 
@@ -102,12 +103,15 @@ public class TeleportStateService extends StateService<State> {
 
     @Override
     protected void passAddState(State state) {
-
+        Entity owner = state.getOwner();
+        this.addEntityInitData(owner);
     }
 
     @Override
     protected void onEarlyExit(State state) {
         Entity owner = state.getOwner();
+        owner.clearTitle();
+        Log.debug("entity %s teleport state break.", owner.getName());
         this.removeEntityInitData(owner);
     }
 
