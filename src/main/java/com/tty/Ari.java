@@ -46,6 +46,7 @@ public class Ari extends JavaPlugin {
     public static Boolean DEBUG = false;
     public static final ConfigInstance C_INSTANCE = new ConfigInstance();
     public SQLInstance sqlInstance;
+    public WebServer webServer;
 
     public ConfigDataService dataService;
 
@@ -84,6 +85,9 @@ public class Ari extends JavaPlugin {
         //初始化rtp
         RandomTpStateService.setRtpWorldConfig();
 
+        this.webServer = new WebServer();
+        this.webServer.start(this);
+
     }
     @Override
     public void onDisable() {
@@ -92,6 +96,8 @@ public class Ari extends JavaPlugin {
             this.stateMachineManager.forEach(StateService::abort);
         }
         SQLInstance.close();
+        if (this.webServer != null) this.webServer.stop();
+
         C_INSTANCE.clearConfigs();
     }
 
