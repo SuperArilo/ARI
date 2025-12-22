@@ -1,7 +1,6 @@
 package com.tty.gui.warp;
 
 import com.tty.Ari;
-import com.tty.dto.CustomInventoryHolder;
 import com.tty.entity.menu.BaseDataMenu;
 import com.tty.entity.menu.FunctionItems;
 import com.tty.entity.menu.Mask;
@@ -33,7 +32,9 @@ public class WarpList extends BaseDataItemInventory<ServerWarp> {
     private final String baseFree = Ari.instance.dataService.getValue("base.free");
 
     public WarpList(Player player) {
-        super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.WARP_LIST_GUI.name()).saveToString(), BaseDataMenu.class), player);
+        super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.WARP_LIST_GUI.name()).saveToString(), BaseDataMenu.class),
+                player,
+                GuiType.WARP_LIST);
     }
 
     @Override
@@ -126,8 +127,4 @@ public class WarpList extends BaseDataItemInventory<ServerWarp> {
         return null;
     }
 
-    @Override
-    protected CustomInventoryHolder createHolder() {
-        return new CustomInventoryHolder(player, this.inventory, GuiType.WARP_LIST, this);
-    }
 }

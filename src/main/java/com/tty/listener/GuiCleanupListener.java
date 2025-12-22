@@ -1,6 +1,5 @@
 package com.tty.listener;
 
-import com.tty.dto.CustomInventoryHolder;
 import com.tty.gui.BaseInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,10 +25,8 @@ public class GuiCleanupListener implements Listener {
     }
 
     private void clean(Inventory inv) {
-        if (inv.getHolder() instanceof CustomInventoryHolder holder) {
-            if (holder.meta() instanceof BaseInventory baseInventory) {
-                baseInventory.cleanup();
-            }
+        if (inv.getHolder() instanceof BaseInventory baseInventory) {
+            baseInventory.cleanup();
         }
     }
 }

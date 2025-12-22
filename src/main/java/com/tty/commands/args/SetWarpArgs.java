@@ -63,41 +63,46 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
         this.warpManager.getCountByPlayer(player.getUniqueId().toString())
             .thenCompose(list -> {
-                if (list.size() + 1 > PermissionUtils.getMaxCountInPermission(player, "warp")) {
+                int max = PermissionUtils.getMaxCountInPermission(player, "warp");
+                if (list.size() + 1 > max) {
                     player.sendMessage(ConfigUtils.t("function.warp.exceeds"));
-                    return CompletableFuture.completedFuture(null);
+                    return CompletableFuture.completedFuture(false);
                 }
-
-                long sameWarp = list.stream().filter(i -> i.getWarpId().equals(warpId)).count();
-                if (sameWarp == 1) {
-                    player.sendMessage(ConfigUtils.t("function.warp.exist", player));
-                    return CompletableFuture.completedFuture(null);
-                }
-
-                CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
-                Lib.Scheduler.runAtRegion(Ari.instance, player.getLocation(), task -> {
-                    ServerWarp serverWarp = new ServerWarp();
-                    serverWarp.setWarpId(warpId);
-                    serverWarp.setWarpName(warpId);
-                    serverWarp.setCreateBy(player.getUniqueId().toString());
-                    serverWarp.setLocation(player.getLocation().toString());
-                    serverWarp.setShowMaterial(PublicFunctionUtils.checkIsItem(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()).name());
-                    futureWarp.complete(serverWarp);
-                });
-                return futureWarp.thenCompose(warpManager::createInstance);
+                return CompletableFuture.completedFuture(true);
             })
-            .thenAccept(status -> {
-                if(status == null) return;
-                if (status) {
+            .thenCompose(shouldProceed -> {
+                if (!shouldProceed) {
+                    return CompletableFuture.completedFuture(false);
+                }
+                return this.warpManager.getInstance(warpId)
+                    .thenCompose(existing -> {
+                        if (existing != null) {
+                            player.sendMessage(ConfigUtils.t("function.warp.exist", player));
+                            return CompletableFuture.completedFuture(false);
+                        }
+                        CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
+                        Lib.Scheduler.runAtRegion(Ari.instance, player.getLocation(), task -> {
+                            ServerWarp serverWarp = new ServerWarp();
+                            serverWarp.setWarpId(warpId);
+                            serverWarp.setWarpName(warpId);
+                            serverWarp.setCreateBy(player.getUniqueId().toString());
+                            serverWarp.setLocation(player.getLocation().toString());
+                            serverWarp.setShowMaterial(PublicFunctionUtils.checkIsItem( player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()).name());
+                            futureWarp.complete(serverWarp);
+                        });
+                        return futureWarp.thenCompose(warpManager::createInstance);
+                    });
+            })
+            .thenAccept(created -> {
+                if (Boolean.TRUE.equals(created)) {
                     player.sendMessage(ConfigUtils.t("function.warp.create-success"));
-                } else {
-                    player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.on-error")));
                 }
             })
-            .exceptionally(i -> {
-                Log.error(i, "create warp error");
+            .exceptionally(e -> {
+                Log.error(e, "create warp error");
                 player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-error")));
                 return null;
             });
+
     }
 }

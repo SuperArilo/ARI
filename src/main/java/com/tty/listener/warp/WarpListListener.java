@@ -1,7 +1,6 @@
 package com.tty.listener.warp;
 
 import com.tty.Ari;
-import com.tty.dto.CustomInventoryHolder;
 import com.tty.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
@@ -47,17 +46,13 @@ public class WarpListListener extends BaseGuiListener {
         ItemStack currentItem = event.getCurrentItem();
         assert currentItem != null;
         Inventory inventory = event.getInventory();
-        CustomInventoryHolder holder = (CustomInventoryHolder) inventory.getHolder();
-        assert holder != null;
+        WarpList warpList = (WarpList) inventory.getHolder();
+        assert warpList != null;
 
         FunctionType type = FormatUtils.ItemNBT_TypeCheck(currentItem.getItemMeta().getPersistentDataContainer().get(this.TYPE_KEY, PersistentDataType.STRING));
         if(type == null) return;
-        Player player = holder.player();
-        WarpList warpList = this.getGui(holder.meta(), WarpList.class);
-        if (warpList == null) {
-            inventory.close();
-            return;
-        }
+        Player player = warpList.player;
+
         switch (type) {
             case BACK -> inventory.close();
             case DATA -> {

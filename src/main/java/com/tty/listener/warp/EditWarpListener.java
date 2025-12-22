@@ -2,7 +2,6 @@ package com.tty.listener.warp;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.dto.CustomInventoryHolder;
 import com.tty.dto.state.player.PlayerEditGuiState;
 import com.tty.entity.sql.ServerWarp;
 import com.tty.enumType.FilePath;
@@ -48,20 +47,14 @@ public class EditWarpListener extends BaseEditFunctionGuiListener {
         Inventory inventory = event.getInventory();
         ItemStack clickItem = event.getCurrentItem();
         assert clickItem != null;
-        CustomInventoryHolder holder = (CustomInventoryHolder) inventory.getHolder();
-        assert holder != null;
+        WarpEditor warpEditor = (WarpEditor) inventory.getHolder();
+        assert warpEditor != null;
         Player player = (Player) event.getWhoClicked();
 
         ItemMeta clickMeta = clickItem.getItemMeta();
         NamespacedKey icon_type = new NamespacedKey(Ari.instance, "type");
         FunctionType type = FormatUtils.ItemNBT_TypeCheck(clickMeta.getPersistentDataContainer().get(icon_type, PersistentDataType.STRING));
         if(type == null) return;
-        WarpEditor warpEditor = this.getGui(holder.meta(), WarpEditor.class);
-
-        if (warpEditor == null) {
-            inventory.close();
-            return;
-        }
 
         WarpManager warpManager = new WarpManager(true);
         switch (type) {
@@ -95,15 +88,7 @@ public class EditWarpListener extends BaseEditFunctionGuiListener {
                 Ari.instance.stateMachineManager.get(GuiEditStateService.class)
                         .addState(new PlayerEditGuiState(
                                         player,
-                                        new CustomInventoryHolder(
-                                                player,
-                                                inventory,
-                                                GuiType.WARP_EDIT,
-                                                new WarpEditor(
-                                                        PublicFunctionUtils.deepCopy(warpEditor.currentWarp, ServerWarp.class),
-                                                        player
-                                                )
-                                        ),
+                                        new WarpEditor(PublicFunctionUtils.deepCopy(warpEditor.currentWarp, ServerWarp.class), player),
                                         type
                                 )
                         );
@@ -178,7 +163,7 @@ public class EditWarpListener extends BaseEditFunctionGuiListener {
             player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
             return false;
         }
-        WarpEditor warpEditor = this.getGui(state.getHolder().meta(), WarpEditor.class);
+        WarpEditor warpEditor = (WarpEditor) state.getI();
         switch (type) {
             case RENAME -> {
                 if(!FormatUtils.checkName(message) || value.contains(message) || !FormatUtils.checkName(message)) {

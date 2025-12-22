@@ -2,7 +2,6 @@ package com.tty.gui.warp;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.dto.CustomInventoryHolder;
 import com.tty.entity.menu.BaseMenu;
 import com.tty.entity.menu.FunctionItems;
 import com.tty.entity.menu.Mask;
@@ -25,7 +24,7 @@ public class WarpEditor extends BaseInventory {
     public ServerWarp currentWarp;
 
     public WarpEditor(ServerWarp serverWarp, Player player) {
-        super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.WARP_EDIT_GUI.name()).saveToString(), BaseMenu.class), player);
+        super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.WARP_EDIT_GUI.name()).saveToString(), BaseMenu.class), player, GuiType.WARP_EDIT);
         this.currentWarp = serverWarp;
     }
 
@@ -68,11 +67,6 @@ public class WarpEditor extends BaseInventory {
             }
         }
         return functionItems;
-    }
-
-    @Override
-    protected CustomInventoryHolder createHolder() {
-        return new CustomInventoryHolder(player, this.inventory, GuiType.WARP_EDIT, this);
     }
 
     @Override

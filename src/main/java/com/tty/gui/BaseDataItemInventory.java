@@ -2,6 +2,7 @@ package com.tty.gui;
 
 import com.tty.Ari;
 import com.tty.entity.menu.BaseDataMenu;
+import com.tty.enumType.GuiType;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import org.bukkit.Material;
@@ -25,8 +26,8 @@ public abstract class BaseDataItemInventory<T> extends BaseInventory {
     public final BaseDataMenu baseDataInstance;
     protected List<T> data;
 
-    public BaseDataItemInventory(BaseDataMenu baseDataInstance, Player player) {
-        super(baseDataInstance, player);
+    public BaseDataItemInventory(BaseDataMenu baseDataInstance, Player player, GuiType type) {
+        super(baseDataInstance, player, type);
         this.baseDataInstance = baseDataInstance;
         this.pageSize = baseDataInstance.getDataItems().getSlot().size();
         this.requestAndAccept(list -> {
@@ -82,7 +83,7 @@ public abstract class BaseDataItemInventory<T> extends BaseInventory {
             return;
         }
         future.thenAccept(onSuccess).exceptionally(ex -> {
-            Log.error(ex, "%s: request data error!", this.holder != null ? this.holder.type().name() : "UNKNOWN");
+            Log.error(ex, "%s: request data error!", this.type.name());
             return null;
         });
     }
@@ -103,7 +104,7 @@ public abstract class BaseDataItemInventory<T> extends BaseInventory {
                     },
                     null);
         }
-        Log.debug("%s: submit render task time: %sms", this.holder != null ? this.holder.type().name() : "UNKNOWN", (System.currentTimeMillis() - l));
+        Log.debug("%s: submit render task time: %sms", this.type.name(), (System.currentTimeMillis() - l));
     }
 
     /**

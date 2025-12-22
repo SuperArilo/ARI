@@ -2,7 +2,6 @@ package com.tty.listener.home;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.dto.CustomInventoryHolder;
 import com.tty.dto.state.player.PlayerEditGuiState;
 import com.tty.entity.sql.ServerHome;
 import com.tty.enumType.FilePath;
@@ -45,8 +44,8 @@ public class EditHomeListener extends BaseEditFunctionGuiListener {
     public void passClick(InventoryClickEvent event) {
         super.passClick(event);
         Inventory inventory = event.getInventory();
-        CustomInventoryHolder holder = (CustomInventoryHolder) inventory.getHolder();
-        assert holder != null;
+        HomeEditor homeEditor = (HomeEditor) inventory.getHolder();
+        assert homeEditor != null;
 
         Player player = (Player) event.getWhoClicked();
         ItemStack clickItem = event.getCurrentItem();
@@ -57,12 +56,6 @@ public class EditHomeListener extends BaseEditFunctionGuiListener {
         FunctionType type = FormatUtils.ItemNBT_TypeCheck(clickMeta.getPersistentDataContainer().get(icon_type, PersistentDataType.STRING));
         event.setCancelled(true);
         if (type == null) return;
-
-        HomeEditor homeEditor = this.getGui(holder.meta(), HomeEditor.class);
-        if (homeEditor == null) {
-            inventory.close();
-            return;
-        }
 
         HomeManager homeManager = new HomeManager(player, true);
         switch (type) {
@@ -88,15 +81,7 @@ public class EditHomeListener extends BaseEditFunctionGuiListener {
                         .get(GuiEditStateService.class)
                         .addState(new PlayerEditGuiState(
                                 player,
-                                new CustomInventoryHolder(
-                                        player,
-                                        inventory,
-                                        GuiType.HOME_EDIT,
-                                        new HomeEditor(
-                                                PublicFunctionUtils.deepCopy(homeEditor.currentHome, ServerHome.class),
-                                                player
-                                        )
-                                ),
+                                new HomeEditor(PublicFunctionUtils.deepCopy(homeEditor.currentHome, ServerHome.class), player),
                                 type)
                         );
                 inventory.close();
@@ -174,7 +159,7 @@ public class EditHomeListener extends BaseEditFunctionGuiListener {
             player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-edit.rename.name-too-long")));
             return false;
         }
-        HomeEditor homeEditor = this.getGui(state.getHolder().meta(), HomeEditor.class);
+        HomeEditor homeEditor = (HomeEditor) state.getI();
         homeEditor.currentHome.setHomeName(message);
         Lib.Scheduler.runAtEntity(Ari.instance, player, p -> homeEditor.open(), () -> {});
         return true;

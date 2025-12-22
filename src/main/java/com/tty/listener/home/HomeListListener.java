@@ -1,7 +1,6 @@
 package com.tty.listener.home;
 
 import com.tty.Ari;
-import com.tty.dto.CustomInventoryHolder;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
@@ -37,20 +36,14 @@ public class HomeListListener extends BaseGuiListener {
     @Override
     public void passClick(InventoryClickEvent event) {
         Inventory inventory = event.getInventory();
-        CustomInventoryHolder holder = (CustomInventoryHolder) inventory.getHolder();
-        assert holder != null;
+        HomeList homeList = (HomeList) inventory.getHolder();
         ItemStack currentItem = event.getCurrentItem();
         assert currentItem != null;
 
+        assert homeList != null;
         FunctionType type = FormatUtils.ItemNBT_TypeCheck(currentItem.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Ari.instance, "type"), PersistentDataType.STRING));
         if(type == null) return;
-        Player player = holder.player();
-        HomeList homeList = this.getGui(holder.meta(), HomeList.class);
-
-        if (homeList == null) {
-            inventory.close();
-            return;
-        }
+        Player player = homeList.player;
 
         switch (type) {
             case BACK -> inventory.close();
