@@ -56,42 +56,41 @@ public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
             Player player = (Player) sender;
             HomeManager homeManager = new HomeManager(player, true);
             homeManager.getList(0, Integer.MAX_VALUE)
-                    .thenCompose(serverHomes -> {
-                        if (serverHomes.size() + 1 > PermissionUtils.getMaxCountInPermission(player, "home")) {
-                            sender.sendMessage(ConfigUtils.t("function.home.exceeds"));
-                            return CompletableFuture.completedFuture(null);
-                        }
-                        return homeManager.getInstance(homeId);
-                    })
-                    .thenCompose(home -> {
-                        if (home != null) {
-                            sender.sendMessage(ConfigUtils.t("function.home.exist", player));
-                            return CompletableFuture.completedFuture(null);
-                        }
-                        CompletableFuture<ServerHome> future = new CompletableFuture<>();
-                        Lib.Scheduler.runAtRegion(Ari.instance, player.getLocation(), task -> {
-                            ServerHome serverHome = new ServerHome();
-                            serverHome.setHomeId(homeId);
-                            serverHome.setHomeName(homeId);
-                            serverHome.setPlayerUUID(player.getUniqueId().toString());
-                            serverHome.setLocation(player.getLocation().toString());
-                            serverHome.setShowMaterial(PublicFunctionUtils.checkIsItem(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()).name());
-                            future.complete(serverHome);
-                        });
-                        return future.thenCompose(homeManager::createInstance);
-                    })
-                    .thenAccept(status -> {
-                        if (status == null) return;
-                        if (status) {
-                            sender.sendMessage(ConfigUtils.t("function.home.create-success", player));
-                        } else {
-                            sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.on-error")));
-                        }
-                    }).exceptionally(i -> {
-                        Log.error(i, "create home error");
-                        player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
-                        return null;
+                .thenCompose(list -> {
+                    if (list.size() + 1 > PermissionUtils.getMaxCountInPermission(player, "home")) {
+                        sender.sendMessage(ConfigUtils.t("function.home.exceeds"));
+                        return CompletableFuture.completedFuture(null);
+                    }
+                    long sameHome = list.stream().filter(i -> i.getHomeId().equals(homeId)).count();
+                    if (sameHome == 1) {
+                        sender.sendMessage(ConfigUtils.t("function.home.exist", player));
+                        return CompletableFuture.completedFuture(null);
+                    }
+
+                    CompletableFuture<ServerHome> future = new CompletableFuture<>();
+                    Lib.Scheduler.runAtRegion(Ari.instance, player.getLocation(), task -> {
+                        ServerHome serverHome = new ServerHome();
+                        serverHome.setHomeId(homeId);
+                        serverHome.setHomeName(homeId);
+                        serverHome.setPlayerUUID(player.getUniqueId().toString());
+                        serverHome.setLocation(player.getLocation().toString());
+                        serverHome.setShowMaterial(PublicFunctionUtils.checkIsItem(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()).name());
+                        future.complete(serverHome);
                     });
+                    return future.thenCompose(homeManager::createInstance);
+                })
+                .thenAccept(status -> {
+                    if (status == null) return;
+                    if (status) {
+                        sender.sendMessage(ConfigUtils.t("function.home.create-success", player));
+                    } else {
+                        sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.on-error")));
+                    }
+                }).exceptionally(i -> {
+                    Log.error(i, "create home error");
+                    player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
+                    return null;
+                });
         } else {
             sender.sendMessage(ConfigUtils.t("function.home.id-error"));
         }

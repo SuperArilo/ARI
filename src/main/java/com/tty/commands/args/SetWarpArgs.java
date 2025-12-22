@@ -62,42 +62,42 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
         }
 
         this.warpManager.getCountByPlayer(player.getUniqueId().toString())
-                .thenCompose(serverWarps -> {
-                    if (serverWarps.size() + 1 > PermissionUtils.getMaxCountInPermission(player, "warp")) {
-                        player.sendMessage(ConfigUtils.t("function.warp.exceeds"));
-                        return CompletableFuture.completedFuture(null);
-                    }
-                    return this.warpManager.getInstance(warpId);
-                })
-                .thenCompose(warp -> {
-                    if (warp != null) {
-                        player.sendMessage(ConfigUtils.t("function.warp.exist", player));
-                        return CompletableFuture.completedFuture(null);
-                    }
-                    CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
-                    Lib.Scheduler.runAtRegion(Ari.instance, player.getLocation(), task -> {
-                        ServerWarp serverWarp = new ServerWarp();
-                        serverWarp.setWarpId(warpId);
-                        serverWarp.setWarpName(warpId);
-                        serverWarp.setCreateBy(player.getUniqueId().toString());
-                        serverWarp.setLocation(player.getLocation().toString());
-                        serverWarp.setShowMaterial(PublicFunctionUtils.checkIsItem(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()).name());
-                        futureWarp.complete(serverWarp);
-                    });
-                    return futureWarp.thenCompose(warpManager::createInstance);
-                })
-                .thenAccept(status -> {
-                    if(status == null) return;
-                    if (status) {
-                        player.sendMessage(ConfigUtils.t("function.warp.create-success"));
-                    } else {
-                        player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.on-error")));
-                    }
-                })
-                .exceptionally(i -> {
-                    Log.error(i, "create warp error");
-                    player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-error")));
-                    return null;
+            .thenCompose(list -> {
+                if (list.size() + 1 > PermissionUtils.getMaxCountInPermission(player, "warp")) {
+                    player.sendMessage(ConfigUtils.t("function.warp.exceeds"));
+                    return CompletableFuture.completedFuture(null);
+                }
+
+                long sameWarp = list.stream().filter(i -> i.getWarpId().equals(warpId)).count();
+                if (sameWarp == 1) {
+                    player.sendMessage(ConfigUtils.t("function.warp.exist", player));
+                    return CompletableFuture.completedFuture(null);
+                }
+
+                CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
+                Lib.Scheduler.runAtRegion(Ari.instance, player.getLocation(), task -> {
+                    ServerWarp serverWarp = new ServerWarp();
+                    serverWarp.setWarpId(warpId);
+                    serverWarp.setWarpName(warpId);
+                    serverWarp.setCreateBy(player.getUniqueId().toString());
+                    serverWarp.setLocation(player.getLocation().toString());
+                    serverWarp.setShowMaterial(PublicFunctionUtils.checkIsItem(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()).name());
+                    futureWarp.complete(serverWarp);
                 });
+                return futureWarp.thenCompose(warpManager::createInstance);
+            })
+            .thenAccept(status -> {
+                if(status == null) return;
+                if (status) {
+                    player.sendMessage(ConfigUtils.t("function.warp.create-success"));
+                } else {
+                    player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.on-error")));
+                }
+            })
+            .exceptionally(i -> {
+                Log.error(i, "create warp error");
+                player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-error")));
+                return null;
+            });
     }
 }

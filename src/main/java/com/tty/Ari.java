@@ -135,7 +135,11 @@ public class Ari extends JavaPlugin {
             if (!file.exists()) {
                 Ari.instance.saveResource(path, true);
             } else if (pluginConfig.getBoolean("debug.overwrite-file", false)) {
-                Ari.instance.saveResource(path, true);
+                try {
+                    Ari.instance.saveResource(path, true);
+                } catch (Exception e) {
+                    Log.error("can not find file %s, path %s .", filePath.getNickName(), path);
+                }
             }
             C_INSTANCE.setConfig(filePath.name(), YamlConfiguration.loadConfiguration(file));
         }
