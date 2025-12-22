@@ -21,34 +21,38 @@ public abstract class BaseGuiListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        Inventory topInventory = event.getView().getTopInventory();
+        InventoryView view = event.getView();
+        Inventory topInventory = view.getTopInventory();
+        Inventory bottomInventory = view.getBottomInventory();
         Inventory clickedInventory = event.getClickedInventory();
         if (clickedInventory == null) return;
 
-        BaseInventory clickedHolder = clickedInventory.getHolder() instanceof BaseInventory c ? c : null;
         BaseInventory topHolder = topInventory.getHolder() instanceof BaseInventory t ? t : null;
+        BaseInventory clickedHolder = clickedInventory.getHolder() instanceof BaseInventory c ? c : null;
+
+        if (topHolder != null && event.isShiftClick()) {
+            if (clickedInventory.equals(topInventory) || clickedInventory.equals(bottomInventory)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
+        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR && clickedInventory.equals(topInventory) && topHolder != null) {
+            event.setCancelled(true);
+            return;
+        }
 
         if (clickedHolder == null) return;
 
         boolean isCustomGui = clickedHolder.type.equals(this.guiType);
-
-        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR && isCustomGui) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (topHolder != null && isCustomGui) {
+        if (clickedInventory.equals(topInventory) && isCustomGui) {
             event.setCancelled(true);
             if (event.getCurrentItem() == null) return;
             if (event.isShiftClick()) return;
             this.passClick(event);
-            return;
-        }
-
-        if (topHolder != null && event.isShiftClick()) {
-            event.setCancelled(true);
         }
     }
+
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
