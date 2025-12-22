@@ -28,12 +28,16 @@ public abstract class BaseGuiListener implements Listener {
         BaseInventory clickedHolder = clickedInventory.getHolder() instanceof BaseInventory c ? c : null;
         BaseInventory topHolder = topInventory.getHolder() instanceof BaseInventory t ? t : null;
 
-        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+        if (clickedHolder == null) return;
+
+        boolean isCustomGui = clickedHolder.type.equals(this.guiType);
+
+        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR && isCustomGui) {
             event.setCancelled(true);
             return;
         }
 
-        if (topHolder != null && clickedHolder != null && clickedHolder.type.equals(this.guiType)) {
+        if (topHolder != null && isCustomGui) {
             event.setCancelled(true);
             if (event.getCurrentItem() == null) return;
             if (event.isShiftClick()) return;
@@ -41,7 +45,6 @@ public abstract class BaseGuiListener implements Listener {
             return;
         }
 
-        // 阻止 shift-click 将物品从背包放入自定义 GUI
         if (topHolder != null && event.isShiftClick()) {
             event.setCancelled(true);
         }
@@ -64,13 +67,6 @@ public abstract class BaseGuiListener implements Listener {
                 break;
             }
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected <T extends BaseInventory> T getGui(BaseInventory inventory, Class<T> tClass) {
-        if (inventory == null) return null;
-        if (!tClass.isInstance(inventory)) return null;
-        return (T) inventory;
     }
 
     /**
