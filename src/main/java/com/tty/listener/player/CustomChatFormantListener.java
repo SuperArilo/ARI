@@ -27,7 +27,7 @@ public class CustomChatFormantListener implements Listener {
 
     @EventHandler
     public void playerSendMessage(AsyncChatEvent event) {
-        if (!this.isEnable()) return;
+        if (this.isNotEnable()) return;
         event.renderer((source, sourceDisplayName, msg, viewer) ->
                 ComponentUtils.text(
                         this.getPattern(source),
@@ -35,20 +35,15 @@ public class CustomChatFormantListener implements Listener {
     }
     @EventHandler
     public void whenPluginReload(CustomPluginReloadEvent event) {
-        if (!this.isEnable()) return;
+        if (this.isNotEnable()) return;
         this.groupsPattern = this.set();
     }
 
     private Map<String, String> set() {
-        return Ari.C_INSTANCE
-                .getValue(
-                        "chat.groups-pattern",
-                        FilePath.FUNCTION_CONFIG,
-                        new TypeToken<Map<String, String>>(){}.getType(),
-                        new HashMap<>());
+        return Ari.C_INSTANCE.getValue("chat.groups-pattern", FilePath.FUNCTION_CONFIG, new TypeToken<Map<String, String>>(){}.getType(), Map.of());
     }
 
-    private String getPattern(Player player) {
+    private String getPattern(Player player)                      {
         AtomicReference<String> s = new AtomicReference<>("");
         this.groupsPattern.forEach((k, v) -> {
             if (!s.get().isEmpty()) return;
@@ -62,7 +57,7 @@ public class CustomChatFormantListener implements Listener {
         return s.get();
     }
 
-    private boolean isEnable() {
+    private boolean isNotEnable() {
         return Ari.C_INSTANCE.getValue("chat.enable", FilePath.FUNCTION_CONFIG, Boolean.class, false);
     }
 }
