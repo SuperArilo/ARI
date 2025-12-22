@@ -15,7 +15,7 @@ public class OnPluginReloadListener implements Listener {
     @EventHandler
     public void pluginReload(CustomPluginReloadEvent event) {
         Ari.reloadAllConfig();
-        Log.init(Ari.instance.getComponentLogger(), Ari.DEBUG);
+        Log.init(Ari.instance.getLogger(), Ari.DEBUG);
         if (Ari.DEBUG) {
             Ari.instance.sqlInstance.reconnect();
         }

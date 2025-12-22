@@ -64,7 +64,7 @@ public class Ari extends JavaPlugin {
         }
 
         reloadAllConfig();
-        Log.init(this.getComponentLogger(), DEBUG);
+        Log.init(this.getLogger(), DEBUG);
 
         this.printLogo();
 
