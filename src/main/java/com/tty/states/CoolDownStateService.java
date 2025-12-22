@@ -27,8 +27,8 @@ public class CoolDownStateService extends StateService<CooldownState> {
             state.setOver(true);
             return;
         }
-        Log.debug("entity %s teleport cd time is cooling down", state.getOwner().getName());
         state.setPending(false);
+        Log.debug("entity %s teleport cd time is cooling down. count %s, max_count %s", state.getOwner().getName(), state.getCount(), state.getMax_count());
     }
 
     @Override
