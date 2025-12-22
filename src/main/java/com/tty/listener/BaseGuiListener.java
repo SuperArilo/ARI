@@ -1,6 +1,5 @@
 package com.tty.listener;
 
-import com.tty.dto.CustomInventoryHolder;
 import com.tty.enumType.GuiType;
 import com.tty.gui.BaseInventory;
 import org.bukkit.event.EventHandler;
@@ -26,15 +25,15 @@ public abstract class BaseGuiListener implements Listener {
         Inventory clickedInventory = event.getClickedInventory();
         if (clickedInventory == null) return;
 
-        CustomInventoryHolder clickedHolder = clickedInventory.getHolder() instanceof CustomInventoryHolder c ? c : null;
-        CustomInventoryHolder topHolder = topInventory.getHolder() instanceof CustomInventoryHolder t ? t : null;
+        BaseInventory clickedHolder = clickedInventory.getHolder() instanceof BaseInventory c ? c : null;
+        BaseInventory topHolder = topInventory.getHolder() instanceof BaseInventory t ? t : null;
 
-        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR && clickedHolder != null) {
+        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
             event.setCancelled(true);
             return;
         }
 
-        if (topHolder != null && clickedHolder != null && clickedHolder.type().equals(this.guiType)) {
+        if (topHolder != null && clickedHolder != null && clickedHolder.type.equals(this.guiType)) {
             event.setCancelled(true);
             if (event.getCurrentItem() == null) return;
             if (event.isShiftClick()) return;
@@ -53,8 +52,8 @@ public abstract class BaseGuiListener implements Listener {
         InventoryView view = event.getView();
         Inventory topInventory = view.getTopInventory();
 
-        if (!(topInventory.getHolder() instanceof CustomInventoryHolder holder &&
-                holder.type().equals(this.guiType))) {
+        if (!(topInventory.getHolder() instanceof BaseInventory holder &&
+                holder.type.equals(this.guiType))) {
             return;
         }
 

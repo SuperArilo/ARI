@@ -36,7 +36,7 @@ public abstract class BaseEditFunctionGuiListener extends BaseGuiListener {
             return;
         }
         PlayerEditGuiState first = states.getFirst();
-        if (!first.getHolder().type().equals(this.guiType)) return;
+        if (!first.getI().type.equals(this.guiType)) return;
         event.setCancelled(true);
         String message = FormatUtils.componentToString(event.message());
 

@@ -2,7 +2,6 @@ package com.tty.gui.home;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.dto.CustomInventoryHolder;
 import com.tty.entity.menu.BaseMenu;
 import com.tty.entity.menu.FunctionItems;
 import com.tty.entity.menu.Mask;
@@ -24,7 +23,7 @@ public class HomeEditor extends BaseInventory {
     public ServerHome currentHome;
 
     public HomeEditor(ServerHome serverHome, Player player) {
-        super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_EDIT_GUI.name()).saveToString(), BaseMenu.class), player);
+        super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_EDIT_GUI.name()).saveToString(), BaseMenu.class), player, GuiType.HOME_EDIT);
         this.currentHome = serverHome;
     }
 
@@ -54,11 +53,6 @@ public class HomeEditor extends BaseInventory {
             }
         }
         return functionItems;
-    }
-
-    @Override
-    protected CustomInventoryHolder createHolder() {
-        return new CustomInventoryHolder(player, this.inventory, GuiType.HOME_EDIT, this);
     }
 
     @Override

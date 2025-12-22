@@ -1,7 +1,6 @@
 package com.tty.gui.home;
 
 import com.tty.Ari;
-import com.tty.dto.CustomInventoryHolder;
 import com.tty.entity.menu.BaseDataMenu;
 import com.tty.entity.menu.FunctionItems;
 import com.tty.entity.menu.Mask;
@@ -32,7 +31,9 @@ import java.util.concurrent.CompletableFuture;
 public class HomeList extends BaseDataItemInventory<ServerHome> {
 
     public HomeList(Player player) {
-        super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_LIST_GUI.name()).saveToString(), BaseDataMenu.class), player);
+        super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_LIST_GUI.name()).saveToString(), BaseDataMenu.class),
+                player,
+                GuiType.HOME_LIST);
     }
 
     @Override
@@ -98,11 +99,6 @@ public class HomeList extends BaseDataItemInventory<ServerHome> {
     @Override
     protected Map<String, FunctionItems> renderCustomFunctionItems() {
         return null;
-    }
-
-    @Override
-    protected CustomInventoryHolder createHolder() {
-        return new CustomInventoryHolder(player, this.inventory, GuiType.HOME_LIST, this);
     }
 
 }
