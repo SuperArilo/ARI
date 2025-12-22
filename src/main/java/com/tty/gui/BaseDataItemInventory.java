@@ -5,6 +5,7 @@ import com.tty.entity.menu.BaseDataMenu;
 import com.tty.enumType.GuiType;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
+import com.tty.lib.tool.ComponentUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -42,7 +43,7 @@ public abstract class BaseDataItemInventory<T> extends BaseInventory {
     public void prev() {
         this.pageNum--;
         if(this.pageNum <= 0) {
-            this.player.sendMessage(Ari.instance.dataService.getValue("base.page-change.none-prev"));
+            this.player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.page-change.none-prev")));
             this.pageNum = 1;
             return;
         }
@@ -59,7 +60,7 @@ public abstract class BaseDataItemInventory<T> extends BaseInventory {
         this.pageNum++;
         this.requestAndAccept(list -> {
             if (list.isEmpty()) {
-                this.player.sendMessage(Ari.instance.dataService.getValue("base.page-change.none-next"));
+                this.player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.page-change.none-next")));
                 this.pageNum--;
             } else {
                 this.data = list;
@@ -114,13 +115,13 @@ public abstract class BaseDataItemInventory<T> extends BaseInventory {
      */
     protected ItemStack createItemStack(@Nullable String showMaterial) {
         if (showMaterial == null) return null;
-        ItemStack itemStack = null;
+        ItemStack itemStack;
         try {
             itemStack = new ItemStack(Material.valueOf(showMaterial.toUpperCase()));
             return itemStack;
         } catch (Exception e) {
             Log.error(e, "create ItemStack error. material %s", showMaterial);
-            return itemStack;
+            return null;
         }
 
     }
