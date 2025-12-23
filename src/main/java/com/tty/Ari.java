@@ -54,6 +54,9 @@ public class Ari extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
+        reloadAllConfig();
+        Log.init(this.getLogger(), DEBUG);
+        this.printLogo();
     }
 
     @Override
@@ -62,11 +65,6 @@ public class Ari extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
-        reloadAllConfig();
-        Log.init(this.getLogger(), DEBUG);
-
-        this.printLogo();
 
         PublicFunctionUtils.loadPlugin("Vault", Economy.class, EconomyUtils::setInstance);
         PublicFunctionUtils.loadPlugin("Vault", Permission.class, PermissionUtils::setInstance);
