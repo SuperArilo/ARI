@@ -32,7 +32,7 @@ public class back extends BaseLiteralArgumentLiteralCommand {
         if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.BACK_CONFIG.name()))) return;
 
         Player player = (Player) sender;
-        Location beforeLocation = TELEPORT_LAST_LOCATION.get(player);
+        Location beforeLocation = TELEPORT_LAST_LOCATION.get(player.getUniqueId());
         if(beforeLocation == null) {
             player.sendMessage(ConfigUtils.t("teleport.none-location"));
             return;
