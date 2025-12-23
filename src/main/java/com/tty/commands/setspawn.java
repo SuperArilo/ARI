@@ -1,6 +1,7 @@
 package com.tty.commands;
 
 import com.tty.Ari;
+import com.tty.dto.SpawnLocation;
 import com.tty.enumType.FilePath;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
@@ -28,7 +29,16 @@ public class setspawn extends BaseLiteralArgumentLiteralCommand {
 
         Player player = (Player) sender;
         Location location = player.getLocation();
-        Ari.C_INSTANCE.setValue(Ari.instance, "main.location", FilePath.SPAWN_CONFIG, location);
+        SpawnLocation spawnLocation = new SpawnLocation();
+        spawnLocation.setWorldName(player.getWorld().getName());
+        spawnLocation.setX(location.getX());
+        spawnLocation.setY(location.getY());
+        spawnLocation.setZ(location.getZ());
+        spawnLocation.setPitch(location.getPitch());
+        spawnLocation.setYaw(location.getYaw());
+
+        Ari.C_INSTANCE.setValue(Ari.instance, "main.location", FilePath.SPAWN_CONFIG, spawnLocation.toMap());
+
         player.sendMessage(ConfigUtils.t("function.spawn.create-success"));
     }
 

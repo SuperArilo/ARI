@@ -1,6 +1,7 @@
 package com.tty.commands;
 
 import com.tty.Ari;
+import com.tty.dto.SpawnLocation;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.TeleportType;
@@ -9,6 +10,7 @@ import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.states.teleport.TeleportStateService;
 import com.tty.tool.ConfigUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,19 +34,19 @@ public class spawn extends BaseLiteralArgumentLiteralCommand {
 
         Player player = (Player) sender;
 
-        Location value = Ari.C_INSTANCE.getValue("main.location", FilePath.SPAWN_CONFIG, Location.class);
+        SpawnLocation value = Ari.C_INSTANCE.getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
         if(value == null) {
             Log.debug("location null");
             player.sendMessage(ConfigUtils.t("function.spawn.no-spawn"));
             return;
         }
         Ari.instance.stateMachineManager
-                .get(TeleportStateService.class)
-                .addState(new EntityToLocationState(
-                        player,
-                        Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.SPAWN_CONFIG, Integer.class, 3),
-                        value,
-                        TeleportType.SPAWN));
+            .get(TeleportStateService.class)
+            .addState(new EntityToLocationState(
+                    player,
+                    Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.SPAWN_CONFIG, Integer.class, 3),
+                    new Location(Bukkit.getWorld(value.getWorldName()), value.getX(), value.getY(), value.getZ(), value.getPitch(), value.getYaw()),
+                    TeleportType.SPAWN));
     }
 
     @Override
