@@ -45,7 +45,7 @@ public class spawn extends BaseLiteralArgumentLiteralCommand {
             .addState(new EntityToLocationState(
                     player,
                     Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.SPAWN_CONFIG, Integer.class, 3),
-                    new Location(Bukkit.getWorld(value.getWorldName()), value.getX(), value.getY(), value.getZ(), value.getPitch(), value.getYaw()),
+                    new Location(Bukkit.getWorld(value.getWorldName()), value.getX(), value.getY(), value.getZ(), value.getYaw(), value.getPitch()),
                     TeleportType.SPAWN));
     }
 
