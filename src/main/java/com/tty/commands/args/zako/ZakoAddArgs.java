@@ -6,6 +6,7 @@ import com.tty.entity.sql.WhitelistInstance;
 import com.tty.lib.Log;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.Operator;
+import com.tty.lib.tool.ComponentUtils;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;
 
@@ -54,7 +55,7 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
                 return CompletableFuture.completedFuture(true);
             })
             .thenCompose(i -> {
-                if (!i) return null;
+                if (!i) return CompletableFuture.completedFuture(null);
 
                 WhitelistInstance instance = new WhitelistInstance();
                 instance.setPlayerUUID(uuid.toString());
@@ -63,11 +64,14 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
 
                 return this.whitelistManager.createInstance(instance);
             })
-            .thenAccept(status -> sender.sendMessage(ConfigUtils.t("function.zako.add-" + (status ? "success":"failure"))))
+            .thenAccept(status -> {
+                if (status == null) return;
+                sender.sendMessage(ConfigUtils.t("function.zako.add-" + (status ? "success":"failure")));
+            })
             .whenComplete((v, ex) -> {
                 if (ex != null) {
                     Log.error(ex, "add zako error.");
-                    sender.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
+                    sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-error")));
                 }
             });
     }
