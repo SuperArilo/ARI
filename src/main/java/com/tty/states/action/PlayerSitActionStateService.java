@@ -14,11 +14,8 @@ import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.block.data.type.Stairs;
-import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
@@ -103,27 +100,17 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
     protected void passAddState(PlayerSitActionState state) {
         Player player = (Player) state.getOwner();
         Block sitBlock = state.getSitBlock();
-        Log.debug("create sit entity to player %s", player.getName());
         Location location = this.locationRecalculate(player, sitBlock);
-        Entity entity = player.getWorld()
-            .spawnEntity(
-                location,
-                EntityType.AREA_EFFECT_CLOUD,
-                CreatureSpawnEvent.SpawnReason.CUSTOM,
-                e -> {
-                    if (e instanceof AreaEffectCloud cloud) {
-                        cloud.setRadius(0);
-                        cloud.setInvulnerable(true);
-                        cloud.setGravity(false);
-                        cloud.setInvisible(true);
-                        cloud.setParticle(Particle.DUST, new Particle.DustOptions(Color.fromRGB(0, 0, 0), 0f));
-                        cloud.addPassenger(player);
-                    }
-                }
-            );
-        player.setRotation(location.getYaw(), 0);
-        player.sendActionBar(ConfigUtils.t("function.sit.tips"));
-        state.setTool_entity(entity);
+        state.createToolEntity(
+            player.getWorld(),
+            location,
+            i -> {
+                player.setRotation(location.getYaw(), 0);
+                player.sendActionBar(ConfigUtils.t("function.sit.tips"));
+                i.addPassenger(player);
+            }
+        );
+
         Log.debug("player %s sit block %s.", state.getOwner().getName(), sitBlock.getType().name());
     }
 

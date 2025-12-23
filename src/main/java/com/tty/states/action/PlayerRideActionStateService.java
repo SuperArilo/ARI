@@ -5,16 +5,10 @@ import com.tty.lib.Log;
 import com.tty.dto.state.action.PlayerRideActionState;
 import com.tty.lib.Lib;
 import com.tty.lib.services.StateService;
-import lombok.SneakyThrows;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.entity.AreaEffectCloud;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-
 
 
 public class PlayerRideActionStateService extends StateService<PlayerRideActionState> {
@@ -37,7 +31,6 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
         return state.getBeRidePlayer().getPassengers().isEmpty();
     }
 
-    @SneakyThrows
     @Override
     protected void loopExecution(PlayerRideActionState state) {
 
@@ -69,22 +62,18 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
     @Override
     protected void passAddState(PlayerRideActionState state) {
         Player beRidePlayer = state.getBeRidePlayer();
-        Entity entity = beRidePlayer.getWorld().spawnEntity(
-                beRidePlayer.getEyeLocation(),
-                EntityType.AREA_EFFECT_CLOUD,
-                CreatureSpawnEvent.SpawnReason.CUSTOM,
-                e -> {
-                    if (e instanceof AreaEffectCloud cloud) {
-                        cloud.setRadius(0);
-                        cloud.setInvulnerable(true);
-                        cloud.setGravity(false);
-                        cloud.setParticle(Particle.DUST, new Particle.DustOptions(Color.fromRGB(0, 0, 0), 0f));
-                        cloud.setInvisible(true);
-                        beRidePlayer.addPassenger(cloud);
-                    }
-                });
-        state.setTool_entity(entity);
-        entity.addPassenger(state.getOwner());
+        Entity owner = state.getOwner();
+        Location location = beRidePlayer.getEyeLocation();
+        state.createToolEntity(
+            beRidePlayer.getWorld(),
+            location,
+            i -> {
+                beRidePlayer.addPassenger(i);
+                i.addPassenger(owner);
+                owner.setRotation(location.getYaw(), 0);
+                Log.debug("player %s riding player %s.", owner.getName(), beRidePlayer.getName());
+            }
+        );
     }
 
     @Override
