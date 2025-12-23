@@ -131,17 +131,17 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
     protected void onEarlyExit(PlayerSitActionState state) {
         String playerName = state.getOwner().getName();
         Log.debug("player %s sit check status fail, remove tool entity", playerName);
-        state.removeToolEntity();
+        state.removeToolEntity(Ari.instance);
     }
 
     @Override
     protected void onFinished(PlayerSitActionState state) {
-        state.removeToolEntity();
+        state.removeToolEntity(Ari.instance);
     }
 
     @Override
     protected void onServiceAbort(PlayerSitActionState state) {
-        state.removeToolEntity();
+        state.removeToolEntity(Ari.instance);
     }
 
     private Location locationRecalculate(Player player, Block sitBlock) {

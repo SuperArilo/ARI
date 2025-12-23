@@ -89,17 +89,17 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
 
     @Override
     protected void onEarlyExit(PlayerRideActionState state) {
-        state.removeToolEntity();
+        state.removeToolEntity(Ari.instance);
     }
 
     @Override
     protected void onFinished(PlayerRideActionState state) {
-        state.removeToolEntity();
+        state.removeToolEntity(Ari.instance);
     }
 
     @Override
     protected void onServiceAbort(PlayerRideActionState state) {
-        state.removeToolEntity();
+        state.removeToolEntity(Ari.instance);
         Log.info("ejected player %s", state.getOwner().getName());
     }
 }
