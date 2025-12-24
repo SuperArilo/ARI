@@ -58,6 +58,6 @@ public class CustomChatFormantListener implements Listener {
     }
 
     private boolean isNotEnable() {
-        return Ari.C_INSTANCE.getValue("chat.enable", FilePath.FUNCTION_CONFIG, Boolean.class, false);
+        return !Ari.C_INSTANCE.getValue("chat.enable", FilePath.FUNCTION_CONFIG, Boolean.class, false);
     }
 }
