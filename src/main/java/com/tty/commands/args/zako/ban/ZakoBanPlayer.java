@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ZakoBanPlayer extends ZakoBanBase<String> {
 
@@ -21,7 +22,9 @@ public class ZakoBanPlayer extends ZakoBanBase<String> {
 
     @Override
     public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        List<String> list = Bukkit.getOnlinePlayers().stream().map(Player::getName).filter(name -> !name.equals(sender.getName())).toList();
+        Stream<String> stream = Bukkit.getOnlinePlayers().stream().map(Player::getName).filter(i -> !i.equals(sender.getName()));
+        if (args.length == 2) return stream.toList();
+        List<String> list = stream.filter(i -> i.startsWith(args[2])).toList();
         if (list.isEmpty()) return List.of("<player name or uuid (string)>");
         return list;
     }
