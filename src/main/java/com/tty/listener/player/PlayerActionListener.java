@@ -1,11 +1,19 @@
 package com.tty.listener.player;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import com.tty.Ari;
 import com.tty.dto.state.action.PlayerRideActionState;
 import com.tty.dto.state.action.PlayerSitActionState;
 import com.tty.enumType.FilePath;
+import com.tty.lib.Log;
 import com.tty.states.action.PlayerRideActionStateService;
 import com.tty.states.action.PlayerSitActionStateService;
+import com.tty.tool.ConfigUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -15,6 +23,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
 import org.bukkit.Material;
 import org.bukkit.inventory.EquipmentSlot;
+
 
 public class PlayerActionListener implements Listener {
 
@@ -31,6 +40,10 @@ public class PlayerActionListener implements Listener {
         if (event.getItem() != null || !player.getInventory().getItemInMainHand().getType().isAir()) return;
         // 点击的方块不存在
         Block clickedBlock = event.getClickedBlock();
+        if (!this.canInteract(player, clickedBlock)) {
+            player.sendMessage(ConfigUtils.t("function.sit.error-location"));
+            return;
+        }
         if (clickedBlock == null) return;
         // 玩家已经骑乘实体
         if (player.getVehicle() != null) return;
@@ -65,4 +78,29 @@ public class PlayerActionListener implements Listener {
     private boolean isNotEnablePlayerSitPlayer() {
         return Ari.C_INSTANCE.getValue("action.player-sit-player.enable", FilePath.FUNCTION_CONFIG, Boolean.class, false);
     }
+
+    public boolean hasWorldGuard() {
+        return Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
+    }
+
+    public boolean canInteract(Player player, Block block) {
+        if (!this.hasWorldGuard()) {
+            Log.debug("not have WorldGuard. skip...");
+            return true;
+        }
+        RegionQuery query = WorldGuard.getInstance()
+                .getPlatform()
+                .getRegionContainer()
+                .createQuery();
+
+        com.sk89q.worldguard.LocalPlayer localPlayer =
+                WorldGuardPlugin.inst().wrapPlayer(player);
+
+        return query.testState(
+                BukkitAdapter.adapt(block.getLocation()),
+                localPlayer,
+                Flags.INTERACT
+        );
+    }
+
 }
