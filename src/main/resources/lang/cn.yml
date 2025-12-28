@@ -75,7 +75,7 @@ function:
     remove-failure: '&c✖ 白名单移除失败，不存在或者存在错误'
     ban-remove-success: '&a✔ 黑名单移除成功'
     had_baned: '&c✖ 添加失败，该玩家已经被封禁'
-    baned: '&a✔ 已将该玩家进行封禁！封禁时长为<ban_total_time>，&3封禁原因&f：&3<ban_reason>'
+    baned: '&a✔ 已将该玩家进行封禁！封禁时长为<ban_total_time>，&f封禁原因：&3<ban_reason>'
   unknown: '&c未知指令，请重新输入'
 server:
   time:
