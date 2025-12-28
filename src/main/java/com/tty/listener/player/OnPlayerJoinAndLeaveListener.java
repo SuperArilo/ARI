@@ -2,6 +2,7 @@ package com.tty.listener.player;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
+import com.tty.dto.SpawnLocation;
 import com.tty.dto.event.OnZakoSavedEvent;
 import com.tty.dto.state.player.PlayerSaveState;
 import com.tty.entity.sql.BanPlayer;
@@ -149,9 +150,20 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 if(!player.hasPlayedBefore()) {
                     if (Ari.C_INSTANCE.getValue("main.first-join", FilePath.SPAWN_CONFIG, Boolean.class, false) &&
                             Ari.C_INSTANCE.getValue("main.enable", FilePath.SPAWN_CONFIG, Boolean.class, false)) {
-                        Location value = Ari.C_INSTANCE.getValue("main.location", FilePath.SPAWN_CONFIG, Location.class);
+                        SpawnLocation value = Ari.C_INSTANCE.getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
                         if (value != null) {
-                            Teleporting.create(player, value).teleport();
+                            Teleporting.create(player,
+                                new Location(
+                                    Bukkit.getWorld(value.getWorldName()),
+                                    value.getX(),
+                                    value.getY(),
+                                    value.getZ(),
+                                    value.getYaw(),
+                                    value.getPitch()
+                                )
+                            ).teleport();
+                        } else {
+                            Log.info("server not set spawn location.");
                         }
                     }
                     if(first) {
