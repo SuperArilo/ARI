@@ -1,6 +1,11 @@
 package com.tty.states.action;
 
 import com.google.gson.reflect.TypeToken;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import com.tty.Ari;
 import com.tty.lib.Log;
 import com.tty.dto.state.action.PlayerSitActionState;
@@ -45,6 +50,12 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             Log.debug("player %s interact the block %s is disabled", playerName, sitBlockName);
             return false;
         }
+
+        if (!this.worldGuardCanInteract(owner, sitBlock)) {
+            owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
+            return false;
+        }
+
         BlockData blockData = sitBlock.getBlockData();
         //如果为楼梯
         if (blockData instanceof Stairs stairs) {
@@ -53,14 +64,14 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                 owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
                 return false;
             }
-            return sitBlockName.endsWith("_STAIRS");
-            //如果为半砖
+            return true;
+        //如果为半砖
         } else if (blockData instanceof Slab) {
             if (this.checkBlockTopIsNotAllow(owner, sitBlock)) {
                 owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
                 return false;
             }
-            return sitBlockName.endsWith("_SLAB");
+            return true;
         } else {
             return false;
         }
@@ -224,6 +235,30 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             case WEST -> -90.0F;
             default -> 0.0F;
         };
+    }
+
+    private boolean hasWorldGuard() {
+        return Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
+    }
+
+    private boolean worldGuardCanInteract(Player player, Block block) {
+        if (!this.hasWorldGuard()) {
+            Log.debug("not have WorldGuard. skip...");
+            return true;
+        }
+        RegionQuery query = WorldGuard.getInstance()
+                .getPlatform()
+                .getRegionContainer()
+                .createQuery();
+
+        com.sk89q.worldguard.LocalPlayer localPlayer =
+                WorldGuardPlugin.inst().wrapPlayer(player);
+
+        return query.testState(
+                BukkitAdapter.adapt(block.getLocation()),
+                localPlayer,
+                Flags.BUILD
+        );
     }
 
 }
