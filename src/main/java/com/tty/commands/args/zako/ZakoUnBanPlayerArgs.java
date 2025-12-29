@@ -47,7 +47,7 @@ public class ZakoUnBanPlayerArgs extends ZakoBaseArgs<String> {
             .thenCompose(CompletableFuture::completedFuture)
             .thenAccept(banPlayer -> {
                 if (banPlayer == null) {
-                    sender.sendMessage(ConfigUtils.t("function.zako.player-not-exist"));
+                    sender.sendMessage(ConfigUtils.t("function.zako.ban-remove-failure"));
                     return;
                 }
                 this.banPlayerManager.deleteInstance(banPlayer);
