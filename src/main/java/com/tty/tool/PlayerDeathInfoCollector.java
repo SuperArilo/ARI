@@ -68,7 +68,7 @@ public class PlayerDeathInfoCollector {
                 }
             }
             return pool.isEmpty() ? "" :
-                    pool.get(PublicFunctionUtils.randomGenerator(0, pool.size()));
+                    pool.get(PublicFunctionUtils.randomGenerator(0, pool.size() - 1));
         }
 
     }
