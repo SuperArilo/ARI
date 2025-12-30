@@ -29,7 +29,9 @@ public class PlayerActionListener implements Listener {
         // 动作不匹配或旁观模式
         if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || player.getGameMode().equals(GameMode.SPECTATOR)) return;
         // 手持空
-        if (event.getItem() != null || !player.getInventory().getItemInMainHand().getType().isAir()) return;
+        if (event.getItem() != null ||
+                !player.getInventory().getItemInMainHand().isEmpty() ||
+                !player.getInventory().getItemInOffHand().isEmpty()) return;
         // 点击的方块不存在
         Block clickedBlock = event.getClickedBlock();
         if (clickedBlock == null) return;
