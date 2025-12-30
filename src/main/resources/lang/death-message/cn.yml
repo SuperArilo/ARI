@@ -78,6 +78,10 @@ custom-death:
     projectile:
       public:
         - '&2<victim> &7被 &2<killer> &7用 &2<killer_item> &7射杀'
+    explosion:
+      public:
+        - '&2<victim> &7被 &2<killer> &7炸死了'
+        - '&2<victim> &7想和 &2<killer> &7进行亲密接触'
   falling-blocks:
     anvil:
       public:

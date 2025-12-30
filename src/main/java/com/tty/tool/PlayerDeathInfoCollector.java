@@ -4,57 +4,49 @@ import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.enumType.FilePath;
 import com.tty.lib.tool.PublicFunctionUtils;
+import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.projectiles.ProjectileSource;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class PlayerDeathInfoCollector {
 
     public static class DeathInfo {
-        //受害者
+
         public Player victim;
-        //死亡时间
         public long deathTime;
-        //死亡原因
         public EntityDamageEvent.DamageCause deathCause;
-        //
         public EntityDamageEvent event;
-        //是否是实体造成的
         public boolean isEntityCause;
-        //是否是远程舞曲
         public boolean isProjectile;
-        //实施者
         public Entity killer;
-        //实施者使用的武器，如果有
-        public ItemStack weapon;   // 武器或手
-        public boolean isEscapeAttempt; // 可自定义逻辑
+        public ItemStack weapon;
+        public boolean isEscapeAttempt;
 
         @Override
         public String toString() {
             return "DeathInfo{" +
                     "victim=" + victim.getName() +
                     ", deathTime=" + deathTime +
-                    ", event=" + event +
                     ", deathCause=" + deathCause +
+                    ", event=" + event +
                     ", isEntityCause=" + isEntityCause +
                     ", isProjectile=" + isProjectile +
                     ", killer=" + (killer != null ? killer.getName() : "null") +
                     ", weapon=" + (weapon != null ? weapon.getType().name() : "null") +
+                    ", isEscapeAttempt=" + isEscapeAttempt +
                     '}';
         }
 
         public String getRandomOfList(String keyPath) {
             String killerName = this.killer == null ? null : this.killer.getType().name().toLowerCase();
             Type type = new TypeToken<List<String>>() {}.getType();
-
             List<String> pool = new ArrayList<>();
 
             List<String> publicList = Ari.C_INSTANCE.getValue(keyPath + ".public", FilePath.DEATH_MESSAGE, type, null);
@@ -63,74 +55,100 @@ public class PlayerDeathInfoCollector {
                 pool.addAll(publicList);
                 if (killerName != null) {
                     List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName, FilePath.DEATH_MESSAGE, type, null);
-                    if (killerList != null && !killerList.isEmpty()) {
-                        pool.addAll(killerList);
-                    }
+                    if (killerList != null && !killerList.isEmpty()) pool.addAll(killerList);
                 }
             } else {
                 if (killerName != null) {
                     List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName, FilePath.DEATH_MESSAGE, type,null);
-                    if (killerList != null && !killerList.isEmpty()) {
-                        pool.addAll(killerList);
-                    } else {
+                    if (killerList != null && !killerList.isEmpty()) pool.addAll(killerList);
+                    else {
                         List<String> fallbackList = Ari.C_INSTANCE.getValue(keyPath, FilePath.DEATH_MESSAGE, type, null);
-                        if (fallbackList != null && !fallbackList.isEmpty()) {
-                            pool.addAll(fallbackList);
-                        }
+                        if (fallbackList != null && !fallbackList.isEmpty()) pool.addAll(fallbackList);
                     }
                 }
             }
-
-
             return pool.isEmpty() ? "" :
                     pool.get(PublicFunctionUtils.randomGenerator(0, pool.size()));
         }
+
     }
 
-    public static DeathInfo collect(PlayerDeathEvent event) {
+    public DeathInfo collect(PlayerDeathEvent event, LastDamageTracker tracker) {
         DeathInfo info = new DeathInfo();
         info.victim = event.getEntity();
         info.deathTime = System.currentTimeMillis();
-        info.event = event.getEntity().getLastDamageCause();
-        info.deathCause = event.getEntity().getLastDamageCause() != null
-                ? event.getEntity().getLastDamageCause().getCause()
-                : EntityDamageEvent.DamageCause.CUSTOM;
-        info.isEscapeAttempt = false;
-
-        info.weapon = null;
+        info.event = info.victim.getLastDamageCause();
+        info.deathCause = info.event != null ? info.event.getCause() : EntityDamageEvent.DamageCause.CUSTOM;
         info.isEntityCause = false;
         info.isProjectile = false;
         info.killer = null;
+        info.weapon = null;
+        info.isEscapeAttempt = false;
 
-        // 检查是否由实体造成伤害
-        if (event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent damageEvent) {
-            Entity damager = damageEvent.getDamager();
-            info.isEntityCause = true;
+        List<LastDamageTracker.DamageRecord> records = tracker.getRecords(info.victim.getUniqueId());
 
-            // 处理远程攻击（箭、雪球等）
-            if (damager instanceof Projectile projectile) {
-                info.isProjectile = true;
-                if (projectile.getShooter() instanceof Entity shooter) {
-                    damager = shooter;
+        if (!records.isEmpty()) {
+            Map<Entity, Double> damageSum = new HashMap<>();
+            for (LastDamageTracker.DamageRecord r : records) {
+                Entity realDamager = getActualDamager(r.damager());
+                if (realDamager != null && realDamager.isValid()) {
+                    damageSum.put(realDamager, damageSum.getOrDefault(realDamager, 0.0) + r.damage());
                 }
             }
 
-            info.killer = damager;
+            Entity mainKiller = damageSum.entrySet().stream()
+                    .max(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey)
+                    .orElse(null);
 
-            // 玩家攻击
-            if (damager instanceof Player playerDamager) {
-                info.weapon = Optional.of(playerDamager.getEquipment())
-                        .map(EntityEquipment::getItemInMainHand)
+            if (mainKiller != null) {
+                info.killer = mainKiller;
+                info.isEntityCause = true;
+
+                LastDamageTracker.DamageRecord lastRecord = records.stream()
+                        .filter(r -> getActualDamager(r.damager()) == mainKiller)
+                        .reduce((first, second) -> second)
                         .orElse(null);
-            }
-            // 怪物或其他生物攻击
-            else if (damager instanceof LivingEntity entityDamager) {
-                Optional.ofNullable(entityDamager.getEquipment())
-                        .map(EntityEquipment::getItemInMainHand).ifPresent(weaponItem -> info.weapon = weaponItem);
+
+                if (lastRecord != null) {
+                    if (!(info.deathCause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION
+                            || info.deathCause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION)) {
+                        info.weapon = lastRecord.weapon();
+                    }
+                    info.isProjectile = lastRecord.isProjectile() || lastRecord.damager() instanceof Projectile;
+                    double escapeDistance = info.isProjectile ? 1.5 : 20.0;
+                    Location lastLoc = lastRecord.location();
+                    Location deathLoc = info.victim.getLocation();
+                    if (lastLoc != null && lastLoc.getWorld() == deathLoc.getWorld()) {
+                        double distSq = lastLoc.distanceSquared(deathLoc);
+                        info.isEscapeAttempt = distSq > escapeDistance * escapeDistance;
+                    }
+                }
             }
         }
 
+        if (info.deathCause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+            if (info.event instanceof EntityDamageByEntityEvent damageEvent) {
+                Entity damager = damageEvent.getDamager();
+                if (damager instanceof Creeper || damager instanceof TNTPrimed || damager instanceof Wither) {
+                    info.killer = damager;
+                    info.isEntityCause = true;
+                    info.weapon = null; // 爆炸没有武器
+                    info.isProjectile = false;
+                }
+            }
+        }
+
+        tracker.clearRecords(info.victim.getUniqueId());
         return info;
+    }
+
+    private Entity getActualDamager(Entity damager) {
+        if (damager instanceof Projectile projectile) {
+            ProjectileSource shooter = projectile.getShooter();
+            if (shooter instanceof Entity entityShooter) return entityShooter;
+        }
+        return damager;
     }
 
 }
