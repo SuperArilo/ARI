@@ -32,7 +32,8 @@ public class BreakAndExplodeListener implements Listener {
             EntityType.WITHER_SKULL,      // 凋灵头颅爆炸
             EntityType.END_CRYSTAL,     // 末影水晶爆炸
             EntityType.FIREBALL,          // Ghast / Blaze 火球爆炸
-            EntityType.SMALL_FIREBALL     // 小火球效果爆炸
+            EntityType.SMALL_FIREBALL,     // 小火球效果爆炸
+            EntityType.WIND_CHARGE // 风弹
     );
 
     public BreakAndExplodeListener() {

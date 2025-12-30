@@ -42,3 +42,5 @@ anti-explosion:
   enable: true
   pass-list:
     - "tnt"
+    # 更加有效果？
+    #- "wind_charge"
