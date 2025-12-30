@@ -38,12 +38,15 @@ public class AutoSeedListener implements Listener {
 
         if (ageable.getAge() < ageable.getMaximumAge()) return; // 只处理成熟作物
 
-        // 消耗耐久
+
         ItemMeta meta = mainHand.getItemMeta();
         if (!(meta instanceof Damageable damageable)) return;
 
-        damageable.setDamage(damageable.getDamage() + 1);
-        mainHand.setItemMeta(meta);
+        // 随机消耗耐久
+        if(PublicFunctionUtils.randomGenerator(0, 1) == 0) {
+            damageable.setDamage(damageable.getDamage() + 1);
+            mainHand.setItemMeta(meta);
+        }
 
         if (damageable.getDamage() >= mainHand.getType().getMaxDurability()) return;
 
