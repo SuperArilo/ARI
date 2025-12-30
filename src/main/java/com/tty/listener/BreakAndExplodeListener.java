@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.dto.event.CustomPluginReloadEvent;
 import com.tty.enumType.FilePath;
+import com.tty.lib.Log;
 import com.tty.lib.tool.FireworkUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -65,7 +66,7 @@ public class BreakAndExplodeListener implements Listener {
         if (event.getAction() != Action.PHYSICAL) return;
         if (event.getClickedBlock() == null) return;
         if (event.getClickedBlock().getType() != Material.FARMLAND) return;
-
+        Log.debug("player %s try break farmland.", event.getPlayer().getName());
         event.setCancelled(true);
     }
 
