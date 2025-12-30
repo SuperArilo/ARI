@@ -90,8 +90,15 @@ public abstract class BaseDataItemInventory<T> extends BaseInventory {
     }
 
     private void renderDataItem() {
+        if (this.inventory == null) return;
         long l = System.currentTimeMillis();
-        Map<Integer, ItemStack> renderItem = this.getRenderItem();
+        Map<Integer, ItemStack> renderItem;
+        try {
+            renderItem = this.getRenderItem();
+        } catch (Exception e) {
+            Log.error("get render item error.", e);
+            return;
+        }
         if (renderItem == null || renderItem.isEmpty()) return;
 
         for (Integer index : this.baseDataInstance.getDataItems().getSlot()) {
