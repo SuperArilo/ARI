@@ -24,6 +24,16 @@ public class BreakAndExplodeListener implements Listener {
 
     private final FireworkUtils utils = new FireworkUtils(Ari.instance);
     private Set<String> passSet;
+    private final Set<EntityType> supported_entity_explosions = Set.of(
+            EntityType.TNT,        // TNT 实体爆炸
+            EntityType.TNT_MINECART,      // TNT 矿车爆炸
+            EntityType.CREEPER,           // 苦力怕爆炸
+            EntityType.WITHER,            // 凋灵爆炸
+            EntityType.WITHER_SKULL,      // 凋灵头颅爆炸
+            EntityType.END_CRYSTAL,     // 末影水晶爆炸
+            EntityType.FIREBALL,          // Ghast / Blaze 火球爆炸
+            EntityType.SMALL_FIREBALL     // 小火球效果爆炸
+    );
 
     public BreakAndExplodeListener() {
         this.reloadPassSet();
@@ -35,9 +45,9 @@ public class BreakAndExplodeListener implements Listener {
 
         EntityType entityType = event.getEntityType();
 
-        if (this.passSet.contains(entityType.name())) {
-            return;
-        }
+        if (!this.supported_entity_explosions.contains(entityType)) return;
+
+        if (this.passSet.contains(entityType.name())) return;
 
         event.blockList().clear();
         this.utils.spawnFireworks(event.getLocation(), 1);
@@ -48,10 +58,9 @@ public class BreakAndExplodeListener implements Listener {
         if (this.isDisabled()) return;
 
         Material material = event.getBlock().getType();
+        if (material == Material.AIR) return;
 
-        if (this.passSet.contains(material.name())) {
-            return;
-        }
+        if (this.passSet.contains(material.name())) return;
 
         event.blockList().clear();
         this.utils.spawnFireworks(
