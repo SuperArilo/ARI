@@ -10,9 +10,10 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.List;
 import java.util.Set;
@@ -59,10 +60,12 @@ public class BreakAndExplodeListener implements Listener {
     }
 
     @EventHandler
-    public void onEntityTrample(EntityInteractEvent event) {
+    public void onPlayerStep(PlayerInteractEvent event) {
         if (!Ari.instance.getConfig().getBoolean("server.anti-trample-farmland", false)) return;
-        // 耕地
-        if (event.getBlock().getType() != Material.FARMLAND) return;
+        if (event.getAction() != Action.PHYSICAL) return;
+        if (event.getClickedBlock() == null) return;
+        if (event.getClickedBlock().getType() != Material.FARMLAND) return;
+
         event.setCancelled(true);
     }
 
