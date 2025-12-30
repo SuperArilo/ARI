@@ -35,6 +35,8 @@ server:
   save-interval: 300 # 5分钟
   #收获自动播种
   auto-seed: false
+  #阻止耕地踩踏
+  anti-trample-farmland: false
 debug:
   enable: false
   overwrite-file: false

@@ -12,17 +12,18 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class BreakExplodeListener implements Listener {
+public class BreakAndExplodeListener implements Listener {
 
     private final FireworkUtils utils = new FireworkUtils(Ari.instance);
     private Set<String> passSet;
 
-    public BreakExplodeListener() {
+    public BreakAndExplodeListener() {
         this.reloadPassSet();
     }
 
@@ -55,6 +56,14 @@ public class BreakExplodeListener implements Listener {
                 event.getBlock().getLocation().add(0.5, 2, 0.5),
                 1
         );
+    }
+
+    @EventHandler
+    public void onEntityTrample(EntityInteractEvent event) {
+        if (!Ari.instance.getConfig().getBoolean("server.anti-trample-farmland", false)) return;
+        // 耕地
+        if (event.getBlock().getType() != Material.FARMLAND) return;
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOW)
