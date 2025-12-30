@@ -112,6 +112,7 @@ public class Ari extends JavaPlugin {
         pluginManager.registerEvents(new KeepInventoryAndExperience(), this);
         pluginManager.registerEvents(new CustomPlayerDeathListener(), this);
         pluginManager.registerEvents(new BreakExplodeListener(), this);
+        pluginManager.registerEvents(new AutoSeedListener(), this);
     }
 
     public static void reloadAllConfig() {

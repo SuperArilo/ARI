@@ -33,7 +33,8 @@ server:
   enable-keep-experience: true
   #秒
   save-interval: 300 # 5分钟
-
+  #收获自动播种
+  auto-seed: false
 debug:
   enable: false
   overwrite-file: false
