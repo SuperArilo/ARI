@@ -11,6 +11,7 @@ import com.tty.lib.dto.AliasItem;
 import com.tty.lib.services.ConfigDataService;
 import com.tty.lib.services.StateService;
 import com.tty.lib.tool.*;
+import com.tty.listener.BreakExplodeListener;
 import com.tty.listener.GuiCleanupListener;
 import com.tty.listener.OnPluginReloadListener;
 import com.tty.listener.PlayerListener;
@@ -110,6 +111,7 @@ public class Ari extends JavaPlugin {
         pluginManager.registerEvents(new PlayerActionListener(), this);
         pluginManager.registerEvents(new KeepInventoryAndExperience(), this);
         pluginManager.registerEvents(new CustomPlayerDeathListener(), this);
+        pluginManager.registerEvents(new BreakExplodeListener(), this);
     }
 
     public static void reloadAllConfig() {
