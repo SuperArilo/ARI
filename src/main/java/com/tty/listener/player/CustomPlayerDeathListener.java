@@ -16,7 +16,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,21 +30,22 @@ public class CustomPlayerDeathListener implements Listener {
         PlayerDeathInfoCollector.DeathInfo info = this.collector.collect(event, this.tracker);
         Log.debug(info.toString());
 
-        Map<String, Component> placeholders = new HashMap<>();
-        placeholders.put(LangType.VICTIM.getType(), ComponentUtils.setEntityHoverText(info.victim));
-        placeholders.put(LangType.KILLER.getType(), info.killer != null ? ComponentUtils.setEntityHoverText(info.killer) : Component.empty());
-        placeholders.put(LangType.KILLER_ITEM.getType(), ComponentUtils.setHoverItemText(info.weapon));
-
         StringBuilder sb = new StringBuilder();
         String baseKey = "custom-death.";
         switch (info.deathCause) {
-            case ENTITY_ATTACK, ENTITY_EXPLOSION, ENTITY_SWEEP_ATTACK, PROJECTILE, POISON -> {
-                if(info.killer instanceof Player) {
-                    sb.append(info.getRandomOfList(baseKey + "player." +
-                            (info.weapon == null || info.weapon.getType().isAir() ? "air" : info.isProjectile ? "projectile" : "item")));
+            case ENTITY_EXPLOSION, BLOCK_EXPLOSION -> {
+                if (info.killer instanceof Explosive) {
+                    sb.append(info.getRandomOfList(baseKey + "player.explosion"));
                 } else {
-                    sb.append(info.getRandomOfList(baseKey + "mob." +
-                            (info.weapon == null || info.weapon.getType().isAir() ? "air" : info.isProjectile ? "projectile" : "item")));
+                    sb.append(info.getRandomOfList(baseKey + "mob.explosion"));
+                }
+            }
+            case ENTITY_ATTACK, ENTITY_SWEEP_ATTACK, PROJECTILE, POISON -> {
+                String lastKey = info.weapon == null || info.weapon.getType().isAir() ? "air" : info.isProjectile ? "projectile" : "item";
+                if(info.killer instanceof Player) {
+                    sb.append(info.getRandomOfList(baseKey + "player." + lastKey));
+                } else {
+                    sb.append(info.getRandomOfList(baseKey + "mob." + lastKey));
                 }
 
                 if(info.isEscapeAttempt) {
@@ -87,9 +87,16 @@ public class CustomPlayerDeathListener implements Listener {
             case MAGIC -> sb.append(info.getRandomOfList(baseKey + "player.magic"));
             case STARVATION -> sb.append(info.getRandomOfList(baseKey + "player.starvation"));
             case SONIC_BOOM -> sb.append(info.getRandomOfList(baseKey + "player.sonic_boom"));
-            case BLOCK_EXPLOSION -> sb.append(info.getRandomOfList(baseKey + "player.explosion"));
         }
-        event.deathMessage(ComponentUtils.text(sb.toString(), placeholders));
+        event.deathMessage(ComponentUtils.text(
+                sb.toString(),
+                Map.of(
+                    LangType.VICTIM.getType(), ComponentUtils.setEntityHoverText(info.victim),
+                    LangType.KILLER.getType(), info.killer != null ? ComponentUtils.setEntityHoverText(info.killer) : Component.empty(),
+                    LangType.KILLER_ITEM.getType(), ComponentUtils.setHoverItemText(info.weapon)
+                )
+            )
+        );
     }
 
     @EventHandler

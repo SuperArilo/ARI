@@ -130,10 +130,13 @@ public class PlayerDeathInfoCollector {
         if (info.deathCause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
             if (info.event instanceof EntityDamageByEntityEvent damageEvent) {
                 Entity damager = damageEvent.getDamager();
-                if (damager instanceof Creeper || damager instanceof TNTPrimed || damager instanceof Wither) {
+                if (damager instanceof Creeper ||
+                        damager instanceof TNTPrimed ||
+                        damager instanceof Wither ||
+                        damager instanceof EnderCrystal) {
                     info.killer = damager;
                     info.isEntityCause = true;
-                    info.weapon = null; // 爆炸没有武器
+                    info.weapon = null;
                     info.isProjectile = false;
                 }
             }
