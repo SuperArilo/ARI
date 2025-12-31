@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.tty.listener.player.PlayerSkipNight.isBedWorksRe;
+
 public class TimeArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public TimeArgs() {
@@ -61,7 +63,7 @@ public class TimeArgs extends BaseRequiredArgumentLiteralCommand<String> {
             return;
         }
         World world = player.getWorld();
-        if (!world.isBedWorks()) {
+        if (!isBedWorksRe(world)) {
             player.sendMessage(ConfigUtils.t("server.time.not-allowed-world"));
             return;
         }
