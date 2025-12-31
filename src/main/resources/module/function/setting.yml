@@ -42,5 +42,6 @@ anti-explosion:
   enable: true
   pass-list:
     - "tnt"
-    # 更加有效果？
-    #- "wind_charge"
+attack-boss-bar:
+  enable: true
+  max-bar: 3

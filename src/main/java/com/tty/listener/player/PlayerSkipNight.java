@@ -1,4 +1,4 @@
-package com.tty.listener.skip_sleep;
+package com.tty.listener.player;
 
 import com.tty.Ari;
 import com.tty.dto.SleepingWorld;
@@ -33,18 +33,18 @@ public class PlayerSkipNight implements Listener {
 
     @EventHandler
     public void deepSleep(PlayerDeepSleepEvent event) {
-        if (!this.isEnable()) return;
+        if (this.isDisabled()) return;
         this.update(event.getPlayer().getWorld());
     }
 
     @EventHandler
     public void leave(PlayerBedLeaveEvent event) {
-        if (!this.isEnable()) return;
+        if (this.isDisabled()) return;
         this.update(event.getPlayer().getWorld());
     }
 
-    private boolean isEnable() {
-        return Ari.instance.getConfig().getBoolean("server.skip-night.enable", false);
+    private boolean isDisabled() {
+        return !Ari.instance.getConfig().getBoolean("server.skip-night.enable", false);
     }
 
 }

@@ -83,7 +83,7 @@ server:
     tips: '&e将时间调整为 &6<time>'
     not-exist-period: '&c不存在的时间段: &3<period>'
     not-allowed-world: '&c当前世界不允许调整时间'
-    skip-to-night: '&e将加速跳过夜晚'
+    skip-to-night: '&e将加速跳过夜晚 &7速率: &5<skip_night_tick_increment>'
     report-status: '&7当前有 <sleep_players> 名玩家在睡觉，时间加速为 <skip_night_tick_increment>'
     name:
       sunrise: '&e黎明'
@@ -113,3 +113,10 @@ server:
       - "&4你已经被此服务器封禁！"
       - "&3原因&f: <ban_reason>"
       - "&3剩余时间&f: &6<ban_end_time>"
+  boss-bar:
+    player-attack: "<mob> &6<mob_current_health>&f / &3<mob_max_health>"
+  maintenance:
+    on-enable: '&e服务器维护模式已开启'
+    on-disable: '&a服务器维护模式已关闭'
+    to-player: '&e服务器维护模式已开启，你将在 &6<maintenance_kick_delay>秒 &e被强制踢出服务器'
+    when-player-join: '&6服务器正在维护中，请稍后尝试'

@@ -49,3 +49,6 @@ itemlore:
 zako:
   enable: true
   usage: '/zako <add | info | remove> 对服务器白名单进行添加或移除，查询当前服务器玩家的信息'
+maintenance:
+  enable: true
+  usage: '/maintenance 开启服务器维护模式。除了 OP 其他玩家将无法进入'

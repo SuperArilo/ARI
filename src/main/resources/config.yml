@@ -37,6 +37,9 @@ server:
   auto-seed: false
   #阻止耕地踩踏
   anti-trample-farmland: false
+  maintenance:
+    # 10 秒
+    kick_delay: 10
 debug:
   enable: false
   overwrite-file: false
