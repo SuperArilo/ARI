@@ -21,6 +21,10 @@ public class BaseBossBar {
         this.bossBar = BossBar.bossBar(title, 1.0f, BossBar.Color.YELLOW, BossBar.Overlay.NOTCHED_10);
     }
 
+    protected BaseBossBar(Component title, float progress) {
+        this.bossBar = BossBar.bossBar(title, progress, BossBar.Color.YELLOW, BossBar.Overlay.NOTCHED_10);
+    }
+
     /**
      * 设置当前 boos bar 的进度条颜色
      * @param color 颜色
@@ -43,6 +47,14 @@ public class BaseBossBar {
      */
     public void setProgress(float value) {
         this.bossBar.progress(Math.max(0.0f, Math.min(1.0f, value)));
+    }
+
+    /**
+     * 获取进度条值
+     * @return 值 0.0 ~ 1.0
+     */
+    public float getProgress() {
+        return this.bossBar.progress();
     }
 
     public void show(@NotNull Audience audience) {

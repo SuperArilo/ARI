@@ -22,8 +22,8 @@ public class PlayerAttackBar extends BaseBossBar {
         super.show(player);
     }
 
-    public PlayerAttackBar(Player player, Component component) {
-        super(component);
+    public PlayerAttackBar(Player player, Component component, float progress) {
+        super(component, progress);
         this.player = player;
         this.autoRemove();
         super.show(player);
