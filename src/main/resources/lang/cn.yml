@@ -115,3 +115,8 @@ server:
       - "&3剩余时间&f: &6<ban_end_time>"
   boss-bar:
     player-attack: "<mob> &6<mob_current_health>&f / &3<mob_max_health>"
+  maintenance:
+    on-enable: '&e服务器维护模式已开启'
+    on-disable: '&a服务器维护模式已关闭'
+    to-player: '&e服务器维护模式已开启，你将在 &6<maintenance_kick_delay>秒 &e被强制踢出服务器'
+    when-player-join: '&6服务器正在维护中，请稍后尝试'

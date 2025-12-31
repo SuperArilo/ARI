@@ -2,6 +2,7 @@ package com.tty.listener.player;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
+import com.tty.commands.maintenance;
 import com.tty.dto.SpawnLocation;
 import com.tty.dto.event.OnZakoSavedEvent;
 import com.tty.dto.state.player.PlayerSaveState;
@@ -44,6 +45,13 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     private final BanPlayerManager banPlayerManager = new BanPlayerManager(true);
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void maintenance(AsyncPlayerPreLoginEvent event) {
+        if (maintenance.MAINTENANCE_MODE){
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join"));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
     public void banCheck(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
         BanPlayer banPlayer;
