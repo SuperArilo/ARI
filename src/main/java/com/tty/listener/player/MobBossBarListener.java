@@ -109,7 +109,7 @@ public class MobBossBarListener implements Listener {
 
         if (bar == null || bar.isRemoved()) {
             if (bar != null) bar.remove(attacker);
-            bar = new PlayerAttackBar(attacker, t, healthRatio);
+            bar = new PlayerAttackBar(attacker, t, healthRatio, this.getColor(healthRatio));
             bars.put(mob, bar);
         } else {
             bar.setName(t);
@@ -117,9 +117,9 @@ public class MobBossBarListener implements Listener {
 
         if (bar.getProgress() != healthRatio) {
             bar.setProgress(healthRatio);
-            bar.setColor(getColor(healthRatio));
+            bar.setColor(this.getColor(healthRatio));
         }
-        enforceLimit(bars, attacker);
+        this.enforceLimit(bars, attacker);
     }
 
     @EventHandler(priority = EventPriority.HIGH)

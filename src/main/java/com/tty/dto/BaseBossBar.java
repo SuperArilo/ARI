@@ -25,6 +25,10 @@ public class BaseBossBar {
         this.bossBar = BossBar.bossBar(title, progress, BossBar.Color.YELLOW, BossBar.Overlay.NOTCHED_10);
     }
 
+    protected BaseBossBar(Component title, float progress, BossBar.Color color) {
+        this.bossBar = BossBar.bossBar(title, progress, color, BossBar.Overlay.NOTCHED_10);
+    }
+
     /**
      * 设置当前 boos bar 的进度条颜色
      * @param color 颜色

@@ -5,6 +5,7 @@ import com.tty.dto.BaseBossBar;
 import com.tty.lib.Lib;
 import com.tty.lib.task.CancellableTask;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +23,8 @@ public class PlayerAttackBar extends BaseBossBar {
         super.show(player);
     }
 
-    public PlayerAttackBar(Player player, Component component, float progress) {
-        super(component, progress);
+    public PlayerAttackBar(Player player, Component component, float progress, BossBar.Color color) {
+        super(component, progress, color);
         this.player = player;
         this.autoRemove();
         super.show(player);
