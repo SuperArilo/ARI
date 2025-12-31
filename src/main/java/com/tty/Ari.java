@@ -18,7 +18,7 @@ import com.tty.listener.PlayerListener;
 import com.tty.listener.home.EditHomeListener;
 import com.tty.listener.home.HomeListListener;
 import com.tty.listener.player.*;
-import com.tty.listener.skip_sleep.PlayerSkipNight;
+import com.tty.listener.player.PlayerSkipNight;
 import com.tty.listener.teleport.RecordLastLocationListener;
 import com.tty.listener.warp.EditWarpListener;
 import com.tty.listener.warp.WarpListListener;

@@ -7,7 +7,6 @@ import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.enum_type.TimePeriod;
-import com.tty.lib.task.CancellableTask;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
@@ -19,12 +18,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-
 public class SleepingWorld {
 
     private final World world;
     private final TimeManager timeManager;
-    private CancellableTask cancellableTask;
     private boolean skipNightOver = false;
 
     public SleepingWorld(World world) {
@@ -38,25 +35,28 @@ public class SleepingWorld {
             this.timeManager.setAddTick(Math.min(this.getSleepPlayers() * this.getTickIncrement(), this.getMaxTickIncrement()));
             this.sendTipsActionBar();
         }
-        if (this.timeManager.getScheduledTask().get() != null && condition) {
-            this.cancelTask();
+        if (this.timeManager.getTask() != null && condition) {
             this.timeManager.cancelTask();
-        } else if(this.timeManager.getScheduledTask().get() == null && !condition) {
+        } else if(this.timeManager.getTask() == null && !condition) {
             this.skipNightOver = false;
-            this.timeManager.timeAutomaticallyPasses(i -> {
-                if (this.cancellableTask != null) return;
-                this.cancellableTask = Lib.Scheduler.runAsyncDelayed(Ari.instance, j -> {
-                    for (Player player : this.world.getPlayers()) {
-                        if (this.playerCondition(player.getWorld()) || !player.isSleeping() || !player.isDeeplySleeping()) continue;
-                        Lib.Scheduler.runAtEntity(Ari.instance, player, b -> player.showTitle(
-                                ComponentUtils.setPlayerTitle(timeManager.tickToTime(i),
-                                        Ari.C_INSTANCE.getValue("server.time.skip-to-night", FilePath.LANG),
-                                        0L,
-                                        1000L,
-                                        1000L)), () -> {});
-                    }
-                    this.cancelTask();
-                }, 20L);
+            this.timeManager.timeAutomaticallyPasses(10, i -> {
+                for (Player player : this.world.getPlayers()) {
+                    if (this.playerCondition(player.getWorld()) || !player.isSleeping() || !player.isDeeplySleeping()) continue;
+                    Lib.Scheduler.runAtEntity(
+                        Ari.instance,
+                        player,
+                        b ->
+                            player.showTitle(
+                                ComponentUtils.setPlayerTitle(
+                                    timeManager.tickToTime(i),
+                                    Ari.C_INSTANCE.getValue("server.time.skip-to-night", FilePath.LANG),
+                                    Map.of(LangType.SKIP_NIGHT_TICK_INCREMENT.getType(), Component.text(this.timeManager.getAddTick())),
+                                    0L,
+                                    1000L,
+                                    500L)
+                            ),
+                        null);
+                }
             });
         }
     }
@@ -108,13 +108,6 @@ public class SleepingWorld {
             return numSleepersNeeded == sleepers;
         }
         return true;
-    }
-
-    private void cancelTask() {
-        if (this.cancellableTask != null) {
-            this.cancellableTask.cancel();
-            this.cancellableTask = null;
-        }
     }
 
     private long getSleepPlayers() {
