@@ -25,7 +25,7 @@ public class PlayerSkipNight implements Listener {
         if (sleepingWorld == null) {
             Log.error("cannot found world %s to sleep skipping.", world.getName());
             return;
-        };
+        }
         sleepingWorld.update();
     }
 
