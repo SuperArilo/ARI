@@ -97,11 +97,7 @@ public class MobBossBarListener implements Listener {
         for (Map.Entry<Player, LinkedHashMap<Damageable, PlayerAttackBar>> entry : playerBars.entrySet()) {
             Player player = entry.getKey();
             LinkedHashMap<Damageable, PlayerAttackBar> bars = entry.getValue();
-
-            PlayerAttackBar bar = bars.remove(dead);
-            if (bar != null) {
-                bar.remove(player);
-            }
+            bars.remove(dead);
         }
     }
 
