@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.tty.listener.PlayerListener.getRespawnLocation;
+
 public class RecordLastLocationListener implements Listener {
 
     //保存的玩家上一个传送位置
@@ -40,11 +42,19 @@ public class RecordLastLocationListener implements Listener {
     @EventHandler
     public void onRespawn(CustomPlayerRespawnEvent event) {
         if (!ServerPlatform.isFolia()) return;
+        Player player = event.getPlayer();
+        Location respawnLocation = event.getRespawnLocation();
+        player.setRespawnLocation(respawnLocation);
+        player.teleportAsync(respawnLocation);
         this.setPlayerLastLocation(event);
     }
     @EventHandler
     public void onRespawnOnPaper(PlayerRespawnEvent event) {
         if (ServerPlatform.isFolia()) return;
+        Player player = event.getPlayer();
+        if (!event.isBedSpawn() && !event.isAnchorSpawn()) {
+            event.setRespawnLocation(getRespawnLocation(player.getWorld()));
+        }
         this.setPlayerLastLocation(event);
     }
     @EventHandler
