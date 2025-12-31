@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Iterator;
@@ -46,40 +47,39 @@ public class MobBossBarListener implements Listener {
 
         double maxHealth;
         AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
-        if (attribute != null) {
-            maxHealth = attribute.getValue();
-        } else {
-            maxHealth = 0;
-        }
+        maxHealth = attribute != null ? attribute.getValue() : 0;
+
         double newHealth = mob.getHealth() - event.getFinalDamage();
         if (newHealth < 0) newHealth = 0;
 
-        LinkedHashMap<Damageable, PlayerAttackBar> bars =
-                playerBars.computeIfAbsent(player, k -> new LinkedHashMap<>());
+        LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.computeIfAbsent(player, k -> new LinkedHashMap<>());
 
-        PlayerAttackBar bar = bars.compute(mob, (m, existing) -> {
-            if (existing == null || existing.removed) {
-                if (existing != null) existing.remove();
-                return new PlayerAttackBar(player);
+        PlayerAttackBar bar = bars.get(mob);
+        if (bar == null || bar.isRemoved()) {
+            if (bar != null) {
+                bar.remove(player);
             }
-            return existing;
-        });
+            bar = new PlayerAttackBar(
+                    player,
+                    ConfigUtils.t(
+                            "server.boss-bar.player-attack",
+                            Map.of(
+                                    LangType.MOB.getType(), mob.name(),
+                                    LangType.MOB_CURRENT_HEALTH.getType(), Component.text(FormatUtils.formatTwoDecimalPlaces(newHealth)),
+                                    LangType.MOB_MAX_HEALTH.getType(), Component.text(FormatUtils.formatTwoDecimalPlaces(maxHealth))
+                            )
+                    )
+            );
+            bars.put(mob, bar);
+        }
 
         float healthRatio = (float) (newHealth / maxHealth);
-
         bar.setProgress(healthRatio);
         bar.setColor(getColor(healthRatio));
-        bar.setName(ConfigUtils.t(
-                "server.boss-bar.player-attack",
-                Map.of(
-                        LangType.MOB.getType(), mob.name(),
-                        LangType.MOB_CURRENT_HEALTH.getType(), Component.text(FormatUtils.formatTwoDecimalPlaces(newHealth)),
-                        LangType.MOB_MAX_HEALTH.getType(), Component.text(FormatUtils.formatTwoDecimalPlaces(maxHealth))
-                )
-        ));
 
-        this.enforceLimit(bars);
+        this.enforceLimit(bars, player);
     }
+
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onQuit(PlayerQuitEvent event) {
@@ -87,22 +87,44 @@ public class MobBossBarListener implements Listener {
         Player player = event.getPlayer();
         LinkedHashMap<Damageable, PlayerAttackBar> bars = playerBars.remove(player);
         if (bars != null) {
-            bars.values().forEach(PlayerAttackBar::remove);
+            bars.values().forEach(i -> i.remove(player));
         }
     }
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        Damageable dead = event.getEntity();
+        for (Map.Entry<Player, LinkedHashMap<Damageable, PlayerAttackBar>> entry : playerBars.entrySet()) {
+            Player player = entry.getKey();
+            LinkedHashMap<Damageable, PlayerAttackBar> bars = entry.getValue();
+
+            PlayerAttackBar bar = bars.remove(dead);
+            if (bar != null) {
+                bar.remove(player);
+            }
+        }
+    }
+
 
     @EventHandler
     public void onPluginReload(CustomPluginReloadEvent event) {
         this.maxBar = this.getMaxBar();
         this.isDisabled = this.isDisabled();
+        if (this.isDisabled) {
+            this.playerBars.forEach((player, bars) ->
+                    bars.values().forEach(bar -> bar.remove(player))
+            );
+            this.playerBars.clear();
+        }
+
     }
 
-    private void enforceLimit(LinkedHashMap<Damageable, PlayerAttackBar> bars) {
+    private void enforceLimit(LinkedHashMap<Damageable, PlayerAttackBar> bars, Player player) {
         while (bars.size() > this.maxBar) {
             Iterator<Map.Entry<Damageable, PlayerAttackBar>> iterator = bars.entrySet().iterator();
             if (iterator.hasNext()) {
                 Map.Entry<Damageable, PlayerAttackBar> entry = iterator.next();
-                entry.getValue().remove();
+                entry.getValue().remove(player);
                 iterator.remove();
             }
         }

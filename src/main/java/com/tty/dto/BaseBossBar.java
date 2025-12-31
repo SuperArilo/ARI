@@ -1,20 +1,24 @@
 package com.tty.dto;
 
+import lombok.Getter;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+
 
 public class BaseBossBar {
 
-    protected final Player player;
     protected final BossBar bossBar;
-    public boolean removed = false;
+    @Getter
+    protected boolean removed = false;
 
-    protected BaseBossBar(Player player) {
-        this.player = player;
+    protected BaseBossBar() {
         this.bossBar = BossBar.bossBar(Component.text(), 1.0f, BossBar.Color.YELLOW, BossBar.Overlay.NOTCHED_10);
-        this.player.showBossBar(this.bossBar);
+    }
 
+    protected BaseBossBar(Component title) {
+        this.bossBar = BossBar.bossBar(title, 1.0f, BossBar.Color.YELLOW, BossBar.Overlay.NOTCHED_10);
     }
 
     /**
@@ -39,14 +43,16 @@ public class BaseBossBar {
      */
     public void setProgress(float value) {
         this.bossBar.progress(Math.max(0.0f, Math.min(1.0f, value)));
-
     }
 
-    public void remove() {
-        if (removed) return;
-        removed = true;
-        this.player.hideBossBar(this.bossBar);
+    public void show(@NotNull Audience audience) {
+        audience.showBossBar(this.bossBar);
+    }
 
+    public void remove(@NotNull Audience audience) {
+        if (this.removed) return;
+        this.removed = true;
+        audience.hideBossBar(this.bossBar);
     }
 
 
