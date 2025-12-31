@@ -21,7 +21,12 @@ public class PlayerSkipNight implements Listener {
     private final Map<World, SleepingWorld> worlds = new ConcurrentHashMap<>();
 
     private void update(World world) {
-        this.worlds.get(world).update();
+        SleepingWorld sleepingWorld = this.worlds.get(world);
+        if (sleepingWorld == null) {
+            Log.error("cannot found world %s to sleep skipping.", world.getName());
+            return;
+        };
+        sleepingWorld.update();
     }
 
     @EventHandler
