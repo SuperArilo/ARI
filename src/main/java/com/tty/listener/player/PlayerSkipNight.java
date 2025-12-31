@@ -38,7 +38,6 @@ public class PlayerSkipNight implements Listener {
             }
             this.worlds.put(world, new SleepingWorld(world));
         }
-        Log.debug(String.valueOf(this.worlds.size()));
     }
 
     @EventHandler
