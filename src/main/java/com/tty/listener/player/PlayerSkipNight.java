@@ -28,10 +28,12 @@ public class PlayerSkipNight implements Listener {
     public void onServerLoad(ServerLoadEvent event) {
         this.worlds.clear();
         for (World world : Bukkit.getWorlds()) {
-            if (!world.isBedWorks()) continue;
-            if (!isBedWorksRe(world)) continue;
+            if (!world.isBedWorks()) {
+                if (!isBedWorksRe(world)) continue;
+            }
             this.worlds.put(world, new SleepingWorld(world));
         }
+        Log.debug(String.valueOf(this.worlds.size()));
     }
 
     @EventHandler

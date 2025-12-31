@@ -26,7 +26,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -166,12 +165,9 @@ public class MobBossBarListener implements Listener {
 
     private void enforceLimit(LinkedHashMap<Damageable, PlayerAttackBar> bars, Player player) {
         while (bars.size() > this.maxBar) {
-            Iterator<Map.Entry<Damageable, PlayerAttackBar>> iterator = bars.entrySet().iterator();
-            if (iterator.hasNext()) {
-                Map.Entry<Damageable, PlayerAttackBar> entry = iterator.next();
-                entry.getValue().remove(player);
-                iterator.remove();
-            }
+            Map.Entry<Damageable, PlayerAttackBar> oldest = bars.entrySet().iterator().next();
+            oldest.getValue().remove(player);
+            bars.remove(oldest.getKey());
         }
     }
 
