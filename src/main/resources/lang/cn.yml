@@ -113,3 +113,5 @@ server:
       - "&4你已经被此服务器封禁！"
       - "&3原因&f: <ban_reason>"
       - "&3剩余时间&f: &6<ban_end_time>"
+  boss-bar:
+    player-attack: "<mob> &6<mob_current_health>&f / &3<mob_max_health>"

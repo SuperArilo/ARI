@@ -113,6 +113,7 @@ public class Ari extends JavaPlugin {
         pluginManager.registerEvents(new CustomPlayerDeathListener(), this);
         pluginManager.registerEvents(new BreakAndExplodeListener(), this);
         pluginManager.registerEvents(new AutoSeedListener(), this);
+        pluginManager.registerEvents(new MobBossBarListener(), this);
     }
 
     public static void reloadAllConfig() {

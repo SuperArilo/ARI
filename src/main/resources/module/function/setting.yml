@@ -42,3 +42,6 @@ anti-explosion:
   enable: true
   pass-list:
     - "tnt"
+attack-boss-bar:
+  enable: true
+  max-bar: 3
