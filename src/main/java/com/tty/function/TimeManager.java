@@ -17,7 +17,7 @@ public class TimeManager {
     private long delay;
     @Setter
     @Getter
-    private long addTick;
+    private volatile long addTick;
     @Getter
     private  CancellableTask task;
 

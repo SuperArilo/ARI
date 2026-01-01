@@ -89,7 +89,7 @@ public class SleepingWorld {
             //已经睡下的人
             long sleepers = this.getSleepPlayers();
             long worldTime = world.getTime();
-            Log.debug("world time: %s abs: %s", world.getTime(), TimePeriod.WAKE_UP.getEnd());
+            Log.debug("world time: %s, abs: %s, need_to_sleep: %s, sleep_now: %s", world.getTime(), TimePeriod.WAKE_UP.getEnd(), numSleepersNeeded, sleepers);
             if ((worldTime >= TimePeriod.WAKE_UP.getEnd() ||
                     (worldTime > 0 && worldTime < TimePeriod.SUNRISE.getEnd())) ||
                     (world.isThundering() || world.hasStorm()) &&
