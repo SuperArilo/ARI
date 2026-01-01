@@ -11,6 +11,7 @@ import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -89,36 +90,51 @@ public class MobBossBarListener implements Listener {
     }
 
     private void updateBar(EntityDamageEvent event, Damageable mob, Attributable attr, Player attacker) {
-
         AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
-        double maxHealth = attribute == null ? 1:attribute.getValue();
-        double newHealth = Math.max(0, mob.getHealth() - event.getFinalDamage());
+        double maxHealth = attribute == null ? 1 : attribute.getValue();
+
+        double currentHealth = mob.getHealth();
+
+        if (event instanceof EntityDamageByEntityEvent) {
+            currentHealth = Math.max(0, mob.getHealth() - event.getFinalDamage());
+        }
+
+        double newHealth = Math.max(0, currentHealth);
 
         LinkedHashMap<Damageable, PlayerAttackBar> bars = playerBars.computeIfAbsent(attacker, k -> new LinkedHashMap<>());
         PlayerAttackBar bar = bars.get(mob);
+
+        float healthRatio = (float) (newHealth / Math.max(0.001, maxHealth));
+
+        String formattedCurrent = FormatUtils.formatTwoDecimalPlaces(newHealth);
+
+        if (newHealth > 0 && newHealth < 0.01) {
+            formattedCurrent = "<0.01";
+        }
 
         TextComponent t = ConfigUtils.t(
                 "server.boss-bar.player-attack",
                 Map.of(
                         LangType.MOB.getType(), mob.name(),
-                        LangType.MOB_CURRENT_HEALTH.getType(), Component.text(FormatUtils.formatTwoDecimalPlaces(newHealth)),
-                        LangType.MOB_MAX_HEALTH.getType(), Component.text(FormatUtils.formatTwoDecimalPlaces(maxHealth))
+                        LangType.MOB_CURRENT_HEALTH.getType(),
+                        Component.text(formattedCurrent).color(this.getMobHealthTextColor(healthRatio)),
+                        LangType.MOB_MAX_HEALTH.getType(),
+                        Component.text(FormatUtils.formatTwoDecimalPlaces(maxHealth))
                 )
         );
 
-        float healthRatio = (float) (newHealth / maxHealth);
-
         if (bar == null || bar.isRemoved()) {
             if (bar != null) bar.remove(attacker);
-            bar = new PlayerAttackBar(attacker, t, healthRatio, this.getColor(healthRatio));
+            bar = new PlayerAttackBar(attacker, t, healthRatio, this.getMobBarColor(healthRatio));
             bars.put(mob, bar);
         } else {
             bar.setName(t);
         }
 
-        if (bar.getProgress() != healthRatio) {
-            bar.setProgress(healthRatio);
-            bar.setColor(this.getColor(healthRatio));
+        float displayProgress = Math.max(0.01f, healthRatio);
+        if (bar.getProgress() != displayProgress) {
+            bar.setProgress(displayProgress);
+            bar.setColor(this.getMobBarColor(healthRatio));
         }
         this.enforceLimit(bars, attacker);
     }
@@ -183,10 +199,16 @@ public class MobBossBarListener implements Listener {
         }
     }
 
-    private BossBar.Color getColor(float ratio) {
+    private BossBar.Color getMobBarColor(float ratio) {
         if (ratio >= 0.7f) return BossBar.Color.GREEN;
         if (ratio >= 0.3f) return BossBar.Color.YELLOW;
         return BossBar.Color.RED;
+    }
+
+    private TextColor getMobHealthTextColor(float ratio) {
+        if (ratio >= 0.7f) return TextColor.color(0x55FF55);
+        if (ratio >= 0.3f) return TextColor.color(0xFFFF55);
+        return TextColor.color(0xFF5555);
     }
 
     private boolean isDisabled() {
