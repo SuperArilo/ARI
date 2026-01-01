@@ -24,6 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.LinkedHashMap;
@@ -90,7 +91,7 @@ public class MobBossBarListener implements Listener {
     private void updateBar(EntityDamageEvent event, Damageable mob, Attributable attr, Player attacker) {
 
         AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
-        double maxHealth = attribute == null ? 0:attribute.getValue();
+        double maxHealth = attribute == null ? 1:attribute.getValue();
         double newHealth = Math.max(0, mob.getHealth() - event.getFinalDamage());
 
         LinkedHashMap<Damageable, PlayerAttackBar> bars = playerBars.computeIfAbsent(attacker, k -> new LinkedHashMap<>());
@@ -125,12 +126,7 @@ public class MobBossBarListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onQuit(PlayerQuitEvent event) {
         if (this.isDisabled) return;
-        Player player = event.getPlayer();
-
-        LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.remove(player);
-        if (bars != null) bars.values().forEach(i -> i.remove(player));
-
-        this.lastAttackerMap.entrySet().removeIf(e -> e.getValue().player.equals(player));
+        this.removePlayerRecord(event.getPlayer());
     }
 
     @EventHandler
@@ -150,6 +146,22 @@ public class MobBossBarListener implements Listener {
             });
             this.lastAttackerMap.remove(dead);
         });
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        if (this.isDisabled) return;
+        this.removePlayerRecord(event.getEntity());
+    }
+
+    private void removePlayerRecord(Player player) {
+        LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.remove(player);
+        if (bars != null) {
+            bars.values().forEach(bar -> bar.remove(player));
+        }
+        this.lastAttackerMap.entrySet().removeIf(entry ->
+                entry.getValue().player.equals(player)
+        );
     }
 
     @EventHandler
