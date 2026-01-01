@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.tty.lib.dto.State;
+import com.tty.lib.dto.state.State;
 import com.tty.lib.services.StateService;
 import com.tty.states.*;
 import com.tty.states.action.PlayerRideActionStateService;
