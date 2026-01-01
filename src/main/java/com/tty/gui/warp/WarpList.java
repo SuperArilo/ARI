@@ -91,7 +91,7 @@ public class WarpList extends BaseDataItemInventory<ServerWarp> {
                         case PLAYER_NAME -> replacements.put(keyType.getKey(), ComponentUtils.text(playName));
                         case COST -> {
                             Double cost = serverWarp.getCost();
-                            replacements.put(keyType.getKey(), ComponentUtils.text(cost == null || cost == 0 ? baseFree : cost + EconomyUtils.getNamePlural()));
+                            replacements.put(keyType.getKey(), ComponentUtils.text(cost == null || cost == 0 || EconomyUtils.isNull() ? baseFree : cost + EconomyUtils.getNamePlural()));
                         }
                         case TOP_SLOT -> replacements.put(keyType.getKey(), ComponentUtils.text(Ari.instance.dataService.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
                         case PERMISSION -> replacements.put(keyType.getKey(), ComponentUtils.text(Ari.instance.dataService.getValue(hasPermission ? "base.yes_re":"base.no_re")));
