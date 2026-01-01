@@ -1,7 +1,7 @@
 package com.tty.commands.sub;
 
 import com.tty.Ari;
-import com.tty.lib.dto.event.CustomPluginReloadEvent;
+import com.tty.dto.event.CustomPluginReloadEvent;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.ComponentUtils;

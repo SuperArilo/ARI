@@ -1,7 +1,7 @@
 package com.tty.listener;
 
 import com.tty.Ari;
-import com.tty.lib.dto.event.CustomPluginReloadEvent;
+import com.tty.dto.event.CustomPluginReloadEvent;
 import com.tty.lib.Log;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.states.PlayerSaveStateService;
