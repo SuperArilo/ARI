@@ -5,7 +5,7 @@ import com.tty.Ari;
 import com.tty.dto.state.player.PlayerEditGuiState;
 import com.tty.entity.sql.ServerHome;
 import com.tty.enumType.FilePath;
-import com.tty.enumType.GuiType;
+import com.tty.lib.enum_type.GuiType;
 import com.tty.function.HomeManager;
 import com.tty.gui.home.HomeEditor;
 import com.tty.gui.home.HomeList;

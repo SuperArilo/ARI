@@ -2,7 +2,7 @@ package com.tty;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.enumType.FilePath;
-import com.tty.enumType.GuiType;
+import com.tty.lib.enum_type.GuiType;
 import com.tty.function.PlayerTabManager;
 import com.tty.lib.Log;
 import com.tty.lib.ServerPlatform;

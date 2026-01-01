@@ -3,7 +3,7 @@ package com.tty.listener.home;
 import com.tty.Ari;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
-import com.tty.enumType.GuiType;
+import com.tty.lib.enum_type.GuiType;
 import com.tty.function.HomeManager;
 import com.tty.gui.home.HomeEditor;
 import com.tty.gui.home.HomeList;

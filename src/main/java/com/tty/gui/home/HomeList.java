@@ -1,14 +1,14 @@
 package com.tty.gui.home;
 
 import com.tty.Ari;
-import com.tty.entity.menu.BaseDataMenu;
-import com.tty.entity.menu.FunctionItems;
-import com.tty.entity.menu.Mask;
+import com.tty.lib.entity.gui.BaseDataMenu;
+import com.tty.lib.entity.gui.FunctionItems;
+import com.tty.lib.entity.gui.Mask;
 import com.tty.entity.sql.ServerHome;
 import com.tty.enumType.FilePath;
-import com.tty.enumType.GuiType;
+import com.tty.lib.enum_type.GuiType;
 import com.tty.function.HomeManager;
-import com.tty.gui.BaseDataItemInventory;
+import com.tty.lib.gui.BaseDataItemInventory;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.enum_type.IconKeyType;
@@ -31,7 +31,8 @@ import java.util.concurrent.CompletableFuture;
 public class HomeList extends BaseDataItemInventory<ServerHome> {
 
     public HomeList(Player player) {
-        super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_LIST_GUI.name()).saveToString(), BaseDataMenu.class),
+        super(Ari.instance,
+                FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_LIST_GUI.name()).saveToString(), BaseDataMenu.class),
                 player,
                 GuiType.HOME_LIST);
     }

@@ -1,7 +1,7 @@
 package com.tty.dto.state.player;
 
 import com.tty.Ari;
-import com.tty.gui.BaseInventory;
+import com.tty.lib.gui.BaseInventory;
 import com.tty.lib.dto.State;
 import com.tty.lib.enum_type.FunctionType;
 import lombok.Getter;

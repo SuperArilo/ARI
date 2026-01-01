@@ -2,13 +2,13 @@ package com.tty.gui.home;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.entity.menu.BaseMenu;
-import com.tty.entity.menu.FunctionItems;
-import com.tty.entity.menu.Mask;
+import com.tty.lib.entity.gui.BaseMenu;
+import com.tty.lib.entity.gui.FunctionItems;
+import com.tty.lib.entity.gui.Mask;
 import com.tty.entity.sql.ServerHome;
 import com.tty.enumType.FilePath;
-import com.tty.enumType.GuiType;
-import com.tty.gui.BaseInventory;
+import com.tty.lib.enum_type.GuiType;
+import com.tty.lib.gui.BaseInventory;
 import com.tty.lib.enum_type.IconKeyType;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -23,7 +23,10 @@ public class HomeEditor extends BaseInventory {
     public ServerHome currentHome;
 
     public HomeEditor(ServerHome serverHome, Player player) {
-        super(FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_EDIT_GUI.name()).saveToString(), BaseMenu.class), player, GuiType.HOME_EDIT);
+        super(Ari.instance,
+                FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_EDIT_GUI.name()).saveToString(), BaseMenu.class),
+                player,
+                GuiType.HOME_EDIT);
         this.currentHome = serverHome;
     }
 

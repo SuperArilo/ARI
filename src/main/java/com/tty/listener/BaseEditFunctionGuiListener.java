@@ -2,7 +2,7 @@ package com.tty.listener;
 
 import com.tty.Ari;
 import com.tty.dto.state.player.PlayerEditGuiState;
-import com.tty.enumType.GuiType;
+import com.tty.lib.enum_type.GuiType;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.tool.ComponentUtils;

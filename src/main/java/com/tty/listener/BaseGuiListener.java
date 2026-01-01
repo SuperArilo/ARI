@@ -1,7 +1,7 @@
 package com.tty.listener;
 
-import com.tty.enumType.GuiType;
-import com.tty.gui.BaseInventory;
+import com.tty.lib.enum_type.GuiType;
+import com.tty.lib.gui.BaseInventory;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
