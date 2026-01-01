@@ -71,12 +71,12 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                 ComponentUtils.text(message, Map.of(LangType.TPA_SENDER.getType(), ComponentUtils.text(owner.getName())))
                         .appendNewline()
                         .append(ComponentUtils.setClickEventText(
-                                Ari.C_INSTANCE.getValue("function.public.agree", FilePath.LANG),
+                                Ari.instance.dataService.getValue("function.public.agree"),
                                 ClickEvent.Action.RUN_COMMAND,
                                 "/ari tpaaccept " + owner.getName()))
-                        .append(ConfigUtils.t("function.public.center"))
+                        .append(ComponentUtils.text(Ari.instance.dataService.getValue("function.public.center")))
                         .append(ComponentUtils.setClickEventText(
-                                Ari.C_INSTANCE.getValue("function.public.refuse", FilePath.LANG),
+                                Ari.instance.dataService.getValue("function.public.refuse"),
                                 ClickEvent.Action.RUN_COMMAND,
                                 "/ari tparefuse " + owner.getName()))
         );

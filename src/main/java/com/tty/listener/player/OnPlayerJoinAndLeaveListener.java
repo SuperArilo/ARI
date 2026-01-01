@@ -12,7 +12,7 @@ import com.tty.entity.sql.WhitelistInstance;
 import com.tty.enumType.FilePath;
 import com.tty.function.BanPlayerManager;
 import com.tty.function.PlayerManager;
-import com.tty.function.Teleporting;
+import com.tty.lib.tool.Teleporting;
 import com.tty.function.WhitelistManager;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.LangType;
@@ -160,7 +160,9 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                             Ari.C_INSTANCE.getValue("main.enable", FilePath.SPAWN_CONFIG, Boolean.class, false)) {
                         SpawnLocation value = Ari.C_INSTANCE.getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
                         if (value != null) {
-                            Teleporting.create(player,
+                            Teleporting.create(
+                                    Ari.instance,
+                                    player,
                                 new Location(
                                     Bukkit.getWorld(value.getWorldName()),
                                     value.getX(),

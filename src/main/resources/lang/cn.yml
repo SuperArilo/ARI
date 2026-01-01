@@ -2,7 +2,6 @@ teleport:
   title:
     main: '&e请不要移动...'
     sub-title: '&6<teleport_delay>'
-  success: '&a✔ 传送成功！'
   break: '&c✖ 传送过程中被阻断或者取消'
   unable-player: '&c该玩家离线或者不存在！'
   cooling: '&e传送冷却中...'
@@ -12,12 +11,6 @@ teleport:
   again: '&e你已经发起过传送请求了，请等待一段时间再重试。'
   tips-back: '&b上次死亡的地点: <death_location> &7/back返回或者点击此消息'
 function:
-  public:
-    agree: '&a✔ [同意]'
-    center: '&f或者'
-    refuse: '&c✖ [拒绝]'
-    not-player: '&c这个指令只能在游戏里使用！'
-    fail: '&c指令缺少集合或者输入不正确！'
   tpa:
     again: '&e您已经发送过请求给 <tpa_be_sender>'
     send-message: '&e已发送传送请求给玩家...'

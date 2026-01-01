@@ -8,7 +8,7 @@ import com.tty.dto.state.CooldownState;
 import com.tty.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
-import com.tty.function.Teleporting;
+import com.tty.lib.tool.Teleporting;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.services.StateService;
 import com.tty.lib.tool.ComponentUtils;
@@ -154,9 +154,7 @@ public class TeleportStateService extends StateService<State> {
                 return;
             }
         }
-        Teleporting.create(owner, targetLocation)
-                .teleport()
-                .after(afterAction);
+        Teleporting.create(Ari.instance, owner, targetLocation).teleport().after(afterAction);
     }
 
     @Override
