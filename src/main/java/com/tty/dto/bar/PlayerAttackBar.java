@@ -1,7 +1,7 @@
 package com.tty.dto.bar;
 
 import com.tty.Ari;
-import com.tty.dto.BaseBossBar;
+import com.tty.lib.dto.BaseBossBar;
 import com.tty.lib.Lib;
 import com.tty.lib.task.CancellableTask;
 import net.kyori.adventure.audience.Audience;
