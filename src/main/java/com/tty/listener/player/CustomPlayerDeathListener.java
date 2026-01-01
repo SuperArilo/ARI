@@ -47,7 +47,6 @@ public class CustomPlayerDeathListener implements Listener {
                 } else {
                     sb.append(info.getRandomOfList(baseKey + "mob." + lastKey));
                 }
-
                 if(info.isEscapeAttempt) {
                     sb.append(info.getRandomOfList(baseKey + "running-away"));
                 }
@@ -87,6 +86,7 @@ public class CustomPlayerDeathListener implements Listener {
             case MAGIC -> sb.append(info.getRandomOfList(baseKey + "player.magic"));
             case STARVATION -> sb.append(info.getRandomOfList(baseKey + "player.starvation"));
             case SONIC_BOOM -> sb.append(info.getRandomOfList(baseKey + "player.sonic_boom"));
+            case THORNS -> sb.append(info.getRandomOfList(baseKey + "player.thorns"));
         }
         event.deathMessage(ComponentUtils.text(
                 sb.toString(),

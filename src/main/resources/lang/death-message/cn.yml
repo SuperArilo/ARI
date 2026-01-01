@@ -66,6 +66,9 @@ custom-death:
       public:
         - '&2<victim> &7被 &2<killer> &7炸死了'
         - '&2<victim> &7想和 &2<killer> &7进行亲密接触'
+    thorns:
+      public:
+        - '&2<victim> &7被 &2<killer> &7给反死了'
   mob:
     air:
       public:
