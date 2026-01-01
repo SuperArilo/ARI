@@ -5,6 +5,7 @@ import com.tty.dto.bar.PlayerAttackBar;
 import com.tty.dto.event.CustomPluginReloadEvent;
 import com.tty.enumType.FilePath;
 import com.tty.lib.Lib;
+import com.tty.lib.Log;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.tool.ConfigUtils;
@@ -46,16 +47,34 @@ public class MobBossBarListener implements Listener {
         this.isDisabled = this.isDisabled();
     }
 
+    private void debugLog(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Damageable mob)) return;
+        double finalDamage = event.getFinalDamage();
+        double health = Math.max(0, mob.getHealth() - finalDamage);
+        Log.debug("event: %s, entity: %s, damage: %s, health: %s, damageType: %s, status: %s.",
+                event.getEventName(),
+                event.getEntity().getName(),
+                String.valueOf(event.getFinalDamage()),
+                health,
+                event.getDamageSource().getDamageType().getTranslationKey(),
+                health == 0F ? "death":"living")
+        ;
+    }
+
     @EventHandler
     public void onAttack(EntityDamageByEntityEvent event) {
         if (this.isDisabled) return;
-
-        Player attacker = null;
+        Player attacker;
         Entity damager = event.getDamager();
         if (damager instanceof Player p) {
             attacker = p;
         } else if (damager instanceof Projectile proj) {
             if (proj.getShooter() instanceof Player shooter) attacker = shooter;
+            else {
+                attacker = null;
+            }
+        } else {
+            attacker = null;
         }
         if (attacker == null) return;
 
@@ -63,19 +82,20 @@ public class MobBossBarListener implements Listener {
         if (!(entity instanceof Damageable mob && entity instanceof Attributable attr)) return;
 
         this.updateBar(event, mob, attr, attacker);
+        this.debugLog(event);
         this.lastAttackerMap.put(mob, new AttackerRecord(attacker, System.currentTimeMillis()));
+
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
         if (this.isDisabled) return;
-
         if (!(event.getEntity() instanceof Damageable mob && event.getEntity() instanceof Attributable attr)) return;
-
         switch (event.getCause()) {
             case FIRE_TICK, FIRE, POISON, WITHER, MAGIC -> {
-                AttackerRecord rec = lastAttackerMap.get(mob);
+                AttackerRecord rec = this.lastAttackerMap.get(mob);
                 if (rec == null) return;
+                this.debugLog(event);
                 if (System.currentTimeMillis() - rec.timestamp > ATTACKER_TTL_MS) {
                     this.lastAttackerMap.remove(mob);
                     return;
@@ -84,7 +104,7 @@ public class MobBossBarListener implements Listener {
                 Player attacker = rec.player;
                 if (attacker == null || !attacker.isOnline()) return;
 
-                this.updateBar(event, mob, attr, attacker);
+                Lib.Scheduler.runAtEntity(Ari.instance, attacker, i -> this.updateBar(event, mob, attr, attacker), null);
             }
         }
     }
@@ -98,40 +118,35 @@ public class MobBossBarListener implements Listener {
         if (event instanceof EntityDamageByEntityEvent) {
             currentHealth = Math.max(0, mob.getHealth() - event.getFinalDamage());
         }
-
         double newHealth = Math.max(0, currentHealth);
 
         LinkedHashMap<Damageable, PlayerAttackBar> bars = playerBars.computeIfAbsent(attacker, k -> new LinkedHashMap<>());
         PlayerAttackBar bar = bars.get(mob);
 
-        float healthRatio = (float) (newHealth / Math.max(0.001, maxHealth));
-
-        String formattedCurrent = FormatUtils.formatTwoDecimalPlaces(newHealth);
-
-        if (newHealth > 0 && newHealth < 0.01) {
-            formattedCurrent = "<0.01";
-        }
+        float healthRatio = (float) (newHealth / Math.max(1, maxHealth));
 
         TextComponent t = ConfigUtils.t(
                 "server.boss-bar.player-attack",
                 Map.of(
                         LangType.MOB.getType(), mob.name(),
                         LangType.MOB_CURRENT_HEALTH.getType(),
-                        Component.text(formattedCurrent).color(this.getMobHealthTextColor(healthRatio)),
+                        Component.text(FormatUtils.formatTwoDecimalPlaces(newHealth)).color(this.getMobHealthTextColor(healthRatio)),
                         LangType.MOB_MAX_HEALTH.getType(),
                         Component.text(FormatUtils.formatTwoDecimalPlaces(maxHealth))
                 )
         );
 
         if (bar == null || bar.isRemoved()) {
-            if (bar != null) bar.remove(attacker);
+            if (bar != null) {
+                bar.remove(attacker);
+            }
             bar = new PlayerAttackBar(attacker, t, healthRatio, this.getMobBarColor(healthRatio));
             bars.put(mob, bar);
         } else {
             bar.setName(t);
         }
 
-        float displayProgress = Math.max(0.01f, healthRatio);
+        float displayProgress = Math.max(0, healthRatio);
         if (bar.getProgress() != displayProgress) {
             bar.setProgress(displayProgress);
             bar.setColor(this.getMobBarColor(healthRatio));
@@ -155,13 +170,13 @@ public class MobBossBarListener implements Listener {
                 affectedPlayers.put(player, bar);
             }
         });
-        Lib.Scheduler.run(Ari.instance, i -> {
+        Lib.Scheduler.runAtEntity(Ari.instance, dead, i -> {
             affectedPlayers.forEach((player, bar) -> {
                 LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.get(player);
                 if (bars != null) bars.remove(dead);
             });
             this.lastAttackerMap.remove(dead);
-        });
+        }, null);
     }
 
     @EventHandler
