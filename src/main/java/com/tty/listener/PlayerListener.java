@@ -4,6 +4,7 @@ import com.tty.Ari;
 import com.tty.dto.SpawnLocation;
 import com.tty.dto.event.CustomPlayerRespawnEvent;
 import com.tty.enumType.FilePath;
+import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.ServerPlatform;
 import org.bukkit.Bukkit;
@@ -23,12 +24,13 @@ public class PlayerListener implements Listener {
         if (event.getInventory().getType() != InventoryType.CRAFTING || !player.isDead() || !player.isConnected() || player.getHealth() > 0) return;
         // do stuff
         if (!ServerPlatform.isFolia()) return;
-        Location respawnLocation = ((Player) event.getPlayer()).getRespawnLocation();
-        if (respawnLocation == null) {
-            respawnLocation = getRespawnLocation(player.getWorld());
-        }
-
-        Bukkit.getPluginManager().callEvent(new CustomPlayerRespawnEvent(player, respawnLocation, player.getLocation()));
+        Lib.Scheduler.runAtEntity(Ari.instance, player,i -> {
+            Location respawnLocation = ((Player) event.getPlayer()).getRespawnLocation();
+            if (respawnLocation == null) {
+                respawnLocation = getRespawnLocation(player.getWorld());
+            }
+            Bukkit.getPluginManager().callEvent(new CustomPlayerRespawnEvent(player, respawnLocation, player.getLocation()));
+        }, null);
     }
 
     public static Location getRespawnLocation(@NotNull World world) {
