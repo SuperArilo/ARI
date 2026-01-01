@@ -15,7 +15,7 @@ import com.tty.lib.enum_type.TeleportType;
 import com.tty.lib.tool.EconomyUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PermissionUtils;
-import com.tty.listener.BaseGuiListener;
+import com.tty.lib.listener.BaseGuiListener;
 import com.tty.states.teleport.TeleportStateService;
 import com.tty.tool.*;
 import net.kyori.adventure.text.Component;

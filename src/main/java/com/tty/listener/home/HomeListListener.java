@@ -12,7 +12,7 @@ import com.tty.lib.Log;
 import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.enum_type.TeleportType;
 import com.tty.lib.tool.FormatUtils;
-import com.tty.listener.BaseGuiListener;
+import com.tty.lib.listener.BaseGuiListener;
 import com.tty.states.teleport.TeleportStateService;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.NamespacedKey;

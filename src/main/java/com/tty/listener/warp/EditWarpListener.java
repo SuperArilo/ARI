@@ -2,7 +2,7 @@ package com.tty.listener.warp;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.dto.state.player.PlayerEditGuiState;
+import com.tty.lib.dto.state.PlayerEditGuiState;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.GuiType;
@@ -16,7 +16,7 @@ import com.tty.lib.enum_type.IconKeyType;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
-import com.tty.listener.BaseEditFunctionGuiListener;
+import com.tty.listener.OnGuiEditListener;
 import com.tty.states.GuiEditStateService;
 import com.tty.tool.ConfigUtils;
 import com.tty.lib.tool.EconomyUtils;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class EditWarpListener extends BaseEditFunctionGuiListener {
+public class EditWarpListener extends OnGuiEditListener {
 
     public EditWarpListener(GuiType guiType) {
         super(guiType);

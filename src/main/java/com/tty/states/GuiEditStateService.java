@@ -1,10 +1,12 @@
 package com.tty.states;
 
-import com.tty.Ari;
-import com.tty.dto.state.player.PlayerEditGuiState;
+import com.tty.lib.dto.state.PlayerEditGuiState;
+import com.tty.lib.Lib;
 import com.tty.lib.Log;
+import com.tty.lib.enum_type.FilePath;
 import com.tty.lib.services.StateService;
 import com.tty.lib.tool.ComponentUtils;
+import com.tty.lib.tool.LibConfigUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -39,11 +41,11 @@ public class GuiEditStateService extends StateService<PlayerEditGuiState> {
     @Override
     protected void passAddState(PlayerEditGuiState state) {
         Player owner = (Player) state.getOwner();
-        int i = Ari.instance.getConfig().getInt("server.gui-edit-timeout", 10);
+        int i = Lib.instance.getConfig().getInt("server.gui-edit-timeout", 10);
         owner.showTitle(
                 ComponentUtils.setPlayerTitle(
-                        Ari.instance.dataService.getValue("base.on-edit.title"),
-                        Ari.instance.dataService.getValue("base.on-edit.sub-title"),
+                        Lib.C_INSTANCE.getValue("base.on-edit.title", FilePath.Lang),
+                        Lib.C_INSTANCE.getValue("base.on-edit.sub-title", FilePath.Lang),
                         1000,
                         i * 1000L,
                         1000));
@@ -58,7 +60,7 @@ public class GuiEditStateService extends StateService<PlayerEditGuiState> {
     @Override
     protected void onFinished(PlayerEditGuiState state) {
         Player owner = (Player) state.getOwner();
-        owner.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-edit.timeout-cancel")));
+        owner.sendMessage(LibConfigUtils.t("base.on-edit.timeout-cancel"));
         owner.clearTitle();
         Log.debug("player %s edit status timeout.", owner.getName());
     }
