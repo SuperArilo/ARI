@@ -3,6 +3,8 @@ package com.tty.listener.teleport;
 import com.tty.Ari;
 import com.tty.dto.event.CustomPlayerRespawnEvent;
 import com.tty.enumType.FilePath;
+import com.tty.lib.Lib;
+import com.tty.lib.Log;
 import com.tty.lib.ServerPlatform;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.tool.ComponentUtils;
@@ -45,7 +47,11 @@ public class RecordLastLocationListener implements Listener {
         Player player = event.getPlayer();
         Location respawnLocation = event.getRespawnLocation();
         player.setRespawnLocation(respawnLocation);
-        player.teleportAsync(respawnLocation);
+        Lib.Scheduler.runAtRegion(Ari.instance, respawnLocation, i -> {
+            player.teleportAsync(respawnLocation).thenAccept(t -> {
+                Log.debug(String.valueOf(t));
+            });
+        });
         this.setPlayerLastLocation(event);
     }
     @EventHandler
