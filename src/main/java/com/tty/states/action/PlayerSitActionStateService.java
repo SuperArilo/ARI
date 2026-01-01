@@ -17,6 +17,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Waterlogged;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.entity.Entity;
@@ -56,25 +57,30 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             return false;
         }
 
+        boolean status = true;
         BlockData blockData = sitBlock.getBlockData();
         //如果为楼梯
         if (blockData instanceof Stairs stairs) {
             //如果为倒放楼梯，不允许
             if (this.checkBlockTopIsNotAllow(owner, sitBlock) || stairs.getHalf().equals(Bisected.Half.TOP)) {
-                owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
-                return false;
+                status = false;
             }
-            return true;
-        //如果为半砖
-        } else if (blockData instanceof Slab) {
-            if (this.checkBlockTopIsNotAllow(owner, sitBlock)) {
-                owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
-                return false;
-            }
-            return true;
-        } else {
-            return false;
         }
+        //如果为半砖
+        if (blockData instanceof Slab) {
+            if (this.checkBlockTopIsNotAllow(owner, sitBlock)) {
+
+                status = false;
+            }
+            //判断方块是否在水里
+        }
+        if (this.isBlockFullyInWater(sitBlock)){
+            status = false;
+        }
+        if (!status) {
+            owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
+        }
+        return status;
     }
 
     @Override
@@ -259,6 +265,11 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                 localPlayer,
                 Flags.BUILD
         );
+    }
+
+    public boolean isBlockFullyInWater(Block block) {
+        return block.getType() == Material.WATER
+                || (block.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged());
     }
 
 }
