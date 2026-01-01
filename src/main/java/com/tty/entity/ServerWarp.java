@@ -1,4 +1,4 @@
-package com.tty.entity.sql;
+package com.tty.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

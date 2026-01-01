@@ -3,7 +3,7 @@ package com.tty.listener.warp;
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.dto.state.player.PlayerEditGuiState;
-import com.tty.entity.sql.ServerWarp;
+import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.GuiType;
 import com.tty.function.WarpManager;

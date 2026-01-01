@@ -1,4 +1,4 @@
-package com.tty.entity.sql;
+package com.tty.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -7,14 +7,15 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("whitelist")
-public class WhitelistInstance {
+@TableName("player_home")
+public class ServerHome {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+    private String homeId;
+    private String homeName;
     @TableField("player_uuid")
     private String playerUUID;
-    @TableField("add_time")
-    private double addTime;
-    @TableField("operator")
-    private String operator;
+    private String location;
+    private String showMaterial;
+    private boolean topSlot = false;
 }

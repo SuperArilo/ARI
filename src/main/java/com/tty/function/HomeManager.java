@@ -2,7 +2,7 @@ package com.tty.function;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.tty.entity.sql.ServerHome;
+import com.tty.entity.ServerHome;
 import com.tty.mapper.HomeMapper;
 import com.tty.tool.SQLInstance;
 import org.apache.ibatis.session.SqlSession;

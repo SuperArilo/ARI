@@ -3,7 +3,7 @@ package com.tty.listener.home;
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.dto.state.player.PlayerEditGuiState;
-import com.tty.entity.sql.ServerHome;
+import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.GuiType;
 import com.tty.function.HomeManager;

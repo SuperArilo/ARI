@@ -1,7 +1,7 @@
 package com.tty.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.tty.entity.sql.WhitelistInstance;
+import com.tty.entity.WhitelistInstance;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

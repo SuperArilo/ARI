@@ -3,7 +3,7 @@ package com.tty.commands.args.zako.ban;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
 import com.tty.commands.args.zako.ZakoBaseArgs;
-import com.tty.entity.sql.BanPlayer;
+import com.tty.entity.BanPlayer;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.FilePath;

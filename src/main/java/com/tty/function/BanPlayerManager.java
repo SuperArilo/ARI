@@ -1,7 +1,7 @@
 package com.tty.function;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.tty.entity.sql.BanPlayer;
+import com.tty.entity.BanPlayer;
 import com.tty.mapper.BanPlayerMapper;
 import com.tty.tool.SQLInstance;
 import org.apache.ibatis.session.SqlSession;

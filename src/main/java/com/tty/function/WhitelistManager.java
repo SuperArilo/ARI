@@ -1,7 +1,7 @@
 package com.tty.function;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.tty.entity.sql.WhitelistInstance;
+import com.tty.entity.WhitelistInstance;
 import com.tty.mapper.WhitelistMapper;
 import com.tty.tool.SQLInstance;
 import org.apache.ibatis.session.SqlSession;

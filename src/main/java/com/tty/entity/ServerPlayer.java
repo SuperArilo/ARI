@@ -1,4 +1,4 @@
-package com.tty.entity.sql;
+package com.tty.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -7,15 +7,16 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("player_home")
-public class ServerHome {
+@TableName("players")
+public class ServerPlayer {
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
-    private String homeId;
-    private String homeName;
+    private Integer id;
+    private String playerName;
     @TableField("player_uuid")
     private String playerUUID;
-    private String location;
-    private String showMaterial;
-    private boolean topSlot = false;
+    private Long firstLoginTime = 0L;
+    private Long lastLoginOffTime = 0L;
+    private Long totalOnlineTime = 0L;
+    private String namePrefix = "";
+    private String nameSuffix = "";
 }

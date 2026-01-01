@@ -2,7 +2,7 @@ package com.tty.commands.args.zako;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
-import com.tty.entity.sql.WhitelistInstance;
+import com.tty.entity.WhitelistInstance;
 import com.tty.lib.Log;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.Operator;

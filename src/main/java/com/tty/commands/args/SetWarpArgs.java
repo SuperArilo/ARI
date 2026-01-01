@@ -2,7 +2,7 @@ package com.tty.commands.args;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
-import com.tty.entity.sql.ServerWarp;
+import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.function.WarpManager;
 import com.tty.lib.Lib;

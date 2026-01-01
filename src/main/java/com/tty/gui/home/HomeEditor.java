@@ -5,7 +5,7 @@ import com.tty.Ari;
 import com.tty.lib.entity.gui.BaseMenu;
 import com.tty.lib.entity.gui.FunctionItems;
 import com.tty.lib.entity.gui.Mask;
-import com.tty.entity.sql.ServerHome;
+import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.GuiType;
 import com.tty.lib.gui.BaseInventory;

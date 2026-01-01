@@ -2,7 +2,7 @@ package com.tty.commands.args;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
-import com.tty.entity.sql.ServerHome;
+import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.function.HomeManager;
 import com.tty.lib.Lib;
