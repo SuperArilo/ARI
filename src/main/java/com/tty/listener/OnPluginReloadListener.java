@@ -1,12 +1,12 @@
 package com.tty.listener;
 
 import com.tty.Ari;
-import com.tty.dto.event.CustomPluginReloadEvent;
+import com.tty.lib.dto.event.CustomPluginReloadEvent;
 import com.tty.lib.Log;
+import com.tty.lib.tool.ComponentUtils;
 import com.tty.states.PlayerSaveStateService;
 import com.tty.states.teleport.RandomTpStateService;
 import com.tty.lib.services.StateService;
-import com.tty.tool.ConfigUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -24,7 +24,7 @@ public class OnPluginReloadListener implements Listener {
 
         //重新添加玩家保存state
         PlayerSaveStateService.addPlayerState();
-        event.getSender().sendMessage(ConfigUtils.t("function.reload.success"));
+        event.getSender().sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("function.reload.success")));
     }
 
 }

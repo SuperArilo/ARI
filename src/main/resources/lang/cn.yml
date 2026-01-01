@@ -21,9 +21,7 @@ function:
     refuse-success: '&a✔ 拒绝成功！'
     refused: '&6玩家 &a<tpa_be_sender> &6拒绝了您的传送请求'
     error: '&c传送状态错误，无法完成传送'
-  reload:
-    doing: '&e重载插件中...'
-    success: '&a✔ 重载插件成功！'
+
   home:
     create-success: '&a✔ 创建家成功！'
     id-error: '&chome的id不满足'

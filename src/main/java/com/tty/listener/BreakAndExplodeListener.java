@@ -2,7 +2,7 @@ package com.tty.listener;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.dto.event.CustomPluginReloadEvent;
+import com.tty.lib.dto.event.CustomPluginReloadEvent;
 import com.tty.enumType.FilePath;
 import com.tty.lib.Log;
 import com.tty.lib.tool.FireworkUtils;

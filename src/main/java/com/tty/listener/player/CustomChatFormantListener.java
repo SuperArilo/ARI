@@ -2,7 +2,7 @@ package com.tty.listener.player;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.dto.event.CustomPluginReloadEvent;
+import com.tty.lib.dto.event.CustomPluginReloadEvent;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.tool.ComponentUtils;
