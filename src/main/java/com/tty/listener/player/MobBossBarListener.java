@@ -7,6 +7,7 @@ import com.tty.enumType.FilePath;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.LangType;
+import com.tty.lib.task.CancellableTask;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.bossbar.BossBar;
@@ -29,6 +30,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,10 +43,12 @@ public class MobBossBarListener implements Listener {
     private boolean isDisabled = true;
     private final Map<Player, LinkedHashMap<Damageable, PlayerAttackBar>> playerBars = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Damageable, AttackerRecord> lastAttackerMap = new ConcurrentHashMap<>();
+    private CancellableTask cleanTask;
 
     public MobBossBarListener() {
         this.maxBar = this.getMaxBar();
         this.isDisabled = this.isDisabled();
+        this.cleanTask = this.createCleanTask();
     }
 
     private void debugLog(EntityDamageEvent event) {
@@ -54,8 +58,8 @@ public class MobBossBarListener implements Listener {
         Log.debug("event: %s, entity: %s, damage: %s, health: %s, damageType: %s, status: %s.",
                 event.getEventName(),
                 event.getEntity().getName(),
-                String.valueOf(event.getFinalDamage()),
-                health,
+                FormatUtils.formatTwoDecimalPlaces(event.getFinalDamage()),
+                FormatUtils.formatTwoDecimalPlaces(health),
                 event.getDamageSource().getDamageType().getTranslationKey(),
                 health == 0F ? "death":"living")
         ;
@@ -114,13 +118,19 @@ public class MobBossBarListener implements Listener {
         double maxHealth = attribute == null ? 1 : attribute.getValue();
 
         double currentHealth = mob.getHealth();
-
-        if (event instanceof EntityDamageByEntityEvent) {
-            currentHealth = Math.max(0, mob.getHealth() - event.getFinalDamage());
+        if (event instanceof EntityDamageByEntityEvent e) {
+            currentHealth = Math.max(0, currentHealth - e.getFinalDamage());
         }
         double newHealth = Math.max(0, currentHealth);
 
         LinkedHashMap<Damageable, PlayerAttackBar> bars = playerBars.computeIfAbsent(attacker, k -> new LinkedHashMap<>());
+
+        while (bars.size() >= this.maxBar) {
+            Map.Entry<Damageable, PlayerAttackBar> oldest = bars.entrySet().iterator().next();
+            oldest.getValue().remove(attacker);
+            bars.remove(oldest.getKey());
+        }
+
         PlayerAttackBar bar = bars.get(mob);
 
         float healthRatio = (float) (newHealth / Math.max(1, maxHealth));
@@ -151,7 +161,6 @@ public class MobBossBarListener implements Listener {
             bar.setProgress(displayProgress);
             bar.setColor(this.getMobBarColor(healthRatio));
         }
-        this.enforceLimit(bars, attacker);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -203,14 +212,7 @@ public class MobBossBarListener implements Listener {
             this.playerBars.forEach((player, bars) -> bars.values().forEach(bar -> bar.remove(player)));
             this.playerBars.clear();
             this.lastAttackerMap.clear();
-        }
-    }
-
-    private void enforceLimit(LinkedHashMap<Damageable, PlayerAttackBar> bars, Player player) {
-        while (bars.size() > this.maxBar) {
-            Map.Entry<Damageable, PlayerAttackBar> oldest = bars.entrySet().iterator().next();
-            oldest.getValue().remove(player);
-            bars.remove(oldest.getKey());
+            this.cleanTask = this.createCleanTask();
         }
     }
 
@@ -233,6 +235,48 @@ public class MobBossBarListener implements Listener {
     private int getMaxBar() {
         return Ari.C_INSTANCE.getValue("attack-boss-bar.max-bar", FilePath.FUNCTION_CONFIG, Integer.class, 1);
     }
+
+    private CancellableTask createCleanTask() {
+        if (this.cleanTask != null) {
+            this.cleanTask.cancel();
+            this.cleanTask = null;
+        }
+
+        return Lib.Scheduler.runAsyncAtFixedRate(Ari.instance, i -> {
+            long now = System.currentTimeMillis();
+            var expiredMobs = this.lastAttackerMap.entrySet().stream()
+                    .filter(e -> now - e.getValue().timestamp > 10_000L)
+                    .map(Map.Entry::getKey)
+                    .toList();
+            if (expiredMobs.isEmpty()) return;
+            Lib.Scheduler.run(Ari.instance, j -> this.cleanExpired(expiredMobs));
+        }, 1L, 10 * 20L);
+    }
+
+    private void cleanExpired(Iterable<Damageable> expiredMobs) {
+        Map<Player, Integer> removedCountByPlayer = new LinkedHashMap<>();
+        for (Damageable mob : expiredMobs) {
+            this.lastAttackerMap.remove(mob);
+            Iterator<Map.Entry<Player, LinkedHashMap<Damageable, PlayerAttackBar>>> it =
+                    this.playerBars.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<Player, LinkedHashMap<Damageable, PlayerAttackBar>> entry = it.next();
+                Player player = entry.getKey();
+                LinkedHashMap<Damageable, PlayerAttackBar> bars = entry.getValue();
+                PlayerAttackBar bar = bars.remove(mob);
+                if (bar != null) {
+                    bar.remove(player);
+                    removedCountByPlayer.merge(player, 1, Integer::sum);
+                }
+                if (bars.isEmpty()) {
+                    it.remove();
+                }
+            }
+        }
+        removedCountByPlayer.forEach((player, count) -> Log.debug("mob bar expired: player=%s, removedEntities=%s.", player.getName(), count));
+    }
+
+
 
     private record AttackerRecord(Player player, long timestamp) {}
 }
