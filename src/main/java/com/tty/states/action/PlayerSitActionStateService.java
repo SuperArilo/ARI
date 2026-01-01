@@ -57,28 +57,25 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             return false;
         }
 
-        boolean status = true;
+        boolean status = false;
         BlockData blockData = sitBlock.getBlockData();
         //如果为楼梯
         if (blockData instanceof Stairs stairs) {
             //如果为倒放楼梯，不允许
-            if (this.checkBlockTopIsNotAllow(owner, sitBlock) || stairs.getHalf().equals(Bisected.Half.TOP)) {
-                status = false;
+            if ((this.checkBlockTopIsAllow(owner, sitBlock) || stairs.getHalf().equals(Bisected.Half.TOP)) &&
+                    this.isBlockNotFullyInWater(sitBlock)) {
+                status = true;
+            } else {
+                owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
             }
         }
         //如果为半砖
         if (blockData instanceof Slab) {
-            if (this.checkBlockTopIsNotAllow(owner, sitBlock)) {
-
-                status = false;
+            if (this.checkBlockTopIsAllow(owner, sitBlock) && this.isBlockNotFullyInWater(sitBlock)) {
+                status = true;
+            } else {
+                owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
             }
-            //判断方块是否在水里
-        }
-        if (this.isBlockFullyInWater(sitBlock)){
-            status = false;
-        }
-        if (!status) {
-            owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
         }
         return status;
     }
@@ -167,11 +164,11 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         return location;
     }
 
-    private boolean checkBlockTopIsNotAllow(Player p, Block actionBlock) {
-        if (actionBlock == null) return true;
+    private boolean checkBlockTopIsAllow(Player p, Block actionBlock) {
+        if (actionBlock == null) return false;
         Location location = actionBlock.getLocation();
         World world = location.getWorld();
-        if (world == null) return true;
+        if (world == null) return false;
 
         double x = location.getX();
         double y = location.getY();
@@ -196,7 +193,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                     Material type = b.getType();
                     VoxelShape shape = b.getCollisionShape();
                     if (shape.overlaps(seatBox)) {
-                        return true;
+                        return false;
                     }
                     String name = type.name();
                     if (name.endsWith("_CARPET")
@@ -209,11 +206,11 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                             || type == Material.DRAGON_EGG
                             || type == Material.FIRE
                             || type == Material.LAVA) {
-                        return true;
+                        return false;
                     }
 
                     if (!b.isEmpty() && !b.isPassable()) {
-                        return true;
+                        return false;
                     }
                 }
             }
@@ -223,11 +220,11 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             if (entity instanceof Player other &&
                     !other.equals(p) &&
                     other.getGameMode() != GameMode.SPECTATOR) {
-                return true;
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
     private List<String> getDisableList() {
@@ -267,9 +264,9 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         );
     }
 
-    public boolean isBlockFullyInWater(Block block) {
-        return block.getType() == Material.WATER
-                || (block.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged());
+    public boolean isBlockNotFullyInWater(Block block) {
+        return block.getType() != Material.WATER
+                && (!(block.getBlockData() instanceof Waterlogged wl) || !wl.isWaterlogged());
     }
 
 }
