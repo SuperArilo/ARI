@@ -85,7 +85,7 @@ public class PlayerDeathInfoCollector {
         info.weapon = null;
         info.isEscapeAttempt = false;
 
-        List<LastDamageTracker.DamageRecord> records = tracker.getRecords(info.victim.getUniqueId());
+        List<LastDamageTracker.DamageRecord> records = tracker.getRecords(info.victim);
 
         if (!records.isEmpty()) {
             Map<Entity, Double> damageSum = new HashMap<>();
@@ -142,7 +142,7 @@ public class PlayerDeathInfoCollector {
             }
         }
 
-        tracker.clearRecords(info.victim.getUniqueId());
+        tracker.clearRecords(info.victim);
         return info;
     }
 
