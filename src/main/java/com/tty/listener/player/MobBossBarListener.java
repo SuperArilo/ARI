@@ -71,6 +71,8 @@ public class MobBossBarListener implements Listener {
 
         Player attacker;
         Entity damager = event.getDamager();
+        Entity entity = event.getEntity();
+        if (entity.isDead()) return;
 
         if (damager instanceof Player player) {
             attacker = player;
@@ -78,7 +80,7 @@ public class MobBossBarListener implements Listener {
             attacker = player;
         } else return;
 
-        if (!(event.getEntity() instanceof Damageable victim)) return;
+        if (!(entity instanceof Damageable victim)) return;
 
         if (victim == attacker) return;
         if (this.isBoss(victim)) return;
@@ -91,6 +93,7 @@ public class MobBossBarListener implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         if (this.isDisabled) return;
         Entity victim = event.getEntity();
+        if (victim.isDead()) return;
         if (!(victim instanceof Damageable victimDamageable && victim instanceof Attributable)) return;
         if (this.isBoss(victimDamageable)) return;
         List<LastDamageTracker.DamageRecord> re = DAMAGE_TRACKER.getRecords(victim);
@@ -145,9 +148,10 @@ public class MobBossBarListener implements Listener {
         } else {
             bar.setName(t);
         }
-
-        bar.setProgress(Float.parseFloat(FormatUtils.formatTwoDecimalPlaces(Math.max(0, healthRatio))));
-        bar.setColor(this.getMobBarColor(healthRatio));
+        if (Float.compare(bar.getProgress(), (float) healthRatio) != 0) {
+            bar.setProgress(Float.parseFloat(FormatUtils.formatTwoDecimalPlaces(Math.max(0, healthRatio))));
+            bar.setColor(this.getMobBarColor(healthRatio));
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH)
