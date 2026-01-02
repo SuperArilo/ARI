@@ -30,19 +30,18 @@ public class LastDamageTracker {
         }
     }
 
+    /**
+     * 清除与被害者所有有关的记录
+     * @param victim 被害者
+     */
     public void clearRecords(Entity victim) {
         synchronized (this) {
             this.records.remove(victim);
-        }
-    }
-
-    public void clearDamagerRecords(Entity damager) {
-        synchronized (this) {
             Iterator<Map.Entry<Entity, List<DamageRecord>>> it = this.records.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<Entity, List<DamageRecord>> entry = it.next();
                 List<DamageRecord> list = entry.getValue();
-                list.removeIf(rec -> rec.damager() == damager);
+                list.removeIf(r -> r.damager().equals(victim));
                 if (list.isEmpty()) {
                     it.remove();
                 }
