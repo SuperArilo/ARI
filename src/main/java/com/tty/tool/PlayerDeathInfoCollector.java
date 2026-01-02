@@ -5,6 +5,7 @@ import com.tty.Ari;
 import com.tty.enumType.FilePath;
 import com.tty.lib.Log;
 import com.tty.lib.tool.PublicFunctionUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
@@ -71,12 +72,12 @@ public class PlayerDeathInfoCollector {
                     if (killerList != null && !killerList.isEmpty()) {
                         pool.addAll(killerList);
                         resolvedKeys.add(keyPath + "." + killerName);
-                    } else {
-                        List<String> fallbackList = Ari.C_INSTANCE.getValue(keyPath, FilePath.DEATH_MESSAGE, type, null);
-                        if (fallbackList != null && !fallbackList.isEmpty()) {
-                            pool.addAll(fallbackList);
-                            resolvedKeys.add(keyPath);
-                        }
+                    }
+                } else {
+                    List<String> fallbackList = Ari.C_INSTANCE.getValue(keyPath, FilePath.DEATH_MESSAGE, type, null);
+                    if (fallbackList != null && !fallbackList.isEmpty()) {
+                        pool.addAll(fallbackList);
+                        resolvedKeys.add(keyPath);
                     }
                 }
             }
@@ -104,6 +105,13 @@ public class PlayerDeathInfoCollector {
             LastDamageTracker.DamageRecord last = records.getLast();
             Entity mainKiller = last.damager();
             if (mainKiller != null) {
+                if (mainKiller instanceof Projectile e) {
+                    UUID ownerUniqueId = e.getOwnerUniqueId();
+                    if (ownerUniqueId != null) {
+                        mainKiller = Bukkit.getServer().getPlayer(ownerUniqueId);
+                    }
+                }
+
                 info.killer = mainKiller;
                 info.isEntityCause = true;
                 double escapeDistance = !info.isProjectile ? 1.5 : 20.0;

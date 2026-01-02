@@ -47,7 +47,7 @@ public class CustomPlayerDeathListener implements Listener {
                     sb.append(info.getRandomOfList(baseKey + "running-away"));
                 }
             }
-            case CONTACT, LAVA, HOT_FLOOR -> sb.append(info.getRandomOfList(baseKey + "block." + info.deathCause.name().toLowerCase()));
+            case CONTACT, LAVA, HOT_FLOOR -> sb.append(info.getRandomOfList(baseKey + "block." + event.getDamageSource().getDamageType().getTranslationKey()));
             case FALLING_BLOCK -> {
                 Material material = null;
                 String key = "";
