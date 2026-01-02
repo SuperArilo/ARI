@@ -68,13 +68,22 @@ public class MobBossBarListener implements Listener {
     @EventHandler
     public void onAttack(EntityDamageByEntityEvent event) {
         if (this.isDisabled) return;
-        if (!(event.getDamager() instanceof Player player)) return;
 
-        if (!(event.getEntity() instanceof Damageable victimDamageable)) return;
-        if (this.isBoss(victimDamageable)) return;
+        Player attacker;
+        Entity damager = event.getDamager();
 
-        // 更新显示
-        this.updateBar(event, victimDamageable, player);
+        if (damager instanceof Player player) {
+            attacker = player;
+        } else if (damager instanceof Projectile projectile && projectile.getShooter() instanceof Player player) {
+            attacker = player;
+        } else return;
+
+        if (!(event.getEntity() instanceof Damageable victim)) return;
+
+        if (victim == attacker) return;
+        if (this.isBoss(victim)) return;
+
+        this.updateBar(event, victim, attacker);
         this.debugLog(event);
     }
 
@@ -84,29 +93,31 @@ public class MobBossBarListener implements Listener {
         Entity victim = event.getEntity();
         if (!(victim instanceof Damageable victimDamageable && victim instanceof Attributable)) return;
         if (this.isBoss(victimDamageable)) return;
-        EntityDamageEvent.DamageCause cause = event.getCause();
-        if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK || cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK) return;
         List<LastDamageTracker.DamageRecord> re = DAMAGE_TRACKER.getRecords(victim);
-
         if (re.isEmpty()) return;
-
         if (!(re.getLast().damager() instanceof Player player)) return;
-
+        if(victimDamageable == player) return;
         this.updateBar(event, victimDamageable, player);
         this.debugLog(event);
     }
 
-    private void updateBar(EntityDamageEvent event, Damageable damageable, Player attacker) {
+    /**
+     * 更新玩家 bar
+     * @param event 事件
+     * @param damageable 被玩家攻击的对象
+     * @param player 玩家
+     */
+    private void updateBar(EntityDamageEvent event, Damageable damageable, Player player) {
         if (!(damageable instanceof Attributable attr)) return;
         AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
         double maxHealth = attribute == null ? 1 : attribute.getValue();
 
         double currentHealth = Math.max(0, damageable.getHealth() - event.getFinalDamage());
-        LinkedHashMap<Damageable, PlayerAttackBar> bars = playerBars.computeIfAbsent(attacker, k -> new LinkedHashMap<>());
+        LinkedHashMap<Damageable, PlayerAttackBar> bars = playerBars.computeIfAbsent(player, k -> new LinkedHashMap<>());
 
         while (bars.size() >= this.maxBar) {
             Map.Entry<Damageable, PlayerAttackBar> oldest = bars.entrySet().iterator().next();
-            oldest.getValue().remove(attacker);
+            oldest.getValue().remove(player);
             bars.remove(oldest.getKey());
         }
 
@@ -127,9 +138,9 @@ public class MobBossBarListener implements Listener {
 
         if (bar == null || bar.isRemoved()) {
             if (bar != null) {
-                bar.remove(attacker);
+                bar.remove(player);
             }
-            bar = new PlayerAttackBar(attacker, t, Float.parseFloat(FormatUtils.formatTwoDecimalPlaces(healthRatio)), this.getMobBarColor(healthRatio));
+            bar = new PlayerAttackBar(player, t, Float.parseFloat(FormatUtils.formatTwoDecimalPlaces(healthRatio)), this.getMobBarColor(healthRatio));
             bars.put(damageable, bar);
         } else {
             bar.setName(t);

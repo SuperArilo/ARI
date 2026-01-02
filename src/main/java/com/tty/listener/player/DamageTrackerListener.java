@@ -30,27 +30,35 @@ public class DamageTrackerListener implements Listener {
         this.cleanTask = this.createCleanTask();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onAttack(EntityDamageByEntityEvent event) {
-        Entity damager = event.getDamager();
         Entity victim = event.getEntity();
         if (!(victim instanceof Damageable)) return;
 
-        if (damager instanceof Player || victim instanceof Player) {
-            ItemStack weapon = null;
-            if (damager instanceof LivingEntity living) {
-                EntityEquipment eq = living.getEquipment();
-                if (eq != null) weapon = eq.getItemInMainHand();
-            }
+        Entity rawDamager = event.getDamager();
+        Entity attacker = rawDamager;
 
-            DAMAGE_TRACKER.addRecord(
-                    victim,
-                    damager,
-                    event.getFinalDamage(),
-                    weapon
-            );
+        if (rawDamager instanceof Projectile projectile
+                && projectile.getShooter() instanceof Entity shooter) {
+            attacker = shooter;
         }
+
+        if (!(attacker instanceof Player) && !(victim instanceof Player)) return;
+
+        ItemStack weapon = null;
+        if (attacker instanceof LivingEntity living) {
+            EntityEquipment eq = living.getEquipment();
+            if (eq != null) weapon = eq.getItemInMainHand();
+        }
+
+        DAMAGE_TRACKER.addRecord(
+                victim,
+                attacker,
+                event.getFinalDamage(),
+                weapon
+        );
     }
+
 
     @EventHandler(priority = EventPriority.LOW)
     public void onEntityDamage(EntityDamageEvent event) {
@@ -66,14 +74,12 @@ public class DamageTrackerListener implements Listener {
 
         Entity attacker = event.getDamageSource().getCausingEntity();
 
-        //查找最近玩家造成的伤害
         List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
         if (!records.isEmpty()) {
             for (int i = records.size() - 1; i >= 0; i--) {
                 LastDamageTracker.DamageRecord r = records.get(i);
-
-                //超时则移除
-                if (now - r.timestamp() > DOT_ATTacker_TTL_MS) {
+                boolean a = now - r.timestamp() > DOT_ATTacker_TTL_MS;
+                if (a) {
                     records.remove(i);
                     continue;
                 }
@@ -81,7 +87,6 @@ public class DamageTrackerListener implements Listener {
                 attacker = r.damager();
             }
         }
-
         if (attacker == null) return;
 
         //判断是否需要添加记录
