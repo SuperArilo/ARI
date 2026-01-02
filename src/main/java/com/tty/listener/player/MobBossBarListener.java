@@ -227,7 +227,7 @@ public class MobBossBarListener implements Listener {
                     Damageable mob = barEntry.getKey();
                     PlayerAttackBar bar = barEntry.getValue();
                     long lastAttackTs = DAMAGE_TRACKER.getLastTimestamp(mob);
-                    if (bar.isRemoved() || lastAttackTs == 0 || (now - lastAttackTs) > 30_000L) {
+                    if (bar.isRemoved() || lastAttackTs == 0 || (now - lastAttackTs) > 20_000L) {
                         bar.remove(player);
                         it.remove();
                         removedCountByPlayer.merge(player, 1, Integer::sum);
@@ -238,7 +238,7 @@ public class MobBossBarListener implements Listener {
                     Log.debug("mob bar expired: player=%s, removedEntities=%s, current_bar_count=%s, max_bar_count=%s",
                             player.getName(), count, this.playerBars.getOrDefault(player, new LinkedHashMap<>()).size(), this.maxBar)
             );
-        }, 1L, 10 * 20L);
+        }, 1L, 30 * 20L);
     }
 
 

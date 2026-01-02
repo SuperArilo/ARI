@@ -173,14 +173,14 @@ public class DamageTrackerListener implements Listener {
                 if (!(e instanceof Damageable mob)) continue;
                 long lastTs = DAMAGE_TRACKER.getLastTimestamp(mob);
 
-                if (lastTs == 0L || (now - lastTs) > 10_000L) {
+                if (lastTs == 0L || (now - lastTs) > 20_000L) {
                     t++;
                     DAMAGE_TRACKER.clearRecords(mob);
                 }
             }
             if (t == 0) return;
             Log.debug("remove tracker record %s.", t);
-        }, 1L, 20 * 20L);
+        }, 1L, 30 * 20L);
     }
 
 }
