@@ -32,33 +32,24 @@ public class DamageTrackerListener implements Listener {
 
     @EventHandler
     public void onAttack(EntityDamageByEntityEvent event) {
-        Player attacker;
         Entity damager = event.getDamager();
-        if (damager instanceof Player p) {
-            attacker = p;
-        } else if (damager instanceof Projectile proj) {
-            if (proj.getShooter() instanceof Player shooter) attacker = shooter;
-            else attacker = null;
-        } else {
-            attacker = null;
-        }
-        if (attacker == null) return;
-
         Entity victim = event.getEntity();
-        if (!(victim instanceof Damageable victimDamageable)) return;
+        if (!(victim instanceof Damageable)) return;
 
-        ItemStack weapon = null;
-        if (damager instanceof LivingEntity living) {
-            EntityEquipment eq = living.getEquipment();
-            if (eq != null) weapon = eq.getItemInMainHand();
+        if (damager instanceof Player || victim instanceof Player) {
+            ItemStack weapon = null;
+            if (damager instanceof LivingEntity living) {
+                EntityEquipment eq = living.getEquipment();
+                if (eq != null) weapon = eq.getItemInMainHand();
+            }
+
+            DAMAGE_TRACKER.addRecord(
+                    victim,
+                    damager,
+                    event.getFinalDamage(),
+                    weapon
+            );
         }
-
-        DAMAGE_TRACKER.addRecord(
-                victimDamageable,
-                attacker,
-                event.getFinalDamage(),
-                weapon
-        );
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -72,13 +63,8 @@ public class DamageTrackerListener implements Listener {
                 cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK) return;
 
         long now = System.currentTimeMillis();
-        Player attackerPlayer = null;
 
-        //直接攻击来源
-        Entity causing = event.getDamageSource().getCausingEntity();
-        if (causing instanceof Player p) {
-            attackerPlayer = p;
-        }
+        Entity attacker = event.getDamageSource().getCausingEntity();
 
         //查找最近玩家造成的伤害
         List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
@@ -92,30 +78,25 @@ public class DamageTrackerListener implements Listener {
                     continue;
                 }
 
-                Entity damager = r.damager();
-                if (damager instanceof Player p) {
-                    attackerPlayer = attackerPlayer == null ? p : attackerPlayer;
-                    break;
-                }
+                attacker = r.damager();
             }
         }
 
-        if (attackerPlayer == null || !attackerPlayer.isOnline()) return;
+        if (attacker == null) return;
 
         //判断是否需要添加记录
         boolean shouldAddRecord = false;
-        if (causing instanceof Player) {
-            long lastPlayerTs = 0L;
-            for (int i = records.size() - 1; i >= 0; i--) {
-                LastDamageTracker.DamageRecord r = records.get(i);
-                if (r.damager() instanceof Player p && p.equals(attackerPlayer)) {
-                    lastPlayerTs = r.timestamp();
-                    break;
-                }
+
+        long lastPlayerTs = 0L;
+        for (int i = records.size() - 1; i >= 0; i--) {
+            LastDamageTracker.DamageRecord r = records.get(i);
+            if (r.damager().equals(attacker)) {
+                lastPlayerTs = r.timestamp();
+                break;
             }
-            if (lastPlayerTs == 0L || now - lastPlayerTs > 50L) {
-                shouldAddRecord = true;
-            }
+        }
+        if (lastPlayerTs == 0L || now - lastPlayerTs > 50L) {
+            shouldAddRecord = true;
         }
 
         //获取武器信息
@@ -131,13 +112,13 @@ public class DamageTrackerListener implements Listener {
         }
 
         if (shouldAddRecord) {
-            DAMAGE_TRACKER.addRecord(victim, attackerPlayer, event.getFinalDamage(), weapon);
+            DAMAGE_TRACKER.addRecord(victim, attacker, event.getFinalDamage(), weapon);
         }
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onQuit(PlayerQuitEvent event) {
-        this.removePlayerRecord(event.getPlayer());
+        DAMAGE_TRACKER.clearRecords(event.getPlayer());
     }
 
     @EventHandler
@@ -156,9 +137,6 @@ public class DamageTrackerListener implements Listener {
         this.cleanTask = this.createCleanTask();
     }
 
-    private void removePlayerRecord(Player player) {
-        DAMAGE_TRACKER.clearDamagerRecords(player);
-    }
 
     private CancellableTask createCleanTask() {
         if (this.cleanTask != null) {
@@ -168,18 +146,15 @@ public class DamageTrackerListener implements Listener {
         return Lib.Scheduler.runAtFixedRate(Ari.instance, i -> {
             long now = System.currentTimeMillis();
             Set<Entity> victims = DAMAGE_TRACKER.getVictimsSnapshot();
-            int t = 0;
             for (Entity e : victims) {
-                if (!(e instanceof Damageable mob)) continue;
-                long lastTs = DAMAGE_TRACKER.getLastTimestamp(mob);
+                if (!(e instanceof Damageable damageable)) continue;
+                long lastTs = DAMAGE_TRACKER.getLastTimestamp(damageable);
 
                 if (lastTs == 0L || (now - lastTs) > 20_000L) {
-                    t++;
-                    DAMAGE_TRACKER.clearRecords(mob);
+                    DAMAGE_TRACKER.clearRecords(damageable);
+                    Log.debug("remove tracker entity %s record.", e.getName());
                 }
             }
-            if (t == 0) return;
-            Log.debug("remove tracker record %s.", t);
         }, 1L, 30 * 20L);
     }
 
