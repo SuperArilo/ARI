@@ -4,30 +4,26 @@ import com.tty.Ari;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.tool.ComponentUtils;
-import com.tty.tool.LastDamageTracker;
 import com.tty.tool.PlayerDeathInfoCollector;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
-import java.util.Optional;
 
 public class CustomPlayerDeathListener implements Listener {
 
     private final PlayerDeathInfoCollector collector = new PlayerDeathInfoCollector();
-    private final LastDamageTracker tracker = new LastDamageTracker();
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onDeath(PlayerDeathEvent event){
         if (!Ari.instance.getConfig().getBoolean("server.custom-death", false)) return;
-        PlayerDeathInfoCollector.DeathInfo info = this.collector.collect(event, this.tracker);
+        PlayerDeathInfoCollector.DeathInfo info = this.collector.collect(event);
         Log.debug(info.toString());
 
         StringBuilder sb = new StringBuilder();
@@ -55,7 +51,7 @@ public class CustomPlayerDeathListener implements Listener {
             case FALLING_BLOCK -> {
                 Material material = null;
                 String key = "";
-                if(info.event instanceof EntityDamageByEntityEvent damageByEntityEvent) {
+                if(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent damageByEntityEvent) {
                     if(damageByEntityEvent.getDamager() instanceof FallingBlock fallingBlock) {
                         material = fallingBlock.getBlockData().getMaterial();
                         if (material == Material.ANVIL || material == Material.CHIPPED_ANVIL || material == Material.DAMAGED_ANVIL) {
@@ -97,21 +93,6 @@ public class CustomPlayerDeathListener implements Listener {
                 )
             )
         );
-    }
-
-    @EventHandler
-    public void onPlayerDamage(EntityDamageByEntityEvent event){
-        if(!(event.getEntity() instanceof Player player)) return;
-
-        Entity damager = event.getDamager();
-        boolean isProjectile = damager instanceof Projectile;
-        ItemStack weapon = null;
-
-        if(damager instanceof Player p) weapon = p.getInventory().getItemInMainHand();
-        else if(damager instanceof LivingEntity le && !(damager instanceof Projectile))
-            weapon = Optional.ofNullable(le.getEquipment()).map(EntityEquipment::getItemInMainHand).orElse(null);
-
-        this.tracker.addRecord(player, damager, event.getFinalDamage(), isProjectile, weapon);
     }
 
 }

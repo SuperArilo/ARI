@@ -10,10 +10,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.projectiles.ProjectileSource;
 
 import java.lang.reflect.Type;
 import java.util.*;
+
+import static com.tty.listener.player.DamageTrackerListener.DAMAGE_TRACKER;
 
 public class PlayerDeathInfoCollector {
 
@@ -22,7 +23,6 @@ public class PlayerDeathInfoCollector {
         public Player victim;
         public long deathTime;
         public EntityDamageEvent.DamageCause deathCause;
-        public EntityDamageEvent event;
         public boolean isEntityCause;
         public boolean isProjectile;
         public Entity killer;
@@ -35,7 +35,6 @@ public class PlayerDeathInfoCollector {
                     "victim=" + victim.getName() +
                     ", deathTime=" + deathTime +
                     ", deathCause=" + deathCause +
-                    ", event=" + event +
                     ", isEntityCause=" + isEntityCause +
                     ", isProjectile=" + isProjectile +
                     ", killer=" + (killer != null ? killer.getName() : "null") +
@@ -73,62 +72,40 @@ public class PlayerDeathInfoCollector {
 
     }
 
-    public DeathInfo collect(PlayerDeathEvent event, LastDamageTracker tracker) {
+    public DeathInfo collect(PlayerDeathEvent event) {
         DeathInfo info = new DeathInfo();
         info.victim = event.getEntity();
         info.deathTime = System.currentTimeMillis();
-        info.event = info.victim.getLastDamageCause();
-        info.deathCause = info.event != null ? info.event.getCause() : EntityDamageEvent.DamageCause.CUSTOM;
+        EntityDamageEvent cause = info.victim.getLastDamageCause();
+        info.deathCause = cause != null ? cause.getCause() : EntityDamageEvent.DamageCause.CUSTOM;
         info.isEntityCause = false;
-        info.isProjectile = false;
+        info.isProjectile = info.deathCause.equals(EntityDamageEvent.DamageCause.PROJECTILE);
         info.killer = null;
         info.weapon = null;
         info.isEscapeAttempt = false;
 
-        List<LastDamageTracker.DamageRecord> records = tracker.getRecords(info.victim);
+        List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(info.victim);
 
         if (!records.isEmpty()) {
-            Map<Entity, Double> damageSum = new HashMap<>();
-            for (LastDamageTracker.DamageRecord r : records) {
-                Entity realDamager = getActualDamager(r.damager());
-                if (realDamager != null && realDamager.isValid()) {
-                    damageSum.put(realDamager, damageSum.getOrDefault(realDamager, 0.0) + r.damage());
-                }
-            }
-
-            Entity mainKiller = damageSum.entrySet().stream()
-                    .max(Map.Entry.comparingByValue())
-                    .map(Map.Entry::getKey)
-                    .orElse(null);
-
+            LastDamageTracker.DamageRecord last = records.getLast();
+            Entity mainKiller = last.damager();
             if (mainKiller != null) {
                 info.killer = mainKiller;
                 info.isEntityCause = true;
 
-                LastDamageTracker.DamageRecord lastRecord = records.stream()
-                        .filter(r -> getActualDamager(r.damager()) == mainKiller)
-                        .reduce((first, second) -> second)
-                        .orElse(null);
-
-                if (lastRecord != null) {
-                    if (!(info.deathCause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION
-                            || info.deathCause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION)) {
-                        info.weapon = lastRecord.weapon();
-                    }
-                    info.isProjectile = lastRecord.isProjectile() || lastRecord.damager() instanceof Projectile;
-                    double escapeDistance = info.isProjectile ? 1.5 : 20.0;
-                    Location lastLoc = lastRecord.location();
-                    Location deathLoc = info.victim.getLocation();
-                    if (lastLoc != null && lastLoc.getWorld() == deathLoc.getWorld()) {
-                        double distSq = lastLoc.distanceSquared(deathLoc);
-                        info.isEscapeAttempt = distSq > escapeDistance * escapeDistance;
-                    }
+                double escapeDistance = info.isProjectile ? 1.5 : 20.0;
+                Location lastLoc = last.location();
+                Location deathLoc = info.victim.getLocation();
+                if (lastLoc != null && lastLoc.getWorld() == deathLoc.getWorld()) {
+                    info.isEscapeAttempt = lastLoc.distanceSquared(deathLoc) > escapeDistance * escapeDistance;
                 }
+
+                info.weapon = last.weapon();
             }
         }
 
         if (info.deathCause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
-            if (info.event instanceof EntityDamageByEntityEvent damageEvent) {
+            if (cause instanceof EntityDamageByEntityEvent damageEvent) {
                 Entity damager = damageEvent.getDamager();
                 if (damager instanceof Creeper ||
                         damager instanceof TNTPrimed ||
@@ -142,16 +119,7 @@ public class PlayerDeathInfoCollector {
             }
         }
 
-        tracker.clearRecords(info.victim);
         return info;
-    }
-
-    private Entity getActualDamager(Entity damager) {
-        if (damager instanceof Projectile projectile) {
-            ProjectileSource shooter = projectile.getShooter();
-            if (shooter instanceof Entity entityShooter) return entityShooter;
-        }
-        return damager;
     }
 
 }

@@ -14,12 +14,12 @@ public class LastDamageTracker {
      */
     private final Map<Entity, List<DamageRecord>> records = new HashMap<>();
 
-    public record DamageRecord(long timestamp, Entity damager, double damage, Location location, boolean isProjectile, ItemStack weapon) {}
+    public record DamageRecord(long timestamp, Entity damager, double damage, Location location, ItemStack weapon) {}
 
-    public void addRecord(Entity victim, Entity damager, double damage, boolean isProjectile, ItemStack weapon) {
+    public void addRecord(Entity victim, Entity damager, double damage, ItemStack weapon) {
         synchronized (this) {
             this.records.computeIfAbsent(victim, k -> new ArrayList<>())
-                    .add(new DamageRecord(System.currentTimeMillis(), damager, damage, victim.getLocation(), isProjectile, weapon));
+                    .add(new DamageRecord(System.currentTimeMillis(), damager, damage, victim.getLocation(), weapon));
         }
     }
 
