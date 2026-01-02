@@ -8,6 +8,7 @@ import com.tty.lib.enum_type.LangType;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -41,8 +42,12 @@ public class maintenance extends BaseLiteralArgumentLiteralCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         MAINTENANCE_MODE = !MAINTENANCE_MODE;
+        TextComponent t = ConfigUtils.t("server.maintenance." + (MAINTENANCE_MODE ? "on-enable" : "on-disable"));
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.isOp()) continue;
+            if (player.isOp()) {
+                player.sendMessage(t);
+                continue;
+            }
             player.sendMessage(ConfigUtils.t(
                     "server.maintenance.to-player",
                     Map.of(LangType.MAINTENANCE_KICK_DEALY.getType(), Component.text(this.getMaintenanceKickDelay()))));
@@ -56,7 +61,7 @@ public class maintenance extends BaseLiteralArgumentLiteralCommand {
                     () -> {},
                     this.getMaintenanceKickDelay() * 20L);
         }
-        sender.sendMessage(ConfigUtils.t("server.maintenance." + (MAINTENANCE_MODE ? "on-enable":"on-disable")));
+        sender.sendMessage(t);
     }
 
     private int getMaintenanceKickDelay() {
