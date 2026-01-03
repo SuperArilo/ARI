@@ -11,10 +11,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.List;
 import java.util.Set;
@@ -70,14 +69,13 @@ public class BreakAndExplodeListener implements Listener {
         );
     }
 
-    @EventHandler
-    public void onPlayerStep(PlayerInteractEvent event) {
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
         if (!Ari.instance.getConfig().getBoolean("server.anti-trample-farmland", false)) return;
-        if (event.getAction() != Action.PHYSICAL) return;
-        if (event.getClickedBlock() == null) return;
-        if (event.getClickedBlock().getType() != Material.FARMLAND) return;
-        Log.debug("player %s try break farmland.", event.getPlayer().getName());
-        event.setCancelled(true);
+        if (event.getBlock().getType() == Material.FARMLAND && event.getTo() == Material.DIRT) {
+            Log.debug("entity %s try break farmland.", event.getEntity().getName());
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW)
