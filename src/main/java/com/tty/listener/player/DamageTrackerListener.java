@@ -157,7 +157,7 @@ public class DamageTrackerListener implements Listener {
 
                 if (lastTs == 0L || (now - lastTs) > 20_000L) {
                     DAMAGE_TRACKER.clearRecords(damageable);
-                    Log.debug("remove tracker entity %s record.", e.getName());
+                    Lib.Scheduler.runAtEntity(Ari.instance, e, t -> Log.debug("remove tracker entity %s record.", e.getName()), null);
                 }
             }
         }, 1L, 30 * 20L);
