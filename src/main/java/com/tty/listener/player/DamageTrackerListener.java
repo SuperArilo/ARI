@@ -51,7 +51,15 @@ public class DamageTrackerListener implements Listener {
             if (eq != null) weapon = eq.getItemInMainHand();
         }
 
+        //因为 EntityDamageEvent 比 EntityDamageByEntityEvent 先执行，所以先排除相同伤害
+        List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
+        if (!records.isEmpty()) {
+            LastDamageTracker.DamageRecord last = records.getLast();
+            if (last.hash() == Objects.hash(event)) return;
+        }
+
         DAMAGE_TRACKER.addRecord(
+                Objects.hash(event),
                 victim,
                 attacker,
                 event.getFinalDamage(),
@@ -65,25 +73,20 @@ public class DamageTrackerListener implements Listener {
         Entity victim = event.getEntity();
         if (!(victim instanceof Damageable && victim instanceof Attributable)) return;
 
-        //排除近战主动攻击
-        EntityDamageEvent.DamageCause cause = event.getCause();
-        if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK ||
-                cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK) return;
-
         long now = System.currentTimeMillis();
 
         Entity attacker = event.getDamageSource().getCausingEntity();
-
         List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
+
+        int hash = Objects.hash(event);
+
         if (!records.isEmpty()) {
             for (int i = records.size() - 1; i >= 0; i--) {
                 LastDamageTracker.DamageRecord r = records.get(i);
-                boolean a = now - r.timestamp() > DOT_ATTacker_TTL_MS;
-                if (a) {
+                if (now - r.timestamp() > DOT_ATTacker_TTL_MS) {
                     records.remove(i);
                     continue;
                 }
-
                 attacker = r.damager();
             }
         }
@@ -117,7 +120,7 @@ public class DamageTrackerListener implements Listener {
         }
 
         if (shouldAddRecord) {
-            DAMAGE_TRACKER.addRecord(victim, attacker, event.getFinalDamage(), weapon);
+            DAMAGE_TRACKER.addRecord(hash, victim, attacker, event.getFinalDamage(), weapon);
         }
     }
 
@@ -142,7 +145,6 @@ public class DamageTrackerListener implements Listener {
         this.cleanTask = this.createCleanTask();
     }
 
-
     private CancellableTask createCleanTask() {
         if (this.cleanTask != null) {
             this.cleanTask.cancel();
@@ -154,10 +156,14 @@ public class DamageTrackerListener implements Listener {
             for (Entity e : victims) {
                 if (!(e instanceof Damageable damageable)) continue;
                 long lastTs = DAMAGE_TRACKER.getLastTimestamp(damageable);
-
                 if (lastTs == 0L || (now - lastTs) > 20_000L) {
                     DAMAGE_TRACKER.clearRecords(damageable);
-                    Lib.Scheduler.runAtEntity(Ari.instance, e, t -> Log.debug("remove tracker entity %s record.", e.getName()), null);
+                    Lib.Scheduler.runAtEntity(
+                            Ari.instance,
+                            e,
+                            t -> Log.debug("damage_tracker: remove victim entity %s record.", e.getName()),
+                            null
+                    );
                 }
             }
         }, 1L, 30 * 20L);

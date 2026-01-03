@@ -14,12 +14,21 @@ public class LastDamageTracker {
      */
     private final Map<Entity, List<DamageRecord>> records = new HashMap<>();
 
-    public record DamageRecord(long timestamp, Entity damager, double damage, Location location, ItemStack weapon) {}
+    /**
+     * 实体之间的伤害记录（玩家 - 玩家，玩家 - 实体， 实体 - 玩家， 实体 x 实体）
+     * @param hash 用于是否确认添加重复伤害
+     * @param timestamp 造成伤害的时间戳
+     * @param damager 伤害着
+     * @param damage 造成的伤害
+     * @param location 位置
+     * @param weapon 武器
+     */
+    public record DamageRecord(int hash, long timestamp, Entity damager, double damage, Location location, ItemStack weapon) {}
 
-    public void addRecord(Entity victim, Entity damager, double damage, ItemStack weapon) {
+    public void addRecord(int hash, Entity victim, Entity damager, double damage, ItemStack weapon) {
         synchronized (this) {
             this.records.computeIfAbsent(victim, k -> new ArrayList<>())
-                    .add(new DamageRecord(System.currentTimeMillis(), damager, damage, victim.getLocation(), weapon));
+                    .add(new DamageRecord(hash, System.currentTimeMillis(), damager, damage, victim.getLocation(), weapon));
         }
     }
 

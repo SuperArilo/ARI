@@ -51,12 +51,14 @@ public class MobBossBarListener implements Listener {
         if (!(event.getEntity() instanceof Damageable mob)) return;
         double finalDamage = event.getFinalDamage();
         double health = Math.max(0, mob.getHealth() - finalDamage);
-        Log.debug("event: %s, entity: %s, damage: %s, health: %s, damageType: %s, status: %s.",
+        Entity directEntity = event.getDamageSource().getDirectEntity();
+        Log.debug("attacker: %s, event: %s, entity: %s, damage: %s, health: %s, damageType: %s, status: %s.",
+                directEntity == null ? "null":directEntity.getName(),
                 event.getEventName(),
                 event.getEntity().getName(),
                 FormatUtils.formatTwoDecimalPlaces(event.getFinalDamage()),
                 FormatUtils.formatTwoDecimalPlaces(health),
-                event.getDamageSource().getDamageType().getTranslationKey(),
+                event.getCause().name(),
                 health == 0F ? "death":"living")
         ;
     }
@@ -72,8 +74,8 @@ public class MobBossBarListener implements Listener {
         Player attacker;
         Entity damager = event.getDamager();
         Entity entity = event.getEntity();
-        if (entity.isDead()) return;
 
+        //攻击者和受害者必须有一个是属于玩家类
         if (damager instanceof Player player) {
             attacker = player;
         } else if (damager instanceof Projectile projectile && projectile.getShooter() instanceof Player player) {
@@ -82,8 +84,21 @@ public class MobBossBarListener implements Listener {
 
         if (!(entity instanceof Damageable victim)) return;
 
+        //如果是自己造成的伤害不显示
         if (victim == attacker) return;
         if (this.isBoss(victim)) return;
+
+        List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
+        if (records.isEmpty()) return;
+        LastDamageTracker.DamageRecord last = records.getLast();
+        if (last.hash() == Objects.hash(event)) {
+            Log.debug("attacker %s to victim %s bar already exists. type: %s. skip....",
+                    attacker.getName(),
+                    victim.getName(),
+                    event.getCause().name()
+            );
+            return;
+        }
 
         this.updateBar(event, victim, attacker);
         this.debugLog(event);
@@ -93,13 +108,16 @@ public class MobBossBarListener implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         if (this.isDisabled) return;
         Entity victim = event.getEntity();
-        if (victim.isDead()) return;
+
         if (!(victim instanceof Damageable victimDamageable && victim instanceof Attributable)) return;
         if (this.isBoss(victimDamageable)) return;
         List<LastDamageTracker.DamageRecord> re = DAMAGE_TRACKER.getRecords(victim);
         if (re.isEmpty()) return;
         if (!(re.getLast().damager() instanceof Player player)) return;
+
+        //如果是自己造成的伤害不显示
         if(victimDamageable == player) return;
+
         this.updateBar(event, victimDamageable, player);
         this.debugLog(event);
     }
