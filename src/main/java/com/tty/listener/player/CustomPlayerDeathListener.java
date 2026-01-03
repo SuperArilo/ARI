@@ -7,10 +7,12 @@ import com.tty.lib.tool.ComponentUtils;
 import com.tty.tool.PlayerDeathInfoCollector;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
@@ -47,7 +49,16 @@ public class CustomPlayerDeathListener implements Listener {
                     sb.append(info.getRandomOfList(baseKey + "running-away"));
                 }
             }
-            case CONTACT, LAVA, HOT_FLOOR -> sb.append(info.getRandomOfList(baseKey + "block." + event.getDamageSource().getDamageType().getTranslationKey()));
+            case CONTACT, LAVA, HOT_FLOOR -> {
+                if (event.getEntity().getLastDamageCause() instanceof EntityDamageByBlockEvent damageByBlockEvent) {
+                    Block block = damageByBlockEvent.getDamager();
+                    if (block == null) {
+                        Log.error("can not find contact block");
+                    } else {
+                        sb.append(info.getRandomOfList(baseKey + "block." + block.getType().name().toLowerCase()));
+                    }
+                }
+            }
             case FALLING_BLOCK -> {
                 Material material = null;
                 String key = "";
