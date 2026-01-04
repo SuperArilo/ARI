@@ -104,7 +104,7 @@ public class EditWarpListener extends OnGuiEditListener {
                 ItemStack cursor = event.getCursor();
                 Material current = cursor.getType();
                 if(current.equals(Material.AIR)) return;
-                ItemStack newItemStake = new ItemStack(current);
+                ItemStack newItemStake = ItemStack.of(current);
                 ItemMeta newItemMeta = newItemStake.getItemMeta();
                 newItemMeta.displayName(clickMeta.displayName());
                 newItemMeta.lore(clickItem.lore());

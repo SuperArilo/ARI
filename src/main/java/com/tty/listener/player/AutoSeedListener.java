@@ -65,12 +65,12 @@ public class AutoSeedListener implements Listener {
             // 掉落作物本身
             Material cropMaterial = getCropBlock(blockData.getMaterial());
             int cropDropAmount = PublicFunctionUtils.randomGenerator(1, level + 2);
-            clickedBlock.getWorld().dropItemNaturally(clickedBlock.getLocation(), new ItemStack(cropMaterial, cropDropAmount));
+            clickedBlock.getWorld().dropItemNaturally(clickedBlock.getLocation(), ItemStack.of(cropMaterial, cropDropAmount));
 
             // 掉落种子或副手可种植物品
             int seedDropAmount = this.getSeedDropAmount(seedType, level);
             if (seedDropAmount > 0) {
-                clickedBlock.getWorld().dropItemNaturally(clickedBlock.getLocation(), new ItemStack(seedType, seedDropAmount));
+                clickedBlock.getWorld().dropItemNaturally(clickedBlock.getLocation(), ItemStack.of(seedType, seedDropAmount));
             }
 
             // 自动播种
