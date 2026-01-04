@@ -9,29 +9,41 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static com.tty.listener.player.DamageTrackerListener.DAMAGE_TRACKER;
 
 public class PlayerDeathInfoCollector {
+
+    private static final Type STRING_LIST_TYPE = new TypeToken<List<String>>() {}.getType();
 
     public static class DeathInfo {
 
         public Player victim;
         public long deathTime;
         public EntityDamageEvent.DamageCause deathCause;
-        public boolean isEntityCause;
-        public boolean isProjectile;
         public Entity killer;
         public ItemStack weapon;
         public boolean isEscapeAttempt;
+        public boolean isDestine;
+
+        public boolean isProjectile() {
+            return deathCause == EntityDamageEvent.DamageCause.PROJECTILE;
+        }
+
+        public boolean isDirectCombat() {
+            return deathCause == EntityDamageEvent.DamageCause.ENTITY_ATTACK
+                    || deathCause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK
+                    || deathCause == EntityDamageEvent.DamageCause.PROJECTILE;
+        }
 
         @Override
         public String toString() {
@@ -39,51 +51,68 @@ public class PlayerDeathInfoCollector {
                     "victim=" + victim.getName() +
                     ", deathTime=" + deathTime +
                     ", deathCause=" + deathCause +
-                    ", isEntityCause=" + isEntityCause +
-                    ", isProjectile=" + isProjectile +
                     ", killer=" + (killer != null ? killer.getName() : "null") +
                     ", weapon=" + (weapon != null ? weapon.getType().name() : "null") +
                     ", isEscapeAttempt=" + isEscapeAttempt +
+                    ", isDestine=" + isDestine +
                     '}';
         }
 
         public String getRandomOfList(String keyPath) {
-            String killerName = this.killer == null ? null : this.killer.getType().name().toLowerCase();
-            Type type = new TypeToken<List<String>>() {}.getType();
+            return getRandomOfList(keyPath, this.isDestine);
+        }
+
+        public String getRandomOfList(String keyPath, boolean isDestine) {
+            String killerName = killer == null ? null : killer.getType().name().toLowerCase();
+
+            String basePath = isDestine
+                    ? keyPath + ".destine"
+                    : keyPath;
 
             List<String> pool = new ArrayList<>();
             List<String> resolvedKeys = new ArrayList<>();
-            List<String> publicList = Ari.C_INSTANCE.getValue(keyPath + ".public", FilePath.DEATH_MESSAGE, type, null);
 
-            if (publicList != null && !publicList.isEmpty()) {
-                pool.addAll(publicList);
-                resolvedKeys.add(keyPath + ".public");
+            this.findMessages(basePath, killerName, pool, resolvedKeys);
 
-                if (killerName != null) {
-                    List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName, FilePath.DEATH_MESSAGE, type, null);
-                    if (killerList != null && !killerList.isEmpty()) {
-                        pool.addAll(killerList);
-                        resolvedKeys.add(keyPath + "." + killerName);
-                    }
-                }
-            } else {
-                if (killerName != null) {
-                    List<String> killerList = Ari.C_INSTANCE.getValue(keyPath + "." + killerName, FilePath.DEATH_MESSAGE, type, null);
-                    if (killerList != null && !killerList.isEmpty()) {
-                        pool.addAll(killerList);
-                        resolvedKeys.add(keyPath + "." + killerName);
-                    }
-                } else {
-                    List<String> fallbackList = Ari.C_INSTANCE.getValue(keyPath, FilePath.DEATH_MESSAGE, type, null);
-                    if (fallbackList != null && !fallbackList.isEmpty()) {
-                        pool.addAll(fallbackList);
-                        resolvedKeys.add(keyPath);
-                    }
+            return pool.isEmpty()
+                    ? ""
+                    : pool.get(PublicFunctionUtils.randomGenerator(0, pool.size() - 1));
+        }
+
+        private void findMessages(String basePath,
+                                  String killerName,
+                                  List<String> pool,
+                                  List<String> resolvedKeys) {
+
+            if (killerName != null) {
+                String killerKey = basePath + "." + killerName;
+                List<String> list = Ari.C_INSTANCE.getValue(
+                        killerKey,
+                        FilePath.DEATH_MESSAGE,
+                        STRING_LIST_TYPE,
+                        null
+                );
+
+                if (list != null && !list.isEmpty()) {
+                    pool.addAll(list);
+                    resolvedKeys.add(killerKey);
+                    return;
                 }
             }
-            Log.debug("full key path: %s", String.join(", ", resolvedKeys));
-            return pool.isEmpty() ? "" :
-                    pool.get(PublicFunctionUtils.randomGenerator(0, pool.size() - 1));
+
+            String publicKey = basePath + ".public";
+            List<String> list = Ari.C_INSTANCE.getValue(
+                    publicKey,
+                    FilePath.DEATH_MESSAGE,
+                    STRING_LIST_TYPE,
+                    null
+            );
+
+            if (list != null && !list.isEmpty()) {
+                Log.debug("deathMessage hit public key: %s", publicKey);
+                pool.addAll(list);
+                resolvedKeys.add(publicKey);
+            }
         }
     }
 
@@ -91,67 +120,117 @@ public class PlayerDeathInfoCollector {
         DeathInfo info = new DeathInfo();
         info.victim = event.getEntity();
         info.deathTime = System.currentTimeMillis();
-        EntityDamageEvent cause = info.victim.getLastDamageCause();
-        info.deathCause = cause != null ? cause.getCause() : EntityDamageEvent.DamageCause.CUSTOM;
-        info.isEntityCause = false;
-        info.isProjectile = info.deathCause.equals(EntityDamageEvent.DamageCause.PROJECTILE);
-        info.killer = null;
-        info.weapon = null;
-        info.isEscapeAttempt = false;
+
+        EntityDamageEvent last = info.victim.getLastDamageCause();
+        info.deathCause = last != null
+                ? last.getCause()
+                : EntityDamageEvent.DamageCause.CUSTOM;
+
+        Log.debug("death cause resolved: %s", info.deathCause);
 
         List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(info.victim);
 
+        Log.debug("damage records count: %s", records.size());
+
         if (!records.isEmpty()) {
-            LastDamageTracker.DamageRecord last = records.getLast();
-            Entity mainKiller = last.damager();
-            if (mainKiller != null) {
-                if (mainKiller instanceof Projectile e) {
-                    UUID ownerUniqueId = e.getOwnerUniqueId();
-                    if (ownerUniqueId != null) {
-                        mainKiller = Bukkit.getServer().getPlayer(ownerUniqueId);
-                    }
-                }
-
-                info.killer = mainKiller;
-                info.isEntityCause = true;
-                double escapeDistance = !info.isProjectile ? 1.5 : 20.0;
-                Location lastLoc = records.getFirst().location();
-                Location deathLoc = info.victim.getLocation();
-                if (lastLoc != null && lastLoc.getWorld() == deathLoc.getWorld()) {
-                    double sqDist = lastLoc.distanceSquared(deathLoc);
-                    Log.debug("Distance squared: %s, Threshold: %s", sqDist, (escapeDistance * escapeDistance));
-                    info.isEscapeAttempt = lastLoc.distanceSquared(deathLoc) > escapeDistance * escapeDistance;
-                }
-
-                info.weapon = last.weapon();
-            }
-            return info;
-        }
-        DamageSource damageSource = event.getDamageSource();
-
-        info.killer = damageSource.getCausingEntity();
-        if (info.killer instanceof LivingEntity e) {
-            EntityEquipment equipment = e.getEquipment();
-            info.weapon = equipment == null ? null:equipment.getItemInMainHand();
-            return info;
-        }
-
-        if (info.deathCause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
-            if (cause instanceof EntityDamageByEntityEvent damageEvent) {
-                Entity damager = damageEvent.getDamager();
-                if (damager instanceof Creeper ||
-                        damager instanceof TNTPrimed ||
-                        damager instanceof Wither ||
-                        damager instanceof EnderCrystal) {
-                    info.killer = damager;
-                    info.isEntityCause = true;
-                    info.weapon = null;
-                    info.isProjectile = false;
-                }
+            this.analyzeCombat(records, info);
+            if (info.killer != null) {
+                Log.debug("combat analysis success, killer: %s", info.killer.getName());
+                return info;
             }
         }
 
+        Log.debug("fallback to DamageSource analysis");
+        this.fallbackByDamageSource(event, info);
         return info;
     }
 
+    private void analyzeCombat(List<LastDamageTracker.DamageRecord> records, DeathInfo info) {
+
+        Entity firstAttacker = null;
+        Entity mainKiller = null;
+        ItemStack killWeapon = null;
+        Location firstAttackLocation = null;
+
+        for (LastDamageTracker.DamageRecord r : records) {
+            Entity actualAttacker = this.resolveAttacker(r.damager());
+            if (actualAttacker == null) continue;
+
+            if (firstAttacker == null) {
+                firstAttacker = actualAttacker;
+                firstAttackLocation = r.location();
+
+                Log.debug("first attacker resolved: %s", actualAttacker.getName());
+            }
+
+            mainKiller = actualAttacker;
+            killWeapon = r.weapon();
+        }
+
+        if (mainKiller == null) {
+            Log.debug("no valid attacker found in damage records");
+            return;
+        }
+
+        info.killer = mainKiller;
+        info.weapon = killWeapon;
+
+        Log.debug("main killer resolved: %s, weapon: %s", mainKiller.getName(), killWeapon == null ? "null" : killWeapon.getType().name());
+
+        this.evaluateDestine(info, firstAttacker);
+        this.evaluateEscape(info, firstAttackLocation);
+    }
+
+    private void evaluateDestine(DeathInfo info, Entity firstAttacker) {
+        if (!info.killer.equals(firstAttacker)) {
+            info.isDestine = true;
+        } else {
+            info.isDestine = !info.isDirectCombat();
+        }
+
+        Log.debug("destine evaluated: %s (firstAttacker=%s, directCombat=%s)", info.isDestine, firstAttacker == null ? "null" : firstAttacker.getName(), info.isDirectCombat());
+    }
+
+    private void evaluateEscape(DeathInfo info, Location firstAttackLocation) {
+        if (firstAttackLocation == null) return;
+        if (firstAttackLocation.getWorld() != info.victim.getWorld()) return;
+
+        double escapeDistance = info.isProjectile() ? 20.0 : 1.5;
+        double sqDist = firstAttackLocation.distanceSquared(
+                info.victim.getLocation());
+
+        info.isEscapeAttempt = sqDist > escapeDistance * escapeDistance;
+
+        Log.debug("escape evaluated: %s (sqDist=%s, threshold=%s)", info.isEscapeAttempt, sqDist, escapeDistance * escapeDistance);
+    }
+
+    private void fallbackByDamageSource(PlayerDeathEvent event, DeathInfo info) {
+        DamageSource source = event.getDamageSource();
+        info.killer = source.getCausingEntity();
+
+        Log.debug("fallback killer resolved: %s", info.killer == null ? "null" : info.killer.getName());
+
+        if (info.killer instanceof LivingEntity e) {
+            EntityEquipment eq = e.getEquipment();
+            info.weapon = eq == null ? null : eq.getItemInMainHand();
+
+            Log.debug("fallback weapon resolved: %s", info.weapon == null ? "null" : info.weapon.getType().name());
+        }
+    }
+
+    private Entity resolveAttacker(Entity damager) {
+        if (damager instanceof Projectile projectile) {
+            if (projectile.getShooter() instanceof Entity shooter) {
+                return shooter;
+            }
+
+            UUID ownerId = projectile.getOwnerUniqueId();
+            if (ownerId != null) {
+                return Bukkit.getPlayer(ownerId);
+            }
+
+            return damager;
+        }
+        return damager;
+    }
 }

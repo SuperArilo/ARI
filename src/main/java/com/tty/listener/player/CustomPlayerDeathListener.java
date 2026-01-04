@@ -10,7 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -22,88 +21,104 @@ public class CustomPlayerDeathListener implements Listener {
 
     private final PlayerDeathInfoCollector collector = new PlayerDeathInfoCollector();
 
-    @EventHandler(priority = EventPriority.LOW)
-    public void onDeath(PlayerDeathEvent event){
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
         if (!Ari.instance.getConfig().getBoolean("server.custom-death", false)) return;
-        PlayerDeathInfoCollector.DeathInfo info = this.collector.collect(event);
+
+        PlayerDeathInfoCollector.DeathInfo info = collector.collect(event);
         Log.debug(info.toString());
 
-        StringBuilder sb = new StringBuilder();
+        String message = getDeathMessage(info, event);
+
+        if (message != null) {
+            event.deathMessage(ComponentUtils.text(
+                    message,
+                    Map.of(
+                            LangType.VICTIM.getType(), ComponentUtils.setEntityHoverText(info.victim),
+                            LangType.KILLER.getType(), info.killer != null ? ComponentUtils.setEntityHoverText(info.killer) : Component.empty(),
+                            LangType.KILLER_ITEM.getType(), ComponentUtils.setHoverItemText(info.weapon)
+                    )
+            ));
+        }
+    }
+    
+    private String getDeathMessage(PlayerDeathInfoCollector.DeathInfo info, PlayerDeathEvent event) {
+
         String baseKey = "custom-death.";
         switch (info.deathCause) {
             case ENTITY_EXPLOSION, BLOCK_EXPLOSION -> {
-                if (info.killer instanceof Explosive) {
-                    sb.append(info.getRandomOfList(baseKey + "player.explosion"));
-                } else {
-                    sb.append(info.getRandomOfList(baseKey + "mob.explosion"));
-                }
+                return info.getRandomOfList(baseKey + (info.killer instanceof Explosive ? "player.explosion" : "mob.explosion"), info.isDestine);
             }
             case ENTITY_ATTACK, ENTITY_SWEEP_ATTACK, PROJECTILE, POISON -> {
-                String lastKey = info.weapon == null || info.weapon.getType().isAir() ? "air" : info.isProjectile ? "projectile" : "item";
-                if(info.killer instanceof Player) {
-                    sb.append(info.getRandomOfList(baseKey + "player." + lastKey));
-                } else {
-                    sb.append(info.getRandomOfList(baseKey + "mob." + lastKey));
+                String weaponKey = getWeaponKey(info);
+                String targetKey = info.killer instanceof Player ? "player" : "mob";
+                String message = info.getRandomOfList(baseKey + targetKey + "." + weaponKey, info.isDestine);
+
+                if (info.isEscapeAttempt) {
+                    message += info.getRandomOfList(baseKey + "running-away");
                 }
-                if(info.isEscapeAttempt) {
-                    sb.append(info.getRandomOfList(baseKey + "running-away"));
-                }
+                return message;
             }
             case CONTACT, LAVA, HOT_FLOOR -> {
-                if (event.getEntity().getLastDamageCause() instanceof EntityDamageByBlockEvent damageByBlockEvent) {
-                    Block block = damageByBlockEvent.getDamager();
+                if (event.getEntity().getLastDamageCause() instanceof EntityDamageByBlockEvent blockEvent) {
+                    Block block = blockEvent.getDamager();
                     if (block == null) {
                         Log.error("can not find contact block");
-                    } else {
-                        sb.append(info.getRandomOfList(baseKey + "block." + block.getType().name().toLowerCase()));
+                        return null;
                     }
+                    return info.getRandomOfList(baseKey + "block." + block.getType().name().toLowerCase(), info.isDestine);
                 }
+                return null;
             }
             case FALLING_BLOCK -> {
                 Material material = null;
                 String key = "";
-                if(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent damageByEntityEvent) {
-                    if(damageByEntityEvent.getDamager() instanceof FallingBlock fallingBlock) {
+                if (event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent entityEvent) {
+                    if (entityEvent.getDamager() instanceof FallingBlock fallingBlock) {
                         material = fallingBlock.getBlockData().getMaterial();
-                        if (material == Material.ANVIL || material == Material.CHIPPED_ANVIL || material == Material.DAMAGED_ANVIL) {
-                            key = "anvil";
-                        } else {
-                            key = material.name().toLowerCase();
-                        }
+                        key = switch (material) {
+                            case ANVIL, CHIPPED_ANVIL, DAMAGED_ANVIL -> "anvil";
+                            default -> material.name().toLowerCase();
+                        };
                     } else {
                         Log.error("can not find falling block");
+                        return null;
                     }
                 }
-                if(material == null) {
-                    Log.error("custom-death: can not find material data"); return;
+
+                if (material == null) {
+                    Log.error("custom-death: can not find material data");
+                    return null;
                 }
-                sb.append(info.getRandomOfList(baseKey + "falling-blocks." + key));
+                return info.getRandomOfList(baseKey + "falling-blocks." + key, info.isDestine);
             }
-            case FALL -> sb.append(info.getRandomOfList(baseKey + "player.fall"));
-            case FIRE, FIRE_TICK, CAMPFIRE -> sb.append(info.getRandomOfList(baseKey + "player.fire"));
-            case LIGHTNING -> sb.append(info.getRandomOfList(baseKey + "player.lightning"));
-            case SUFFOCATION -> sb.append(info.getRandomOfList(baseKey + "player.suffocation"));
-            case DROWNING -> sb.append(info.getRandomOfList(baseKey + "player.drowning"));
-            case FREEZE -> sb.append(info.getRandomOfList(baseKey + "player.freeze"));
-            case SUICIDE -> sb.append(info.getRandomOfList(baseKey + "player.suicide"));
-            case VOID -> sb.append(info.getRandomOfList(baseKey + "player.void"));
-            case WITHER -> sb.append(info.getRandomOfList(baseKey + "player.wither"));
-            case FLY_INTO_WALL -> sb.append(info.getRandomOfList(baseKey + "player.fly_into_wall"));
-            case KILL -> sb.append(info.getRandomOfList(baseKey + "player.kill"));
-            case MAGIC -> sb.append(info.getRandomOfList(baseKey + "player.magic"));
-            case STARVATION -> sb.append(info.getRandomOfList(baseKey + "player.starvation"));
-            case SONIC_BOOM -> sb.append(info.getRandomOfList(baseKey + "player.sonic_boom"));
-            case THORNS -> sb.append(info.getRandomOfList(baseKey + "player.thorns"));
+            case FALL -> { return info.getRandomOfList(baseKey + "player.fall", info.isDestine); }
+            case FIRE, FIRE_TICK, CAMPFIRE -> { return info.getRandomOfList(baseKey + "player.fire", info.isDestine); }
+            case LIGHTNING -> { return info.getRandomOfList(baseKey + "player.lightning", info.isDestine); }
+            case SUFFOCATION -> { return info.getRandomOfList(baseKey + "player.suffocation", info.isDestine); }
+            case DROWNING -> { return info.getRandomOfList(baseKey + "player.drowning", info.isDestine); }
+            case FREEZE -> { return info.getRandomOfList(baseKey + "player.freeze", info.isDestine); }
+            case SUICIDE -> { return info.getRandomOfList(baseKey + "player.suicide", info.isDestine); }
+            case VOID -> { return info.getRandomOfList(baseKey + "player.void", info.isDestine); }
+            case WITHER -> { return info.getRandomOfList(baseKey + "player.wither", info.isDestine); }
+            case FLY_INTO_WALL -> { return info.getRandomOfList(baseKey + "player.fly_into_wall", info.isDestine); }
+            case KILL -> { return info.getRandomOfList(baseKey + "player.kill", info.isDestine); }
+            case MAGIC -> { return info.getRandomOfList(baseKey + "player.magic", info.isDestine); }
+            case STARVATION -> { return info.getRandomOfList(baseKey + "player.starvation", info.isDestine); }
+            case SONIC_BOOM -> { return info.getRandomOfList(baseKey + "player.sonic_boom", info.isDestine); }
+            case THORNS -> { return info.getRandomOfList(baseKey + "player.thorns", info.isDestine); }
+
+            default -> { return null; }
         }
-        event.deathMessage(ComponentUtils.text(
-                sb.toString(),
-                Map.of(
-                    LangType.VICTIM.getType(), ComponentUtils.setEntityHoverText(info.victim),
-                    LangType.KILLER.getType(), info.killer != null ? ComponentUtils.setEntityHoverText(info.killer) : Component.empty(),
-                    LangType.KILLER_ITEM.getType(), ComponentUtils.setHoverItemText(info.weapon)
-                )
-            )
-        );
     }
 
+    private String getWeaponKey(PlayerDeathInfoCollector.DeathInfo info) {
+        if (info.weapon == null || info.weapon.getType().isAir()) {
+            return "air";
+        } else if (info.isProjectile()) {
+            return "projectile";
+        } else {
+            return "item";
+        }
+    }
 }
