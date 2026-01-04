@@ -28,8 +28,7 @@ public class DamageTrackerListener implements Listener {
     private static final long CLEAR_LAST_ATTACK_RECORD = 20_000L;
     //用于定时清理受害者的记录周期
     private static final long TICK_CLEAR_DEALY = 30 * 20L;
-    //用于查询上次攻击者的时间，（查询5秒前的攻击者
-    private static final long DOT_ATTacker_TTL_MS = 5_000L;
+
     private CancellableTask cleanTask;
 
     public DamageTrackerListener() {
@@ -90,10 +89,6 @@ public class DamageTrackerListener implements Listener {
         if (!records.isEmpty()) {
             for (int i = records.size() - 1; i >= 0; i--) {
                 LastDamageTracker.DamageRecord r = records.get(i);
-                if (now - r.timestamp() > DOT_ATTacker_TTL_MS) {
-                    records.remove(i);
-                    continue;
-                }
                 attacker = r.damager();
             }
         }
