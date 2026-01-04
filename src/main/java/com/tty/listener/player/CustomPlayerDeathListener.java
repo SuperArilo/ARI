@@ -41,7 +41,7 @@ public class CustomPlayerDeathListener implements Listener {
             ));
         }
     }
-    
+
     private String getDeathMessage(PlayerDeathInfoCollector.DeathInfo info, PlayerDeathEvent event) {
 
         String baseKey = "custom-death.";
@@ -115,7 +115,7 @@ public class CustomPlayerDeathListener implements Listener {
     private String getWeaponKey(PlayerDeathInfoCollector.DeathInfo info) {
         if (info.weapon == null || info.weapon.getType().isAir()) {
             return "air";
-        } else if (info.isProjectile()) {
+        } else if (info.isProjectile) {
             return "projectile";
         } else {
             return "item";
