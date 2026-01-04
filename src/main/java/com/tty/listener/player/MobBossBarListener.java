@@ -180,18 +180,21 @@ public class MobBossBarListener implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        Damageable dead = event.getEntity();
+        Damageable deadEntity = event.getEntity();
+
         var affectedPlayers = new LinkedHashMap<Player, PlayerAttackBar>();
         this.playerBars.forEach((player, bars) -> {
-            PlayerAttackBar bar = bars.get(dead);
+            PlayerAttackBar bar = bars.get(deadEntity);
             if (bar != null) {
                 affectedPlayers.put(player, bar);
             }
         });
-        Lib.Scheduler.runAtEntity(Ari.instance, dead, i ->
+        if (affectedPlayers.isEmpty()) return;
+
+        Lib.Scheduler.runAtEntity(Ari.instance, deadEntity, i ->
                 affectedPlayers.forEach((player, bar) -> {
                     LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.get(player);
-                    if (bars != null) bars.remove(dead);
+                    if (bars != null) bars.remove(deadEntity);
         }), null);
     }
 
