@@ -23,6 +23,12 @@ import java.util.*;
 public class DamageTrackerListener implements Listener {
 
     public static final LastDamageTracker DAMAGE_TRACKER = new LastDamageTracker();
+
+    //用于清理超过20秒后的被攻击的实体记录
+    private static final long CLEAR_LAST_ATTACK_RECORD = 20_000L;
+    //用于定时清理受害者的记录周期
+    private static final long TICK_CLEAR_DEALY = 30 * 20L;
+    //用于查询上次攻击者的时间，（查询5秒前的攻击者
     private static final long DOT_ATTacker_TTL_MS = 5_000L;
     private CancellableTask cleanTask;
 
@@ -80,6 +86,7 @@ public class DamageTrackerListener implements Listener {
 
         int hash = Objects.hash(event);
 
+        // 攻击者回溯
         if (!records.isEmpty()) {
             for (int i = records.size() - 1; i >= 0; i--) {
                 LastDamageTracker.DamageRecord r = records.get(i);
@@ -90,39 +97,31 @@ public class DamageTrackerListener implements Listener {
                 attacker = r.damager();
             }
         }
+
         if (attacker == null) return;
 
-        //判断是否需要添加记录
-        boolean shouldAddRecord = false;
-
-        long lastPlayerTs = 0L;
-        for (int i = records.size() - 1; i >= 0; i--) {
-            LastDamageTracker.DamageRecord r = records.get(i);
-            if (r.damager().equals(attacker)) {
-                lastPlayerTs = r.timestamp();
-                break;
-            }
-        }
-        if (lastPlayerTs == 0L || now - lastPlayerTs > 50L) {
-            shouldAddRecord = true;
-        }
-
-        //获取武器信息
         ItemStack weapon = null;
         Entity directEntity = event.getDamageSource().getDirectEntity();
         if (directEntity != null) {
             if (directEntity instanceof LivingEntity living) {
                 EntityEquipment eq = living.getEquipment();
-                if (eq != null) weapon = eq.getItemInMainHand();
+                if (eq != null) {
+                    weapon = eq.getItemInMainHand();
+                }
             } else if (directEntity instanceof Item dropped) {
                 weapon = dropped.getItemStack();
             }
         }
 
-        if (shouldAddRecord) {
-            DAMAGE_TRACKER.addRecord(hash, victim, attacker, event.getFinalDamage(), weapon);
-        }
+        DAMAGE_TRACKER.addRecord(
+                hash,
+                victim,
+                attacker,
+                event.getFinalDamage(),
+                weapon
+        );
     }
+
 
     @EventHandler(priority = EventPriority.LOW)
     public void onQuit(PlayerQuitEvent event) {
@@ -156,7 +155,7 @@ public class DamageTrackerListener implements Listener {
             for (Entity e : victims) {
                 if (!(e instanceof Damageable damageable)) continue;
                 long lastTs = DAMAGE_TRACKER.getLastTimestamp(damageable);
-                if (lastTs == 0L || (now - lastTs) > 20_000L) {
+                if (lastTs == 0L || (now - lastTs) > CLEAR_LAST_ATTACK_RECORD) {
                     DAMAGE_TRACKER.clearRecords(damageable);
                     Lib.Scheduler.runAtEntity(
                             Ari.instance,
@@ -166,7 +165,7 @@ public class DamageTrackerListener implements Listener {
                     );
                 }
             }
-        }, 1L, 30 * 20L);
+        }, 1L, TICK_CLEAR_DEALY);
     }
 
 }
