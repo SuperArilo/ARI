@@ -130,11 +130,13 @@ public class MobBossBarListener implements Listener {
      */
     private void updateBar(EntityDamageEvent event, Damageable damageable, Player player) {
         if (!(damageable instanceof Attributable attr)) return;
-        AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
-        double maxHealth = attribute == null ? 1 : attribute.getValue();
 
-        double currentHealth = Math.max(0, damageable.getHealth() - event.getFinalDamage());
-        LinkedHashMap<Damageable, PlayerAttackBar> bars = playerBars.computeIfAbsent(player, k -> new LinkedHashMap<>());
+        LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.get(player);
+        if (bars == null) {
+            LinkedHashMap<Damageable, PlayerAttackBar> created = new LinkedHashMap<>();
+            LinkedHashMap<Damageable, PlayerAttackBar> race = this.playerBars.putIfAbsent(player, created);
+            bars = (race == null) ? created : race;
+        }
 
         while (bars.size() >= this.maxBar) {
             Map.Entry<Damageable, PlayerAttackBar> oldest = bars.entrySet().iterator().next();
@@ -144,6 +146,9 @@ public class MobBossBarListener implements Listener {
 
         PlayerAttackBar bar = bars.get(damageable);
 
+        AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
+        double maxHealth = attribute == null ? 1 : attribute.getValue();
+        double currentHealth = Math.max(0, damageable.getHealth() - event.getFinalDamage());
         double healthRatio = (currentHealth / Math.max(1, maxHealth));
 
         TextComponent t = ConfigUtils.t(
