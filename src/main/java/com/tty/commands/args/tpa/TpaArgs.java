@@ -12,6 +12,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class TpaArgs extends TpaBaseLiteralLiteralArgument {
 
@@ -50,9 +52,9 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        List<String> strings = this.getOnlinePlayers(sender);
-        if (args.length != 2) return strings;
-        return PublicFunctionUtils.tabList(args[1], strings);
+    public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
+        Set<String> strings = this.getOnlinePlayers(sender);
+        if (args.length != 2) return CompletableFuture.completedFuture(strings);
+        return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[1], strings));
     }
 }

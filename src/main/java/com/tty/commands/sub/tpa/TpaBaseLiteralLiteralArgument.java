@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgumentLiteralCommand<PlayerSelectorArgumentResolver> {
@@ -29,11 +30,11 @@ public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgument
      * @param sender 发起者
      * @return 返回玩家名称列表
      */
-    public List<String> getOnlinePlayers(CommandSender sender) {
+    public Set<String> getOnlinePlayers(CommandSender sender) {
         return Bukkit.getOnlinePlayers().stream()
                 .map(Player::getName)
                 .filter(name -> !name.equals(sender.getName()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -41,12 +42,12 @@ public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgument
      * @param sender 接收者
      * @return 能够执行的列表
      */
-    public List<String> getResponseList(CommandSender sender) {
+    public Set<String> getResponseList(CommandSender sender) {
         return Ari.instance.stateMachineManager.get(PreTeleportStateService.class).getSTATE_LIST().stream()
                 .filter(i -> i.getTarget().equals(sender))
                 .filter(i -> i.getType().equals(TeleportType.TPA))
                 .map(e -> e.getOwner().getName())
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     /**

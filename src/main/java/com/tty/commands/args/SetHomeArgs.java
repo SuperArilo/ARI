@@ -19,6 +19,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
@@ -28,8 +29,8 @@ public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        return List.of();
+    public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
+        return CompletableFuture.completedFuture(Set.of());
     }
 
     @Override

@@ -19,6 +19,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class ZakoInfoPlayer extends ZakoBaseArgs<String> {
 
@@ -32,11 +34,11 @@ public class ZakoInfoPlayer extends ZakoBaseArgs<String> {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
+    public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
         Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-        List<String> strings = onlinePlayers.stream().map(Player::getName).toList();
-        if (onlinePlayers.isEmpty() || args.length != 3) return strings;
-        return PublicFunctionUtils.tabList(args[2], strings);
+        Set<String> strings = onlinePlayers.stream().map(Player::getName).collect(Collectors.toSet());
+        if (onlinePlayers.isEmpty() || args.length != 3) return CompletableFuture.completedFuture(strings);
+        return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[2], strings));
     }
 
     @Override

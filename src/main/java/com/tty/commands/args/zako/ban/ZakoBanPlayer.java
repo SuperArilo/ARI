@@ -7,7 +7,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class ZakoBanPlayer extends ZakoBanBase<String> {
 
@@ -21,12 +23,28 @@ public class ZakoBanPlayer extends ZakoBanBase<String> {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        Stream<String> stream = Bukkit.getOnlinePlayers().stream().map(Player::getName).filter(i -> !i.equals(sender.getName()));
-        if (args.length == 2) return stream.toList();
-        List<String> list = stream.filter(i -> i.startsWith(args[2])).toList();
-        if (list.isEmpty()) return List.of("<player name or uuid (string)>");
-        return list;
+    public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
+        Set<String> players = Bukkit.getOnlinePlayers().stream()
+                .map(Player::getName)
+                .filter(name -> !name.equals(sender.getName()))
+                .collect(Collectors.toSet());
+
+        if (args.length == 2) {
+            return CompletableFuture.completedFuture(players);
+        }
+
+        if (args.length < 3) {
+            return CompletableFuture.completedFuture(players);
+        }
+
+        String prefix = args[2];
+
+        Set<String> filtered = players.stream()
+                .filter(name -> name.startsWith(prefix))
+                .collect(Collectors.toSet());
+
+        if (filtered.isEmpty()) return CompletableFuture.completedFuture(Set.of("<player name or uuid (string)>"));
+        return CompletableFuture.completedFuture(filtered);
     }
 
     @Override

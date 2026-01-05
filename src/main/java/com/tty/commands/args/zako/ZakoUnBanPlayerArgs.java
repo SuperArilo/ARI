@@ -7,6 +7,7 @@ import com.tty.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,8 +18,8 @@ public class ZakoUnBanPlayerArgs extends ZakoBaseArgs<String> {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        return List.of();
+    public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
+        return CompletableFuture.completedFuture(Set.of());
     }
 
     @Override

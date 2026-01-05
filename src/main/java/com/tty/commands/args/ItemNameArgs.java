@@ -11,6 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class ItemNameArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
@@ -19,8 +21,8 @@ public class ItemNameArgs extends BaseRequiredArgumentLiteralCommand<String> {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        return List.of();
+    public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
+        return CompletableFuture.completedFuture(Set.of());
     }
 
     @Override

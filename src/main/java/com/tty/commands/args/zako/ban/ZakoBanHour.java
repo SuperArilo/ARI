@@ -5,6 +5,8 @@ import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class ZakoBanHour extends ZakoBanBase<Integer> {
 
@@ -13,8 +15,8 @@ public class ZakoBanHour extends ZakoBanBase<Integer> {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        return List.of();
+    public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
+        return CompletableFuture.completedFuture(Set.of());
     }
 
     @Override

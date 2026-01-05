@@ -15,9 +15,8 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import static com.tty.listener.player.PlayerSkipNight.isBedWorksRe;
 
@@ -28,12 +27,12 @@ public class TimeArgs extends BaseRequiredArgumentLiteralCommand<String> {
     }
 
     @Override
-    public List<String> tabSuggestions(CommandSender sender, String[] args) {
-        List<String> list = new ArrayList<>();
+    public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
+        Set<String> strings = new HashSet<>();
         for (TimePeriod value : TimePeriod.values()) {
-            list.add(value.getDescription());
+            strings.add(value.getDescription());
         }
-        return list;
+        return CompletableFuture.completedFuture(strings);
     }
 
     @Override
