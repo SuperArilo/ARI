@@ -57,7 +57,8 @@ public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
             Player player = (Player) sender;
             HomeManager homeManager = new HomeManager(player, true);
             homeManager.getList(0, Integer.MAX_VALUE)
-                .thenCompose(list -> {
+                .thenCompose(result -> {
+                    List<ServerHome> list = result.getRecords();
                     if (list.size() + 1 > PermissionUtils.getMaxCountInPermission(player, "home")) {
                         sender.sendMessage(ConfigUtils.t("function.home.exceeds"));
                         return CompletableFuture.completedFuture(null);

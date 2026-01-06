@@ -3,6 +3,7 @@ package com.tty.function;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tty.entity.ServerHome;
+import com.tty.lib.dto.PageResult;
 import com.tty.mapper.HomeMapper;
 import com.tty.tool.SQLInstance;
 import org.apache.ibatis.session.SqlSession;
@@ -21,14 +22,26 @@ public class HomeManager extends BaseManager<ServerHome> {
     }
 
     @Override
-    public CompletableFuture<List<ServerHome>> getList(int pageNum, int pageSize) {
+    public CompletableFuture<PageResult<ServerHome>> getList(int pageNum, int pageSize) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 HomeMapper mapper = session.getMapper(HomeMapper.class);
-                return mapper.selectList(new Page<>(pageNum, pageSize), new LambdaQueryWrapper<ServerHome>().eq(ServerHome::getPlayerUUID, this.player.getUniqueId().toString()).orderByDesc(ServerHome::isTopSlot));
+                Page<ServerHome> page = new Page<>(pageNum, pageSize);
+                Page<ServerHome> resultPage = mapper.selectPage(
+                        page,
+                        new LambdaQueryWrapper<ServerHome>()
+                                .eq(ServerHome::getPlayerUUID, this.player.getUniqueId().toString())
+                                .orderByDesc(ServerHome::isTopSlot)
+                );
+                return PageResult.build(
+                        resultPage.getRecords(),
+                        resultPage.getTotal(),
+                        resultPage.getPages(),
+                        resultPage.getCurrent());
             }
         });
     }
+
 
     public CompletableFuture<ServerHome> getInstance(String homeId) {
         return this.executeTask(() -> {

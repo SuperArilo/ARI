@@ -2,11 +2,11 @@ package com.tty.function;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.entity.ServerPlayer;
+import com.tty.lib.dto.PageResult;
 import com.tty.mapper.PlayersMapper;
 import com.tty.tool.SQLInstance;
 import org.apache.ibatis.session.SqlSession;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class PlayerManager extends BaseManager<ServerPlayer> {
@@ -16,7 +16,7 @@ public class PlayerManager extends BaseManager<ServerPlayer> {
     }
 
     @Override
-    public CompletableFuture<List<ServerPlayer>> getList(int pageNum, int pageSize) {
+    public CompletableFuture<PageResult<ServerPlayer>> getList(int pageNum, int pageSize) {
         return null;
     }
 

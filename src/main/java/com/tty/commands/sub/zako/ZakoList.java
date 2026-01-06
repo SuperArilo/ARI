@@ -57,8 +57,9 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
         String baseCommand = "/ari zako list ";
         String suggestCommand = "/ari zako remove ";
         sender.sendMessage(ConfigUtils.t("function.zako.list-requesting"));
-        manager.getList(pageNum, 10).thenAccept(list -> {
-            if (list.isEmpty()) {
+        manager.getList(pageNum, 10).thenAccept(result -> {
+            List<WhitelistInstance> records = result.getRecords();
+            if (records.isEmpty()) {
                 sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.page-change.none-next")));
                 return;
             }
@@ -68,7 +69,7 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
                             baseCommand + (pageNum == 1 ? pageNum:pageNum - 1),
                             baseCommand + (pageNum + 1));
 
-            for (WhitelistInstance instance : list) {
+            for (WhitelistInstance instance : records) {
                 String instancePlayerUUID = instance.getPlayerUUID();
                 OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(instancePlayerUUID));
                 String name = offlinePlayer.getName();

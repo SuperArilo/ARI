@@ -3,6 +3,7 @@ package com.tty.function;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tty.entity.ServerWarp;
+import com.tty.lib.dto.PageResult;
 import com.tty.mapper.WarpMapper;
 import com.tty.tool.SQLInstance;
 import org.apache.ibatis.session.SqlSession;
@@ -17,15 +18,25 @@ public class WarpManager extends BaseManager<ServerWarp> {
     }
 
     @Override
-    public CompletableFuture<List<ServerWarp>> getList(int pageNum, int pageSize) {
+    public CompletableFuture<PageResult<ServerWarp>> getList(int pageNum, int pageSize) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
-                Page<ServerWarp> page = new Page<>(pageNum, pageSize);
                 WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.selectList(page, new LambdaQueryWrapper<ServerWarp>().orderByDesc(ServerWarp::isTopSlot));
+                Page<ServerWarp> page = new Page<>(pageNum, pageSize);
+                Page<ServerWarp> resultPage = mapper.selectPage(
+                        page,
+                        new LambdaQueryWrapper<ServerWarp>()
+                                .orderByDesc(ServerWarp::isTopSlot)
+                );
+                return PageResult.build(
+                        resultPage.getRecords(),
+                        resultPage.getTotal(),
+                        resultPage.getPages(),
+                        resultPage.getCurrent());
             }
         });
     }
+
 
     public CompletableFuture<List<ServerWarp>> getCountByPlayer(String uuid) {
         return this.executeTask(() -> {

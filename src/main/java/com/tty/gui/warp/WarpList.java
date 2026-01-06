@@ -1,6 +1,7 @@
 package com.tty.gui.warp;
 
 import com.tty.Ari;
+import com.tty.lib.dto.PageResult;
 import com.tty.lib.entity.gui.BaseDataMenu;
 import com.tty.lib.entity.gui.FunctionItems;
 import com.tty.lib.entity.gui.Mask;
@@ -39,7 +40,7 @@ public class WarpList extends BaseDataItemInventory<ServerWarp> {
     }
 
     @Override
-    public CompletableFuture<List<ServerWarp>> requestData() {
+    public CompletableFuture<PageResult<ServerWarp>> requestData() {
         return new WarpManager(true).getList(this.pageNum, this.pageSize);
     }
 

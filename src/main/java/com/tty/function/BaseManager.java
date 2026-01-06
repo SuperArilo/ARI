@@ -1,6 +1,8 @@
 package com.tty.function;
 
 
+import com.tty.lib.dto.PageResult;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -36,7 +38,7 @@ public abstract class BaseManager<T> {
         }
     }
 
-    public abstract CompletableFuture<List<T>> getList(int pageNum, int pageSize);
+    public abstract CompletableFuture<PageResult<T>> getList(int pageNum, int pageSize);
 
     public abstract CompletableFuture<Boolean> createInstance(T instance);
 

@@ -1,6 +1,7 @@
 package com.tty.gui.home;
 
 import com.tty.Ari;
+import com.tty.lib.dto.PageResult;
 import com.tty.lib.entity.gui.BaseDataMenu;
 import com.tty.lib.entity.gui.FunctionItems;
 import com.tty.lib.entity.gui.Mask;
@@ -38,7 +39,7 @@ public class HomeList extends BaseDataItemInventory<ServerHome> {
     }
 
     @Override
-    public CompletableFuture<List<ServerHome>> requestData() {
+    public CompletableFuture<PageResult<ServerHome>> requestData() {
         return new HomeManager(this.player, true)
                 .getList(this.pageNum, this.baseDataInstance.getDataItems().getSlot().size());
     }
