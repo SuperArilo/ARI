@@ -55,7 +55,7 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
 
     public static void Build_Zako_List(WhitelistManager manager, CommandSender sender, Integer pageNum) {
         String baseCommand = "/ari zako list ";
-        String suggestCommand = "/ari info ";
+        String suggestCommand = "/ari zako info ";
 
         sender.sendMessage(ConfigUtils.t("function.zako.list-requesting"));
 
