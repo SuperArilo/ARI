@@ -55,7 +55,7 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
 
     public static void Build_Zako_List(WhitelistManager manager, CommandSender sender, Integer pageNum) {
         String baseCommand = "/ari zako list ";
-        String suggestCommand = "/ari zako remove ";
+        String suggestCommand = "/ari info ";
 
         sender.sendMessage(ConfigUtils.t("function.zako.list-requesting"));
 
@@ -83,7 +83,7 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
                 }
                 TextComponent set = ComponentUtils.setClickEventText(Ari.C_INSTANCE.getValue("server.player.zako." + (name == null ? "unable-record":"list-show"), FilePath.LANG),
                         Map.of(LangType.PLAYER_NAME.getType(), Component.text(name == null ? instancePlayerUUID:name)),
-                        ClickEvent.Action.SUGGEST_COMMAND,
+                        ClickEvent.Action.RUN_COMMAND,
                         suggestCommand + instancePlayerUUID);
                 dataPage.addLine(set);
             }
