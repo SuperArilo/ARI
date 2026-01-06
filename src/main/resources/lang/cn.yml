@@ -102,7 +102,9 @@ server:
       - "&f玩家 &6<player_name> &f的信息"
       - "&f第一次登录服务器时间: &6<first_login_server_time>"
       - "&f上次登录服务器的时间: &6<last_login_server_time>"
-      - "&f累计在线时间: &6<total_on_server>"
+      - "&f累计在线时间: &6<total_online_time_on_server>"
+      - "&f操作员: &6<zako_whitelist_operator>"
+      - "&f白名单添加时间: &6<zako_whitelist_add_time>"
       - "&f所在世界：&8<player_world>"
       - "&f当前位置: <player_location>"
     baned:
