@@ -3,7 +3,6 @@ package com.tty.function;
 
 import com.tty.lib.dto.PageResult;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
