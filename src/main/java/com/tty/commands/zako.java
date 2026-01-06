@@ -16,6 +16,7 @@ public class zako extends BaseLiteralArgumentLiteralCommand {
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of(new ZakoAdd(),
+                new ZakoList(),
                 new ZakoInfo(),
                 new ZakoBan(),
                 new ZakoUnBan(),

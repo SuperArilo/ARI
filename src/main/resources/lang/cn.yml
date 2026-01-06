@@ -58,16 +58,21 @@ function:
     tips: '&f按下 &2潜行键 &f来取消'
     error-location: '&c当前位置不允许坐下'
   zako:
-    add-success: '&a✔ 白名单添加成功'
-    add-failure: '&c✖ 添加失败，请查看控制台'
-    player-exist: '&c✖ 添加失败，玩家已经存在'
-    player-not-exist: '&c✖ 添加失败，玩家不存在'
-    remove-success: '&a✔ 白名单移除成功'
-    remove-failure: '&c✖ 白名单移除失败，不存在或者存在错误'
+    zako-add-success: '&a✔ 白名单添加成功'
+    zako-add-failure: '&c✖ 添加失败，请查看控制台'
+    zako-add-exist: '&c✖ 添加失败，玩家已经存在'
+    zako-check-not-exist: '&c✖ 该玩家不存在，或者从没登录过服务器'
+    public-zako-not-exist: '&c✖ 添加失败，玩家不存在'
+    whitelist-remove-success: '&a✔ 白名单移除成功'
+    whitelist-remove-failure: '&c✖ 白名单移除失败，不存在或者存在错误'
     ban-remove-success: '&a✔ 黑名单移除成功'
     ban-remove-failure: '&c✖ 黑名单移除失败，不存在或者存在错误'
     had_baned: '&c✖ 添加失败，该玩家已经被封禁'
     baned: '&a✔ 已将该玩家进行封禁！封禁时长为<ban_total_time>，&f封禁原因：&3<ban_reason>'
+    list-requesting: '&3查询数据中...'
+    list-request-error: '&c数据查询失败，请检查控制台'
+    list-title: '&7白名单列表'
+    list-show: "&e- &6<player_name>"
   unknown: '&c未知指令，请重新输入'
 server:
   time:
@@ -104,6 +109,9 @@ server:
       - "&4你已经被此服务器封禁！"
       - "&3原因&f: <ban_reason>"
       - "&3剩余时间&f: &6<ban_end_time>"
+    zako:
+      list-show: "&e- &6<player_name>"
+      unable-record: "&e- &6<player_name> &7(可能原因：玩家尚未登录服务器)"
   boss-bar:
     player-attack: "<mob> &6<mob_current_health>&f / &3<mob_max_health>"
   maintenance:

@@ -32,7 +32,7 @@ public abstract class ZakoBanBase <T> extends ZakoBaseArgs<T> {
         UUID uuid = this.parseUUID(args[2]);
 
         if (uuid == null) {
-            sender.sendMessage(ConfigUtils.t("function.zako.player-not-exist"));
+            sender.sendMessage(ConfigUtils.t("function.zako.zako-not-exist"));
             return;
         }
 

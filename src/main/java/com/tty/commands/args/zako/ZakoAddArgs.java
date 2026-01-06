@@ -50,7 +50,7 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
         this.whitelistManager.getInstance(uuid.toString())
             .thenCompose(s -> {
                 if (s != null) {
-                    sender.sendMessage(ConfigUtils.t("function.zako.player-exist"));
+                    sender.sendMessage(ConfigUtils.t("function.zako.zako-add-exist"));
                     return CompletableFuture.completedFuture(false);
                 }
                 return CompletableFuture.completedFuture(true);
@@ -67,7 +67,7 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
             })
             .thenAccept(status -> {
                 if (status == null) return;
-                sender.sendMessage(ConfigUtils.t("function.zako.add-" + (status ? "success":"failure")));
+                sender.sendMessage(ConfigUtils.t("function.zako.zako-add-" + (status ? "success":"failure")));
             })
             .whenComplete((v, ex) -> {
                 if (ex != null) {

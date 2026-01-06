@@ -60,7 +60,7 @@ public class ZakoInfoPlayer extends ZakoBaseArgs<String> {
         this.playerManager.getInstance(uuid.toString())
             .thenAccept(instance -> {
                 if(instance == null) {
-                    sender.sendMessage(ConfigUtils.t("function.zako.not-exist"));
+                    sender.sendMessage(ConfigUtils.t("function.zako.zako-check-not-exist"));
                     return;
                 }
                 Map<String, Component> map = new HashMap<>();

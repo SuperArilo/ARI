@@ -1,6 +1,7 @@
 package com.tty.function;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tty.entity.WhitelistInstance;
 import com.tty.mapper.WhitelistMapper;
 import com.tty.tool.SQLInstance;
@@ -17,7 +18,12 @@ public class WhitelistManager extends BaseManager<WhitelistInstance> {
 
     @Override
     public CompletableFuture<List<WhitelistInstance>> getList(int pageNum, int pageSize) {
-        return null;
+        return this.executeTask(() -> {
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
+                WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
+                return mapper.selectList(new Page<>(pageNum, pageSize), new LambdaQueryWrapper<>());
+            }
+        });
     }
 
     @Override
@@ -55,4 +61,14 @@ public class WhitelistManager extends BaseManager<WhitelistInstance> {
             }
         });
     }
+
+    public CompletableFuture<Integer> deleteInstances(List<String> uuids) {
+        return this.executeTask(() -> {
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
+                WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
+                return mapper.delete(new LambdaQueryWrapper<WhitelistInstance>().in(WhitelistInstance::getPlayerUUID, uuids));
+            }
+        });
+    }
+
 }

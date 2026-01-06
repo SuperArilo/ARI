@@ -41,7 +41,7 @@ public class ZakoUnBanPlayerArgs extends ZakoBaseArgs<String> {
     public void execute(CommandSender sender, String[] args) {
         UUID uuid = this.parseUUID(args[2]);
         if (uuid == null) {
-            sender.sendMessage(ConfigUtils.t("function.zako.player-not-exist"));
+            sender.sendMessage(ConfigUtils.t("function.zako.zako-not-exist"));
             return;
         }
         this.banPlayerManager.getInstance(uuid.toString())

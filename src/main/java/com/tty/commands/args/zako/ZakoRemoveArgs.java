@@ -58,7 +58,7 @@ public class ZakoRemoveArgs extends ZakoBaseArgs<String> {
             if(player != null) {
                 Lib.Scheduler.runAtEntity(Ari.instance, player, (i)->player.kick(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.data-changed"))), () -> player.sendMessage(ConfigUtils.t("on-error")));
             }
-            sender.sendMessage(ConfigUtils.t("function.zako.remove-" + (status ? "success":"failure")));
+            sender.sendMessage(ConfigUtils.t("function.zako.whitelist-remove-" + (status ? "success":"failure")));
         }).exceptionally(i -> {
             Log.error(i, "remove zako error");
             sender.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
