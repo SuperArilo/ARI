@@ -48,14 +48,19 @@ public class MobBossBarListener implements Listener {
     }
 
     private void debugLog(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Damageable mob)) return;
-        double finalDamage = event.getFinalDamage();
-        double health = Math.max(0, mob.getHealth() - finalDamage);
-        Entity directEntity = event.getDamageSource().getDirectEntity();
+        if (!(event.getEntity() instanceof Damageable victim)) return;
+        double health = Math.max(0, victim.getHealth() - event.getFinalDamage());
+        Entity attacker = event.getDamageSource().getDirectEntity();
+        if (attacker == null) {
+            List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
+            if (records != null) {
+                attacker = records.getLast().damager();
+            }
+        }
         Log.debug("attacker: %s, event: %s, entity: %s, damage: %s, health: %s, damageType: %s, status: %s.",
-                directEntity == null ? "null":directEntity.getName(),
+                attacker == null ? "null":attacker.getName(),
                 event.getEventName(),
-                event.getEntity().getName(),
+                victim.getName(),
                 FormatUtils.formatTwoDecimalPlaces(event.getFinalDamage()),
                 FormatUtils.formatTwoDecimalPlaces(health),
                 event.getCause().name(),

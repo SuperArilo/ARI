@@ -7,6 +7,7 @@ import com.tty.lib.Log;
 import com.tty.lib.task.CancellableTask;
 import com.tty.tool.LastDamageTracker;
 import org.bukkit.attribute.Attributable;
+import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,6 +18,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -50,25 +52,15 @@ public class DamageTrackerListener implements Listener {
 
         if (!(attacker instanceof Player) && !(victim instanceof Player)) return;
 
-        ItemStack weapon = null;
-        if (attacker instanceof LivingEntity living) {
-            EntityEquipment eq = living.getEquipment();
-            if (eq != null) weapon = eq.getItemInMainHand();
-        }
-
-        //因为 EntityDamageEvent 比 EntityDamageByEntityEvent 先执行，所以先排除相同伤害
-        List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
-        if (!records.isEmpty()) {
-            LastDamageTracker.DamageRecord last = records.getLast();
-            if (last.hash() == Objects.hash(event)) return;
-        }
+        int hash = Objects.hash(event);
+        if (this.hasSameRecord(victim, hash)) return;
 
         DAMAGE_TRACKER.addRecord(
-                Objects.hash(event),
+                hash,
                 victim,
                 attacker,
                 event.getFinalDamage(),
-                weapon
+                this.getWeapon(attacker, victim)
         );
     }
 
@@ -77,43 +69,67 @@ public class DamageTrackerListener implements Listener {
         Entity victim = event.getEntity();
         if (!(victim instanceof Damageable && victim instanceof Attributable)) return;
 
-        long now = System.currentTimeMillis();
-
-        Entity attacker = event.getDamageSource().getCausingEntity();
-        List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
+        DamageSource damageSource = event.getDamageSource();
+        Entity attacker = damageSource.getCausingEntity();
+        Entity directEntity = damageSource.getDirectEntity();
 
         int hash = Objects.hash(event);
+        if (this.hasSameRecord(victim, hash)) return;
 
-        // 攻击者回溯
-        if (!records.isEmpty()) {
-            for (int i = records.size() - 1; i >= 0; i--) {
-                LastDamageTracker.DamageRecord r = records.get(i);
-                attacker = r.damager();
+        if (event.getCause().equals(EntityDamageEvent.DamageCause.MAGIC)) {
+            LastDamageTracker.DamageRecord last = DAMAGE_TRACKER.getRecords(victim).getLast();
+            if (last != null) {
+                attacker = last.damager();
             }
         }
 
         if (attacker == null) return;
-
-        ItemStack weapon = null;
-        Entity directEntity = event.getDamageSource().getDirectEntity();
-        if (directEntity != null) {
-            if (directEntity instanceof LivingEntity living) {
-                EntityEquipment eq = living.getEquipment();
-                if (eq != null) {
-                    weapon = eq.getItemInMainHand();
-                }
-            } else if (directEntity instanceof Item dropped) {
-                weapon = dropped.getItemStack();
-            }
-        }
 
         DAMAGE_TRACKER.addRecord(
                 hash,
                 victim,
                 attacker,
                 event.getFinalDamage(),
-                weapon
+                this.getWeapon(attacker, directEntity)
         );
+    }
+
+    private @Nullable ItemStack getWeapon(Entity attacker, Entity directEntity) {
+        ItemStack weapon = null;
+        if (directEntity != null) {
+            switch (directEntity) {
+                case LivingEntity living -> {
+                    EntityEquipment eq = living.getEquipment();
+                    if (eq != null) {
+                        weapon = eq.getItemInMainHand();
+                    }
+                }
+                case Item dropped -> weapon = dropped.getItemStack();
+                case Projectile projectile -> {
+                    if (projectile.getShooter() instanceof LivingEntity shooter) {
+                        EntityEquipment equipment = shooter.getEquipment();
+                        if (equipment != null) {
+                            weapon = equipment.getItemInMainHand();
+                        }
+                    }
+                }
+                default -> {}
+            }
+        }
+        if (weapon == null && attacker instanceof LivingEntity living) {
+            EntityEquipment eq = living.getEquipment();
+            if (eq != null) {
+                weapon = eq.getItemInMainHand();
+            }
+        }
+        return weapon;
+    }
+
+    private boolean hasSameRecord(Entity victim, int hash) {
+        List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
+        if (records.isEmpty()) return false;
+        LastDamageTracker.DamageRecord last = records.getLast();
+        return last.hash() == hash;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
