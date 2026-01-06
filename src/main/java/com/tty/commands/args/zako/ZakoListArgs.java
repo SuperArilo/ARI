@@ -13,7 +13,7 @@ import static com.tty.commands.sub.zako.ZakoList.Build_Zako_List;
 public class ZakoListArgs extends ZakoBaseArgs<Integer> {
 
     public ZakoListArgs() {
-        super(true, 3, IntegerArgumentType.integer(), true);
+        super(true, 3, IntegerArgumentType.integer(1), true);
     }
 
     @Override

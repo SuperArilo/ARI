@@ -56,7 +56,9 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
     public static void Build_Zako_List(WhitelistManager manager, CommandSender sender, Integer pageNum) {
         String baseCommand = "/ari zako list ";
         String suggestCommand = "/ari zako remove ";
+
         sender.sendMessage(ConfigUtils.t("function.zako.list-requesting"));
+
         manager.getList(pageNum, 10).thenAccept(result -> {
             List<WhitelistInstance> records = result.getRecords();
             if (records.isEmpty()) {
@@ -67,7 +69,9 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
                     .createComponentDataPage(
                             ConfigUtils.t("function.zako.list-title"),
                             baseCommand + (pageNum == 1 ? pageNum:pageNum - 1),
-                            baseCommand + (pageNum + 1));
+                            baseCommand + (pageNum + 1),
+                            (int) result.getCurrentPage(),
+                            (int) result.getTotalPages());
 
             for (WhitelistInstance instance : records) {
                 String instancePlayerUUID = instance.getPlayerUUID();
