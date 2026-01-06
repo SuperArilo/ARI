@@ -71,7 +71,8 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
                             baseCommand + (pageNum == 1 ? pageNum:pageNum - 1),
                             baseCommand + (pageNum + 1),
                             (int) result.getCurrentPage(),
-                            (int) result.getTotalPages());
+                            (int) result.getTotalPages(),
+                            (int) result.getTotal());
 
             for (WhitelistInstance instance : records) {
                 String instancePlayerUUID = instance.getPlayerUUID();
