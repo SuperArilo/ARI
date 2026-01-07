@@ -34,8 +34,15 @@ server:
   save-interval: 300 # 5分钟
   #收获自动播种
   auto-seed: false
+  #阻止爆炸破坏
+  anti-explosion:
+    enable: true
+    pass-list:
+      - "tnt"
   #阻止耕地踩踏
   anti-trample-farmland: false
+  # 阻止火焰蔓延
+  anti-fire-spread: false
   #阻止特定生物生成
   anti-entity-spawn:
     enable: false

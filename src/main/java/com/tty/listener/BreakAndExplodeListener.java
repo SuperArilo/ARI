@@ -1,66 +1,63 @@
 package com.tty.listener;
 
-import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.dto.event.CustomPluginReloadEvent;
 import com.tty.enumType.FilePath;
-import com.tty.lib.Log;
 import com.tty.lib.tool.FireworkUtils;
 import org.bukkit.Material;
+import org.bukkit.Tag;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class BreakAndExplodeListener implements Listener {
 
     private final FireworkUtils utils = new FireworkUtils(Ari.instance);
-    private Set<String> passSet;
-    private final Set<EntityType> supported_entity_explosions = Set.of(
-            EntityType.TNT,        // TNT 实体爆炸
-            EntityType.TNT_MINECART,      // TNT 矿车爆炸
-            EntityType.CREEPER,           // 苦力怕爆炸
-            EntityType.WITHER,            // 凋灵爆炸
-            EntityType.WITHER_SKULL,      // 凋灵头颅爆炸
-            EntityType.END_CRYSTAL,     // 末影水晶爆炸
-            EntityType.FIREBALL,          // Ghast / Blaze 火球爆炸
-            EntityType.SMALL_FIREBALL,     // 小火球效果爆炸
-            EntityType.WIND_CHARGE // 风弹
-    );
+
+    private List<String> passExplosionList;
+    private boolean antiExplosion;
+    private boolean antiTrampleFarmland;
+    private boolean antiFireSpread;
 
     public BreakAndExplodeListener() {
-        this.reloadPassSet();
+        this.antiExplosion = this.loadAntiExplosion();
+        this.passExplosionList = this.loadPassExplosionList();
+        this.antiTrampleFarmland = this.loadAntiTrampleFarmland();
+        this.antiFireSpread = this.loadAntiFireSpread();
     }
 
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
-        if (this.isDisabled()) return;
+        if (!this.antiExplosion) return;
 
         EntityType entityType = event.getEntityType();
-
-        if (!this.supported_entity_explosions.contains(entityType)) return;
-
-        if (this.passSet.contains(entityType.name())) return;
-
+        if (this.passExplosionList.contains(entityType.name())) return;
         event.blockList().clear();
         this.utils.spawnFireworks(event.getLocation(), 1);
     }
 
     @EventHandler
     public void onBlockExplode(BlockExplodeEvent event) {
-        if (this.isDisabled()) return;
-
+        if (!this.antiExplosion) return;
         Material material = event.getBlock().getType();
         if (material == Material.AIR) return;
 
-        if (this.passSet.contains(material.name())) return;
+        if (this.passExplosionList.contains(material.name())) return;
 
         event.blockList().clear();
         this.utils.spawnFireworks(
@@ -69,28 +66,76 @@ public class BreakAndExplodeListener implements Listener {
         );
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        if (!this.antiExplosion) return;
+        Block block = event.getClickedBlock();
+        if (block == null) return;
+        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        Material type = block.getType();
+        boolean isBed = Tag.BEDS.isTagged(type);
+        if (isBed) {
+            if (this.passExplosionList.stream().anyMatch(i -> i.endsWith("BED"))) return;
+        }
+        if (this.passExplosionList.contains(type.name())) return;
+        if (type == Material.RESPAWN_ANCHOR) {
+            BlockData blockData = block.getBlockData();
+            if (blockData instanceof RespawnAnchor anchor) {
+                ItemStack item = event.getItem();
+                if (item != null && item.getType() == Material.GLOWSTONE) {
+                    if (anchor.getCharges() >= anchor.getMaximumCharges()) {
+                        event.setCancelled(true);
+                    }
+                }
+            }
+        } else if (isBed) {
+            World world = block.getWorld();
+            if (world.getEnvironment() != World.Environment.NORMAL) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
-        if (!Ari.instance.getConfig().getBoolean("server.anti-trample-farmland", false)) return;
+        if (!this.antiTrampleFarmland) return;
         if (event.getBlock().getType() == Material.FARMLAND && event.getTo() == Material.DIRT) {
-            Log.debug("entity %s try break farmland.", event.getEntity().getName());
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void fireSpread(BlockSpreadEvent event) {
+        if (!this.antiFireSpread) return;
+        if (event.getSource().getType() == Material.FIRE || event.getBlock().getType() == Material.FIRE) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onReload(CustomPluginReloadEvent event) {
-        this.reloadPassSet();
+        this.passExplosionList = this.loadPassExplosionList();
+        this.antiExplosion = this.loadAntiExplosion();
+        this.antiTrampleFarmland = this.loadAntiTrampleFarmland();
+        this.antiFireSpread = this.loadAntiFireSpread();
     }
 
-    private void reloadPassSet() {
-        this.passSet = passList().stream()
-                .map(String::toUpperCase)
-                .collect(Collectors.toSet());
+    private List<String> loadPassExplosionList() {
+        List<String> result = new ArrayList<>();
+        List<String> list = Ari.instance.getConfig().getStringList("server.anti-explosion.pass-list");
+        for (String s : list) {
+            result.add(s.toUpperCase());
+
+        }
+        return result;
     }
 
-    private boolean isDisabled() {
-        return !Ari.C_INSTANCE.getValue(
+    private boolean loadAntiTrampleFarmland() {
+        return Ari.instance.getConfig().getBoolean("server.anti-trample-farmland", false);
+    }
+
+    private boolean loadAntiExplosion() {
+        return Ari.C_INSTANCE.getValue(
                 "anti-explosion.enable",
                 FilePath.FUNCTION_CONFIG,
                 Boolean.class,
@@ -98,12 +143,7 @@ public class BreakAndExplodeListener implements Listener {
         );
     }
 
-    private List<String> passList() {
-        return Ari.C_INSTANCE.getValue(
-                "anti-explosion.pass-list",
-                FilePath.FUNCTION_CONFIG,
-                new TypeToken<List<String>>() {}.getType(),
-                List.of()
-        );
+    private boolean loadAntiFireSpread() {
+        return Ari.instance.getConfig().getBoolean("server.anti-fire-spread");
     }
 }
