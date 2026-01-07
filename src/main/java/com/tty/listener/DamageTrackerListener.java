@@ -5,6 +5,7 @@ import com.tty.dto.event.CustomPluginReloadEvent;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.task.CancellableTask;
+import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.tool.LastDamageTracker;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
@@ -107,22 +108,8 @@ public class DamageTrackerListener implements Listener {
     }
 
     private List<EntityType> loadExcludedEntities() {
-        List<EntityType> t = new ArrayList<>();
         List<String> configList = Ari.instance.getConfig().getStringList("server.damage-tracker.excluded-entities");
-        for (String entityName : configList) {
-            if (entityName == null || entityName.trim().isEmpty()) {
-                continue;
-            }
-            String cleanName = entityName.trim().toUpperCase();
-            try {
-                EntityType entityType = EntityType.valueOf(cleanName);
-                t.add(entityType);
-                Log.debug("load exclude entity %s.", cleanName);
-            } catch (IllegalArgumentException e) {
-                Log.error("load exclude entities error. input %s is invalid", cleanName);
-            }
-        }
-        return t;
+        return PublicFunctionUtils.convertStringListToEnumList(configList, EntityType.class, false);
     }
 
     private long loadTickClearDealy() {
