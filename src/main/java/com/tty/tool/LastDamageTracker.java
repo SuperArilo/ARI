@@ -156,7 +156,7 @@ public class LastDamageTracker {
         }
 
         //检查是否涉及玩家
-        boolean involvesPlayer = this.checkInvolvesPlayer(victim, resolvedAttacker, directEntity, cause);
+        boolean involvesPlayer = this.checkInvolvesPlayer(victim, resolvedAttacker, directEntity);
         Log.debug("[CHECK_RESULT] victim=%s, involvesPlayer=%s, resolvedAttacker=%s",
                 victim != null ? victim.getType().name() : "null",
                 involvesPlayer,
@@ -164,7 +164,7 @@ public class LastDamageTracker {
         return new AttackCheckResult(involvesPlayer, resolvedAttacker);
     }
 
-    private boolean checkInvolvesPlayer(Entity victim, Entity attacker, Entity directEntity, EntityDamageEvent.DamageCause cause) {
+    private boolean checkInvolvesPlayer(Entity victim, Entity attacker, Entity directEntity) {
         // 攻击者是玩家
         if (attacker instanceof Player) {
             return true;
@@ -204,21 +204,22 @@ public class LastDamageTracker {
      * @return 武器
      */
     @Nullable
-    public ItemStack getWeapon(@Nullable Entity attacker, @Nullable Entity directEntity, @Nullable Entity causingEntity, EntityDamageEvent.DamageCause cause) {
+    public ItemStack getWeapon(@Nullable Entity attacker, @Nullable Entity directEntity, @Nullable Entity causingEntity) {
         ItemStack weapon = null;
-
-        //对于喷溅药水，武器是药水瓶本身
         if (directEntity instanceof ThrownPotion potion) {
             weapon = potion.getItem();
         }
-        //对于药水云，尝试获取来源的药水瓶
-        else if (directEntity instanceof AreaEffectCloud cloud) {
-            // 药水云可能由药水瓶产生
+        else if (directEntity instanceof AreaEffectCloud) {
             if (causingEntity instanceof ThrownPotion potion) {
                 weapon = potion.getItem();
             }
+            if (weapon == null && attacker instanceof LivingEntity living) {
+                EntityEquipment eq = living.getEquipment();
+                if (eq != null) {
+                    weapon = eq.getItemInMainHand();
+                }
+            }
         }
-        //直接实体获取武器
         else if (directEntity != null) {
             switch (directEntity) {
                 case LivingEntity living -> {
@@ -234,6 +235,9 @@ public class LastDamageTracker {
                         if (equipment != null) {
                             weapon = equipment.getItemInMainHand();
                         }
+                    }
+                    if (weapon == null && projectile instanceof Trident trident) {
+                        weapon = trident.getItemStack();
                     }
                 }
                 default -> { }

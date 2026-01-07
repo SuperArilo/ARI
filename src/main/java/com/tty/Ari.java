@@ -93,6 +93,7 @@ public class Ari extends JavaPlugin {
 
     private void registerListener() {
         PluginManager pluginManager = Bukkit.getPluginManager();
+        pluginManager.registerEvents(new DamageTrackerListener(), this);
         pluginManager.registerEvents(new GuiCleanupListener(), this);
         pluginManager.registerEvents(new HomeListListener(GuiType.HOME_LIST), this);
         pluginManager.registerEvents(new EditHomeListener(GuiType.HOME_EDIT), this);
@@ -111,7 +112,7 @@ public class Ari extends JavaPlugin {
         pluginManager.registerEvents(new BreakAndExplodeListener(), this);
         pluginManager.registerEvents(new AutoSeedListener(), this);
         pluginManager.registerEvents(new MobBossBarListener(), this);
-        pluginManager.registerEvents(new DamageTrackerListener(), this);
+
     }
 
     public static void reloadAllConfig() {

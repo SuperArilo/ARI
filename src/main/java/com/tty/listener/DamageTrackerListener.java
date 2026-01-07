@@ -37,7 +37,7 @@ public class DamageTrackerListener implements Listener {
         this.cleanTask = this.createCleanTask();
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntity(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         if (!(entity instanceof Damageable victim)) return;
@@ -54,16 +54,16 @@ public class DamageTrackerListener implements Listener {
                 victim,
                 attacker,
                 event.getFinalDamage(),
-                DAMAGE_TRACKER.getWeapon(attacker, directEntity, causingEntity, event.getCause())
+                DAMAGE_TRACKER.getWeapon(attacker, directEntity, causingEntity)
         );
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onQuit(PlayerQuitEvent event) {
         DAMAGE_TRACKER.clearRecords(event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
         DAMAGE_TRACKER.clearRecords(entity);

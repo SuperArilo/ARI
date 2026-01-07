@@ -158,7 +158,7 @@ public class MobBossBarListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onQuit(PlayerQuitEvent event) {
         if (this.isDisabled) return;
         this.removePlayerRecord(event.getPlayer());
