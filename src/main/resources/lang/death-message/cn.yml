@@ -2,196 +2,225 @@ custom-death:
   running-away:
     public:
       - ' &7试图逃离&2<killer>&7时'
-      - ' &7与&2<killer>&7战斗时'
+      - ' &7正与&2<killer>&7战斗时'
+
   player:
     air:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7死于乱战之中'
+          - '&2<victim>&7注定要因&2<killer>&7而死于乱战之中'
       public:
-        - '&2<victim>&7死于&2<killer>'
-        - '&2<victim>&7死于&2<killer>&7强大的手下'
-        - '&2<victim>&7被&2<killer>&7一拳打死'
+        - '&2<victim>&7死于&2<killer>&7之手'
+        - '&2<victim>&7死于&2<killer>&7的猛烈攻击'
+        - '&2<victim>&7被&2<killer>&7一拳击倒'
+
     item:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要被武器终结'
+          - '&2<victim>&7注定要因&2<killer>&7命丧武器之下'
       public:
-        - '&2<victim>&7被&2<killer>&7用&2<killer_item>&7杀死了'
+        - '&2<victim>&7被&2<killer>&7用&2<killer_item>&7击杀'
+
     projectile:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要被暗箭所伤'
+          - '&2<victim>&7注定要因&2<killer>&7而命丧暗箭'
       public:
-        - '&2<victim>&7被&2<killer>&7用&2<killer_item>&7射杀'
+        - '&2<victim>&7被&2<killer>&7用&2<killer_item>&7远程击杀'
+
     fall:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7而摔死'
+          - '&2<victim>&7注定要因&2<killer>&7而摔落身亡'
       public:
-        - '&2<victim>&7落地过猛'
-        - '&2<victim>&7从高处摔了下来'
+        - '&2<victim>&7从高处坠落'
+        - '&2<victim>&7从高处摔落'
+
     fire:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要被火焰吞噬'
+          - '&2<victim>&7注定要因&2<killer>&7而被火焰吞噬'
       public:
-        - '&2<victim>&7浴火焚身'
-        - '&2<victim>&7被烧死了'
+        - '&2<victim>&7在火焰中殒命'
+        - '&2<victim>&7被火焰吞噬'
+
     lightning:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要遭雷劈'
+          - '&2<victim>&7注定要因&2<killer>&7而遭天谴'
       public:
         - '&2<victim> &7被闪电击中'
-        - '&2<victim> &7渡劫失败'
+        - '&2<victim> &7未能渡过雷劫'
+
     suffocation:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要在墙中窒息'
+          - '&2<victim>&7注定要因&2<killer>&7而窒息于墙中'
       public:
-        - '&2<victim>&7在墙里窒息而亡'
+        - '&2<victim>&7在墙壁中窒息而亡'
+
     drowning:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要溺死水中'
+          - '&2<victim>&7注定要因&2<killer>&7而溺水身亡'
       public:
-        - '&2<victim>&7淹死了'
+        - '&2<victim>&7溺水而亡'
+
     freeze:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要冻僵'
+          - '&2<victim>&7注定要因&2<killer>&7而冻结成冰'
       public:
-        - '&2<victim>&7被冻死了'
+        - '&2<victim>&7被严寒冻僵'
+
     suicide:
       destine:
         public:
-          - '&2<victim>&7注定自己的生命'
+          - '&2<victim>&7注定终结自己的生命'
       public:
-        - '&2<victim>&7结束了自己的生命'
+        - '&2<victim>&7选择了自我了断'
+
     void:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>堕入虚空'
+          - '&2<victim>&7注定要因&2<killer>&7而堕入虚空'
       public:
-        - '&2<victim>&7掉出了这个世界'
-        - '&2<victim>&7去往了二刺螈'
+        - '&2<victim>&7坠入了虚空'
+        - '&2<victim>&7遁入了二次元'
+
     wither:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要凋零'
+          - '&2<victim>&7注定要因&2<killer>&7而逐渐凋零'
       public:
-        - '&2<victim>&7凋零了'
+        - '&2<victim>&7在凋零中逝去'
+
     fly_into_wall:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要撞墙'
+          - '&2<victim>&7注定要因&2<killer>&7而撞向墙壁'
       public:
-        - '&2<victim>&7感受到了动能'
-        - '&2<victim>&7学会了什么是动量守恒'
+        - '&2<victim>&7体会到了动能的威力'
+        - '&2<victim>&7明白了动量守恒的定律'
+
     kill:
       destine:
         public:
-          - '&2<victim>&7注定自己的生命'
+          - '&2<victim>&7注定终结自己的生命'
       public:
-        - '&2<victim>&7自杀了'
+        - '&2<victim>&7选择了自我了断'
+
     starvation:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要饿死'
+          - '&2<victim>&7注定要因&2<killer>&7而饥渴致死'
       public:
-        - '&2<victim>&7饿死了'
+        - '&2<victim>&7因饥饿而亡'
+
     sonic_boom:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要被音爆抹除'
+          - '&2<victim>&7注定要因&2<killer>&7而被音爆抹除'
       public:
-        - '&2<victim>&7被&2<killer>&7抹除了'
+        - '&2<victim>&7被&2<killer>&7以音爆抹除'
+
     magic:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要被魔法杀死'
+          - '&2<victim>&7注定要因&2<killer>&7而被魔法终结'
       public:
-        - '&2<victim>&7被&2<killer>&7用魔法杀死了'
+        - '&2<victim>&7被&2<killer>&7的魔法所杀'
+
     explosion:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7死于爆炸'
+          - '&2<victim>&7注定要因&2<killer>&7而死于爆炸'
       public:
-        - '&2<victim>&7被&2<killer>&7炸死了'
+        - '&2<victim>&7被&2<killer>&7引发的爆炸炸死'
+
     thorns:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7被反伤致死'
+          - '&2<victim>&7注定要因&2<killer>&7而被荆棘反伤致死'
       public:
-        - '&2<victim>&7被&2<killer>&7给反死了'
+        - '&2<victim>&7被&2<killer>&7的荆棘反伤致死'
+
   mob:
     air:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7在混战中被杀死'
+          - '&2<victim>&7注定要因&2<killer>&7而死于混战'
       public:
-        - '&2<victim>&7被&2<killer>&7杀死了'
+        - '&2<victim>&7被&2<killer>&7击杀'
+
     item:
       destine:
         public:
-          - '&2<victim>&7在混战中被&2<killer>&7用&2<killer_item>&7杀死'
-          - '&2<victim>&7被&2<killer>&7用&2<killer_item>&7捡漏了'
+          - '&2<victim>&7在混战中注定要因&2<killer>&7的&2<killer_item>&7而亡'
+          - '&2<victim>&7注定要被&2<killer>&7用&2<killer_item>&7捡漏击杀'
       public:
-        - '&2<victim>&7被&2<killer>&7用&2<killer_item>&7杀死了'
+        - '&2<victim>&7被&2<killer>&7用&2<killer_item>&7击杀'
+
     projectile:
       destine:
         public:
-          - '&2<victim>&7在混战中被&2<killer>&7用&2<killer_item>&7射杀'
-          - '&2<victim>&7被&2<killer>&7用&2<killer_item>&7冷箭射杀'
+          - '&2<victim>&7在混战中注定要因&2<killer>&7的&2<killer_item>&7而亡'
+          - '&2<victim>&7注定要被&2<killer>&7用&2<killer_item>&7暗箭射杀'
       public:
-        - '&2<victim>&7被 &2<killer>&7用&2<killer_item>&7射杀'
+        - '&2<victim>&7被&2<killer>&7用&2<killer_item>&7射杀'
+
     explosion:
       destine:
         public:
           - '&2<victim>&7注定要被&2<killer>&7炸死'
       public:
-        - '&2<victim>&7被&2<killer>&7炸死了'
+        - '&2<victim>&7被&2<killer>&7炸死'
+
   falling-blocks:
     anvil:
       destine:
         public:
           - '&2<victim>&7注定要被铁砧压扁'
       public:
-        - '&2<victim>&7被&2<killer>压扁了'
-        - '&2<victim>&7被&2<killer>碾碎'
-        - '&2<victim>&7用头撞击&2<killer>'
-        - '&2<victim>&7尝试亲吻&2<killer>'
+        - '&2<victim>&7被&2<killer>&7压扁'
+        - '&2<victim>&7被&2<killer>&7碾碎'
+        - '&2<victim>&7用头撞向了&2<killer>&7'
+        - '&2<victim>&7试图亲吻&2<killer>&7'
+
   block:
     cactus:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7被仙人掌戳死'
+          - '&2<victim>&7注定要因&2<killer>&7而被仙人掌刺死'
       public:
-        - '&2<victim>&7被戳死了'
-        - '&2<victim>&7试图 曰 仙人掌被反杀'
+        - '&2<victim>&7被仙人掌刺死'
+        - '&2<victim>&7试图亲近仙人掌却被反杀'
+
     magma_block:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7站在岩浆块上跳舞'
+          - '&2<victim>&7注定要因&2<killer>&7而在岩浆块上起舞'
       public:
-        - '&2<victim>&7发现了地板是熔岩做的'
+        - '&2<victim>&7发现地板竟是熔岩'
+
     sweet_berry_bush:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要死在甜浆果丛里'
-          - '&2<victim>&7甜浆果丛是甜蜜的坟墓'
+          - '&2<victim>&7注定要因&2<killer>&7而亡于甜浆果丛'
+          - '&2<victim>&7的坟墓便是这甜浆果丛'
       public:
-        - '&2<victim>&7被甜浆果丛刺死了'
+        - '&2<victim>&7被甜浆果丛刺死'
+
     lava:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7要葬身熔岩'
+          - '&2<victim>&7注定要因&2<killer>&7而葬身熔岩'
       public:
-        - '&2<victim>&7试图在熔岩里游泳'
+        - '&2<victim>&7试图在熔岩中游泳'
+
     pointed_dripstone:
       destine:
         public:
-          - '&2<victim>&7注定因为&2<killer>&7被石笋刺穿'
+          - '&2<victim>&7注定要因&2<killer>&7而被石笋刺穿'
       public:
-        - '&2<victim>&7被石笋刺穿了'
+        - '&2<victim>&7被石笋刺穿'

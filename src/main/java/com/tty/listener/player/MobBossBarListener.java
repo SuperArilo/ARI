@@ -22,7 +22,6 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -31,7 +30,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.tty.listener.player.DamageTrackerListener.DAMAGE_TRACKER;
+import static com.tty.listener.DamageTrackerListener.DAMAGE_TRACKER;
 
 public class MobBossBarListener implements Listener {
 
@@ -50,12 +49,13 @@ public class MobBossBarListener implements Listener {
     private void debugLog(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Damageable victim)) return;
         double health = Math.max(0, victim.getHealth() - event.getFinalDamage());
-        Entity attacker = event.getDamageSource().getDirectEntity();
+        Entity attacker = null;
+        List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
+        if (records != null) {
+            attacker = records.getLast().damager();
+        }
         if (attacker == null) {
-            List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
-            if (records != null) {
-                attacker = records.getLast().damager();
-            }
+            attacker = event.getDamageSource().getDirectEntity();
         }
         Log.debug("attacker: %s, event: %s, entity: %s, damage: %s, health: %s, damageType: %s, status: %s.",
                 attacker == null ? "null":attacker.getName(),
@@ -72,58 +72,31 @@ public class MobBossBarListener implements Listener {
         return (damageable instanceof Boss);
     }
 
-    @EventHandler
-    public void onAttack(EntityDamageByEntityEvent event) {
-        if (this.isDisabled) return;
-
-        Player attacker;
-        Entity damager = event.getDamager();
-        Entity entity = event.getEntity();
-
-        //攻击者和受害者必须有一个是属于玩家类
-        if (damager instanceof Player player) {
-            attacker = player;
-        } else if (damager instanceof Projectile projectile && projectile.getShooter() instanceof Player player) {
-            attacker = player;
-        } else return;
-
-        if (!(entity instanceof Damageable victim)) return;
-
-        //如果是自己造成的伤害不显示
-        if (victim == attacker) return;
-        if (this.isBoss(victim)) return;
-
-        List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
-        if (records.isEmpty()) return;
-        LastDamageTracker.DamageRecord last = records.getLast();
-        if (last.hash() == Objects.hash(event)) {
-            Log.debug("attacker %s to victim %s bar already exists. type: %s. skip....",
-                    attacker.getName(),
-                    victim.getName(),
-                    event.getCause().name()
-            );
-            return;
-        }
-
-        this.updateBar(event, victim, attacker);
-        this.debugLog(event);
-    }
-
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
         if (this.isDisabled) return;
-        Entity victim = event.getEntity();
 
-        if (!(victim instanceof Damageable victimDamageable && victim instanceof Attributable)) return;
-        if (this.isBoss(victimDamageable)) return;
-        List<LastDamageTracker.DamageRecord> re = DAMAGE_TRACKER.getRecords(victim);
-        if (re.isEmpty()) return;
-        if (!(re.getLast().damager() instanceof Player player)) return;
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Damageable victim)) return;
 
-        //如果是自己造成的伤害不显示
-        if(victimDamageable == player) return;
+        // 如果是boss，不显示bar
+        if (this.isBoss(victim)) return;
 
-        this.updateBar(event, victimDamageable, player);
+        // 获取伤害记录
+        List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
+        if (records.isEmpty()) return;
+
+        // 获取最近一次伤害记录
+        LastDamageTracker.DamageRecord last = records.getLast();
+
+        // 攻击者必须是玩家
+        if (!(last.damager() instanceof Player player)) return;
+
+        // 如果是自己造成的伤害不显示
+        if (victim.equals(player)) return;
+
+        // 更新BossBar
+        this.updateBar(event, victim, player);
         this.debugLog(event);
     }
 

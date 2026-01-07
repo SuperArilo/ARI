@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static com.tty.listener.player.DamageTrackerListener.DAMAGE_TRACKER;
+import static com.tty.listener.DamageTrackerListener.DAMAGE_TRACKER;
 
 public class PlayerDeathInfoCollector {
 
@@ -151,7 +151,7 @@ public class PlayerDeathInfoCollector {
             return false;
         }
         boolean ranged = cause == EntityDamageEvent.DamageCause.PROJECTILE;
-        double escapeDistance = ranged ? 20.0 : 1.5;
+        double escapeDistance = ranged ? 20.0 : 5;
         double sqDist = firstAttackLocation.distanceSquared(deathLocation);
         double threshold = escapeDistance * escapeDistance;
         boolean escaped = sqDist > threshold;
