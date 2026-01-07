@@ -8,11 +8,12 @@ import com.tty.states.PlayerSaveStateService;
 import com.tty.states.teleport.RandomTpStateService;
 import com.tty.lib.services.StateService;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 public class OnPluginReloadListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void pluginReload(CustomPluginReloadEvent event) {
         Ari.reloadAllConfig();
         Log.init(Ari.instance.getLogger(), Ari.DEBUG);
