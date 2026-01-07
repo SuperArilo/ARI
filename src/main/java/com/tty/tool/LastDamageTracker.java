@@ -253,7 +253,7 @@ public class LastDamageTracker {
     }
 
     private void log(Entity victim, EntityDamageEvent.DamageCause cause, Long timeDiff, Long threshold, Entity attacker) {
-        Log.debug("[RECORD_BEFORE_CHECK] victim: %s, damage_type: %s, time_difference: %sms (threshold: %sms), attacker: %s",
+        Log.debug("[RECORD_BEFORE_CHECK] victim: %s, damage_type: %s, time_difference: %s ms (threshold: %s ms), attacker: %s",
                 victim.getName(),
                 cause.name(),
                 timeDiff,
