@@ -24,6 +24,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.*;
@@ -99,17 +100,31 @@ public class MobBossBarListener implements Listener {
         if (victim.equals(player)) return;
 
         // 更新BossBar
-        this.updateBar(event, victim, player);
+        this.updateBar(event.getFinalDamage(), victim, player);
         this.debugLog(event);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void regainHealth(EntityRegainHealthEvent event) {
+        if (this.isDisabled) return;
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Damageable victim) || entity instanceof Player) return;
+        List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
+        if (records.isEmpty()) return;
+
+        LastDamageTracker.DamageRecord last = records.getLast();
+        if (!(last.damager() instanceof Player player)) return;
+
+        this.updateBar(-event.getAmount(), victim, player);
     }
 
     /**
      * 更新玩家 bar
-     * @param event 事件
+     * @param finalDamage 收到的伤害，如果是负数则是治疗
      * @param damageable 被玩家攻击的对象
      * @param player 玩家
      */
-    private void updateBar(EntityDamageEvent event, Damageable damageable, Player player) {
+    private void updateBar(double finalDamage, Damageable damageable, Player player) {
         if (!(damageable instanceof Attributable attr)) return;
 
         LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.get(player);
@@ -129,7 +144,7 @@ public class MobBossBarListener implements Listener {
 
         AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
         double maxHealth = attribute == null ? 1 : attribute.getValue();
-        double currentHealth = Math.max(0, damageable.getHealth() - event.getFinalDamage());
+        double currentHealth = Math.max(0, Math.min(maxHealth, damageable.getHealth() - finalDamage));
         double healthRatio = (currentHealth / Math.max(1, maxHealth));
 
         TextComponent t = ConfigUtils.t(
