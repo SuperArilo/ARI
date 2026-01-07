@@ -53,7 +53,10 @@ public class LastDamageTracker {
             while (it.hasNext()) {
                 Map.Entry<Entity, List<DamageRecord>> entry = it.next();
                 List<DamageRecord> list = entry.getValue();
-                list.removeIf(r -> r.damager().equals(victim));
+                list.removeIf(r -> {
+                    Entity damager = r.damager();
+                    return damager != null && damager.equals(victim);
+                });
                 if (list.isEmpty()) {
                     it.remove();
                 }
@@ -154,7 +157,10 @@ public class LastDamageTracker {
 
         //检查是否涉及玩家
         boolean involvesPlayer = this.checkInvolvesPlayer(victim, resolvedAttacker, directEntity, cause);
-
+        Log.debug("[CHECK_RESULT] victim=%s, involvesPlayer=%s, resolvedAttacker=%s",
+                victim != null ? victim.getType().name() : "null",
+                involvesPlayer,
+                resolvedAttacker != null ? resolvedAttacker.getType().name() : "null");
         return new AttackCheckResult(involvesPlayer, resolvedAttacker);
     }
 
