@@ -167,7 +167,7 @@ public class MobBossBarListener implements Listener {
         } else {
             bar.setName(t);
         }
-        if (Float.compare(bar.getProgress(), (float) healthRatio) != 0) {
+        if (bar.getProgress() != healthRatio) {
             bar.setProgress(Float.parseFloat(FormatUtils.formatTwoDecimalPlaces(Math.max(0, healthRatio))));
             bar.setColor(this.getMobBarColor(healthRatio));
         }
