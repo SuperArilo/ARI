@@ -44,4 +44,9 @@ anti-explosion:
     - "tnt"
 attack-boss-bar:
   enable: true
+  #最多给玩家显示的 bar 数量
   max-bar: 3
+  #清理超过20秒后的没有继续被攻击的实体对应的血条 单位秒
+  clear_last_attack_record: 20
+  #用于定时清理对玩家产生的显示实体的血条（清理满足大于 clear_last_attack_record 的记录） 单位秒
+  tick_clear_dealy: 30

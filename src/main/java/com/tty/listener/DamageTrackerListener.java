@@ -22,13 +22,18 @@ public class DamageTrackerListener implements Listener {
     public static final LastDamageTracker DAMAGE_TRACKER = new LastDamageTracker();
 
     //用于清理超过20秒后的被攻击的实体记录
-    private static final long CLEAR_LAST_ATTACK_RECORD = 20_000L;
+    private long clear_last_attack_record;
     //用于定时清理受害者的记录周期
-    private static final long TICK_CLEAR_DEALY = 30 * 20L;
+    private long tick_clear_dealy;
+
+    private List<EntityType> excludedEntities = new ArrayList<>();
 
     private CancellableTask cleanTask;
 
     public DamageTrackerListener() {
+        this.excludedEntities = this.loadExcludedEntities();
+        this.clear_last_attack_record = this.loadClearLastAttackRecord();
+        this.tick_clear_dealy = this.loadTickClearDealy();
         this.cleanTask = this.createCleanTask();
     }
 
@@ -36,6 +41,7 @@ public class DamageTrackerListener implements Listener {
     public void onEntity(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         if (!(entity instanceof Damageable victim)) return;
+        if (this.excludedEntities.contains(entity.getType())) return;
 
         DamageSource damageSource = event.getDamageSource();
         Entity causingEntity = damageSource.getCausingEntity();
@@ -70,6 +76,9 @@ public class DamageTrackerListener implements Listener {
             this.cleanTask.cancel();
             this.cleanTask = null;
         }
+        this.tick_clear_dealy = this.loadTickClearDealy();
+        this.clear_last_attack_record = this.loadClearLastAttackRecord();
+        this.excludedEntities = this.loadExcludedEntities();
         this.cleanTask = this.createCleanTask();
     }
 
@@ -84,7 +93,7 @@ public class DamageTrackerListener implements Listener {
             for (Entity e : victims) {
                 if (!(e instanceof Damageable damageable)) continue;
                 long lastTs = DAMAGE_TRACKER.getLastTimestamp(damageable);
-                if (lastTs == 0L || (now - lastTs) > CLEAR_LAST_ATTACK_RECORD) {
+                if (lastTs == 0L || (now - lastTs) > this.clear_last_attack_record * 1000L) {
                     DAMAGE_TRACKER.clearRecords(damageable);
                     Lib.Scheduler.runAtEntity(
                             Ari.instance,
@@ -94,7 +103,34 @@ public class DamageTrackerListener implements Listener {
                     );
                 }
             }
-        }, 1L, TICK_CLEAR_DEALY);
+        }, 1L, this.tick_clear_dealy * 20L);
+    }
+
+    private List<EntityType> loadExcludedEntities() {
+        List<EntityType> t = new ArrayList<>();
+        List<String> configList = Ari.instance.getConfig().getStringList("server.damage-tracker.excluded-entities");
+        for (String entityName : configList) {
+            if (entityName == null || entityName.trim().isEmpty()) {
+                continue;
+            }
+            String cleanName = entityName.trim().toUpperCase();
+            try {
+                EntityType entityType = EntityType.valueOf(cleanName);
+                t.add(entityType);
+                Log.debug("load exclude entity %s.", cleanName);
+            } catch (IllegalArgumentException e) {
+                Log.error("load exclude entities error. input %s is invalid", cleanName);
+            }
+        }
+        return t;
+    }
+
+    private long loadTickClearDealy() {
+        return Ari.instance.getConfig().getLong("server.damage-tracker.tick_clear_dealy", 30L);
+    }
+
+    private long loadClearLastAttackRecord() {
+        return Ari.instance.getConfig().getLong("server.damage-tracker.clear_last_attack_record", 20L);
     }
 
 }

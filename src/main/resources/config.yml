@@ -39,6 +39,15 @@ server:
   maintenance:
     # 10 秒
     kick_delay: 10
+  #伤害追踪
+  damage-tracker:
+    #用于定时清理伤害追踪列表记录周期 单位秒
+    tick_clear_dealy: 30
+    #清理超过20秒后的被攻击的实体记录 单位秒
+    clear_last_attack_record: 20
+    #排除可被追踪的实体
+    excluded-entities:
+      - ARMOR_STAND
 debug:
   enable: false
   overwrite-file: false

@@ -33,6 +33,8 @@ import static com.tty.listener.DamageTrackerListener.DAMAGE_TRACKER;
 
 public class MobBossBarListener implements Listener {
 
+    private long clear_last_attack_record;
+    private long tick_clear_dealy;
     private int maxBar = 0;
     private boolean isDisabled = true;
     private final Map<Player, LinkedHashMap<Damageable, PlayerAttackBar>> playerBars = new ConcurrentHashMap<>();
@@ -40,6 +42,8 @@ public class MobBossBarListener implements Listener {
     private CancellableTask cleanTask;
 
     public MobBossBarListener() {
+        this.tick_clear_dealy = this.loadTick_clear_dealy();
+        this.clear_last_attack_record = this.loadClear_last_attack_record();
         this.maxBar = this.getMaxBar();
         this.isDisabled = this.isDisabled();
         this.cleanTask = this.createCleanTask();
@@ -193,8 +197,10 @@ public class MobBossBarListener implements Listener {
 
     @EventHandler
     public void onPluginReload(CustomPluginReloadEvent event) {
-        this.maxBar = getMaxBar();
-        this.isDisabled = isDisabled();
+        this.maxBar = this.getMaxBar();
+        this.isDisabled = this.isDisabled();
+        this.tick_clear_dealy = this.loadTick_clear_dealy();
+        this.clear_last_attack_record = this.loadClear_last_attack_record();
         if (this.isDisabled) {
             this.playerBars.forEach((player, bars) -> bars.values().forEach(bar -> bar.remove(player)));
             this.playerBars.clear();
@@ -243,7 +249,7 @@ public class MobBossBarListener implements Listener {
                     Damageable mob = barEntry.getKey();
                     PlayerAttackBar bar = barEntry.getValue();
                     long lastAttackTs = DAMAGE_TRACKER.getLastTimestamp(mob);
-                    if (bar.isRemoved() || lastAttackTs == 0 || (now - lastAttackTs) > 20_000L) {
+                    if (bar.isRemoved() || lastAttackTs == 0 || (now - lastAttackTs) > this.clear_last_attack_record * 1000L) {
                         bar.remove(player);
                         it.remove();
                         removedCountByPlayer.merge(player, 1, Integer::sum);
@@ -257,8 +263,15 @@ public class MobBossBarListener implements Listener {
                     Log.debug("mob bar expired: player=%s, removedEntities=%s, current_bar_count=%s, max_bar_count=%s",
                             player.getName(), count, this.playerBars.getOrDefault(player, new LinkedHashMap<>()).size(), this.maxBar)
             );
-        }, 1L, 30 * 20L);
+        }, 1L, this.tick_clear_dealy * 20L);
     }
 
+    private long loadTick_clear_dealy() {
+        return Ari.C_INSTANCE.getValue("attack-boss-bar.tick_clear_dealy", FilePath.FUNCTION_CONFIG, Long.class, 30L);
+    }
+
+    private long loadClear_last_attack_record() {
+        return Ari.C_INSTANCE.getValue("attack-boss-bar.clear_last_attack_record", FilePath.FUNCTION_CONFIG, Long.class, 20L);
+    }
 
 }
