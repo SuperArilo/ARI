@@ -24,7 +24,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.*;
@@ -163,28 +162,26 @@ public class MobBossBarListener implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        Damageable deadEntity = event.getEntity();
-
-        var affectedPlayers = new LinkedHashMap<Player, PlayerAttackBar>();
-        this.playerBars.forEach((player, bars) -> {
-            PlayerAttackBar bar = bars.get(deadEntity);
-            if (bar != null) {
-                affectedPlayers.put(player, bar);
-            }
-        });
-        if (affectedPlayers.isEmpty()) return;
-
-        Lib.Scheduler.runAtEntity(Ari.instance, deadEntity, i ->
-                affectedPlayers.forEach((player, bar) -> {
-                    LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.get(player);
-                    if (bars != null) bars.remove(deadEntity);
-        }), null);
-    }
-
-    @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
         if (this.isDisabled) return;
-        this.removePlayerRecord(event.getEntity());
+        Damageable deadEntity = event.getEntity();
+        if (deadEntity instanceof Player player) {
+            this.removePlayerRecord(player);
+        } else {
+            var affectedPlayers = new LinkedHashMap<Player, PlayerAttackBar>();
+            this.playerBars.forEach((player, bars) -> {
+                PlayerAttackBar bar = bars.get(deadEntity);
+                if (bar != null) {
+                    affectedPlayers.put(player, bar);
+                }
+            });
+            if (affectedPlayers.isEmpty()) return;
+
+            Lib.Scheduler.runAtEntity(Ari.instance, deadEntity, i ->
+                    affectedPlayers.forEach((player, bar) -> {
+                        LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.get(player);
+                        if (bars != null) bars.remove(deadEntity);
+                    }), null);
+        }
     }
 
     private void removePlayerRecord(Player player) {
@@ -251,6 +248,9 @@ public class MobBossBarListener implements Listener {
                         it.remove();
                         removedCountByPlayer.merge(player, 1, Integer::sum);
                     }
+                }
+                if (bars.isEmpty()) {
+                    this.playerBars.remove(player);
                 }
             }
             removedCountByPlayer.forEach((player, count) ->
