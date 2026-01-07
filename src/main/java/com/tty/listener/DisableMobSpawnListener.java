@@ -2,7 +2,6 @@ package com.tty.listener;
 
 import com.tty.Ari;
 import com.tty.dto.event.CustomPluginReloadEvent;
-import com.tty.lib.Log;
 import com.tty.lib.tool.PublicFunctionUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -29,7 +28,6 @@ public class DisableMobSpawnListener implements Listener {
         EntityType entityType = event.getEntityType();
         if (this.disableList.contains(entityType)) {
             Entity entity = event.getEntity();
-            Log.debug("disable entity %s spawn.", entity.getName());
             event.setCancelled(true);
             entity.remove();
         }
