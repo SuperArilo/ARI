@@ -2,7 +2,6 @@ package com.tty.listener;
 
 import com.tty.Ari;
 import com.tty.dto.event.CustomPluginReloadEvent;
-import com.tty.enumType.FilePath;
 import com.tty.lib.tool.FireworkUtils;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -15,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -104,11 +104,27 @@ public class BreakAndExplodeListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void fireSpread(BlockSpreadEvent event) {
+    @EventHandler(ignoreCancelled = true)
+    public void onFireSpread(BlockSpreadEvent event) {
         if (!this.antiFireSpread) return;
-        if (event.getSource().getType() == Material.FIRE || event.getBlock().getType() == Material.FIRE) {
-            event.setCancelled(true);
+        switch (event.getNewState().getType()) {
+            case FIRE:
+            case SOUL_FIRE:
+                event.setCancelled(true);
+                break;
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onFireBurn(BlockBurnEvent event) {
+        if (!this.antiFireSpread) return;
+        event.setCancelled(true);
+        Block igniting = event.getIgnitingBlock();
+        if (igniting == null) return;
+
+        Material type = igniting.getType();
+        if (type == Material.FIRE || type == Material.SOUL_FIRE) {
+            igniting.setType(Material.AIR);
         }
     }
 
@@ -135,12 +151,7 @@ public class BreakAndExplodeListener implements Listener {
     }
 
     private boolean loadAntiExplosion() {
-        return Ari.C_INSTANCE.getValue(
-                "anti-explosion.enable",
-                FilePath.FUNCTION_CONFIG,
-                Boolean.class,
-                false
-        );
+        return Ari.instance.getConfig().getBoolean("server.anti-explosion.enable", false);
     }
 
     private boolean loadAntiFireSpread() {
