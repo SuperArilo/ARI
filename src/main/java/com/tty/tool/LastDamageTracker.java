@@ -259,12 +259,13 @@ public class LastDamageTracker {
     }
 
     private void log(Entity victim, EntityDamageEvent.DamageCause cause, Long timeDiff, Long threshold, Entity attacker) {
-        Log.debug("[RECORD_BEFORE_CHECK] victim: %s, damage_type: %s, time_difference: %s ms (threshold: %s ms), attacker: %s",
+        Log.debug("[RECORD_BEFORE_CHECK] victim: %s, damage_type: %s, time_difference: %s ms (threshold: %s ms), attacker: %s, location: %s",
                 victim.getName(),
                 cause.name(),
                 timeDiff,
                 threshold,
-                attacker != null ? attacker.getName() : "null"
+                attacker != null ? attacker.getName() : "null",
+                victim.getLocation().toString()
         );
     }
 
