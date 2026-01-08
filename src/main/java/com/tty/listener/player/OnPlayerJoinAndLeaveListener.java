@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
 
+import static com.tty.commands.sub.EnderChestToPlayer.OFFLINE_ON_EDIT_ENDER_CHEST_LIST;
+
 
 public class OnPlayerJoinAndLeaveListener implements Listener {
 
@@ -44,14 +46,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     private final WhitelistManager whitelistManager = new WhitelistManager(true);
     private final BanPlayerManager banPlayerManager = new BanPlayerManager(true);
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void maintenance(AsyncPlayerPreLoginEvent event) {
-        if (maintenance.MAINTENANCE_MODE){
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join"));
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void banCheck(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
         BanPlayer banPlayer;
@@ -78,7 +73,17 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
+    public void maintenance(AsyncPlayerPreLoginEvent event) {
+        if (maintenance.MAINTENANCE_MODE){
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join"));
+        }
+        if (OFFLINE_ON_EDIT_ENDER_CHEST_LIST.contains(event.getUniqueId())) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.data-changed")));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
     public void whitelist(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
         if(!Ari.instance.getConfig().getBoolean("server.whitelist.enable", false)) return;

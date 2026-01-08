@@ -9,6 +9,7 @@ import com.tty.lib.ServerPlatform;
 import com.tty.lib.command.CommandRegister;
 import com.tty.lib.dto.AliasItem;
 import com.tty.lib.services.ConfigDataService;
+import com.tty.lib.services.NBTDataService;
 import com.tty.lib.services.StateService;
 import com.tty.lib.tool.*;
 import com.tty.listener.*;
@@ -46,6 +47,7 @@ public class Ari extends JavaPlugin {
     public SQLInstance sqlInstance;
 
     public ConfigDataService dataService;
+    public NBTDataService nbtDataService;
 
     public StateMachineManager stateMachineManager;
 
@@ -67,6 +69,7 @@ public class Ari extends JavaPlugin {
         PublicFunctionUtils.loadPlugin("Vault", Economy.class, EconomyUtils::setInstance);
         PublicFunctionUtils.loadPlugin("Vault", Permission.class, PermissionUtils::setInstance);
         PublicFunctionUtils.loadPlugin("arilib", ConfigDataService.class, i -> this.dataService = i);
+        PublicFunctionUtils.loadPlugin("arilib", NBTDataService.class, i -> this.nbtDataService = i);
 
         this.stateMachineManager = new StateMachineManager(this);
         this.stateMachineManager.initDefaultStateMachines();

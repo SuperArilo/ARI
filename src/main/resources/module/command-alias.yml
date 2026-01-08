@@ -55,3 +55,6 @@ maintenance:
 enchant:
   enable: true
   usage: '/enchant <附魔类型> <等级> 对主手上的物品添加对应的附魔'
+enderchest:
+  enable: true
+  usage: '/enderchest <player> 打开自己或者指定玩家的末影箱'
