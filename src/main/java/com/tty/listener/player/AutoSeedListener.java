@@ -24,7 +24,7 @@ import static org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP;
 
 public class AutoSeedListener implements Listener {
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (!Ari.instance.getConfig().getBoolean("server.auto-seed", false)) return;

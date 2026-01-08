@@ -11,6 +11,7 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class CustomChatFormantListener implements Listener {
         this.groupsPattern = this.set();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void playerSendMessage(AsyncChatEvent event) {
         if (this.isNotEnable()) return;
         event.renderer((source, sourceDisplayName, msg, viewer) ->
@@ -33,7 +34,7 @@ public class CustomChatFormantListener implements Listener {
                         this.getPattern(source),
                         Map.of(LangType.SOURCE_DISPLAY_NAME.getType(), Component.text(source.getName()), LangType.CHAT_MESSAGE.getType(), msg)));
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void whenPluginReload(CustomPluginReloadEvent event) {
         if (this.isNotEnable()) return;
         this.groupsPattern = this.set();
