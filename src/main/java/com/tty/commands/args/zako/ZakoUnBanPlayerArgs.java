@@ -3,6 +3,7 @@ package com.tty.commands.args.zako;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.lib.Log;
 import com.tty.lib.command.SuperHandsomeCommand;
+import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;
 
@@ -39,7 +40,7 @@ public class ZakoUnBanPlayerArgs extends ZakoBaseArgs<String> {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        UUID uuid = this.parseUUID(args[2]);
+        UUID uuid = PublicFunctionUtils.parseUUID(args[2]);
         if (uuid == null) {
             sender.sendMessage(ConfigUtils.t("function.zako.zako-not-exist"));
             return;

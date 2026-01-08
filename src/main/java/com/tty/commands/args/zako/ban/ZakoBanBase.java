@@ -10,6 +10,7 @@ import com.tty.lib.enum_type.FilePath;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.enum_type.Operator;
 import com.tty.lib.tool.ComponentUtils;
+import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.lib.tool.TimeFormatUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
@@ -29,7 +30,7 @@ public abstract class ZakoBanBase <T> extends ZakoBaseArgs<T> {
     }
 
     public void ban(CommandSender sender, String[] args) {
-        UUID uuid = this.parseUUID(args[2]);
+        UUID uuid = PublicFunctionUtils.parseUUID(args[2]);
 
         if (uuid == null) {
             sender.sendMessage(ConfigUtils.t("function.zako.zako-not-exist"));

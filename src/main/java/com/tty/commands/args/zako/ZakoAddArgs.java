@@ -7,6 +7,7 @@ import com.tty.lib.Log;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.Operator;
 import com.tty.lib.tool.ComponentUtils;
+import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;
 
@@ -44,7 +45,7 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
     @Override
     public void execute(CommandSender sender, String[] args) {
         String value = args[2];
-        UUID uuid = this.parseUUID(value);
+        UUID uuid = PublicFunctionUtils.parseUUID(value);
         if (uuid == null) return;
 
         WHITELIST_MANAGER.getInstance(uuid.toString())

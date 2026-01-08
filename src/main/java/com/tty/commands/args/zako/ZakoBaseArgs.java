@@ -5,10 +5,6 @@ import com.tty.function.BanPlayerManager;
 import com.tty.function.PlayerManager;
 import com.tty.function.WhitelistManager;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
-import org.bukkit.Bukkit;
-
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class ZakoBaseArgs <T> extends BaseRequiredArgumentLiteralCommand<T> {
 
@@ -18,27 +14,6 @@ public abstract class ZakoBaseArgs <T> extends BaseRequiredArgumentLiteralComman
 
     public ZakoBaseArgs(boolean allowConsole, Integer correctArgsLength, ArgumentType<T> type, boolean isSuggests) {
         super(allowConsole, correctArgsLength, type, isSuggests);
-    }
-
-    /**
-     * 根据输入参数解析 UUID
-     * @param value 玩家名字或 UUID
-     * @return 玩家 UUID，如果不存在则返回 null
-     */
-    protected UUID parseUUID(String value) {
-        AtomicReference<UUID> uuid = new AtomicReference<>(null);
-        try {
-            uuid.set(UUID.fromString(value));
-        } catch (Exception ignored) {
-        }
-        if (uuid.get() == null) {
-            try {
-                uuid.set(Bukkit.getOfflinePlayer(value).getUniqueId());
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        return uuid.get();
     }
 
 }

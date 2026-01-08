@@ -59,7 +59,7 @@ public class ZakoInfoPlayer extends ZakoBaseArgs<String> {
     @Override
     public void execute(CommandSender sender, String[] args) {
         String value = args[2];
-        UUID uuid = this.parseUUID(value);
+        UUID uuid = PublicFunctionUtils.parseUUID(value);
         if (uuid == null) return;
 
         String PATTERN_DATETIME = this.getPatternDatetime();
