@@ -73,8 +73,9 @@ public class WarpEditor extends BaseConfigInventory {
     }
 
     @Override
-    public void onCleanup() {
-        super.onCleanup();
+    public void clean() {
+        super.clean();
         this.currentWarp = null;
     }
+
 }
