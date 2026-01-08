@@ -52,3 +52,6 @@ zako:
 maintenance:
   enable: true
   usage: '/maintenance 开启服务器维护模式。除了 OP 其他玩家将无法进入'
+enchant:
+  enable: true
+  usage: '/enchant <附魔类型> <等级> 对主手上的物品添加对应的附魔'

@@ -73,6 +73,11 @@ function:
     list-request-error: '&c数据查询失败，请检查控制台'
     list-title: '&7白名单列表'
     list-show: "&e- &6<player_name>"
+  enchant:
+    not-exist: '&c✖ 该附魔类型不存在'
+    can-not-apply-item: '&c✖ 该类型的附魔无法作用在此物品上'
+    level-too-high: '&c✖ 等级超出该附魔类型的上限'
+    enchant-success: '&a✔ 已添加附魔 &b<enchant_name> &a等级 &6<enchant_level>'
   unknown: '&c未知指令，请重新输入'
 server:
   time:
