@@ -38,6 +38,6 @@ public class ZakoListArgs extends ZakoBaseArgs<Integer> {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        Build_Zako_List(this.whitelistManager, sender, Integer.parseInt(args[2]));
+        Build_Zako_List(WHITELIST_MANAGER, sender, Integer.parseInt(args[2]));
     }
 }

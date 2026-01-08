@@ -44,14 +44,14 @@ public class ZakoUnBanPlayerArgs extends ZakoBaseArgs<String> {
             sender.sendMessage(ConfigUtils.t("function.zako.zako-not-exist"));
             return;
         }
-        this.banPlayerManager.getInstance(uuid.toString())
+        BAN_PLAYER_MANAGER.getInstance(uuid.toString())
             .thenCompose(CompletableFuture::completedFuture)
             .thenAccept(banPlayer -> {
                 if (banPlayer == null) {
                     sender.sendMessage(ConfigUtils.t("function.zako.ban-remove-failure"));
                     return;
                 }
-                this.banPlayerManager.deleteInstance(banPlayer);
+                BAN_PLAYER_MANAGER.deleteInstance(banPlayer);
                 sender.sendMessage(ConfigUtils.t("function.zako.ban-remove-success"));
             })
             .whenComplete((i, e) -> {

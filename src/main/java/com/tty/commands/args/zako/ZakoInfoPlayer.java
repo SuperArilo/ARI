@@ -64,7 +64,7 @@ public class ZakoInfoPlayer extends ZakoBaseArgs<String> {
 
         String PATTERN_DATETIME = this.getPatternDatetime();
 
-        this.playerManager.getInstance(uuid.toString()).thenCombine(this.whitelistManager.getInstance(uuid.toString()), (playerInstance, whitelistInstance) -> {
+        PLAYER_MANAGER.getInstance(uuid.toString()).thenCombine(WHITELIST_MANAGER.getInstance(uuid.toString()), (playerInstance, whitelistInstance) -> {
             if (playerInstance == null || whitelistInstance == null) {
                 sender.sendMessage(ConfigUtils.t("function.zako.zako-check-not-exist"));
                 return null;

@@ -12,9 +12,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class ZakoBaseArgs <T> extends BaseRequiredArgumentLiteralCommand<T> {
 
-    protected final PlayerManager playerManager = new PlayerManager(true);
-    protected final WhitelistManager whitelistManager = new WhitelistManager(true);
-    protected final BanPlayerManager banPlayerManager = new BanPlayerManager(true);
+    protected static final PlayerManager PLAYER_MANAGER = new PlayerManager(true);
+    protected static final WhitelistManager WHITELIST_MANAGER = new WhitelistManager(true);
+    protected static final BanPlayerManager BAN_PLAYER_MANAGER = new BanPlayerManager(true);
 
     public ZakoBaseArgs(boolean allowConsole, Integer correctArgsLength, ArgumentType<T> type, boolean isSuggests) {
         super(allowConsole, correctArgsLength, type, isSuggests);

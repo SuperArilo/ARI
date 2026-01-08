@@ -36,7 +36,7 @@ public abstract class ZakoBanBase <T> extends ZakoBaseArgs<T> {
             return;
         }
 
-        this.banPlayerManager.getInstance(uuid.toString())
+        BAN_PLAYER_MANAGER.getInstance(uuid.toString())
             .thenCompose(banPlayer -> {
                 if (banPlayer != null) {
                     sender.sendMessage(ConfigUtils.t("function.zako.had_baned"));
@@ -69,9 +69,9 @@ public abstract class ZakoBanBase <T> extends ZakoBaseArgs<T> {
                 banPlayer.setStartTime(now);
                 banPlayer.setEndTime(now + total);
 
-                this.banPlayerManager.createInstance(banPlayer);
+                BAN_PLAYER_MANAGER.createInstance(banPlayer);
                 //同时移除白名单
-                this.whitelistManager.getInstance(uuid.toString()).thenCompose(this.whitelistManager::deleteInstance);
+                WHITELIST_MANAGER.getInstance(uuid.toString()).thenCompose(WHITELIST_MANAGER::deleteInstance);
 
                 String string = TimeFormatUtils.format(total);
                 Lib.Scheduler.run(Ari.instance, i -> {

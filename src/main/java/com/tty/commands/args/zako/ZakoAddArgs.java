@@ -47,7 +47,7 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
         UUID uuid = this.parseUUID(value);
         if (uuid == null) return;
 
-        this.whitelistManager.getInstance(uuid.toString())
+        WHITELIST_MANAGER.getInstance(uuid.toString())
             .thenCompose(s -> {
                 if (s != null) {
                     sender.sendMessage(ConfigUtils.t("function.zako.zako-add-exist"));
@@ -63,7 +63,7 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
                 instance.setAddTime(System.currentTimeMillis());
                 instance.setOperator(Operator.getOperator(sender).toString());
 
-                return this.whitelistManager.createInstance(instance);
+                return WHITELIST_MANAGER.createInstance(instance);
             })
             .thenAccept(status -> {
                 if (status == null) return;
