@@ -1,5 +1,6 @@
 package com.tty.listener;
 
+import com.tty.lib.gui.BaseConfigInventory;
 import com.tty.lib.gui.BaseInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

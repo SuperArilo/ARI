@@ -8,7 +8,7 @@ import com.tty.lib.entity.gui.Mask;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.GuiType;
-import com.tty.lib.gui.BaseInventory;
+import com.tty.lib.gui.BaseConfigInventory;
 import com.tty.lib.enum_type.IconKeyType;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HomeEditor extends BaseInventory {
+public class HomeEditor extends BaseConfigInventory {
 
     public ServerHome currentHome;
 

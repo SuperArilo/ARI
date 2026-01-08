@@ -9,7 +9,7 @@ import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.GuiType;
 import com.tty.function.WarpManager;
-import com.tty.lib.gui.BaseDataItemInventory;
+import com.tty.lib.gui.BaseDataItemConfigInventory;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.enum_type.IconKeyType;
@@ -28,7 +28,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class WarpList extends BaseDataItemInventory<ServerWarp> {
+public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     private final String baseFree = Ari.instance.dataService.getValue("base.free");
 

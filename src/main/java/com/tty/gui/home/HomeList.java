@@ -9,7 +9,7 @@ import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.GuiType;
 import com.tty.function.HomeManager;
-import com.tty.lib.gui.BaseDataItemInventory;
+import com.tty.lib.gui.BaseDataItemConfigInventory;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.enum_type.IconKeyType;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class HomeList extends BaseDataItemInventory<ServerHome> {
+public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     public HomeList(Player player) {
         super(Ari.instance,
