@@ -147,8 +147,8 @@ public class PlayerDeathInfoCollector {
                         info.deathCause);
 
                 // 判断是否为"注定"死亡
-                info.isDestine = determineIfDestine(records, firstAttacker, maxDamageAttacker,
-                        info.deathCause, info.isEscapeAttempt);
+                info.isDestine = this.determineIfDestine(records, firstAttacker, maxDamageAttacker,
+                        info.deathCause);
 
                 Log.debug("combat analysis success, killer: %s, weapon: %s", info.killer.getType().name(), info.weapon != null ? info.weapon.getType().name() : "null");
                 Log.debug("escape attempt: %s, destine: %s", info.isEscapeAttempt, info.isDestine);
@@ -190,14 +190,7 @@ public class PlayerDeathInfoCollector {
      */
     private boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records,
                                        Entity firstAttacker, Entity mainKiller,
-                                       EntityDamageEvent.DamageCause deathCause,
-                                       boolean isEscapeAttempt) {
-
-        // 如果试图逃跑，就是"注定"
-        if (isEscapeAttempt) {
-            Log.debug("destine: player tried to escape");
-            return true;
-        }
+                                       EntityDamageEvent.DamageCause deathCause) {
 
         // 统计不同的攻击者数量
         Set<Entity> uniqueAttackers = new HashSet<>();
