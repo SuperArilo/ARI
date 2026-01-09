@@ -1,6 +1,6 @@
 package com.tty.commands.sub.zako;
 
-import com.tty.commands.args.zako.ZakoInfoPlayer;
+import com.tty.commands.args.zako.ZakoInfoArgs;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ public class ZakoInfo extends BaseLiteralArgumentLiteralCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new ZakoInfoPlayer());
+        return List.of(new ZakoInfoArgs());
     }
 
     @Override

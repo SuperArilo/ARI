@@ -27,9 +27,9 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class ZakoInfoPlayer extends ZakoBaseArgs<String> {
+public class ZakoInfoArgs extends ZakoBaseArgs<String> {
 
-    public ZakoInfoPlayer() {
+    public ZakoInfoArgs() {
         super(true, 3, StringArgumentType.string(), true);
     }
 
