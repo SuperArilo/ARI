@@ -10,7 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -22,7 +21,7 @@ public class CustomPlayerDeathListener implements Listener {
 
     private final PlayerDeathInfoCollector collector = new PlayerDeathInfoCollector();
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         if (!Ari.instance.getConfig().getBoolean("server.custom-death", false)) return;
 
