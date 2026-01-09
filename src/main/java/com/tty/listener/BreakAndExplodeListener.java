@@ -55,6 +55,7 @@ public class BreakAndExplodeListener implements Listener {
     public void onBlockExplode(BlockExplodeEvent event) {
         if (!this.antiExplosion) return;
         Material material = event.getBlock().getType();
+        if (material.isAir()) return;
         if (this.passExplosionList.contains(material.name())) return;
         event.blockList().clear();
         this.utils.spawnFireworks(

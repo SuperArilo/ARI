@@ -138,9 +138,9 @@ public class LastDamageTracker {
                 long threshold = switch (cause) {
                     case MAGIC, POISON, WITHER -> 1500L; // 1.5秒，药水效果持续时间
                     case THORNS -> 1000L; // 1秒，荆棘伤害立即反弹
-                    case FIRE_TICK, FIRE -> 3000L; // 3秒，火焰可能持续燃烧
+                    case FIRE_TICK, FIRE -> 5000L; // 3秒，火焰可能持续燃烧
                     case LIGHTNING, SONIC_BOOM, CUSTOM -> 1000L; // 1秒内被雷劈死或被音爆或者是自定义
-                    case FALL, FALLING_BLOCK, FREEZE -> 4000L; // 4秒内的摔死、被砸死和冻死
+                    case FALL, FALLING_BLOCK, FREEZE -> 5000L; // 4秒内的摔死、被砸死和冻死
                     case FLY_INTO_WALL -> 2000L; //速度太快撞死
                     case BLOCK_EXPLOSION, ENTITY_EXPLOSION -> 3000L; // 3秒内的炸死
                     default -> 2000L; // 2秒默认阈值
