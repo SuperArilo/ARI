@@ -10,7 +10,6 @@ import com.tty.lib.Lib;
 import com.tty.lib.task.CancellableTask;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.PermissionUtils;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import org.bukkit.Bukkit;
@@ -85,8 +84,7 @@ public class PlayerTabManager implements Listener {
         }
 
         final AtomicInteger displayIndex = new AtomicInteger(Bukkit.getMaxPlayers());
-        groupMap.forEach((k, v) -> Audience.audience(v.getPlayers()).forEachAudience(audience -> {
-            Player player = (Player) audience;
+        groupMap.forEach((k, v) -> v.getPlayers().forEach(player -> {
             player.sendPlayerListHeaderAndFooter(this.buildTabLine(this.rawHeaders, player), this.buildTabLine(this.rawFooters, player));
             player.playerListName(ComponentUtils.text(this.buildPlayerRealLine(player, v)));
             player.setPlayerListOrder(displayIndex.getAndDecrement());

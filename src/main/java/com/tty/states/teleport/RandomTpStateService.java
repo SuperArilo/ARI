@@ -93,14 +93,18 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             state.setRunning(true);
         }
         this.searchSafeLocation.search(world, x, z)
-            .whenComplete((location, ex) ->
-                    Lib.Scheduler.run(Ari.instance, i -> {
-                        state.setPending(false);
-                        state.setRunning(false);
-                        if (location == null) return;
-                        state.setTrueLocation(location);
-                        state.setOver(true);
-                    }));
+            .thenAccept((location) ->
+                Lib.Scheduler.run(Ari.instance, i -> {
+                    state.setPending(false);
+                    state.setRunning(false);
+                    if (location == null) return;
+                    state.setTrueLocation(location);
+                    state.setOver(true);
+                }))
+            .exceptionally(e -> {
+                Log.error(e);
+                return null;
+            });
     }
 
     @Override

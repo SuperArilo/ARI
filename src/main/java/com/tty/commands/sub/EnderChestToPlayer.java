@@ -3,6 +3,7 @@ package com.tty.commands.sub;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.gui.OfflineNBTEnderCheat;
+import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
@@ -61,15 +62,24 @@ public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<Strin
         if (b == null) {
             Log.debug("player %s is offline to open ender chest.", uuid.toString());
             OFFLINE_ON_EDIT_ENDER_CHEST_LIST.add(uuid);
-            NBTFileHandle data = Ari.instance.nbtDataService.getData(uuid.toString());
-            ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
-            OfflineNBTEnderCheat cheat = new OfflineNBTEnderCheat(player, data, uuid);
-            cheat.open();
-            for (ReadWriteNBT enderItem : enderItems) {
-                int slot = enderItem.getByte("Slot") & 0xFF;
-                ItemStack itemStack = NBT.itemStackFromNBT(enderItem);
-                cheat.setItem(slot, itemStack);
-            }
+            Lib.Scheduler.runAsync(Ari.instance, i -> {
+                NBTFileHandle data = Ari.instance.nbtDataService.getData(uuid.toString());
+                ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
+                OfflineNBTEnderCheat cheat = new OfflineNBTEnderCheat(player, data, uuid);
+                Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
+                    cheat.open();
+                    for (ReadWriteNBT enderItem : enderItems) {
+                        int slot = enderItem.getByte("Slot") & 0xFF;
+                        ItemStack itemStack = NBT.itemStackFromNBT(enderItem);
+                        cheat.setItem(slot, itemStack);
+                    }
+                }, () -> {
+                    Log.error("read player %s nbt error.");
+                    OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(uuid);
+                });
+            });
+
+
         } else {
             player.openInventory(b.getEnderChest());
         }
