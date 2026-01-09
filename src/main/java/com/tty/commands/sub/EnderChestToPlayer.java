@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<String> {
 
@@ -37,7 +38,7 @@ public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<Strin
 
     @Override
     public String name() {
-        return "player_name";
+        return "name or uuid (string)";
     }
 
     @Override
@@ -87,6 +88,9 @@ public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<Strin
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        return CompletableFuture.completedFuture(Set.of("Kobe"));
+        Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+        Set<String> strings = onlinePlayers.stream().map(Player::getName).collect(Collectors.toSet());
+        if (onlinePlayers.isEmpty() || args.length != 3) return CompletableFuture.completedFuture(strings);
+        return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[2], strings));
     }
 }
