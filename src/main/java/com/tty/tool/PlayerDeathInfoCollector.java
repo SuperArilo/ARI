@@ -109,12 +109,11 @@ public class PlayerDeathInfoCollector {
 
         if (!records.isEmpty()) {
             Entity firstAttacker = null;
-            Entity maxDamageAttacker = null;
-            ItemStack maxDamageWeapon = null;
+            Entity lastAttacker = null;
+            ItemStack lastWeapon = null;
             Location firstAttackLocation = null;
 
-            double maxDamage = 0;
-
+            // 遍历所有记录，寻找第一个攻击者和最后一个攻击者
             for (LastDamageTracker.DamageRecord r : records) {
                 Entity damager = r.damager();
                 if (damager == null) continue;
@@ -129,26 +128,21 @@ public class PlayerDeathInfoCollector {
                     Log.debug("first attacker resolved: %s", actual.getType().name());
                 }
 
-                // 寻找最大伤害攻击者
-                if (r.damage() > maxDamage) {
-                    maxDamage = r.damage();
-                    maxDamageAttacker = actual;
-                    maxDamageWeapon = r.weapon();
-                    Log.debug("new max damage attacker: %s (damage: %s)", actual.getType().name(), r.damage());
-                }
+                // 更新最后一个攻击者
+                lastAttacker = actual;
+                lastWeapon = r.weapon();
+                Log.debug("last attacker updated: %s", actual.getType().name());
             }
 
-            if (maxDamageAttacker != null) {
-                info.killer = maxDamageAttacker;
-                info.weapon = maxDamageWeapon;
+            if (lastAttacker != null) {
+                info.killer = lastAttacker;
+                info.weapon = lastWeapon;
 
                 // 首先判断是否试图逃跑
-                info.isEscapeAttempt = evaluateEscape(firstAttackLocation, info.victim.getLocation(),
-                        info.deathCause);
+                info.isEscapeAttempt = this.evaluateEscape(firstAttackLocation, info.victim.getLocation(), info.deathCause);
 
                 // 判断是否为"注定"死亡
-                info.isDestine = this.determineIfDestine(records, firstAttacker, maxDamageAttacker,
-                        info.deathCause);
+                info.isDestine = this.determineIfDestine(records, firstAttacker, lastAttacker, info.deathCause);
 
                 Log.debug("combat analysis success, killer: %s, weapon: %s", info.killer.getType().name(), info.weapon != null ? info.weapon.getType().name() : "null");
                 Log.debug("escape attempt: %s, destine: %s", info.isEscapeAttempt, info.isDestine);
@@ -189,9 +183,8 @@ public class PlayerDeathInfoCollector {
      * 3. 玩家死于间接伤害，但之前曾被其他攻击者攻击
      */
     private boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records,
-                                       Entity firstAttacker, Entity mainKiller,
+                                       Entity firstAttacker, Entity lastAttacker,
                                        EntityDamageEvent.DamageCause deathCause) {
-
         // 统计不同的攻击者数量
         Set<Entity> uniqueAttackers = new HashSet<>();
         for (LastDamageTracker.DamageRecord record : records) {
@@ -209,12 +202,13 @@ public class PlayerDeathInfoCollector {
             return true;
         }
 
-        //如果是间接伤害死亡，且第一个攻击者和主要攻击者相同（说明是同一个人持续攻击）
-        boolean isIndirectDamage = isIndirectDamageCause(deathCause);
-        if (isIndirectDamage && firstAttacker != null && firstAttacker.equals(mainKiller)) {
-            // 如果是同一个人造成的间接伤害，不算是"注定"
-            Log.debug("destine: indirect damage from same attacker, not destine");
-            return false;
+        // 如果是间接伤害死亡
+        boolean isIndirectDamage = this.isIndirectDamageCause(deathCause);
+        if (isIndirectDamage) {
+            if (firstAttacker != null && lastAttacker != null) {
+                Log.debug("destine: indirect damage from different attacker");
+                return true;
+            }
         }
 
         // 其他情况：非"注定"
