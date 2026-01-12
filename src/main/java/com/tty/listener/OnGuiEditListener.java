@@ -19,7 +19,7 @@ public abstract class OnGuiEditListener extends BaseEditFunctionGuiListener {
     @Override
     public PlayerEditGuiState isHaveState(Player player) {
         GuiEditStateService stateService = Ari.instance.stateMachineManager.get(GuiEditStateService.class);
-        if (stateService.getSTATE_LIST().isEmpty()) return null;
+        if (stateService.stateIsEmpty()) return null;
         if (stateService.isNotHaveState(player)) return null;
         List<PlayerEditGuiState> states = stateService.getStates(player);
         if (states.isEmpty()) {
