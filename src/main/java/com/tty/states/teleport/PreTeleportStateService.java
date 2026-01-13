@@ -16,6 +16,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.List;
 import java.util.Map;
 
 public class PreTeleportStateService extends StateService<PreEntityToEntityState> {
@@ -124,5 +125,9 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
         }
 
         return true;
+    }
+
+    public List<PreEntityToEntityState> getList() {
+        return this.stateList;
     }
 }
