@@ -76,27 +76,21 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
                     PermissionUtils.hasPermission(this.player, serverWarp.getPermission()) ||
                     UUID.fromString(serverWarp.getCreateBy()).equals(this.player.getUniqueId());
 
-            for (String line : rawLore) {
-                Map<String, Component> replacements = new HashMap<>();
+            Map<String, Component> types = new HashMap<>();
+            types.put(IconKeyType.ID.getKey(), Component.text(serverWarp.getId()));
+            types.put(IconKeyType.X.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getX())));
+            types.put(IconKeyType.Y.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getY())));
+            types.put(IconKeyType.Z.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
+            types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
+            types.put(IconKeyType.PLAYER_NAME.getKey(), ComponentUtils.text(playName));
+            Double cost = serverWarp.getCost();
+            types.put(IconKeyType.COST.getKey(), ComponentUtils.text(cost == null || cost == 0 || EconomyUtils.isNull() ? baseFree : cost + EconomyUtils.getNamePlural()));
+            types.put(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.instance.dataService.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
+            types.put(IconKeyType.PERMISSION.getKey(), ComponentUtils.text(Ari.instance.dataService.getValue(hasPermission ? "base.yes_re":"base.no_re")));
 
-                for (IconKeyType keyType : IconKeyType.values()) {
-                    switch (keyType) {
-                        case ID -> replacements.put(keyType.getKey(), ComponentUtils.text(serverWarp.getWarpId()));
-                        case X -> replacements.put(keyType.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getX())));
-                        case Y -> replacements.put(keyType.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getY())));
-                        case Z -> replacements.put(keyType.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
-                        case WORLD_NAME -> replacements.put(keyType.getKey(), Component.text(location.getWorld().getName()));
-                        case PLAYER_NAME -> replacements.put(keyType.getKey(), ComponentUtils.text(playName));
-                        case COST -> {
-                            Double cost = serverWarp.getCost();
-                            replacements.put(keyType.getKey(), ComponentUtils.text(cost == null || cost == 0 || EconomyUtils.isNull() ? baseFree : cost + EconomyUtils.getNamePlural()));
-                        }
-                        case TOP_SLOT -> replacements.put(keyType.getKey(), ComponentUtils.text(Ari.instance.dataService.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
-                        case PERMISSION -> replacements.put(keyType.getKey(), ComponentUtils.text(Ari.instance.dataService.getValue(hasPermission ? "base.yes_re":"base.no_re")));
-                    }
-                }
 
-                textComponents.add(ComponentUtils.text(line, replacements));
+            for (String s : rawLore) {
+                textComponents.add(ComponentUtils.text(s, types));
             }
 
             ItemMeta itemMeta = itemStack.getItemMeta();

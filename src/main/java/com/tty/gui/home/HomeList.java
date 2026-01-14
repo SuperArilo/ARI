@@ -62,19 +62,15 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             List<TextComponent> textComponents = new ArrayList<>();
             Location location = FormatUtils.parseLocation(ph.getLocation());
 
-            for (String line : rawLore) {
-                Map<String, Component> replacements = new HashMap<>();
+            Map<String, Component> types = new HashMap<>();
+            types.put(IconKeyType.ID.getKey(), Component.text(ph.getHomeId()));
+            types.put(IconKeyType.X.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getX())));
+            types.put(IconKeyType.Y.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getY())));
+            types.put(IconKeyType.Z.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
+            types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
 
-                for (IconKeyType keyType : IconKeyType.values()) {
-                    switch (keyType) {
-                        case ID -> replacements.put(keyType.getKey(), ComponentUtils.text(ph.getHomeId()));
-                        case X -> replacements.put(keyType.getKey(), ComponentUtils.text(FormatUtils.formatTwoDecimalPlaces(location.getX())));
-                        case Y -> replacements.put(keyType.getKey(), ComponentUtils.text(FormatUtils.formatTwoDecimalPlaces(location.getY())));
-                        case Z -> replacements.put(keyType.getKey(), ComponentUtils.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
-                        case WORLD_NAME -> replacements.put(keyType.getKey(), ComponentUtils.text(location.getWorld().getName()));
-                    }
-                }
-                textComponents.add(ComponentUtils.text(line, replacements));
+            for (String line : rawLore) {
+                textComponents.add(ComponentUtils.text(line, types));
             }
 
             ItemMeta itemMeta = itemStack.getItemMeta();
