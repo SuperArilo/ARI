@@ -116,7 +116,7 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
                 Log.error(e, "create warp error");
                 player.sendMessage(
                         ComponentUtils.text(
-                                Ari.instance.dataService.getValue("base.on-error")
+                                Ari.DATA_SERVICE.getValue("base.on-error")
                         )
                 );
                 return null;

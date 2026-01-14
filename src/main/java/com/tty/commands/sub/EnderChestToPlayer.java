@@ -52,11 +52,11 @@ public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<Strin
         Player player = (Player) sender;
         UUID uuid = PublicFunctionUtils.parseUUID(args[1]);
         if (uuid == null) {
-            sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.not-exist")));
+            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             return;
         }
         if (OFFLINE_ON_EDIT_ENDER_CHEST_LIST.contains(uuid)) {
-            sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.task-occupied")));
+            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.task-occupied")));
             return;
         }
         Player b = Bukkit.getServer().getPlayer(uuid);
@@ -64,7 +64,7 @@ public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<Strin
             Log.debug("player {} is offline to open ender chest.", uuid.toString());
             OFFLINE_ON_EDIT_ENDER_CHEST_LIST.add(uuid);
             Lib.Scheduler.runAsync(Ari.instance, i -> {
-                NBTFileHandle data = Ari.instance.nbtDataService.getData(uuid.toString());
+                NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(uuid.toString());
                 ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
                 OfflineNBTEnderCheat cheat = new OfflineNBTEnderCheat(player, data, uuid);
                 Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {

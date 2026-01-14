@@ -68,7 +68,7 @@ public class WarpListListener extends BaseGuiListener {
                     switch (eventClick) {
                         case LEFT -> {
                             Location targetLocation = FormatUtils.parseLocation(instance.getLocation());
-                            Ari.instance.stateMachineManager
+                            Ari.STATE_MACHINE_MANAGER
                                 .get(TeleportStateService.class)
                                 .addState(new EntityToLocationCallbackState(
                                     player,

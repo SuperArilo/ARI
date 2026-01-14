@@ -77,7 +77,7 @@ public class ZakoAddArgs extends BaseRequiredArgumentLiteralCommand<String> {
             .whenComplete((v, ex) -> {
                 if (ex != null) {
                     Log.error(ex, "add zako error.");
-                    sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-error")));
+                    sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                 }
             });
     }

@@ -38,7 +38,7 @@ public class back extends BaseLiteralArgumentLiteralCommand {
             return;
         }
 
-        Ari.instance.stateMachineManager
+        Ari.STATE_MACHINE_MANAGER
                 .get(TeleportStateService.class)
                 .addState(new EntityToLocationState(
                         player,

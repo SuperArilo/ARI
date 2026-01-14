@@ -84,7 +84,7 @@ public abstract class ZakoBanBase <T> extends BaseRequiredArgumentLiteralCommand
                 Lib.Scheduler.run(Ari.instance, i -> {
                     Player player = Bukkit.getPlayer(uuid);
                     if (player != null) {
-                        player.kick(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.data-changed")));
+                        player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
 
                         Bukkit.getServer().broadcast(ConfigUtils.t("function.zako.baned", Map.of(LangType.BAN_T0TAL_TIME.getType(), Component.text(string), LangType.BAN_REASON.getType(), ComponentUtils.text(args[3]))));
                         Log.debug("baned player uuid {}. total {}", uuid.toString(), string);

@@ -58,7 +58,7 @@ public class HomeListListener extends BaseGuiListener {
                             return CompletableFuture.completedFuture(false);
                         }
                         if (event.isLeftClick()) {
-                            Ari.instance.stateMachineManager
+                            Ari.STATE_MACHINE_MANAGER
                                 .get(TeleportStateService.class)
                                 .addState(new EntityToLocationState(
                                     player,

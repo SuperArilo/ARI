@@ -55,7 +55,7 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             if (itemStack == null) {
                 Log.error("There is a problem with the homeID: [{}] of the player: [{}]", ph.getHomeId(), this.player.getName());
                 Log.warn("Skip the rendering homeId [{}] process...", ph.getHomeId());
-                this.player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
+                this.player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
                 continue;
             }
 

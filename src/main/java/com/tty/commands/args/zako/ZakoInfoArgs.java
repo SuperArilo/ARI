@@ -93,8 +93,8 @@ public class ZakoInfoArgs extends BaseRequiredArgumentLiteralCommand<String> {
                     Map<String, Component> map = result.map;
                     Player player = Bukkit.getPlayer(UUID.fromString(result.serverPlayer.getPlayerUUID()));
                     WhitelistInstance whitelistInstance = result.whitelistInstance;
-                    map.put(LangType.PLAYER_WORLD.getType(), ComponentUtils.text(player == null ? Ari.instance.dataService.getValue("base.no-record"):player.getWorld().getName()));
-                    map.put(LangType.PLAYER_LOCATION.getType(), ComponentUtils.text(player == null ? Ari.instance.dataService.getValue("base.no-record"): FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())));
+                    map.put(LangType.PLAYER_WORLD.getType(), ComponentUtils.text(player == null ? Ari.DATA_SERVICE.getValue("base.no-record"):player.getWorld().getName()));
+                    map.put(LangType.PLAYER_LOCATION.getType(), ComponentUtils.text(player == null ? Ari.DATA_SERVICE.getValue("base.no-record"): FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())));
 
                     String operator;
                     if(whitelistInstance.getOperator().equals(Operator.CONSOLE.getUuid())) {
@@ -116,7 +116,7 @@ public class ZakoInfoArgs extends BaseRequiredArgumentLiteralCommand<String> {
     }
 
     private @NotNull String getPatternDatetime() {
-        ConfigDataService service = Ari.instance.dataService;
+        ConfigDataService service = Ari.DATA_SERVICE;
 
         return "yyyy"
                 + Objects.toString(service.getValue("base.time-format.year"), "")

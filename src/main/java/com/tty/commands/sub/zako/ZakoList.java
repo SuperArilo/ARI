@@ -61,10 +61,10 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
         repository.getList(pageNum, 10, new WhitelistManager.QueryKey(null)).thenAccept(result -> {
             List<WhitelistInstance> records = result.getRecords();
             if (records.isEmpty()) {
-                sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.page-change.none-next")));
+                sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next")));
                 return;
             }
-            ComponentListPage dataPage = Ari.instance.dataService
+            ComponentListPage dataPage = Ari.DATA_SERVICE
                     .createComponentDataPage(
                             ConfigUtils.t("function.zako.list-title"),
                             baseCommand + (pageNum == 1 ? pageNum:pageNum - 1),

@@ -1,7 +1,6 @@
 package com.tty.enumType;
 
 import com.tty.lib.enum_type.SQLType;
-import com.tty.tool.SQLInstance;
 
 public enum SqlTable {
 
@@ -60,10 +59,8 @@ public enum SqlTable {
         this.sql = sql;
     }
 
-    public String getSql() {
-        return sql.formatted(
-                SQLInstance.getTablePrefix(),
-                SQLInstance.sqlType.equals(SQLType.MYSQL) ? "AUTO_INCREMENT":"AUTOINCREMENT");
+    public String getSql(String tabPrefix, SQLType sqlType) {
+        return sql.formatted(tabPrefix, sqlType.equals(SQLType.MYSQL) ? "AUTO_INCREMENT":"AUTOINCREMENT");
     }
 
 }

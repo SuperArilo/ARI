@@ -77,7 +77,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join"));
         }
         if (OFFLINE_ON_EDIT_ENDER_CHEST_LIST.contains(event.getUniqueId())) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.data-changed")));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
         }
     }
 
@@ -156,7 +156,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             .whenComplete((i, ex) -> {
                 if (ex != null) {
                     Log.error("player {} login in server error.", player.getName());
-                    player.kick(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-error")));
+                    player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                     return;
                 }
                 if(!player.hasPlayedBefore()) {
@@ -187,7 +187,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 if(login) {
                     Bukkit.broadcast(ConfigUtils.t("server.message.on-login", Map.of(LangType.PLAYER_NAME.getType(), Component.text(player.getName()))));
                 }
-                Ari.instance.stateMachineManager
+                Ari.STATE_MACHINE_MANAGER
                         .get(PlayerSaveStateService.class)
                         .addState(new PlayerSaveState(player, nowLoginTime));
             });
@@ -199,7 +199,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         if(Ari.instance.getConfig().getBoolean("server.message.on-leave")) {
             event.quitMessage(ConfigUtils.t("server.message.on-leave", Map.of(LangType.PLAYER_NAME.getType(), Component.text(player.getName()))));
         }
-        List<PlayerSaveState> states = Ari.instance.stateMachineManager
+        List<PlayerSaveState> states = Ari.STATE_MACHINE_MANAGER
                 .get(PlayerSaveStateService.class)
                 .getStates(player);
         if (!states.isEmpty()) {
@@ -210,10 +210,10 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     @EventHandler
     public void onSave(OnZakoSavedEvent event) {
         Player player = event.getPlayer();
-        PlayerSaveStateService service = Ari.instance.stateMachineManager.get(PlayerSaveStateService.class);
+        PlayerSaveStateService service = Ari.STATE_MACHINE_MANAGER.get(PlayerSaveStateService.class);
         if (!service.isNotHaveState(player)) return;
 
-        Ari.instance.stateMachineManager
+        Ari.STATE_MACHINE_MANAGER
                 .get(PlayerSaveStateService.class)
                 .addState(new PlayerSaveState(player, System.currentTimeMillis()));
     }

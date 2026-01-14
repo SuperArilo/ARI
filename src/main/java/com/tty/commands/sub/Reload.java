@@ -23,7 +23,7 @@ public class Reload extends BaseLiteralArgumentLiteralCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("function.reload.doing")));
+        sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.reload.doing")));
         Bukkit.getPluginManager().callEvent(new CustomPluginReloadEvent(sender));
     }
 

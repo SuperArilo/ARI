@@ -86,7 +86,7 @@ public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
                     sender.sendMessage(ConfigUtils.t("function.home.create-success", player));
                 }).exceptionally(i -> {
                     Log.error(i, "create home error");
-                    player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
+                    player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
                     return null;
                 });
         } else {

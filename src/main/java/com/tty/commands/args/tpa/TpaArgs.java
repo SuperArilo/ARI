@@ -41,7 +41,7 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
         if (this.preCheckIsNotPass(sender, args)) return;
         Player owner = (Player) sender;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
-        Ari.instance.stateMachineManager
+        Ari.STATE_MACHINE_MANAGER
                 .get(PreTeleportStateService.class)
                 .addState(new PreEntityToEntityState(
                         owner,

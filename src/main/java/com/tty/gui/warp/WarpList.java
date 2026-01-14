@@ -27,7 +27,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
-    private final String baseFree = Ari.instance.dataService.getValue("base.free");
+    private final String baseFree = Ari.DATA_SERVICE.getValue("base.free");
 
     public WarpList(Player player) {
         super(Ari.instance,
@@ -54,7 +54,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             if (itemStack == null) {
                 Log.warn("There is a problem with the warpID: [{}] of the player: [{}]", serverWarp.getWarpId(), this.player.getName());
                 Log.error("Skip the rendering warpId [{}] process...", serverWarp.getWarpId());
-                this.player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
+                this.player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
                 continue;
             }
 
@@ -85,8 +85,8 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             types.put(IconKeyType.PLAYER_NAME.getKey(), ComponentUtils.text(playName));
             Double cost = serverWarp.getCost();
             types.put(IconKeyType.COST.getKey(), ComponentUtils.text(cost == null || cost == 0 || EconomyUtils.isNull() ? baseFree : cost + EconomyUtils.getNamePlural()));
-            types.put(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.instance.dataService.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
-            types.put(IconKeyType.PERMISSION.getKey(), ComponentUtils.text(Ari.instance.dataService.getValue(hasPermission ? "base.yes_re":"base.no_re")));
+            types.put(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
+            types.put(IconKeyType.PERMISSION.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(hasPermission ? "base.yes_re":"base.no_re")));
 
 
             for (String s : rawLore) {

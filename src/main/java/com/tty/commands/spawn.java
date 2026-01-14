@@ -40,7 +40,7 @@ public class spawn extends BaseLiteralArgumentLiteralCommand {
             player.sendMessage(ConfigUtils.t("function.spawn.no-spawn"));
             return;
         }
-        Ari.instance.stateMachineManager
+        Ari.STATE_MACHINE_MANAGER
             .get(TeleportStateService.class)
             .addState(new EntityToLocationState(
                     player,

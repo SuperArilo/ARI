@@ -72,12 +72,12 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                 ComponentUtils.text(message, Map.of(LangType.TPA_SENDER.getType(), ComponentUtils.text(owner.getName())))
                         .appendNewline()
                         .append(ComponentUtils.setClickEventText(
-                                Ari.instance.dataService.getValue("function.public.agree"),
+                                Ari.DATA_SERVICE.getValue("function.public.agree"),
                                 ClickEvent.Action.RUN_COMMAND,
                                 "/ari tpaaccept " + owner.getName()))
-                        .append(ComponentUtils.text(Ari.instance.dataService.getValue("function.public.center")))
+                        .append(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.center")))
                         .append(ComponentUtils.setClickEventText(
-                                Ari.instance.dataService.getValue("function.public.refuse"),
+                                Ari.DATA_SERVICE.getValue("function.public.refuse"),
                                 ClickEvent.Action.RUN_COMMAND,
                                 "/ari tparefuse " + owner.getName()))
         );
@@ -102,7 +102,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
         Entity owner = state.getOwner();
         Entity target = state.getTarget();
-        StateMachineManager manager = Ari.instance.stateMachineManager;
+        StateMachineManager manager = Ari.STATE_MACHINE_MANAGER;
         //判断当前实体是否在传送冷却中
         if (!manager.get(CoolDownStateService.class).getStates(owner).isEmpty()) {
             owner.sendMessage(ConfigUtils.t("teleport.cooling"));

@@ -44,7 +44,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             state.getOwner().sendMessage(ConfigUtils.t("function.rtp.world-disable"));
             return false;
         }
-        StateMachineManager manager = Ari.instance.stateMachineManager;
+        StateMachineManager manager = Ari.STATE_MACHINE_MANAGER;
 
         //判断当前实体是否在传送冷却中
         if (!manager.get(CoolDownStateService.class).getStates(owner).isEmpty()) {
@@ -124,7 +124,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         owner.clearTitle();
         owner.sendMessage(ConfigUtils.t("function.rtp.location-found"));
 
-        Ari.instance.stateMachineManager
+        Ari.STATE_MACHINE_MANAGER
             .get(TeleportStateService.class)
                 .addState(new EntityToLocationState(
                     owner,

@@ -1,8 +1,6 @@
 package com.tty;
 
 import com.google.gson.reflect.TypeToken;
-import com.tty.entity.*;
-import com.tty.entity.cache.*;
 import com.tty.enumType.FilePath;
 import com.tty.function.*;
 import com.tty.lib.enum_type.GuiType;
@@ -46,13 +44,11 @@ public class Ari extends JavaPlugin {
     public static boolean PLUGIN_IS_DISABLED = false;
     public static Boolean DEBUG = false;
     public static final ConfigInstance C_INSTANCE = new ConfigInstance();
-    public SQLInstance sqlInstance;
+    public static SQLInstance SQL_INSTANCE;
     public static RepositoryManager REPOSITORY_MANAGER = new RepositoryManager();
-
-    public ConfigDataService dataService;
-    public NBTDataService nbtDataService;
-
-    public StateMachineManager stateMachineManager;
+    public static ConfigDataService DATA_SERVICE;
+    public static NBTDataService NBT_DATA_SERVICE;
+    public static StateMachineManager STATE_MACHINE_MANAGER;
 
     @Override
     public void onLoad() {
@@ -68,19 +64,12 @@ public class Ari extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
+        SQL_INSTANCE = new SQLInstance();
+        STATE_MACHINE_MANAGER = new StateMachineManager(this);
         PublicFunctionUtils.loadPlugin("Vault", Economy.class, EconomyUtils::setInstance);
         PublicFunctionUtils.loadPlugin("Vault", Permission.class, PermissionUtils::setInstance);
-        PublicFunctionUtils.loadPlugin("arilib", ConfigDataService.class, i -> this.dataService = i);
-        PublicFunctionUtils.loadPlugin("arilib", NBTDataService.class, i -> this.nbtDataService = i);
-
-        this.sqlInstance = new SQLInstance();
-        this.sqlInstance.start();
-
-        this.registerRepository();
-
-        this.stateMachineManager = new StateMachineManager(this);
-        this.stateMachineManager.initDefaultStateMachines();
+        PublicFunctionUtils.loadPlugin("arilib", ConfigDataService.class, i -> DATA_SERVICE = i);
+        PublicFunctionUtils.loadPlugin("arilib", NBTDataService.class, i -> NBT_DATA_SERVICE = i);
 
         //初始化rtp
         RandomTpStateService.setRtpWorldConfig();
@@ -93,8 +82,8 @@ public class Ari extends JavaPlugin {
     @Override
     public void onDisable() {
         PLUGIN_IS_DISABLED = true;
-        if (this.stateMachineManager != null) {
-            this.stateMachineManager.forEach(StateService::abort);
+        if (STATE_MACHINE_MANAGER != null) {
+            STATE_MACHINE_MANAGER.forEach(StateService::abort);
         }
         REPOSITORY_MANAGER.clearAllCache();
         SQLInstance.close();
@@ -149,14 +138,6 @@ public class Ari extends JavaPlugin {
             }
             C_INSTANCE.setConfig(filePath.name(), YamlConfiguration.loadConfiguration(file));
         }
-    }
-
-    public void registerRepository() {
-        REPOSITORY_MANAGER.register(ServerHome.class, new PlayerHomeRepository(new HomeManager(true)));
-        REPOSITORY_MANAGER.register(BanPlayer.class, new BanPlayerRepository(new BanPlayerManager(true)));
-        REPOSITORY_MANAGER.register(ServerPlayer.class, new ServerPlayerRepository(new PlayerManager(true)));
-        REPOSITORY_MANAGER.register(ServerWarp.class, new ServerWarpRepository(new WarpManager(true)));
-        REPOSITORY_MANAGER.register(WhitelistInstance.class, new WhitelistRepository(new WhitelistManager(true)));
     }
 
     @SuppressWarnings("deprecation")

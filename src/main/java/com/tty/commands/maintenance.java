@@ -56,7 +56,7 @@ public class maintenance extends BaseLiteralArgumentLiteralCommand {
                     player,
                     i -> {
                         if (!player.isOnline()) return;
-                        player.kick(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.data-changed")));
+                        player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
                     },
                     () -> {},
                     this.getMaintenanceKickDelay() * 20L);

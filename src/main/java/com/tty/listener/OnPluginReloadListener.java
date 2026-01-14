@@ -18,15 +18,15 @@ public class OnPluginReloadListener implements Listener {
         Ari.reloadAllConfig();
         Log.init(Ari.instance.getLogger(), Ari.DEBUG);
         if (Ari.DEBUG) {
-            Ari.instance.sqlInstance.reconnect();
+            Ari.SQL_INSTANCE.reconnect();
         }
         RandomTpStateService.setRtpWorldConfig();
         Ari.REPOSITORY_MANAGER.clearAllCache();
-        Ari.instance.stateMachineManager.forEach(StateService::abort);
+        Ari.STATE_MACHINE_MANAGER.forEach(StateService::abort);
 
         //重新添加玩家保存state
         PlayerSaveStateService.addPlayerState();
-        event.getSender().sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("function.reload.success")));
+        event.getSender().sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.reload.success")));
     }
 
 }

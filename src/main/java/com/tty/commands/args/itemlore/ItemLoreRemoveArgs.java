@@ -48,7 +48,7 @@ public class ItemLoreRemoveArgs extends BaseRequiredArgumentLiteralCommand<Integ
         String content = args[2];
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         if (mainHand.isEmpty()) {
-            player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-player.hand-no-item")));
+            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
             return;
         }
         ItemMeta itemMeta = mainHand.getItemMeta();
@@ -63,7 +63,7 @@ public class ItemLoreRemoveArgs extends BaseRequiredArgumentLiteralCommand<Integ
             }
             lore.remove(index);
         } catch (Exception e) {
-            player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-edit.input-error")));
+            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.input-error")));
         }
         itemMeta.lore(lore);
         mainHand.setItemMeta(itemMeta);

@@ -28,7 +28,7 @@ public class rtp extends BaseLiteralArgumentLiteralCommand {
     public void execute(CommandSender sender, String[] args) {
         if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.RTP_CONFIG.name()))) return;
         Player player = (Player) sender;
-        Ari.instance.stateMachineManager
+        Ari.STATE_MACHINE_MANAGER
                 .get(RandomTpStateService.class)
                 .addState(new RandomTpState(
                         player,

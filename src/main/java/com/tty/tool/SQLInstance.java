@@ -10,6 +10,7 @@ import com.tty.lib.Log;
 import com.tty.lib.enum_type.SQLType;
 import com.tty.mapper.*;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.SqlSession;
@@ -20,10 +21,16 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.sql.Statement;
 
+@SuppressWarnings("SqlSourceToSinkFlow")
 public class SQLInstance {
 
-    public static SQLType sqlType;
+    @Getter
+    public SQLType sqlType;
     public static SqlSessionFactory SESSION_FACTORY;
+
+    public SQLInstance() {
+        this.start();
+    }
 
     public void start() {
         Log.debug("Start connecting");
@@ -42,11 +49,11 @@ public class SQLInstance {
         try (SqlSession connection = SESSION_FACTORY.openSession()) {
             for (SqlTable value : SqlTable.values()) {
                 try (Statement statement = connection.getConnection().createStatement()) {
-                    statement.execute(value.getSql());
+                    statement.execute(value.getSql(this.getTablePrefix(), this.getSqlType()));
                 }
             }
         } catch (Exception e) {
-            Log.error(e, "sql error");
+            Log.error(e);
         }
 
     }
@@ -100,7 +107,7 @@ public class SQLInstance {
         SESSION_FACTORY = new SqlSessionFactoryBuilder().build(configuration);
     }
 
-    public static String getTablePrefix() {
+    public String getTablePrefix() {
         return Ari.instance.getConfig().getString("data.table-prefix", "ari");
     }
 

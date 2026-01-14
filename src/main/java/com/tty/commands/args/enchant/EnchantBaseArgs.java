@@ -93,7 +93,7 @@ public abstract class EnchantBaseArgs <T> extends BaseRequiredArgumentLiteralCom
         itemMeta.addEnchant(enchantment, level, forceLevel);
         itemStack.setItemMeta(itemMeta);
 
-        String value = Ari.instance.dataService.getValue("enchantment." + enchantment.key().value());
+        String value = Ari.DATA_SERVICE.getValue("enchantment." + enchantment.key().value());
         sender.sendMessage(ConfigUtils.t("function.enchant.enchant-success",
                 Map.of(LangType.ENCHANT_NAME.getType(), Component.text(value), LangType.ENCHANT_LEVEL.getType(), Component.text(level))));
     }

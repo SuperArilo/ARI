@@ -50,7 +50,7 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
         Player owner = (Player) sender;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
 
-        Ari.instance.stateMachineManager
+        Ari.STATE_MACHINE_MANAGER
                 .get(PreTeleportStateService.class)
                 .addState(new PreEntityToEntityState(
                         owner,
