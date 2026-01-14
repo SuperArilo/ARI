@@ -58,7 +58,7 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
 
         sender.sendMessage(ConfigUtils.t("function.zako.list-requesting"));
         EntityRepository<Object, WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
-        repository.getList(pageNum, 10, new WhitelistManager.QueryKey(null)).thenAccept(result -> {
+        repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new WhitelistManager.QueryKey(null)).thenAccept(result -> {
             List<WhitelistInstance> records = result.getRecords();
             if (records.isEmpty()) {
                 sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next")));
