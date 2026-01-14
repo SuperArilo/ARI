@@ -52,8 +52,8 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
             ItemStack itemStack = this.createItemStack(serverWarp.getShowMaterial());
             if (itemStack == null) {
-                Log.warn("There is a problem with the warpID: [%s] of the player: [%s]", serverWarp.getWarpId(), this.player.getName());
-                Log.error("Skip the rendering warpId [%s] process...", serverWarp.getWarpId());
+                Log.warn("There is a problem with the warpID: [{}] of the player: [{}]", serverWarp.getWarpId(), this.player.getName());
+                Log.error("Skip the rendering warpId [{}] process...", serverWarp.getWarpId());
                 this.player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));
                 continue;
             }

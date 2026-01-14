@@ -157,7 +157,7 @@ public class LastDamageTracker {
 
         //检查是否涉及玩家
         boolean involvesPlayer = this.checkInvolvesPlayer(victim, resolvedAttacker, directEntity);
-        Log.debug("[CHECK_RESULT] victim=%s, involvesPlayer=%s, resolvedAttacker=%s",
+        Log.debug("[CHECK_RESULT] victim={}, involvesPlayer=%s, resolvedAttacker=%s",
                 victim != null ? victim.getType().name() : "null",
                 involvesPlayer,
                 resolvedAttacker != null ? resolvedAttacker.getType().name() : "null");

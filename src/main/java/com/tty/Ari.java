@@ -144,7 +144,7 @@ public class Ari extends JavaPlugin {
                 try {
                     Ari.instance.saveResource(path, true);
                 } catch (Exception e) {
-                    Log.error("can not find file %s, path %s .", filePath.getNickName(), path);
+                    Log.error("can not find file {}, path {} .", filePath.getNickName(), path);
                 }
             }
             C_INSTANCE.setConfig(filePath.name(), YamlConfiguration.loadConfiguration(file));
@@ -173,8 +173,8 @@ public class Ari extends JavaPlugin {
         String bukkitVersion = Bukkit.getServer().getVersion();
         Log.info("");
         Log.info("        _   ");
-        Log.info("  |    /_\\  %s", pluginInfo);
-        Log.info("  |___/   \\ Running on %s %s", bukkitName, bukkitVersion);
+        Log.info("  |    /_\\  {}", pluginInfo);
+        Log.info("  |___/   \\ Running on {} {}", bukkitName, bukkitVersion);
         Log.info("");
     }
 }

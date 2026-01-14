@@ -62,7 +62,7 @@ public class PlayerDeathInfoCollector {
             List<String> resolvedKeys = new ArrayList<>();
             String basePath = isDestine ? keyPath + ".destine" : keyPath;
             findMessages(basePath, killerName, type, pool, resolvedKeys);
-            Log.debug("DeathMessage resolved keys: %s", String.join(", ", resolvedKeys));
+            Log.debug("DeathMessage resolved keys: {}", String.join(", ", resolvedKeys));
             return pool.isEmpty() ? "" : pool.get(PublicFunctionUtils.randomGenerator(0, pool.size() - 1));
         }
 
@@ -102,10 +102,10 @@ public class PlayerDeathInfoCollector {
         info.isEscapeAttempt = false;
         info.isDestine = false;
 
-        Log.debug("death cause resolved: %s", info.deathCause);
+        Log.debug("death cause resolved: {}", info.deathCause);
 
         List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(info.victim);
-        Log.debug("damage records count: %s", records.size());
+        Log.debug("damage records count: {}", records.size());
 
         if (!records.isEmpty()) {
             Entity firstAttacker = null;
@@ -125,13 +125,13 @@ public class PlayerDeathInfoCollector {
                 if (firstAttacker == null) {
                     firstAttacker = actual;
                     firstAttackLocation = r.location();
-                    Log.debug("first attacker resolved: %s", actual.getType().name());
+                    Log.debug("first attacker resolved: {}", actual.getType().name());
                 }
 
                 // 更新最后一个攻击者
                 lastAttacker = actual;
                 lastWeapon = r.weapon();
-                Log.debug("last attacker updated: %s", actual.getType().name());
+                Log.debug("last attacker updated: {}", actual.getType().name());
             }
 
             if (lastAttacker != null) {

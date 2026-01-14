@@ -51,14 +51,14 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         try {
             banPlayer = banPlayerEntityRepository.get(new BanPlayerManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
-            Log.error(e, "query ban list error on uuid %s", uuid.toString());
+            Log.error(e, "query ban list error on uuid {}", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
             return;
         }
         if (banPlayer == null) return;
         if (banPlayer.getEndTime() <= System.currentTimeMillis()) {
             banPlayerEntityRepository.delete(banPlayer);
-            Log.debug("free player uuid %s.", banPlayer.getPlayerUUID());
+            Log.debug("free player uuid {}.", banPlayer.getPlayerUUID());
         } else {
             List<String> value = Ari.C_INSTANCE.getValue("server.player.baned", FilePath.LANG, new TypeToken<List<String>>() {
             }.getType(), List.of());
@@ -91,7 +91,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         try {
             instance = whitelistInstanceEntityRepository.get(new WhitelistManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
-            Log.error(e, "check whitelist on uuid %s error.", uuid.toString());
+            Log.error(e, "check whitelist on uuid {} error.", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(e.getMessage()));
             return;
         }

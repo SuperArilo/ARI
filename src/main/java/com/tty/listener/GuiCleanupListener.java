@@ -55,7 +55,7 @@ public class GuiCleanupListener implements Listener {
                 Lib.Scheduler.runAsync(Ari.instance, i -> {
                     try {
                         data.save();
-                        Log.debug("ender chest nbt save player %s success.", cheat.getTarget().toString());
+                        Log.debug("ender chest nbt save player {} success.", cheat.getTarget().toString());
                         OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(cheat.getTarget());
                         Lib.Scheduler.run(Ari.instance, t -> baseInventory.cleanup());
                     } catch (IOException e) {

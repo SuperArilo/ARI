@@ -87,7 +87,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
         int x = (int) Math.min(PublicFunctionUtils.randomGenerator((int) rtpConfig.getMin(), (int) rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
         int z = (int) Math.min(PublicFunctionUtils.randomGenerator((int) rtpConfig.getMin(), (int) rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
-        Log.debug("player %s search count %s. total %s.", state.getOwner().getName(), state.getCount(), state.getMax_count());
+        Log.debug("player {} search count {}. total {}.", state.getOwner().getName(), state.getCount(), state.getMax_count());
         synchronized (state) {
             if (state.getTrueLocation() != null || state.isRunning() || state.isOver()) return;
             state.setRunning(true);

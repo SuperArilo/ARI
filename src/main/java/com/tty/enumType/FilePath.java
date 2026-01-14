@@ -43,7 +43,7 @@ public enum FilePath implements FilePathEnum {
         try {
             filePath = Arrays.stream(FilePath.values()).filter(i -> i.nickName.equals(type.getKey())).findFirst().orElse(null);
         } catch (Exception e) {
-            Log.debug("type %s is not in FilePath", type.getKey());
+            Log.debug("type {} is not in FilePath", type.getKey());
             filePath = null;
         }
         return filePath;

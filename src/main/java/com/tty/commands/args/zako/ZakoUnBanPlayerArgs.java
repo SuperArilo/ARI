@@ -63,7 +63,7 @@ public class ZakoUnBanPlayerArgs extends BaseRequiredArgumentLiteralCommand<Stri
             })
             .whenComplete((i, e) -> {
                 if (e == null) return;
-                Log.error("delete ban player uuid %s error.", uuid.toString());
+                Log.error("delete ban player uuid {} error.", uuid.toString());
             });
     }
 }

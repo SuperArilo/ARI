@@ -30,7 +30,7 @@ public class GuiEditStateService extends StateService<PlayerEditGuiState> {
             return;
         }
         state.setPending(false);
-        Log.debug("checking player %s edit gui %s. type %s", owner.getName(), state.getI().type, state.getFunctionType());
+        Log.debug("checking player {} edit gui {}. type {}", owner.getName(), state.getI().type, state.getFunctionType());
     }
 
     @Override
@@ -54,7 +54,7 @@ public class GuiEditStateService extends StateService<PlayerEditGuiState> {
     @Override
     protected void onEarlyExit(PlayerEditGuiState state) {
         Player owner = (Player) state.getOwner();
-        Log.debug("player %s edit status finish.", owner.getName());
+        Log.debug("player {} edit status finish.", owner.getName());
     }
 
     @Override
@@ -62,7 +62,7 @@ public class GuiEditStateService extends StateService<PlayerEditGuiState> {
         Player owner = (Player) state.getOwner();
         owner.sendMessage(LibConfigUtils.t("base.on-edit.timeout-cancel"));
         owner.clearTitle();
-        Log.debug("player %s edit status timeout.", owner.getName());
+        Log.debug("player {} edit status timeout.", owner.getName());
     }
 
     @Override

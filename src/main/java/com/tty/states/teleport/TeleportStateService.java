@@ -71,7 +71,7 @@ public class TeleportStateService extends StateService<State> {
                 200
         ));
         state.setPending(false);
-        Log.debug("checking entity %s teleporting. count %s, max_count %s", owner.getName(), count, maxCount);
+        Log.debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), count, maxCount);
     }
 
 
@@ -111,7 +111,7 @@ public class TeleportStateService extends StateService<State> {
     protected void onEarlyExit(State state) {
         Entity owner = state.getOwner();
         owner.clearTitle();
-        Log.debug("entity %s teleport state break.", owner.getName());
+        Log.debug("entity {} teleport state break.", owner.getName());
         this.removeEntityInitData(owner);
     }
 
@@ -197,7 +197,7 @@ public class TeleportStateService extends StateService<State> {
     private void handleTeleportAfter(Entity owner, Location location, Runnable removeInit, Runnable addState) {
         removeInit.run();
         addState.run();
-        Log.debug("Entity %s teleport to x: %s, y: %s, z: %s success.", owner.getName(), location.getX(), location.getY(), location.getZ());
+        Log.debug("entity {} teleport to x: {}, y: %s, z: %s success.", owner.getName(), location.getX(), location.getY(), location.getZ());
     }
 
 }

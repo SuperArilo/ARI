@@ -115,7 +115,7 @@ public class EditWarpListener extends OnGuiEditListener {
                 warpEditor.currentWarp.setShowMaterial(current.name());
             }
             case SAVE -> {
-                Log.debug("start saving warp id: %s", warpEditor.currentWarp.getWarpId());
+                Log.debug("start saving warp id: {}", warpEditor.currentWarp.getWarpId());
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.ing"))));
                 clickItem.setItemMeta(clickMeta);
                 CompletableFuture<Boolean> future = warpEntityRepository.update(warpEditor.currentWarp);

@@ -41,14 +41,14 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         String playerName = owner.getName();
         //判断玩家是否已经 sit 了
         if (!this.getStates(owner).isEmpty()) {
-            Log.debug("player %s is sited. skip...", playerName);
+            Log.debug("player {} is sited. skip...", playerName);
             return false;
         }
         //获取列表判断是否满足的方块
         Block sitBlock = state.getSitBlock();
         String sitBlockName = sitBlock.getType().name();
         if (this.getDisableList().contains(sitBlockName)) {
-            Log.debug("player %s interact the block %s is disabled", playerName, sitBlockName);
+            Log.debug("player {} interact the block {} is disabled", playerName, sitBlockName);
             return false;
         }
 
@@ -85,7 +85,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
 
         Player owner = (Player) state.getOwner();
         if (state.getTool_entity() == null) {
-            Log.error("player %s tool entity is null", owner.getName());
+            Log.error("player {} tool entity is null", owner.getName());
             state.setOver(true);
             return;
         }
@@ -98,7 +98,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                 owner.isInsideVehicle();
         if (b) {
             state.setPending(false);
-            Log.debug("player %s is sitting now.", owner.getName());
+            Log.debug("player {} is sitting now.", owner.getName());
         } else {
             state.setOver(true);
         }
@@ -125,7 +125,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             }
         );
 
-        Log.debug("player %s sit block %s.", state.getOwner().getName(), sitBlock.getType().name());
+        Log.debug("player {} sit block %s.", state.getOwner().getName(), sitBlock.getType().name());
     }
 
     @Override

@@ -42,23 +42,23 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
     @Override
     protected void passAddState(PlayerSaveState state) {
-        Log.debug("added player %s state to save.", state.getOwner().getName());
+        Log.debug("added player {} state to save.", state.getOwner().getName());
     }
 
     @Override
     protected void onEarlyExit(PlayerSaveState state) {
-        Log.debug("stop save player %s data", state.getOwner().getName());
+        Log.debug("stop save player {} data", state.getOwner().getName());
     }
 
     @Override
     protected void onFinished(PlayerSaveState state) {
-        Log.debug("start save player data %s.", state.getOwner().getName());
+        Log.debug("start save player data {}.", state.getOwner().getName());
         this.savePlayerData(state, true);
     }
 
     @Override
     protected void onServiceAbort(PlayerSaveState state) {
-        Log.debug("player save service abort. saving %s.", state.getOwner().getName());
+        Log.debug("player save service abort. saving {}.", state.getOwner().getName());
         this.savePlayerData(state, !Ari.PLUGIN_IS_DISABLED);
     }
 
@@ -78,7 +78,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
         this.repository.get(new PlayerManager.QueryKey(uuid))
             .thenCompose(serverPlayer -> {
                 if (serverPlayer == null) {
-                    Log.error("Player data not found: %s", uuid);
+                    Log.error("Player data not found: {}", uuid);
                     return CompletableFuture.completedFuture(false);
                 }
                 serverPlayer.setTotalOnlineTime(serverPlayer.getTotalOnlineTime() + onlineDuration);
@@ -86,19 +86,19 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
             })
             .thenAccept(success -> {
                 if (success) {
-                    Log.debug("Saved player data: %s", player.getName());
+                    Log.debug("Saved player data: {}", player.getName());
                 } else {
-                    Log.error("Failed to save player data: %s", player.getName());
+                    Log.error("Failed to save player data: {}", player.getName());
                 }
             })
             .whenComplete((result, ex) -> {
                 if (ex != null) {
-                    Log.error(ex, "Error saving player data for %s", player.getName());
+                    Log.error(ex, "Error saving player data for {}", player.getName());
                 }
                 if (this.repository.isAsync() && player.isOnline()) {
                     Lib.Scheduler.run(Ari.instance, i -> Bukkit.getPluginManager().callEvent(new OnZakoSavedEvent(player)));
                 } else {
-                    Log.debug("skip player %s save event.", player.getName());
+                    Log.debug("skip player {} save event.", player.getName());
                 }
             });
     }

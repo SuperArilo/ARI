@@ -60,7 +60,7 @@ public class WarpListListener extends BaseGuiListener {
                 //从数据库查询最新的
                 Ari.REPOSITORY_MANAGER.get(ServerWarp.class).get(new WarpManager.QueryKey(warpId, null)).thenAccept((instance) -> {
                     if (instance == null) {
-                        Log.error("can't find warpId: %s", warpId);
+                        Log.error("can't find warpId: {}", warpId);
                         return;
                     }
                     boolean isOwner = UUID.fromString(instance.getCreateBy()).equals(player.getUniqueId());
@@ -115,7 +115,7 @@ public class WarpListListener extends BaseGuiListener {
                         }
                     }
                 }).exceptionally(i -> {
-                   Log.error(i, "get warp id %s error", warpId);
+                   Log.error(i, "get warp id {} error", warpId);
                    return null;
                 });
             }

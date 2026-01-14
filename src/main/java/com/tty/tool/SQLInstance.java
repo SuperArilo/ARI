@@ -33,7 +33,7 @@ public class SQLInstance {
             Log.warn("storage-type is null, Running sqlite mode");
             sqlType = SQLType.SQLITE;
         }
-        Log.debug("The database type is %s", sqlType.getType());
+        Log.debug("The database type is {}", sqlType.getType());
         switch (sqlType) {
             case MYSQL -> this.createMysql();
             case SQLITE -> this.createSQLite();
