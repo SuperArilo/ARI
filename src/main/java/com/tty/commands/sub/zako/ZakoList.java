@@ -3,7 +3,6 @@ package com.tty.commands.sub.zako;
 import com.tty.Ari;
 import com.tty.commands.args.zako.ZakoListArgs;
 import com.tty.entity.WhitelistInstance;
-import com.tty.function.WhitelistManager;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
