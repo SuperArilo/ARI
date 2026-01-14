@@ -197,7 +197,7 @@ public class TeleportStateService extends StateService<State> {
     private void handleTeleportAfter(Entity owner, Location location, Runnable removeInit, Runnable addState) {
         removeInit.run();
         addState.run();
-        Log.debug("entity {} teleport to x: {}, y: %s, z: %s success.", owner.getName(), location.getX(), location.getY(), location.getZ());
+        Log.debug("entity {} teleport to x: {}, y: {}, z: {} success.", owner.getName(), location.getX(), location.getY(), location.getZ());
     }
 
 }

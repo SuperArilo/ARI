@@ -103,7 +103,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 n.setOperator(Operator.CONSOLE.getUuid());
                 whitelistInstanceEntityRepository.create(n)
                     .exceptionally(i -> {
-                        Log.error(i, "player uuid %s login error.", uuid.toString());
+                        Log.error(i, "player uuid {} login error.", uuid.toString());
                         event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(i.getMessage()));
                         return null;
                     });
@@ -122,7 +122,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         }
         if (serverPlayer == null) return;
         if (serverPlayer.getPlayerName().equals(event.getName())) return;
-        Log.debug("layer changed name. old: %s, new: %s", serverPlayer.getPlayerName(), event.getName());
+        Log.debug("layer changed name. old: {}, new: {}", serverPlayer.getPlayerName(), event.getName());
         serverPlayer.setPlayerName(event.getName());
         playerEntityRepository.update(serverPlayer);
 
@@ -155,7 +155,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             })
             .whenComplete((i, ex) -> {
                 if (ex != null) {
-                    Log.error("player %s login in server error.", player.getName());
+                    Log.error("player {} login in server error.", player.getName());
                     player.kick(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-error")));
                     return;
                 }

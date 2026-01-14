@@ -49,7 +49,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
             return;
         }
         state.setPending(false);
-        Log.debug("checking player {} -> %s request. count %s, max_count %s", owner.getName(), target.getName(), state.getCount(), state.getMax_count());
+        Log.debug("checking player {} -> {} request. count {}, max_count {}", owner.getName(), target.getName(), state.getCount(), state.getMax_count());
     }
 
     @Override
@@ -89,7 +89,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
     @Override
     protected void onFinished(PreEntityToEntityState state) {
-        Log.debug("player %s send to %s teleport request expired",  state.getOwner().getName(), state.getTarget().getName());
+        Log.debug("player {} send to {} teleport request expired",  state.getOwner().getName(), state.getTarget().getName());
     }
 
     @Override

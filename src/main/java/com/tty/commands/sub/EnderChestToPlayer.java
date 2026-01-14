@@ -61,7 +61,7 @@ public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<Strin
         }
         Player b = Bukkit.getServer().getPlayer(uuid);
         if (b == null) {
-            Log.debug("player %s is offline to open ender chest.", uuid.toString());
+            Log.debug("player {} is offline to open ender chest.", uuid.toString());
             OFFLINE_ON_EDIT_ENDER_CHEST_LIST.add(uuid);
             Lib.Scheduler.runAsync(Ari.instance, i -> {
                 NBTFileHandle data = Ari.instance.nbtDataService.getData(uuid.toString());
@@ -75,7 +75,7 @@ public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<Strin
                         cheat.setItem(slot, itemStack);
                     }
                 }, () -> {
-                    Log.error("read player %s nbt error.");
+                    Log.error("read player {} nbt error.");
                     OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(uuid);
                 });
             });

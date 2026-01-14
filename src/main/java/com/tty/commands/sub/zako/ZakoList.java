@@ -78,7 +78,7 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
                 OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(instancePlayerUUID));
                 String name = offlinePlayer.getName();
                 if (name == null) {
-                    Log.debug("uuid %s player is null. the possible reason is that the player has not logged into the server.", instancePlayerUUID);
+                    Log.debug("uuid {} player is null. the possible reason is that the player has not logged into the server.", instancePlayerUUID);
                 }
                 TextComponent set = ComponentUtils.setClickEventText(Ari.C_INSTANCE.getValue("server.player.zako." + (name == null ? "unable-record":"list-show"), FilePath.LANG),
                         Map.of(LangType.PLAYER_NAME.getType(), Component.text(name == null ? instancePlayerUUID:name)),

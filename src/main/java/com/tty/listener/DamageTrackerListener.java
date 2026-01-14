@@ -99,7 +99,7 @@ public class DamageTrackerListener implements Listener {
                     Lib.Scheduler.runAtEntity(
                             Ari.instance,
                             e,
-                            t -> Log.debug("damage_tracker: remove victim entity %s record.", e.getName()),
+                            t -> Log.debug("damage_tracker: remove victim entity {} record.", e.getName()),
                             null
                     );
                 }

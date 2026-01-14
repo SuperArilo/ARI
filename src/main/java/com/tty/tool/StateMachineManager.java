@@ -16,27 +16,22 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class StateMachineManager {
 
-    private final JavaPlugin plugin;
     private final Map<Class<? extends StateService<?>>, StateService<? extends State>> stateMachines = new HashMap<>();
 
     public StateMachineManager(JavaPlugin plugin) {
-        this.plugin = plugin;
+        this.registerStateMachine(new PreTeleportStateService(20L, 1L, false, plugin));
+        this.registerStateMachine(new TeleportStateService(20L, 1L, false, plugin));
+        this.registerStateMachine(new CoolDownStateService(20L, 1L, true, plugin));
+        this.registerStateMachine(new RandomTpStateService(20L, 1L, true, plugin));
+        this.registerStateMachine(new PlayerSitActionStateService(20L, 1L, false, plugin));
+        this.registerStateMachine(new PlayerRideActionStateService(20L, 1L, false, plugin));
+        this.registerStateMachine(new GuiEditStateService(20L,1L, false, plugin));
+        this.registerStateMachine(new PlayerSaveStateService(20L, 20L, true, plugin));
     }
 
     @SuppressWarnings("unchecked")
     public <T extends StateService<? extends State>> void registerStateMachine(T machine) {
         this.stateMachines.put((Class<? extends StateService<?>>) machine.getClass(), machine);
-    }
-
-    public void initDefaultStateMachines() {
-        this.registerStateMachine(new PreTeleportStateService(20L, 1L, false, this.plugin));
-        this.registerStateMachine(new TeleportStateService(20L, 1L, false, this.plugin));
-        this.registerStateMachine(new CoolDownStateService(20L, 1L, true, this.plugin));
-        this.registerStateMachine(new RandomTpStateService(20L, 1L, true, this.plugin));
-        this.registerStateMachine(new PlayerSitActionStateService(20L, 1L, false, this.plugin));
-        this.registerStateMachine(new PlayerRideActionStateService(20L, 1L, false, this.plugin));
-        this.registerStateMachine(new GuiEditStateService(20L,1L, false, this.plugin));
-        this.registerStateMachine(new PlayerSaveStateService(20L, 20L, true, this.plugin));
     }
 
     @SuppressWarnings("unchecked")

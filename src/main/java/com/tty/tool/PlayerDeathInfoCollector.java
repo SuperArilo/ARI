@@ -144,15 +144,15 @@ public class PlayerDeathInfoCollector {
                 // 判断是否为"注定"死亡
                 info.isDestine = this.determineIfDestine(records, firstAttacker, lastAttacker, info.deathCause);
 
-                Log.debug("combat analysis success, killer: %s, weapon: %s", info.killer.getType().name(), info.weapon != null ? info.weapon.getType().name() : "null");
-                Log.debug("escape attempt: %s, destine: %s", info.isEscapeAttempt, info.isDestine);
+                Log.debug("combat analysis success, killer: {}, weapon: {}", info.killer.getType().name(), info.weapon != null ? info.weapon.getType().name() : "null");
+                Log.debug("escape attempt: {}, destine: {}", info.isEscapeAttempt, info.isDestine);
 
                 // 后备武器获取
                 if (info.weapon == null && info.killer instanceof LivingEntity living) {
                     EntityEquipment eq = living.getEquipment();
                     if (eq != null) {
                         info.weapon = eq.getItemInMainHand();
-                        Log.debug("weapon retrieved from killer's equipment: %s", info.weapon.getType().name());
+                        Log.debug("weapon retrieved from killer's equipment: {}", info.weapon.getType().name());
                     }
                 }
 
@@ -170,7 +170,7 @@ public class PlayerDeathInfoCollector {
         }
 
         //无法判断是否为"注定"，默认为false
-        Log.debug("fallback analysis used, killer: %s",
+        Log.debug("fallback analysis used, killer: {}",
                 info.killer != null ? info.killer.getType().name() : "null");
 
         return info;
@@ -198,7 +198,7 @@ public class PlayerDeathInfoCollector {
 
         // 如果有多个不同的攻击者，就是"注定"（被围攻）
         if (uniqueAttackers.size() > 1) {
-            Log.debug("destine: attacked by %s unique attackers", uniqueAttackers.size());
+            Log.debug("destine: attacked by {} unique attackers", uniqueAttackers.size());
             return true;
         }
 
@@ -242,7 +242,7 @@ public class PlayerDeathInfoCollector {
         double threshold = escapeDistance * escapeDistance;
         boolean escaped = sqDist > threshold;
 
-        Log.debug("escape evaluated: sqDist=%s, threshold=%s, escaped=%s, cause=%s", sqDist, threshold, escaped, cause.name());
+        Log.debug("escape evaluated: sqDist={}, threshold={}, escaped={}, cause={}", sqDist, threshold, escaped, cause.name());
         return escaped;
     }
 

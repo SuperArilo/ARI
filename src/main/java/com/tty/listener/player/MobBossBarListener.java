@@ -61,7 +61,7 @@ public class MobBossBarListener implements Listener {
         if (attacker == null) {
             attacker = event.getDamageSource().getDirectEntity();
         }
-        Log.debug("attacker: %s, event: %s, entity: %s, damage: %s, health: %s, damageType: %s, status: %s.",
+        Log.debug("attacker: {}, event: {}, entity: {}, damage: {}, health: {}, damageType: {}, status: {}.",
                 attacker == null ? "null":attacker.getName(),
                 event.getEventName(),
                 victim.getName(),
@@ -275,7 +275,7 @@ public class MobBossBarListener implements Listener {
                 }
             }
             removedCountByPlayer.forEach((player, count) ->
-                    Log.debug("mob bar expired: player=%s, removedEntities=%s, current_bar_count=%s, max_bar_count=%s",
+                    Log.debug("mob bar expired: player={}, removedEntities={}, current_bar_count={}, max_bar_count={}",
                             player.getName(), count, this.playerBars.getOrDefault(player, new LinkedHashMap<>()).size(), this.maxBar)
             );
         }, 1L, this.tick_clear_dealy * 20L);
