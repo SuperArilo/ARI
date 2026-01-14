@@ -1,6 +1,7 @@
 package com.tty.commands.args.zako;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
@@ -10,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.tty.commands.sub.zako.ZakoList.Build_Zako_List;
 
-public class ZakoListArgs extends ZakoBaseArgs<Integer> {
+public class ZakoListArgs extends BaseRequiredArgumentLiteralCommand<Integer> {
 
     public ZakoListArgs() {
         super(true, 3, IntegerArgumentType.integer(1), true);
@@ -38,6 +39,6 @@ public class ZakoListArgs extends ZakoBaseArgs<Integer> {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        Build_Zako_List(WHITELIST_MANAGER, sender, Integer.parseInt(args[2]));
+        Build_Zako_List(sender, Integer.parseInt(args[2]));
     }
 }

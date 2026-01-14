@@ -10,10 +10,12 @@ import com.tty.function.PlayerManager;
 import com.tty.function.WhitelistManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
+import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.enum_type.Operator;
 import com.tty.lib.services.ConfigDataService;
+import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -29,7 +31,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class ZakoInfoArgs extends ZakoBaseArgs<String> {
+public class ZakoInfoArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public ZakoInfoArgs() {
         super(true, 3, StringArgumentType.string(), true);
@@ -66,7 +68,10 @@ public class ZakoInfoArgs extends ZakoBaseArgs<String> {
 
         String PATTERN_DATETIME = this.getPatternDatetime();
 
-        PLAYER_MANAGER.getInstance(new PlayerManager.QueryKey(uuid.toString())).thenCombine(WHITELIST_MANAGER.getInstance(new WhitelistManager.QueryKey(uuid.toString())), (playerInstance, whitelistInstance) -> {
+        EntityRepository<Object, ServerPlayer> playerEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
+        EntityRepository<Object, WhitelistInstance> whitelistInstanceRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
+
+        playerEntityRepository.get(new PlayerManager.QueryKey(uuid.toString())).thenCombine(whitelistInstanceRepository.get(new WhitelistManager.QueryKey(uuid.toString())), (playerInstance, whitelistInstance) -> {
             if (playerInstance == null || whitelistInstance == null) {
                 sender.sendMessage(ConfigUtils.t("function.zako.zako-check-not-exist"));
                 return null;

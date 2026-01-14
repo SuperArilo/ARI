@@ -9,6 +9,7 @@ import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
+import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PermissionUtils;
@@ -23,8 +24,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
-
-    private final WarpManager warpManager = new WarpManager(true);
 
     public SetWarpArgs() {
         super(2, StringArgumentType.string());
@@ -62,10 +61,12 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
             return;
         }
 
-        this.warpManager.getCountByPlayer(player.getUniqueId().toString())
+        EntityRepository<Object, ServerWarp> warpEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
+
+        warpEntityRepository.getAllForCheck(new WarpManager.QueryKey(null, player.getUniqueId().toString()))
             .thenApply(list -> {
                 int max = PermissionUtils.getMaxCountInPermission(player, "warp");
-                if (list.size() + 1 > max) {
+                if (list.getTotal() + 1 > max) {
                     player.sendMessage(ConfigUtils.t("function.warp.exceeds"));
                     return false;
                 }
@@ -75,39 +76,36 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
                 if (!shouldProceed) {
                     return CompletableFuture.completedFuture(null);
                 }
-                return this.warpManager
-                    .getInstance(new WarpManager.QueryKey(warpId))
-                    .thenCompose(existing -> {
-                        if (existing != null) {
-                            player.sendMessage(ConfigUtils.t("function.warp.exist", player));
-                            return CompletableFuture.completedFuture(null);
+                return warpEntityRepository.get(new WarpManager.QueryKey(warpId, null)).thenCompose(existing -> {
+                    if (existing != null) {
+                        player.sendMessage(ConfigUtils.t("function.warp.exist", player));
+                        return CompletableFuture.completedFuture(null);
+                    }
+
+                    CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
+                    Lib.Scheduler.runAtRegion(
+                        Ari.instance,
+                        player.getLocation(),
+                        task -> {
+                            ServerWarp serverWarp = new ServerWarp();
+                            serverWarp.setWarpId(warpId);
+                            serverWarp.setWarpName(warpId);
+                            serverWarp.setCreateBy(player.getUniqueId().toString());
+                            serverWarp.setLocation(player.getLocation().toString());
+                            serverWarp.setShowMaterial(
+                                    PublicFunctionUtils
+                                            .checkIsItem(
+                                                    player.getLocation()
+                                                            .getBlock()
+                                                            .getRelative(BlockFace.DOWN)
+                                                            .getType()
+                                            ).name()
+                            );
+                            futureWarp.complete(serverWarp);
                         }
-
-                        CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
-                        Lib.Scheduler.runAtRegion(
-                            Ari.instance,
-                            player.getLocation(),
-                            task -> {
-                                ServerWarp serverWarp = new ServerWarp();
-                                serverWarp.setWarpId(warpId);
-                                serverWarp.setWarpName(warpId);
-                                serverWarp.setCreateBy(player.getUniqueId().toString());
-                                serverWarp.setLocation(player.getLocation().toString());
-                                serverWarp.setShowMaterial(
-                                        PublicFunctionUtils
-                                                .checkIsItem(
-                                                        player.getLocation()
-                                                                .getBlock()
-                                                                .getRelative(BlockFace.DOWN)
-                                                                .getType()
-                                                ).name()
-                                );
-                                futureWarp.complete(serverWarp);
-                            }
-                        );
-
-                        return futureWarp.thenCompose(warpManager::createInstance);
-                    });
+                    );
+                    return futureWarp.thenCompose(warpEntityRepository::create);
+                });
             })
             .thenAccept(created -> {
                 if (created != null) {

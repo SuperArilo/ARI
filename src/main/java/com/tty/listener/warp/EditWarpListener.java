@@ -6,13 +6,13 @@ import com.tty.lib.dto.state.PlayerEditGuiState;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.GuiType;
-import com.tty.function.WarpManager;
 import com.tty.gui.warp.WarpEditor;
 import com.tty.gui.warp.WarpList;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.enum_type.IconKeyType;
+import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -55,14 +55,13 @@ public class EditWarpListener extends OnGuiEditListener {
         NamespacedKey icon_type = new NamespacedKey(Ari.instance, "type");
         FunctionType type = FormatUtils.ItemNBT_TypeCheck(clickMeta.getPersistentDataContainer().get(icon_type, PersistentDataType.STRING));
         if(type == null) return;
-
-        WarpManager warpManager = new WarpManager(true);
+        EntityRepository<Object, ServerWarp> warpEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
         switch (type) {
             case REBACK -> {
                 inventory.close();
                 new WarpList(player).open();
             }
-            case DELETE -> warpManager.deleteInstance(warpEditor.currentWarp).thenAccept(i -> {
+            case DELETE -> warpEntityRepository.delete(warpEditor.currentWarp).thenAccept(i -> {
                 if (i) {
                     player.sendMessage(ConfigUtils.t("function.warp.delete-success"));
                     Lib.Scheduler.run(Ari.instance, ab -> {
@@ -119,7 +118,7 @@ public class EditWarpListener extends OnGuiEditListener {
                 Log.debug("start saving warp id: %s", warpEditor.currentWarp.getWarpId());
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.ing"))));
                 clickItem.setItemMeta(clickMeta);
-                CompletableFuture<Boolean> future = warpManager.modify(warpEditor.currentWarp);
+                CompletableFuture<Boolean> future = warpEntityRepository.update(warpEditor.currentWarp);
                 future.thenAccept(status -> {
                     clickMeta.lore(List.of(ComponentUtils.text(Ari.instance.dataService.getValue(status ? "base.save.done":"base.save.error"))));
                     clickItem.setItemMeta(clickMeta);

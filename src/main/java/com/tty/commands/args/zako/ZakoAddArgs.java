@@ -5,8 +5,10 @@ import com.tty.Ari;
 import com.tty.entity.WhitelistInstance;
 import com.tty.function.WhitelistManager;
 import com.tty.lib.Log;
+import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.Operator;
+import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
@@ -17,7 +19,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public class ZakoAddArgs extends ZakoBaseArgs<String> {
+public class ZakoAddArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public ZakoAddArgs() {
         super(true, 3, StringArgumentType.string(), false);
@@ -49,7 +51,8 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
         UUID uuid = PublicFunctionUtils.parseUUID(value);
         if (uuid == null) return;
 
-        WHITELIST_MANAGER.getInstance(new WhitelistManager.QueryKey(uuid.toString()))
+        EntityRepository<Object, WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
+        repository.get(new WhitelistManager.QueryKey(uuid.toString()))
             .thenCompose(s -> {
                 if (s != null) {
                     sender.sendMessage(ConfigUtils.t("function.zako.zako-add-exist"));
@@ -65,7 +68,7 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
                 instance.setAddTime(System.currentTimeMillis());
                 instance.setOperator(Operator.getOperator(sender).toString());
 
-                return WHITELIST_MANAGER.createInstance(instance);
+                return repository.create(instance);
             })
             .thenAccept(status -> {
                 if (status == null) return;

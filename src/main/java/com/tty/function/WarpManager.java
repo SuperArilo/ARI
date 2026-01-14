@@ -24,11 +24,16 @@ public class WarpManager extends BaseDataManager<WarpManager.QueryKey, ServerWar
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 WarpMapper mapper = session.getMapper(WarpMapper.class);
                 Page<ServerWarp> page = new Page<>(pageNum, pageSize);
-                Page<ServerWarp> resultPage = mapper.selectPage(
-                        page,
-                        new LambdaQueryWrapper<ServerWarp>()
-                                .orderByDesc(ServerWarp::isTopSlot)
-                );
+                LambdaQueryWrapper<ServerWarp> wrapper = new LambdaQueryWrapper<>();
+
+                if (queryKey.warpId != null) {
+                    wrapper.eq(ServerWarp::getWarpId, queryKey.warpId);
+                }
+                if (queryKey.playerUUID != null) {
+                    wrapper.eq(ServerWarp::getCreateBy, queryKey.playerUUID);
+                }
+                wrapper.orderByDesc(ServerWarp::isTopSlot);
+                Page<ServerWarp> resultPage = mapper.selectPage(page, wrapper);
                 return PageResult.build(
                         resultPage.getRecords(),
                         resultPage.getTotal(),
@@ -87,6 +92,6 @@ public class WarpManager extends BaseDataManager<WarpManager.QueryKey, ServerWar
         });
     }
 
-    public record QueryKey(String warpId) {}
+    public record QueryKey(String warpId, String playerUUID) {}
 
 }

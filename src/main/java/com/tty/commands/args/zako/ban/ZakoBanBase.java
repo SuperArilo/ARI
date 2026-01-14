@@ -2,15 +2,17 @@ package com.tty.commands.args.zako.ban;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
-import com.tty.commands.args.zako.ZakoBaseArgs;
 import com.tty.entity.BanPlayer;
+import com.tty.entity.WhitelistInstance;
 import com.tty.function.BanPlayerManager;
 import com.tty.function.WhitelistManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
+import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.enum_type.FilePath;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.enum_type.Operator;
+import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.lib.tool.TimeFormatUtils;
@@ -25,7 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-public abstract class ZakoBanBase <T> extends ZakoBaseArgs<T> {
+public abstract class ZakoBanBase <T> extends BaseRequiredArgumentLiteralCommand<T> {
 
     public ZakoBanBase(boolean allowConsole, Integer correctArgsLength, ArgumentType<T> type, boolean isSuggests) {
         super(allowConsole, correctArgsLength, type, isSuggests);
@@ -38,8 +40,10 @@ public abstract class ZakoBanBase <T> extends ZakoBaseArgs<T> {
             sender.sendMessage(ConfigUtils.t("function.zako.zako-not-exist"));
             return;
         }
+        EntityRepository<Object, BanPlayer> banPlayerRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
+        EntityRepository<Object, WhitelistInstance> whitelistInstanceRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
 
-        BAN_PLAYER_MANAGER.getInstance(new BanPlayerManager.QueryKey(uuid.toString()))
+        banPlayerRepository.get(new BanPlayerManager.QueryKey(uuid.toString()))
             .thenCompose(banPlayer -> {
                 if (banPlayer != null) {
                     sender.sendMessage(ConfigUtils.t("function.zako.had_baned"));
@@ -72,9 +76,9 @@ public abstract class ZakoBanBase <T> extends ZakoBaseArgs<T> {
                 banPlayer.setStartTime(now);
                 banPlayer.setEndTime(now + total);
 
-                BAN_PLAYER_MANAGER.createInstance(banPlayer);
+                banPlayerRepository.create(banPlayer);
                 //同时移除白名单
-                WHITELIST_MANAGER.getInstance(new WhitelistManager.QueryKey(uuid.toString())).thenCompose(WHITELIST_MANAGER::deleteInstance);
+                whitelistInstanceRepository.get(new WhitelistManager.QueryKey(uuid.toString())).thenCompose(whitelistInstanceRepository::delete);
 
                 String string = TimeFormatUtils.format(total);
                 Lib.Scheduler.run(Ari.instance, i -> {

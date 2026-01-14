@@ -13,10 +13,7 @@ import com.tty.lib.gui.BaseDataItemConfigInventory;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.enum_type.IconKeyType;
-import com.tty.lib.tool.ComponentUtils;
-import com.tty.lib.tool.FormatUtils;
-import com.tty.lib.tool.EconomyUtils;
-import com.tty.lib.tool.PermissionUtils;
+import com.tty.lib.tool.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.*;
@@ -41,7 +38,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     @Override
     public CompletableFuture<PageResult<ServerWarp>> requestData() {
-        return new WarpManager(true).getList(this.pageNum, this.pageSize, null);
+        return Ari.REPOSITORY_MANAGER.get(ServerWarp.class).getList(this.pageNum, this.pageSize, new WarpManager.QueryKey(null, null));
     }
 
     @Override
@@ -85,10 +82,10 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
                 for (IconKeyType keyType : IconKeyType.values()) {
                     switch (keyType) {
                         case ID -> replacements.put(keyType.getKey(), ComponentUtils.text(serverWarp.getWarpId()));
-                        case X -> replacements.put(keyType.getKey(), ComponentUtils.text(FormatUtils.formatTwoDecimalPlaces(location.getX())));
-                        case Y -> replacements.put(keyType.getKey(), ComponentUtils.text(FormatUtils.formatTwoDecimalPlaces(location.getY())));
-                        case Z -> replacements.put(keyType.getKey(), ComponentUtils.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
-                        case WORLD_NAME -> replacements.put(keyType.getKey(), ComponentUtils.text(location.getWorld().getName()));
+                        case X -> replacements.put(keyType.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getX())));
+                        case Y -> replacements.put(keyType.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getY())));
+                        case Z -> replacements.put(keyType.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
+                        case WORLD_NAME -> replacements.put(keyType.getKey(), Component.text(location.getWorld().getName()));
                         case PLAYER_NAME -> replacements.put(keyType.getKey(), ComponentUtils.text(playName));
                         case COST -> {
                             Double cost = serverWarp.getCost();

@@ -1,12 +1,11 @@
 package com.tty;
 
 import com.google.gson.reflect.TypeToken;
-import com.tty.entity.ServerHome;
-import com.tty.entity.cache.PlayerHomeRepository;
+import com.tty.entity.*;
+import com.tty.entity.cache.*;
 import com.tty.enumType.FilePath;
-import com.tty.function.HomeManager;
+import com.tty.function.*;
 import com.tty.lib.enum_type.GuiType;
-import com.tty.function.PlayerTabManager;
 import com.tty.lib.Log;
 import com.tty.lib.ServerPlatform;
 import com.tty.lib.command.CommandRegister;
@@ -75,20 +74,22 @@ public class Ari extends JavaPlugin {
         PublicFunctionUtils.loadPlugin("arilib", ConfigDataService.class, i -> this.dataService = i);
         PublicFunctionUtils.loadPlugin("arilib", NBTDataService.class, i -> this.nbtDataService = i);
 
-        this.stateMachineManager = new StateMachineManager(this);
-        this.stateMachineManager.initDefaultStateMachines();
-
-        this.registerListener();
-        CommandRegister.register(this, "com.tty.commands", FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
-
         this.sqlInstance = new SQLInstance();
         this.sqlInstance.start();
+
+        this.registerRepository();
+
+        this.stateMachineManager = new StateMachineManager(this);
+        this.stateMachineManager.initDefaultStateMachines();
 
         //初始化rtp
         RandomTpStateService.setRtpWorldConfig();
 
-        this.test();
+        this.registerListener();
+        CommandRegister.register(this, "com.tty.commands", FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
+
     }
+
     @Override
     public void onDisable() {
         PLUGIN_IS_DISABLED = true;
@@ -150,8 +151,12 @@ public class Ari extends JavaPlugin {
         }
     }
 
-    public void test() {
+    public void registerRepository() {
         REPOSITORY_MANAGER.register(ServerHome.class, new PlayerHomeRepository(new HomeManager(true)));
+        REPOSITORY_MANAGER.register(BanPlayer.class, new BanPlayerRepository(new BanPlayerManager(true)));
+        REPOSITORY_MANAGER.register(ServerPlayer.class, new ServerPlayerRepository(new PlayerManager(true)));
+        REPOSITORY_MANAGER.register(ServerWarp.class, new ServerWarpRepository(new WarpManager(true)));
+        REPOSITORY_MANAGER.register(WhitelistInstance.class, new WhitelistRepository(new WhitelistManager(true)));
     }
 
     @SuppressWarnings("deprecation")

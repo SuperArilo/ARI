@@ -10,6 +10,7 @@ import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.dto.ComponentListPage;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.LangType;
+import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
@@ -26,8 +27,6 @@ import java.util.UUID;
 public class ZakoList extends BaseLiteralArgumentLiteralCommand {
 
     public static Integer MAX_ZAKO_LIST_PAGE_SIZE = 10;
-
-    private final WhitelistManager manager = new WhitelistManager(true);
 
     public ZakoList() {
         super(true, 2, true);
@@ -50,16 +49,16 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        Build_Zako_List(manager, sender, 1);
+        Build_Zako_List(sender, 1);
     }
 
-    public static void Build_Zako_List(WhitelistManager manager, CommandSender sender, Integer pageNum) {
+    public static void Build_Zako_List(CommandSender sender, Integer pageNum) {
         String baseCommand = "/ari zako list ";
         String suggestCommand = "/ari zako info ";
 
         sender.sendMessage(ConfigUtils.t("function.zako.list-requesting"));
-
-        manager.getList(pageNum, 10, null).thenAccept(result -> {
+        EntityRepository<Object, WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
+        repository.getList(pageNum, 10, null).thenAccept(result -> {
             List<WhitelistInstance> records = result.getRecords();
             if (records.isEmpty()) {
                 sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.page-change.none-next")));

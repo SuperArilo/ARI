@@ -2,6 +2,7 @@ package com.tty.listener.home;
 
 import com.tty.Ari;
 import com.tty.dto.state.teleport.EntityToLocationState;
+import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.GuiType;
 import com.tty.function.HomeManager;
@@ -50,7 +51,7 @@ public class HomeListListener extends BaseGuiListener {
             case DATA -> {
                 String homeId = currentItem.getItemMeta().getPersistentDataContainer().get(this.homeIdKey, PersistentDataType.STRING);
                 if (homeId == null) break;
-                new HomeManager(true).getInstance(new HomeManager.QueryKey(player.getUniqueId().toString(), homeId))
+                Ari.REPOSITORY_MANAGER.get(ServerHome.class).get(new HomeManager.QueryKey(player.getUniqueId().toString(), homeId))
                     .thenCompose(home -> {
                         if (home == null) {
                             player.sendMessage(ConfigUtils.t("function.home.not-found"));

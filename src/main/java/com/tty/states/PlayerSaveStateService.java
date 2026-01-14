@@ -3,9 +3,11 @@ package com.tty.states;
 import com.tty.Ari;
 import com.tty.dto.event.OnZakoSavedEvent;
 import com.tty.dto.state.player.PlayerSaveState;
+import com.tty.entity.ServerPlayer;
 import com.tty.function.PlayerManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
+import com.tty.lib.services.EntityRepository;
 import com.tty.lib.services.StateService;
 
 import org.bukkit.Bukkit;
@@ -16,10 +18,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
-    public final PlayerManager manager = new PlayerManager(true);
+    private final EntityRepository<PlayerManager.QueryKey, ServerPlayer> repository;
 
     public PlayerSaveStateService(long rate, long c, boolean isAsync, JavaPlugin javaPlugin) {
         super(rate, c, isAsync, javaPlugin);
+        this.repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
     }
 
     @Override
@@ -67,19 +70,19 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
     public void savePlayerData(PlayerSaveState state, boolean asyncMode) {
 
         Player player = (Player) state.getOwner();
-        this.manager.setExecutionMode(asyncMode);
+        this.repository.setExecutionMode(asyncMode);
         String uuid = player.getUniqueId().toString();
 
         long onlineDuration = System.currentTimeMillis() -  state.getLoginTime();
 
-        this.manager.getInstance(new PlayerManager.QueryKey(uuid))
+        this.repository.get(new PlayerManager.QueryKey(uuid))
             .thenCompose(serverPlayer -> {
                 if (serverPlayer == null) {
                     Log.error("Player data not found: %s", uuid);
                     return CompletableFuture.completedFuture(false);
                 }
                 serverPlayer.setTotalOnlineTime(serverPlayer.getTotalOnlineTime() + onlineDuration);
-                return this.manager.modify(serverPlayer);
+                return this.repository.update(serverPlayer);
             })
             .thenAccept(success -> {
                 if (success) {
@@ -92,7 +95,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
                 if (ex != null) {
                     Log.error(ex, "Error saving player data for %s", player.getName());
                 }
-                if (this.manager.isAsync && player.isOnline()) {
+                if (this.repository.isAsync() && player.isOnline()) {
                     Lib.Scheduler.run(Ari.instance, i -> Bukkit.getPluginManager().callEvent(new OnZakoSavedEvent(player)));
                 } else {
                     Log.debug("skip player %s save event.", player.getName());

@@ -4,6 +4,7 @@ import com.tty.entity.ServerHome;
 import com.tty.function.HomeManager;
 import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.BaseDataManager;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerHomeRepository extends EntityRepository<HomeManager.QueryKey, ServerHome> {
 
@@ -12,7 +13,7 @@ public class PlayerHomeRepository extends EntityRepository<HomeManager.QueryKey,
     }
 
     @Override
-    protected HomeManager.QueryKey extractCacheKey(ServerHome entity) {
+    protected HomeManager.@NotNull QueryKey extractCacheKey(ServerHome entity) {
         return new HomeManager.QueryKey(entity.getPlayerUUID(), entity.getHomeId());
     }
 

@@ -12,6 +12,7 @@ import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
 import com.tty.function.BanPlayerManager;
 import com.tty.function.PlayerManager;
+import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.Teleporting;
 import com.tty.function.WhitelistManager;
 import com.tty.lib.Log;
@@ -42,16 +43,13 @@ import static com.tty.commands.sub.EnderChestToPlayer.OFFLINE_ON_EDIT_ENDER_CHES
 
 public class OnPlayerJoinAndLeaveListener implements Listener {
 
-    private final PlayerManager playerManager = new PlayerManager(true);
-    private final WhitelistManager whitelistManager = new WhitelistManager(true);
-    private final BanPlayerManager banPlayerManager = new BanPlayerManager(true);
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void banCheck(AsyncPlayerPreLoginEvent event) {
+        EntityRepository<Object, BanPlayer> banPlayerEntityRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         UUID uuid = event.getUniqueId();
         BanPlayer banPlayer;
         try {
-            banPlayer = this.banPlayerManager.getInstance(new BanPlayerManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
+            banPlayer = banPlayerEntityRepository.get(new BanPlayerManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Log.error(e, "query ban list error on uuid %s", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
@@ -59,7 +57,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         }
         if (banPlayer == null) return;
         if (banPlayer.getEndTime() <= System.currentTimeMillis()) {
-            this.banPlayerManager.deleteInstance(banPlayer);
+            banPlayerEntityRepository.delete(banPlayer);
             Log.debug("free player uuid %s.", banPlayer.getPlayerUUID());
         } else {
             List<String> value = Ari.C_INSTANCE.getValue("server.player.baned", FilePath.LANG, new TypeToken<List<String>>() {
@@ -87,10 +85,11 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     public void whitelist(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
         if(!Ari.instance.getConfig().getBoolean("server.whitelist.enable", false)) return;
-
+        EntityRepository<Object, ServerPlayer> playerEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
+        EntityRepository<Object, WhitelistInstance> whitelistInstanceEntityRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         WhitelistInstance instance;
         try {
-            instance = this.whitelistManager.getInstance(new WhitelistManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
+            instance = whitelistInstanceEntityRepository.get(new WhitelistManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Log.error(e, "check whitelist on uuid %s error.", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(e.getMessage()));
@@ -102,7 +101,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 n.setAddTime(System.currentTimeMillis());
                 n.setPlayerUUID(uuid.toString());
                 n.setOperator(Operator.CONSOLE.getUuid());
-                this.whitelistManager.createInstance(n)
+                whitelistInstanceEntityRepository.create(n)
                     .exceptionally(i -> {
                         Log.error(i, "player uuid %s login error.", uuid.toString());
                         event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(i.getMessage()));
@@ -117,7 +116,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         //判断玩家是否更改过名字
         ServerPlayer serverPlayer;
         try {
-            serverPlayer = playerManager.getInstance(new PlayerManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
+            serverPlayer = playerEntityRepository.get(new PlayerManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -125,14 +124,14 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         if (serverPlayer.getPlayerName().equals(event.getName())) return;
         Log.debug("layer changed name. old: %s, new: %s", serverPlayer.getPlayerName(), event.getName());
         serverPlayer.setPlayerName(event.getName());
-        this.playerManager.modify(serverPlayer);
+        playerEntityRepository.update(serverPlayer);
 
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-
+        EntityRepository<Object, ServerPlayer> playerEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
         boolean first = Ari.instance.getConfig().getBoolean("server.message.on-first-login", false);
         boolean login = Ari.instance.getConfig().getBoolean("server.message.on-login", false);
 
@@ -140,17 +139,17 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             event.joinMessage(null);
         }
         long nowLoginTime = System.currentTimeMillis();
-        this.playerManager.getInstance(new PlayerManager.QueryKey(player.getUniqueId().toString()))
+        playerEntityRepository.get(new PlayerManager.QueryKey(player.getUniqueId().toString()))
             .thenCompose(i -> {
                 if(i == null) {
                     ServerPlayer serverPlayer = new ServerPlayer();
                     serverPlayer.setPlayerName(player.getName());
                     serverPlayer.setPlayerUUID(player.getUniqueId().toString());
                     serverPlayer.setFirstLoginTime(System.currentTimeMillis());
-                    this.playerManager.createInstance(serverPlayer);
+                    playerEntityRepository.create(serverPlayer);
                 } else {
                     i.setLastLoginOffTime(nowLoginTime);
-                    this.playerManager.modify(i);
+                    playerEntityRepository.update(i);
                 }
                 return CompletableFuture.completedFuture(null);
             })
