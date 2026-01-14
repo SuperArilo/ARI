@@ -19,6 +19,6 @@ public class WhitelistRepository extends EntityRepository<WhitelistManager.Query
 
     @Override
     protected WhitelistManager.QueryKey extractPageQueryKey(WhitelistInstance entity) {
-        return null;
+        return new WhitelistManager.QueryKey(null);
     }
 }

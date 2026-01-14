@@ -3,6 +3,7 @@ package com.tty.commands.sub.zako;
 import com.tty.Ari;
 import com.tty.commands.args.zako.ZakoListArgs;
 import com.tty.entity.WhitelistInstance;
+import com.tty.function.WhitelistManager;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
@@ -57,7 +58,7 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
 
         sender.sendMessage(ConfigUtils.t("function.zako.list-requesting"));
         EntityRepository<Object, WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
-        repository.getList(pageNum, 10, null).thenAccept(result -> {
+        repository.getList(pageNum, 10, new WhitelistManager.QueryKey(null)).thenAccept(result -> {
             List<WhitelistInstance> records = result.getRecords();
             if (records.isEmpty()) {
                 sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.page-change.none-next")));
@@ -89,7 +90,7 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
             sender.sendMessage(dataPage.build());
         })
         .exceptionally(i -> {
-            Log.error("zako list error ", i);
+            Log.error(i);
             sender.sendMessage(ConfigUtils.t("function.zako.list-request-error"));
             return null;
         });
