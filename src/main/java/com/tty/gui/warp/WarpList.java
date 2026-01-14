@@ -41,7 +41,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     @Override
     public CompletableFuture<PageResult<ServerWarp>> requestData() {
-        return new WarpManager(true).getList(this.pageNum, this.pageSize);
+        return new WarpManager(true).getList(this.pageNum, this.pageSize, null);
     }
 
     @Override

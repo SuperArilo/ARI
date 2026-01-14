@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tty.entity.WhitelistInstance;
 import com.tty.lib.dto.PageResult;
+import com.tty.lib.tool.BaseDataManager;
 import com.tty.mapper.WhitelistMapper;
 import com.tty.tool.SQLInstance;
 import org.apache.ibatis.session.SqlSession;
@@ -11,14 +12,14 @@ import org.apache.ibatis.session.SqlSession;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class WhitelistManager extends BaseManager<WhitelistInstance> {
+public class WhitelistManager extends BaseDataManager<WhitelistManager.QueryKey, WhitelistInstance> {
 
     public WhitelistManager(boolean isAsync) {
         super(isAsync);
     }
 
     @Override
-    public CompletableFuture<PageResult<WhitelistInstance>> getList(int pageNum, int pageSize) {
+    public CompletableFuture<PageResult<WhitelistInstance>> getList(int pageNum, int pageSize, WhitelistManager.QueryKey queryKey) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
@@ -35,11 +36,23 @@ public class WhitelistManager extends BaseManager<WhitelistInstance> {
     }
 
     @Override
-    public CompletableFuture<Boolean> createInstance(WhitelistInstance instance) {
+    public CompletableFuture<WhitelistInstance> getInstance(WhitelistManager.QueryKey queryKey) {
+        return this.executeTask(() -> {
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
+                WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
+                LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>();
+                wrapper.eq(WhitelistInstance::getPlayerUUID, queryKey.playerUUID);
+                return mapper.selectOne(wrapper);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<WhitelistInstance> createInstance(WhitelistInstance instance) {
         return this.executeTask(() -> {
            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
                WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
-               return mapper.insert(instance) == 1;
+               return mapper.insert(instance) == 1 ? instance:null;
            }
         });
     }
@@ -59,17 +72,6 @@ public class WhitelistManager extends BaseManager<WhitelistInstance> {
         return null;
     }
 
-    public CompletableFuture<WhitelistInstance> getInstance(String uuid) {
-        return this.executeTask(() -> {
-            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
-                LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>();
-                wrapper.eq(WhitelistInstance::getPlayerUUID, uuid);
-                return mapper.selectOne(wrapper);
-            }
-        });
-    }
-
     public CompletableFuture<Integer> deleteInstances(List<String> uuids) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
@@ -78,5 +80,7 @@ public class WhitelistManager extends BaseManager<WhitelistInstance> {
             }
         });
     }
+
+    public record QueryKey(String playerUUID) {}
 
 }

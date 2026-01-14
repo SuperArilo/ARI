@@ -51,7 +51,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         UUID uuid = event.getUniqueId();
         BanPlayer banPlayer;
         try {
-            banPlayer = this.banPlayerManager.getInstance(uuid.toString()).get(3, TimeUnit.SECONDS);
+            banPlayer = this.banPlayerManager.getInstance(new BanPlayerManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Log.error(e, "query ban list error on uuid %s", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
@@ -90,7 +90,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
         WhitelistInstance instance;
         try {
-            instance = this.whitelistManager.getInstance(uuid.toString()).get(3, TimeUnit.SECONDS);
+            instance = this.whitelistManager.getInstance(new WhitelistManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Log.error(e, "check whitelist on uuid %s error.", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(e.getMessage()));
@@ -117,7 +117,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         //判断玩家是否更改过名字
         ServerPlayer serverPlayer;
         try {
-            serverPlayer = playerManager.getInstance(uuid.toString()).get(3, TimeUnit.SECONDS);
+            serverPlayer = playerManager.getInstance(new PlayerManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -140,7 +140,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             event.joinMessage(null);
         }
         long nowLoginTime = System.currentTimeMillis();
-        this.playerManager.getInstance(player.getUniqueId().toString())
+        this.playerManager.getInstance(new PlayerManager.QueryKey(player.getUniqueId().toString()))
             .thenCompose(i -> {
                 if(i == null) {
                     ServerPlayer serverPlayer = new ServerPlayer();

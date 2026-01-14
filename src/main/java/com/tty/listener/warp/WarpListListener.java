@@ -58,7 +58,7 @@ public class WarpListListener extends BaseGuiListener {
             case DATA -> {
                 String warpId = currentItem.getItemMeta().getPersistentDataContainer().get(this.WARP_ID_KEY, PersistentDataType.STRING);
                 //从数据库查询最新的
-                this.warpManager.getInstance(warpId).thenAccept((instance) -> {
+                this.warpManager.getInstance(new WarpManager.QueryKey(warpId)).thenAccept((instance) -> {
                     if (instance == null) {
                         Log.error("can't find warpId: %s", warpId);
                         return;

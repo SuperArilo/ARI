@@ -63,45 +63,64 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
         }
 
         this.warpManager.getCountByPlayer(player.getUniqueId().toString())
-            .thenCompose(list -> {
+            .thenApply(list -> {
                 int max = PermissionUtils.getMaxCountInPermission(player, "warp");
                 if (list.size() + 1 > max) {
                     player.sendMessage(ConfigUtils.t("function.warp.exceeds"));
-                    return CompletableFuture.completedFuture(false);
+                    return false;
                 }
-                return CompletableFuture.completedFuture(true);
+                return true;
             })
             .thenCompose(shouldProceed -> {
                 if (!shouldProceed) {
-                    return CompletableFuture.completedFuture(false);
+                    return CompletableFuture.completedFuture(null);
                 }
-                return this.warpManager.getInstance(warpId)
+                return this.warpManager
+                    .getInstance(new WarpManager.QueryKey(warpId))
                     .thenCompose(existing -> {
                         if (existing != null) {
                             player.sendMessage(ConfigUtils.t("function.warp.exist", player));
-                            return CompletableFuture.completedFuture(false);
+                            return CompletableFuture.completedFuture(null);
                         }
+
                         CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
-                        Lib.Scheduler.runAtRegion(Ari.instance, player.getLocation(), task -> {
-                            ServerWarp serverWarp = new ServerWarp();
-                            serverWarp.setWarpId(warpId);
-                            serverWarp.setWarpName(warpId);
-                            serverWarp.setCreateBy(player.getUniqueId().toString());
-                            serverWarp.setLocation(player.getLocation().toString());
-                            serverWarp.setShowMaterial(PublicFunctionUtils.checkIsItem( player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()).name());
-                            futureWarp.complete(serverWarp);
-                        });
+                        Lib.Scheduler.runAtRegion(
+                            Ari.instance,
+                            player.getLocation(),
+                            task -> {
+                                ServerWarp serverWarp = new ServerWarp();
+                                serverWarp.setWarpId(warpId);
+                                serverWarp.setWarpName(warpId);
+                                serverWarp.setCreateBy(player.getUniqueId().toString());
+                                serverWarp.setLocation(player.getLocation().toString());
+                                serverWarp.setShowMaterial(
+                                        PublicFunctionUtils
+                                                .checkIsItem(
+                                                        player.getLocation()
+                                                                .getBlock()
+                                                                .getRelative(BlockFace.DOWN)
+                                                                .getType()
+                                                ).name()
+                                );
+                                futureWarp.complete(serverWarp);
+                            }
+                        );
+
                         return futureWarp.thenCompose(warpManager::createInstance);
                     });
             })
             .thenAccept(created -> {
-                if (Boolean.TRUE.equals(created)) {
+                if (created != null) {
                     player.sendMessage(ConfigUtils.t("function.warp.create-success"));
                 }
             })
             .exceptionally(e -> {
                 Log.error(e, "create warp error");
-                player.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.on-error")));
+                player.sendMessage(
+                        ComponentUtils.text(
+                                Ari.instance.dataService.getValue("base.on-error")
+                        )
+                );
                 return null;
             });
 

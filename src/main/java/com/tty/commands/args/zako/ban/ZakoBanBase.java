@@ -4,6 +4,8 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
 import com.tty.commands.args.zako.ZakoBaseArgs;
 import com.tty.entity.BanPlayer;
+import com.tty.function.BanPlayerManager;
+import com.tty.function.WhitelistManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.FilePath;
@@ -37,7 +39,7 @@ public abstract class ZakoBanBase <T> extends ZakoBaseArgs<T> {
             return;
         }
 
-        BAN_PLAYER_MANAGER.getInstance(uuid.toString())
+        BAN_PLAYER_MANAGER.getInstance(new BanPlayerManager.QueryKey(uuid.toString()))
             .thenCompose(banPlayer -> {
                 if (banPlayer != null) {
                     sender.sendMessage(ConfigUtils.t("function.zako.had_baned"));
@@ -72,7 +74,7 @@ public abstract class ZakoBanBase <T> extends ZakoBaseArgs<T> {
 
                 BAN_PLAYER_MANAGER.createInstance(banPlayer);
                 //同时移除白名单
-                WHITELIST_MANAGER.getInstance(uuid.toString()).thenCompose(WHITELIST_MANAGER::deleteInstance);
+                WHITELIST_MANAGER.getInstance(new WhitelistManager.QueryKey(uuid.toString())).thenCompose(WHITELIST_MANAGER::deleteInstance);
 
                 String string = TimeFormatUtils.format(total);
                 Lib.Scheduler.run(Ari.instance, i -> {

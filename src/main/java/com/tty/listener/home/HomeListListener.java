@@ -50,33 +50,33 @@ public class HomeListListener extends BaseGuiListener {
             case DATA -> {
                 String homeId = currentItem.getItemMeta().getPersistentDataContainer().get(this.homeIdKey, PersistentDataType.STRING);
                 if (homeId == null) break;
-                new HomeManager(player, true).getInstance(homeId)
-                        .thenCompose(home -> {
-                            if (home == null) {
-                                player.sendMessage(ConfigUtils.t("function.home.not-found"));
-                                return CompletableFuture.completedFuture(false);
-                            }
-                            if (event.isLeftClick()) {
-                                Ari.instance.stateMachineManager
-                                    .get(TeleportStateService.class)
-                                    .addState(new EntityToLocationState(
-                                        player,
-                                        Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.HOME_CONFIG, Integer.class, 3),
-                                        FormatUtils.parseLocation(home.getLocation()),
-                                        TeleportType.HOME));
-                            } else if (event.isRightClick()) {
-                                Lib.Scheduler.run(Ari.instance, p -> {
-                                    inventory.close();
-                                    new HomeEditor(home,(Player) event.getWhoClicked()).open();
-                                });
-                            }
-                            return CompletableFuture.completedFuture(true);
-                        }).whenComplete((i, ex) -> {
-                           if (ex != null) {
-                               Log.error(ex, "error on get player homes");
-                           }
-                            Lib.Scheduler.run(Ari.instance, o -> inventory.close());
-                        });
+                new HomeManager(true).getInstance(new HomeManager.QueryKey(player.getUniqueId().toString(), homeId))
+                    .thenCompose(home -> {
+                        if (home == null) {
+                            player.sendMessage(ConfigUtils.t("function.home.not-found"));
+                            return CompletableFuture.completedFuture(false);
+                        }
+                        if (event.isLeftClick()) {
+                            Ari.instance.stateMachineManager
+                                .get(TeleportStateService.class)
+                                .addState(new EntityToLocationState(
+                                    player,
+                                    Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.HOME_CONFIG, Integer.class, 3),
+                                    FormatUtils.parseLocation(home.getLocation()),
+                                    TeleportType.HOME));
+                        } else if (event.isRightClick()) {
+                            Lib.Scheduler.run(Ari.instance, p -> {
+                                inventory.close();
+                                new HomeEditor(home, player).open();
+                            });
+                        }
+                        return CompletableFuture.completedFuture(true);
+                    }).whenComplete((i, ex) -> {
+                       if (ex != null) {
+                           Log.error(ex, "error on get player homes");
+                       }
+                        Lib.Scheduler.run(Ari.instance, o -> inventory.close());
+                    });
             }
             case PREV -> homeList.prev();
             case NEXT -> homeList.next();

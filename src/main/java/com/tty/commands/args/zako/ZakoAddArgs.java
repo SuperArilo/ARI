@@ -3,6 +3,7 @@ package com.tty.commands.args.zako;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.WhitelistInstance;
+import com.tty.function.WhitelistManager;
 import com.tty.lib.Log;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.Operator;
@@ -48,7 +49,7 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
         UUID uuid = PublicFunctionUtils.parseUUID(value);
         if (uuid == null) return;
 
-        WHITELIST_MANAGER.getInstance(uuid.toString())
+        WHITELIST_MANAGER.getInstance(new WhitelistManager.QueryKey(uuid.toString()))
             .thenCompose(s -> {
                 if (s != null) {
                     sender.sendMessage(ConfigUtils.t("function.zako.zako-add-exist"));
@@ -68,7 +69,7 @@ public class ZakoAddArgs extends ZakoBaseArgs<String> {
             })
             .thenAccept(status -> {
                 if (status == null) return;
-                sender.sendMessage(ConfigUtils.t("function.zako.zako-add-" + (status ? "success":"failure")));
+                sender.sendMessage(ConfigUtils.t("function.zako.zako-add-success"));
             })
             .whenComplete((v, ex) -> {
                 if (ex != null) {

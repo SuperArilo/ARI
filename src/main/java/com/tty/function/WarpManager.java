@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tty.entity.ServerWarp;
 import com.tty.lib.dto.PageResult;
+import com.tty.lib.tool.BaseDataManager;
 import com.tty.mapper.WarpMapper;
 import com.tty.tool.SQLInstance;
 import org.apache.ibatis.session.SqlSession;
@@ -11,14 +12,14 @@ import org.apache.ibatis.session.SqlSession;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class WarpManager extends BaseManager<ServerWarp> {
+public class WarpManager extends BaseDataManager<WarpManager.QueryKey, ServerWarp> {
 
     public WarpManager(boolean isAsync) {
         super(isAsync);
     }
 
     @Override
-    public CompletableFuture<PageResult<ServerWarp>> getList(int pageNum, int pageSize) {
+    public CompletableFuture<PageResult<ServerWarp>> getList(int pageNum, int pageSize, WarpManager.QueryKey queryKey) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 WarpMapper mapper = session.getMapper(WarpMapper.class);
@@ -37,6 +38,15 @@ public class WarpManager extends BaseManager<ServerWarp> {
         });
     }
 
+    @Override
+    public CompletableFuture<ServerWarp> getInstance(WarpManager.QueryKey queryKey) {
+        return this.executeTask(() -> {
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
+                WarpMapper mapper = session.getMapper(WarpMapper.class);
+                return mapper.selectOne(new LambdaQueryWrapper<ServerWarp>().eq(ServerWarp::getWarpId, queryKey.warpId));
+            }
+        });
+    }
 
     public CompletableFuture<List<ServerWarp>> getCountByPlayer(String uuid) {
         return this.executeTask(() -> {
@@ -47,21 +57,12 @@ public class WarpManager extends BaseManager<ServerWarp> {
         });
     }
 
-    public CompletableFuture<ServerWarp> getInstance(String warpId) {
-        return this.executeTask(() -> {
-            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
-                WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.selectOne(new LambdaQueryWrapper<ServerWarp>().eq(ServerWarp::getWarpId, warpId));
-            }
-        });
-    }
-
     @Override
-    public CompletableFuture<Boolean> createInstance(ServerWarp instance) {
+    public CompletableFuture<ServerWarp> createInstance(ServerWarp instance) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
                 WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.insert(instance) == 1;
+                return mapper.insert(instance) == 1 ? instance:null;
             }
         });
     }
@@ -85,4 +86,7 @@ public class WarpManager extends BaseManager<ServerWarp> {
             }
         });
     }
+
+    public record QueryKey(String warpId) {}
+
 }

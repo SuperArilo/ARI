@@ -6,6 +6,8 @@ import com.tty.Ari;
 import com.tty.entity.ServerPlayer;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
+import com.tty.function.PlayerManager;
+import com.tty.function.WhitelistManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.SuperHandsomeCommand;
@@ -64,7 +66,7 @@ public class ZakoInfoArgs extends ZakoBaseArgs<String> {
 
         String PATTERN_DATETIME = this.getPatternDatetime();
 
-        PLAYER_MANAGER.getInstance(uuid.toString()).thenCombine(WHITELIST_MANAGER.getInstance(uuid.toString()), (playerInstance, whitelistInstance) -> {
+        PLAYER_MANAGER.getInstance(new PlayerManager.QueryKey(uuid.toString())).thenCombine(WHITELIST_MANAGER.getInstance(new WhitelistManager.QueryKey(uuid.toString())), (playerInstance, whitelistInstance) -> {
             if (playerInstance == null || whitelistInstance == null) {
                 sender.sendMessage(ConfigUtils.t("function.zako.zako-check-not-exist"));
                 return null;

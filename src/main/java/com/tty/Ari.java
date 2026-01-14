@@ -1,7 +1,10 @@
 package com.tty;
 
 import com.google.gson.reflect.TypeToken;
+import com.tty.entity.ServerHome;
+import com.tty.entity.cache.PlayerHomeRepository;
 import com.tty.enumType.FilePath;
+import com.tty.function.HomeManager;
 import com.tty.lib.enum_type.GuiType;
 import com.tty.function.PlayerTabManager;
 import com.tty.lib.Log;
@@ -45,6 +48,7 @@ public class Ari extends JavaPlugin {
     public static Boolean DEBUG = false;
     public static final ConfigInstance C_INSTANCE = new ConfigInstance();
     public SQLInstance sqlInstance;
+    public static RepositoryManager REPOSITORY_MANAGER = new RepositoryManager();
 
     public ConfigDataService dataService;
     public NBTDataService nbtDataService;
@@ -83,6 +87,7 @@ public class Ari extends JavaPlugin {
         //初始化rtp
         RandomTpStateService.setRtpWorldConfig();
 
+        this.test();
     }
     @Override
     public void onDisable() {
@@ -90,6 +95,7 @@ public class Ari extends JavaPlugin {
         if (this.stateMachineManager != null) {
             this.stateMachineManager.forEach(StateService::abort);
         }
+        REPOSITORY_MANAGER.clearAllCache();
         SQLInstance.close();
         C_INSTANCE.clearConfigs();
     }
@@ -124,6 +130,7 @@ public class Ari extends JavaPlugin {
         DEBUG = Ari.instance.getConfig().getBoolean("debug.enable", false);
         loadConfigInMemory();
     }
+
     private static void loadConfigInMemory() {
         C_INSTANCE.clearConfigs();
         FileConfiguration pluginConfig = Ari.instance.getConfig();
@@ -143,6 +150,9 @@ public class Ari extends JavaPlugin {
         }
     }
 
+    public void test() {
+        REPOSITORY_MANAGER.register(ServerHome.class, new PlayerHomeRepository(new HomeManager(true)));
+    }
 
     @SuppressWarnings("deprecation")
     private void printLogo() {

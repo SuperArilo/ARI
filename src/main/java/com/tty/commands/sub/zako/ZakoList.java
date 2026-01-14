@@ -59,7 +59,7 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
 
         sender.sendMessage(ConfigUtils.t("function.zako.list-requesting"));
 
-        manager.getList(pageNum, 10).thenAccept(result -> {
+        manager.getList(pageNum, 10, null).thenAccept(result -> {
             List<WhitelistInstance> records = result.getRecords();
             if (records.isEmpty()) {
                 sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.page-change.none-next")));

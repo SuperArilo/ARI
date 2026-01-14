@@ -1,6 +1,7 @@
 package com.tty.commands.args.zako;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.tty.function.BanPlayerManager;
 import com.tty.lib.Log;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -45,7 +46,7 @@ public class ZakoUnBanPlayerArgs extends ZakoBaseArgs<String> {
             sender.sendMessage(ConfigUtils.t("function.zako.zako-not-exist"));
             return;
         }
-        BAN_PLAYER_MANAGER.getInstance(uuid.toString())
+        BAN_PLAYER_MANAGER.getInstance(new BanPlayerManager.QueryKey(uuid.toString()))
             .thenCompose(CompletableFuture::completedFuture)
             .thenAccept(banPlayer -> {
                 if (banPlayer == null) {

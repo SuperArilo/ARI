@@ -59,6 +59,11 @@ public class HomeEditor extends BaseConfigInventory {
     }
 
     @Override
+    protected void beforeOpen() {
+
+    }
+
+    @Override
     public void clean() {
         super.clean();
         this.currentHome = null;

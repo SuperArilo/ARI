@@ -72,7 +72,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
         long onlineDuration = System.currentTimeMillis() -  state.getLoginTime();
 
-        this.manager.getInstance(uuid)
+        this.manager.getInstance(new PlayerManager.QueryKey(uuid))
             .thenCompose(serverPlayer -> {
                 if (serverPlayer == null) {
                     Log.error("Player data not found: %s", uuid);

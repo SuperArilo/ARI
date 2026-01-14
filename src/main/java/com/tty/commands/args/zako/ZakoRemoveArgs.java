@@ -2,6 +2,7 @@ package com.tty.commands.args.zako;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.function.WhitelistManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.SuperHandsomeCommand;
@@ -49,7 +50,7 @@ public class ZakoRemoveArgs extends ZakoBaseArgs<String> {
         UUID uuid = PublicFunctionUtils.parseUUID(value);
         if (uuid == null) return;
 
-        WHITELIST_MANAGER.getInstance(uuid.toString()).thenCompose(instance -> {
+        WHITELIST_MANAGER.getInstance(new WhitelistManager.QueryKey(uuid.toString())).thenCompose(instance -> {
             if (instance == null) {
                 return CompletableFuture.completedFuture(false);
             }

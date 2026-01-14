@@ -6,13 +6,13 @@ import com.tty.lib.dto.state.PlayerEditGuiState;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.GuiType;
-import com.tty.function.HomeManager;
 import com.tty.gui.home.HomeEditor;
 import com.tty.gui.home.HomeList;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.FunctionType;
 import com.tty.lib.enum_type.IconKeyType;
+import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -32,7 +32,6 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public class EditHomeListener extends OnGuiEditListener {
 
@@ -57,25 +56,24 @@ public class EditHomeListener extends OnGuiEditListener {
         event.setCancelled(true);
         if (type == null) return;
 
-        HomeManager homeManager = new HomeManager(player, true);
+        EntityRepository<Object, ServerHome> repository = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
         switch (type) {
             case REBACK -> {
                 inventory.close();
                 new HomeList(player).open();
             }
-            case DELETE -> //delete home
-                    homeManager.deleteInstance(homeEditor.currentHome).thenAccept(i -> {
-                        if (i) {
-                            player.sendMessage(ConfigUtils.t("function.home.delete-success"));
-                            Lib.Scheduler.run(Ari.instance, j -> {
-                                inventory.close();
-                                new HomeList(player).open();
-                            });
-                        } else {
-                            player.sendMessage(ConfigUtils.t("function.home.not-found"));
-                        }
-
-                    });
+            case DELETE ->
+                repository.delete(homeEditor.currentHome).thenAccept(i -> {
+                    if (i) {
+                        player.sendMessage(ConfigUtils.t("function.home.delete-success"));
+                        Lib.Scheduler.run(Ari.instance, j -> {
+                            inventory.close();
+                            new HomeList(player).open();
+                        });
+                    } else {
+                        player.sendMessage(ConfigUtils.t("function.home.not-found"));
+                    }
+                });
             case RENAME -> {
                 Ari.instance.stateMachineManager
                         .get(GuiEditStateService.class)
@@ -122,8 +120,7 @@ public class EditHomeListener extends OnGuiEditListener {
             case SAVE -> {
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.ing"))));
                 clickItem.setItemMeta(clickMeta);
-                CompletableFuture<Boolean> future = homeManager.modify(homeEditor.currentHome);
-                future.thenAccept(status -> {
+                repository.update(homeEditor.currentHome).thenAccept(status -> {
                     clickMeta.lore(List.of(ComponentUtils.text(Ari.instance.dataService.getValue(status ? "base.save.done":"base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
                     Lib.Scheduler.runAsyncDelayed(Ari.instance, e -> {

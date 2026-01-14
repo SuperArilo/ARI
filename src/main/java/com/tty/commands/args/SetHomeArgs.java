@@ -9,7 +9,7 @@ import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.tool.ComponentUtils;
+import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PermissionUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -55,8 +55,8 @@ public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
         String homeId = args[1];
         if(FormatUtils.checkIdName(homeId)) {
             Player player = (Player) sender;
-            HomeManager homeManager = new HomeManager(player, true);
-            homeManager.getList(0, Integer.MAX_VALUE)
+            EntityRepository<Object, ServerHome> repository = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
+            repository.getAllForCheck(new HomeManager.QueryKey(player.getUniqueId().toString(), null))
                 .thenCompose(result -> {
                     List<ServerHome> list = result.getRecords();
                     if (list.size() + 1 > PermissionUtils.getMaxCountInPermission(player, "home")) {
@@ -79,15 +79,11 @@ public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
                         serverHome.setShowMaterial(PublicFunctionUtils.checkIsItem(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()).name());
                         future.complete(serverHome);
                     });
-                    return future.thenCompose(homeManager::createInstance);
+                    return future.thenCompose(repository::create);
                 })
                 .thenAccept(status -> {
                     if (status == null) return;
-                    if (status) {
-                        sender.sendMessage(ConfigUtils.t("function.home.create-success", player));
-                    } else {
-                        sender.sendMessage(ComponentUtils.text(Ari.instance.dataService.getValue("base.save.on-error")));
-                    }
+                    sender.sendMessage(ConfigUtils.t("function.home.create-success", player));
                 }).exceptionally(i -> {
                     Log.error(i, "create home error");
                     player.sendMessage(Ari.instance.dataService.getValue("base.on-error"));

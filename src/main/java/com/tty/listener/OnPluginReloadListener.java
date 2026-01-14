@@ -21,6 +21,7 @@ public class OnPluginReloadListener implements Listener {
             Ari.instance.sqlInstance.reconnect();
         }
         RandomTpStateService.setRtpWorldConfig();
+        Ari.REPOSITORY_MANAGER.clearAllCache();
         Ari.instance.stateMachineManager.forEach(StateService::abort);
 
         //重新添加玩家保存state

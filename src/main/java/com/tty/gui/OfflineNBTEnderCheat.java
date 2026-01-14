@@ -29,7 +29,12 @@ public class OfflineNBTEnderCheat extends BaseInventory {
     }
 
     @Override
-    protected Inventory create() {
+    protected void beforeOpen() {
+
+    }
+
+    @Override
+    protected Inventory createInventory() {
         return Bukkit.createInventory(this, InventoryType.ENDER_CHEST);
     }
 

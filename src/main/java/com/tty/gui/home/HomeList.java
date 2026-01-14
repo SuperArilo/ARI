@@ -1,6 +1,7 @@
 package com.tty.gui.home;
 
 import com.tty.Ari;
+import com.tty.function.HomeManager;
 import com.tty.lib.dto.PageResult;
 import com.tty.lib.entity.gui.BaseDataMenu;
 import com.tty.lib.entity.gui.FunctionItems;
@@ -8,7 +9,6 @@ import com.tty.lib.entity.gui.Mask;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.GuiType;
-import com.tty.function.HomeManager;
 import com.tty.lib.gui.BaseDataItemConfigInventory;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.FunctionType;
@@ -40,8 +40,8 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     @Override
     public CompletableFuture<PageResult<ServerHome>> requestData() {
-        return new HomeManager(this.player, true)
-                .getList(this.pageNum, this.baseDataInstance.getDataItems().getSlot().size());
+        int size = this.baseDataInstance.getDataItems().getSlot().size();
+        return Ari.REPOSITORY_MANAGER.get(ServerHome.class).getList(this.pageNum, size, new HomeManager.QueryKey(this.player.getUniqueId().toString(), null));
     }
 
     @Override
