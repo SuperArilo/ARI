@@ -3,6 +3,7 @@ package com.tty.commands.args;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.ServerHome;
+import com.tty.entity.cache.PlayerHomeRepository;
 import com.tty.enumType.FilePath;
 import com.tty.function.HomeManager;
 import com.tty.lib.Lib;
@@ -55,8 +56,11 @@ public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
         String homeId = args[1];
         if(FormatUtils.checkIdName(homeId)) {
             Player player = (Player) sender;
-            EntityRepository<Object, ServerHome> repository = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
-            repository.getAllForCheck(new HomeManager.QueryKey(player.getUniqueId().toString(), null))
+
+            EntityRepository<HomeManager.QueryKey, ServerHome> repo = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
+            PlayerHomeRepository repository = (PlayerHomeRepository) repo;
+
+            repository.queryCount(new HomeManager.QueryKey(player.getUniqueId().toString(), null))
                 .thenCompose(result -> {
                     List<ServerHome> list = result.getRecords();
                     if (list.size() + 1 > PermissionUtils.getMaxCountInPermission(player, "home")) {

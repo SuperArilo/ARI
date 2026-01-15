@@ -3,6 +3,7 @@ package com.tty.commands.args;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.ServerWarp;
+import com.tty.entity.cache.ServerWarpRepository;
 import com.tty.enumType.FilePath;
 import com.tty.function.WarpManager;
 import com.tty.lib.Lib;
@@ -61,9 +62,10 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
             return;
         }
 
-        EntityRepository<Object, ServerWarp> warpEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
+        EntityRepository<WarpManager.QueryKey, ServerWarp> repo = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
+        ServerWarpRepository repository = (ServerWarpRepository) repo;
 
-        warpEntityRepository.getAllForCheck(new WarpManager.QueryKey(null, player.getUniqueId().toString()))
+        repository.queryCount(new WarpManager.QueryKey(null, player.getUniqueId().toString()))
             .thenApply(list -> {
                 int max = PermissionUtils.getMaxCountInPermission(player, "warp");
                 if (list.getTotal() + 1 > max) {
@@ -76,7 +78,7 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
                 if (!shouldProceed) {
                     return CompletableFuture.completedFuture(null);
                 }
-                return warpEntityRepository.get(new WarpManager.QueryKey(warpId, null)).thenCompose(existing -> {
+                return repository.get(new WarpManager.QueryKey(warpId, null)).thenCompose(existing -> {
                     if (existing != null) {
                         player.sendMessage(ConfigUtils.t("function.warp.exist", player));
                         return CompletableFuture.completedFuture(null);
@@ -104,7 +106,7 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
                             futureWarp.complete(serverWarp);
                         }
                     );
-                    return futureWarp.thenCompose(warpEntityRepository::create);
+                    return futureWarp.thenCompose(repository::create);
                 });
             })
             .thenAccept(created -> {
