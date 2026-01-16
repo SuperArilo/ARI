@@ -9,7 +9,6 @@ import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.dto.state.teleport.RandomTpState;
 import com.tty.enumType.FilePath;
 import com.tty.lib.enum_type.TeleportType;
-import com.tty.lib.enum_type.LangType;
 import com.tty.lib.services.StateService;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -17,7 +16,6 @@ import com.tty.lib.tool.SearchSafeLocation;
 import com.tty.states.CoolDownStateService;
 import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -152,14 +150,16 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 FilePath.LANG,
                 String.class,
                 "null");
-        Title title = ComponentUtils.setPlayerTitle(
-                Ari.C_INSTANCE.getValue("function.rtp.title-searching", FilePath.LANG, String.class, "null"),
-                sub,
-                Map.of(LangType.RTP_SEARCH_COUNT.getType(), Component.text(state.getMax_count() - state.getCount())),
-                0,
-                1000L,
-                1000L);
-        if (player.isOnline()) player.showTitle(title);
+        if (!player.isOnline()) return;
+        Ari.PLACEHOLDER.render("function.rtp.title-search-count", player).thenAccept(i -> Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
+            Title title = ComponentUtils.setPlayerTitle(
+                    Ari.C_INSTANCE.getValue("function.rtp.title-searching", FilePath.LANG, String.class, "null"),
+                    i,
+                    0,
+                    1000L,
+                    1000L);
+            player.showTitle(title);
+        }, null));
     }
 
     private RtpConfig rtpConfig(String worldName) {

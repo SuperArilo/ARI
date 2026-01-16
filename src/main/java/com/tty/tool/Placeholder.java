@@ -2,16 +2,16 @@ package com.tty.tool;
 
 import com.tty.Ari;
 import com.tty.commands.args.zako.ZakoInfoArgs;
+import com.tty.dto.SleepingWorld;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
+import com.tty.dto.state.teleport.RandomTpState;
 import com.tty.entity.ServerPlayer;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
-import com.tty.enumType.lang.LangPlayer;
-import com.tty.enumType.lang.LangTime;
-import com.tty.enumType.lang.LangTpa;
-import com.tty.enumType.lang.LangZakoInfo;
+import com.tty.enumType.lang.*;
 import com.tty.function.PlayerManager;
 import com.tty.function.WhitelistManager;
+import com.tty.lib.dto.state.State;
 import com.tty.lib.enum_type.Operator;
 import com.tty.lib.services.impl.PlaceholderRegistryImpl;
 import com.tty.lib.services.placeholder.AsyncPlaceholder;
@@ -21,7 +21,10 @@ import com.tty.lib.services.placeholder.PlaceholderRegistry;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.TimeFormatUtils;
+import com.tty.listener.player.PlayerSkipNight;
 import com.tty.states.teleport.PreTeleportStateService;
+import com.tty.states.teleport.RandomTpStateService;
+import com.tty.states.teleport.TeleportStateService;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -81,6 +84,32 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         }
                     }
                     return this.set(String.valueOf(sleepingCount));
+                })
+        ));
+        registry.register(PlaceholderDefinition.of(
+                LangTime.SKIP_NIGHT_TICK_INCREMENT,
+                AsyncPlaceholder.ofPlayer(player -> {
+                    World world = player.getWorld();
+                    SleepingWorld sleepingWorld = PlayerSkipNight.SLEEPING_WORLD.get(world);
+                    return this.set(String.valueOf(sleepingWorld.getTimeManager().getAddTick()));
+                })
+        ));
+        registry.register(PlaceholderDefinition.of(
+                LangRTP.RTP_SEARCH_COUNT,
+                AsyncPlaceholder.ofPlayer(player -> {
+                    List<RandomTpState> states = Ari.STATE_MACHINE_MANAGER.get(RandomTpStateService.class).getStates(player);
+                    if (states.isEmpty()) return this.empty();
+                    RandomTpState first = states.getFirst();
+                    return this.set(String.valueOf(first.getMax_count() - first.getCount()));
+                })
+        ));
+        registry.register(PlaceholderDefinition.of(
+                LangTeleport.TELEPORT_DELAY,
+                AsyncPlaceholder.ofPlayer(player -> {
+                    List<State> states = Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).getStates(player);
+                    if (states.isEmpty()) return this.empty();
+                    State first = states.getFirst();
+                    return this.set(String.valueOf(first.getMax_count() - first.getCount()));
                 })
         ));
         registry.register(PlaceholderDefinition.of(

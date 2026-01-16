@@ -19,10 +19,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerSkipNight implements Listener {
 
-    private final Map<World, SleepingWorld> worlds = new ConcurrentHashMap<>();
+    public static final Map<World, SleepingWorld> SLEEPING_WORLD = new ConcurrentHashMap<>();
 
     private void update(World world) {
-        SleepingWorld sleepingWorld = this.worlds.get(world);
+        SleepingWorld sleepingWorld = SLEEPING_WORLD.get(world);
         if (sleepingWorld == null) {
             Log.error("cannot found world {} to sleep skipping.", world.getName());
             return;
@@ -32,12 +32,12 @@ public class PlayerSkipNight implements Listener {
 
     @EventHandler
     public void onServerLoad(ServerLoadEvent event) {
-        this.worlds.clear();
+        SLEEPING_WORLD.clear();
         for (World world : Bukkit.getWorlds()) {
             if (!world.isBedWorks()) {
                 if (!isBedWorksRe(world)) continue;
             }
-            this.worlds.put(world, new SleepingWorld(world));
+            SLEEPING_WORLD.put(world, new SleepingWorld(world));
         }
     }
 

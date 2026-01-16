@@ -59,7 +59,7 @@ public class TimeArgs extends BaseRequiredArgumentLiteralCommand<String> {
         try {
             period = TimePeriod.valueOf(timePeriod.toUpperCase());
         } catch (Exception e) {
-            player.sendMessage(ConfigUtils.t("server.time.not-exist-period", Map.of(LangType.PERIOD.getType(), Component.text(timePeriod))));
+            player.sendMessage(ConfigUtils.t("server.time.not-exist-period", Map.of(LangType.PERIOD_UNRESOLVED.getType(), Component.text(timePeriod))));
             return;
         }
         World world = player.getWorld();

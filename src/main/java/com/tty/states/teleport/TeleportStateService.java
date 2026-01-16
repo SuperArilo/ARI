@@ -2,6 +2,7 @@ package com.tty.states.teleport;
 
 import com.tty.Ari;
 import com.tty.dto.state.teleport.PlayerToPlayerState;
+import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.dto.state.State;
 import com.tty.dto.state.CooldownState;
@@ -9,12 +10,10 @@ import com.tty.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
 import com.tty.lib.tool.Teleporting;
-import com.tty.lib.enum_type.LangType;
 import com.tty.lib.services.StateService;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.states.CoolDownStateService;
 import com.tty.tool.ConfigUtils;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -58,20 +57,20 @@ public class TeleportStateService extends StateService<State> {
             }
         }
 
-        int maxCount = state.getMax_count();
-        int count = state.getCount();
-        Map<String, Component> p = new HashMap<>();
-        p.put(LangType.TELEPORT_DELAY.getType(), Component.text(maxCount - count));
-        owner.showTitle(ComponentUtils.setPlayerTitle(
-                Ari.C_INSTANCE.getValue("teleport.title.main", FilePath.LANG),
-                Ari.C_INSTANCE.getValue("teleport.title.sub-title", FilePath.LANG),
-                p,
-                200,
-                1000,
-                200
-        ));
-        state.setPending(false);
-        Log.debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), count, maxCount);
+        if (owner instanceof Player player) {
+            if (state.isOver() || state.isDone()) return;
+            Ari.PLACEHOLDER.render("teleport.title.sub-title", player).thenAccept(i -> Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
+                player.showTitle(ComponentUtils.setPlayerTitle(
+                        Ari.C_INSTANCE.getValue("teleport.title.main", FilePath.LANG),
+                        i,
+                        200,
+                        1000,
+                        200
+                ));
+                state.setPending(false);
+                Log.debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
+            }, null));
+        }
     }
 
 

@@ -32,7 +32,7 @@ public class CustomChatFormantListener implements Listener {
         event.renderer((source, sourceDisplayName, msg, viewer) ->
                 ComponentUtils.text(
                         this.getPattern(source),
-                        Map.of(LangType.SOURCE_DISPLAY_NAME.getType(), Component.text(source.getName()), LangType.CHAT_MESSAGE.getType(), msg)));
+                        Map.of(LangType.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), LangType.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
     }
     @EventHandler(priority = EventPriority.MONITOR)
     public void whenPluginReload(CustomPluginReloadEvent event) {

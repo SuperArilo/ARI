@@ -1,26 +1,23 @@
 package com.tty.dto;
 
 import com.tty.Ari;
-import com.tty.enumType.FilePath;
 import com.tty.function.TimeManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
-import com.tty.lib.enum_type.LangType;
 import com.tty.lib.enum_type.TimePeriod;
 import com.tty.lib.tool.ComponentUtils;
-import com.tty.tool.ConfigUtils;
-import net.kyori.adventure.text.Component;
+import lombok.Getter;
 import org.bukkit.GameRule;
 import org.bukkit.World;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
 
 public class SleepingWorld {
 
     private final World world;
+    @Getter
     private final TimeManager timeManager;
     private boolean skipNightOver = false;
 
@@ -42,20 +39,20 @@ public class SleepingWorld {
             this.timeManager.timeAutomaticallyPasses(10, i -> {
                 for (Player player : this.world.getPlayers()) {
                     if (this.playerCondition(player.getWorld()) || !player.isSleeping() || !player.isDeeplySleeping()) continue;
-                    Lib.Scheduler.runAtEntity(
-                        Ari.instance,
-                        player,
-                        b ->
-                            player.showTitle(
-                                ComponentUtils.setPlayerTitle(
-                                    timeManager.tickToTime(i),
-                                    Ari.C_INSTANCE.getValue("server.time.skip-to-night", FilePath.LANG),
-                                    Map.of(LangType.SKIP_NIGHT_TICK_INCREMENT.getType(), Component.text(this.timeManager.getAddTick())),
-                                    0L,
-                                    1000L,
-                                    500L)
-                            ),
-                        null);
+
+                    Ari.PLACEHOLDER.render("server.time.skip-to-night", player).thenAccept(c -> Lib.Scheduler.runAtEntity(
+                            Ari.instance,
+                            player,
+                            b ->
+                                    player.showTitle(
+                                            ComponentUtils.setPlayerTitle(
+                                                    timeManager.tickToTime(i),
+                                                    c,
+                                                    0L,
+                                                    1000L,
+                                                    500L)
+                                    ),
+                            null));
                 }
             });
         }
@@ -64,12 +61,8 @@ public class SleepingWorld {
     private void sendTipsActionBar() {
         for (Player player : this.world.getPlayers()) {
             if (!player.isSleeping()) {
-                player.sendActionBar(
-                        ConfigUtils.t(
-                                "server.time.report-status",
-                                Map.of(
-                                        LangType.SLEEP_PLAYERS.getType(), Component.text(this.getSleepPlayers()),
-                                        LangType.SKIP_NIGHT_TICK_INCREMENT.getType(), Component.text(this.timeManager.getAddTick()))));
+                Ari.PLACEHOLDER.render("server.time.report-status", player).thenAccept(player::sendActionBar);
+
             }
         }
     }
