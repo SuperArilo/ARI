@@ -12,6 +12,7 @@ import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
 import com.tty.function.BanPlayerManager;
 import com.tty.function.PlayerManager;
+import com.tty.lib.Lib;
 import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.Teleporting;
 import com.tty.function.WhitelistManager;
@@ -181,11 +182,11 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                         }
                     }
                     if(first) {
-                        Bukkit.broadcast(ConfigUtils.t("server.message.on-first-login", Map.of(LangType.PLAYER_NAME.getType(), Component.text(player.getName()))));
+                        Ari.PLACEHOLDER.render("server.message.on-first-login", player).thenAccept(p -> Lib.Scheduler.run(Ari.instance, t -> Bukkit.broadcast(p)));
                     }
                 }
                 if(login) {
-                    Bukkit.broadcast(ConfigUtils.t("server.message.on-login", Map.of(LangType.PLAYER_NAME.getType(), Component.text(player.getName()))));
+                    Ari.PLACEHOLDER.render("server.message.on-login", player).thenAccept(p -> Lib.Scheduler.run(Ari.instance, t -> Bukkit.broadcast(p)));
                 }
                 Ari.STATE_MACHINE_MANAGER
                         .get(PlayerSaveStateService.class)
@@ -196,6 +197,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        Log.debug(String.valueOf(event.isAsynchronous()));
         if(Ari.instance.getConfig().getBoolean("server.message.on-leave")) {
             event.quitMessage(ConfigUtils.t("server.message.on-leave", Map.of(LangType.PLAYER_NAME.getType(), Component.text(player.getName()))));
         }
