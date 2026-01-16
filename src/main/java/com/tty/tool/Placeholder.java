@@ -80,7 +80,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                     int sleepingCount = 0;
                     World world = player.getWorld();
                     for (Player p : world.getPlayers()) {
-                        if (p.getSleepTicks() > 0) {
+                        if (p.isDeeplySleeping()) {
                             sleepingCount++;
                         }
                     }
