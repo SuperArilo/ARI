@@ -199,7 +199,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         Player player = event.getPlayer();
         Log.debug(String.valueOf(event.isAsynchronous()));
         if(Ari.instance.getConfig().getBoolean("server.message.on-leave")) {
-            event.quitMessage(ConfigUtils.t("server.message.on-leave", Map.of(LangType.PLAYER_NAME.getType(), Component.text(player.getName()))));
+            event.quitMessage(Ari.PLACEHOLDER.renderSync("server.message.on-leave", player));
         }
         List<PlayerSaveState> states = Ari.STATE_MACHINE_MANAGER
                 .get(PlayerSaveStateService.class)
