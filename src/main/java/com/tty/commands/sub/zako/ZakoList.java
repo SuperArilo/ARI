@@ -81,7 +81,7 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
                     Log.debug("uuid {} player is null. the possible reason is that the player has not logged into the server.", instancePlayerUUID);
                 }
                 TextComponent set = ComponentUtils.setClickEventText(Ari.C_INSTANCE.getValue("server.player.zako." + (name == null ? "unable-record":"list-show"), FilePath.LANG),
-                        Map.of(LangType.PLAYER_NAME.getType(), Component.text(name == null ? instancePlayerUUID:name)),
+                        Map.of(LangType.PLAYER_NAME_UNRESOLVED.getType(), Component.text(name == null ? instancePlayerUUID:name)),
                         ClickEvent.Action.RUN_COMMAND,
                         suggestCommand + instancePlayerUUID);
                 dataPage.addLine(set);
