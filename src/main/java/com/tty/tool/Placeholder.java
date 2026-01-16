@@ -85,7 +85,12 @@ public class Placeholder extends BasePlaceholder<FilePath> {
         ));
         registry.register(PlaceholderDefinition.of(
                 LangPlayer.PLAYER_NAME,
-                AsyncPlaceholder.ofPlayer(player -> this.set(player.getName()))
+                AsyncPlaceholder.of(
+                        player -> this.set(player.getName()),
+                        offlinePlayer -> {
+                            String name = offlinePlayer.getName();
+                            return this.set(name == null ? "null":name);
+                        })
         ));
         registry.register(PlaceholderDefinition.of(
                 LangZakoInfo.FIRST_LOGIN_SERVER_TIME,

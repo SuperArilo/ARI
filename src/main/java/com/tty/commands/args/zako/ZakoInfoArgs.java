@@ -2,10 +2,14 @@ package com.tty.commands.args.zako;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.entity.ServerPlayer;
+import com.tty.function.PlayerManager;
+import com.tty.lib.Log;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.services.ConfigDataService;
 import com.tty.lib.tool.PublicFunctionUtils;
+import com.tty.tool.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -49,7 +53,22 @@ public class ZakoInfoArgs extends BaseRequiredArgumentLiteralCommand<String> {
         String value = args[2];
         UUID uuid = PublicFunctionUtils.parseUUID(value);
         if (uuid == null) return;
-        Ari.PLACEHOLDER.renderList("server.player.info", Bukkit.getServer().getOfflinePlayer(uuid)).thenAccept(sender::sendMessage);
+        Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new PlayerManager.QueryKey(uuid.toString())).thenCompose(i -> {
+           if (i == null) {
+               sender.sendMessage(ConfigUtils.t("function.zako.zako-check-not-exist"));
+               return CompletableFuture.completedFuture(null);
+           }
+           return Ari.PLACEHOLDER.renderList("server.player.info", Bukkit.getServer().getOfflinePlayer(uuid));
+        }).thenAccept(message -> {
+            if (message != null) {
+                sender.sendMessage(message);
+            }
+        }).exceptionally(e -> {
+            Log.error(e);
+            sender.sendMessage(ConfigUtils.t("function.zako.list-request-error"));
+            return null;
+        });
+
     }
 
     public static @NotNull String getPatternDatetime() {
