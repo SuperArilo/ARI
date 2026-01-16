@@ -182,11 +182,11 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                         }
                     }
                     if(first) {
-                        Ari.PLACEHOLDER.renderAsync("server.message.on-first-login", player).thenAccept(p -> Lib.Scheduler.run(Ari.instance, t -> Bukkit.broadcast(p)));
+                        Lib.Scheduler.run(Ari.instance, t -> Bukkit.broadcast(Ari.PLACEHOLDER.renderSync("server.message.on-first-login", player)));
                     }
                 }
                 if(login) {
-                    Ari.PLACEHOLDER.renderAsync("server.message.on-login", player).thenAccept(p -> Lib.Scheduler.run(Ari.instance, t -> Bukkit.broadcast(p)));
+                    Lib.Scheduler.run(Ari.instance, t -> Bukkit.broadcast(Ari.PLACEHOLDER.renderSync("server.message.on-login", player)));
                 }
                 Ari.STATE_MACHINE_MANAGER
                         .get(PlayerSaveStateService.class)

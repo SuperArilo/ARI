@@ -75,7 +75,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             return;
         }
 
-        this.sendCountTitle(owner, state);
+        this.sendCountTitle(owner);
         this.search(state);
     }
 
@@ -144,22 +144,17 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     }
 
-    private void sendCountTitle(Player player, RandomTpState state) {
-        String sub = Ari.C_INSTANCE.getValue(
-                "function.rtp.title-search-count",
-                FilePath.LANG,
-                String.class,
-                "null");
+    private void sendCountTitle(Player player) {
         if (!player.isOnline()) return;
-        Ari.PLACEHOLDER.renderAsync("function.rtp.title-search-count", player).thenAccept(i -> Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
+        Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
             Title title = ComponentUtils.setPlayerTitle(
                     Ari.C_INSTANCE.getValue("function.rtp.title-searching", FilePath.LANG, String.class, "null"),
-                    i,
+                    Ari.PLACEHOLDER.renderSync("function.rtp.title-search-count", player),
                     0,
                     1000L,
                     1000L);
             player.showTitle(title);
-        }, null));
+        }, null);
     }
 
     private RtpConfig rtpConfig(String worldName) {

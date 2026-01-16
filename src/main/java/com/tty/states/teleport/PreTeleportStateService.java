@@ -3,7 +3,6 @@ package com.tty.states.teleport;
 import com.tty.Ari;
 import com.tty.lib.Log;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
-import com.tty.enumType.FilePath;
 import com.tty.lib.services.StateService;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.states.CoolDownStateService;
@@ -61,24 +60,18 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
         owner.sendMessage(ConfigUtils.t("function.tpa.send-message"));
 
-        String message = Ari.C_INSTANCE.getValue(
-                "function.tpa." + (state.getType().getKey().equals("tpa") ? "to-message" : "here-message"),
-                FilePath.LANG
-        );
-
-       Ari.PLACEHOLDER.renderAsync("function.tpa." + (state.getType().getKey().equals("tpa") ? "to-message" : "here-message"), (OfflinePlayer) owner)
-           .thenAccept(i -> target.sendMessage(
-                   i.appendNewline()
-                           .append(ComponentUtils.setClickEventText(
-                                   Ari.DATA_SERVICE.getValue("function.public.agree"),
-                                   ClickEvent.Action.RUN_COMMAND,
-                                   "/ari tpaaccept " + owner.getName()))
-                           .append(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.center")))
-                           .append(ComponentUtils.setClickEventText(
-                                   Ari.DATA_SERVICE.getValue("function.public.refuse"),
-                                   ClickEvent.Action.RUN_COMMAND,
-                                   "/ari tparefuse " + owner.getName()))
-       ));
+        target.sendMessage(
+                Ari.PLACEHOLDER.renderSync("function.tpa." + (state.getType().getKey().equals("tpa") ? "to-message" : "here-message"), (OfflinePlayer) owner)
+                        .appendNewline()
+                        .append(ComponentUtils.setClickEventText(
+                                Ari.DATA_SERVICE.getValue("function.public.agree"),
+                                ClickEvent.Action.RUN_COMMAND,
+                                "/ari tpaaccept " + owner.getName()))
+                        .append(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.center")))
+                        .append(ComponentUtils.setClickEventText(
+                                Ari.DATA_SERVICE.getValue("function.public.refuse"),
+                                ClickEvent.Action.RUN_COMMAND,
+                                "/ari tparefuse " + owner.getName())));
     }
 
     @Override
@@ -109,7 +102,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
         //检查是否已经发过请求了
         if (!this.getStates(owner).isEmpty()) {
-            Ari.PLACEHOLDER.renderAsync("function.tpa.again", (OfflinePlayer) owner).thenAccept(owner::sendMessage);
+            owner.sendMessage(Ari.PLACEHOLDER.renderSync("function.tpa.again", (OfflinePlayer) owner));
             return false;
         }
 

@@ -14,10 +14,7 @@ import com.tty.function.WhitelistManager;
 import com.tty.lib.dto.state.State;
 import com.tty.lib.enum_type.Operator;
 import com.tty.lib.services.impl.PlaceholderRegistryImpl;
-import com.tty.lib.services.placeholder.AsyncPlaceholder;
-import com.tty.lib.services.placeholder.BasePlaceholder;
-import com.tty.lib.services.placeholder.PlaceholderDefinition;
-import com.tty.lib.services.placeholder.PlaceholderRegistry;
+import com.tty.lib.services.placeholder.*;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.TimeFormatUtils;
@@ -33,6 +30,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static com.tty.listener.teleport.RecordLastLocationListener.TELEPORT_LAST_LOCATION;
 
@@ -44,38 +42,40 @@ public class Placeholder extends BasePlaceholder<FilePath> {
     }
 
     public void init() {
-        PlaceholderRegistryImpl registry = new PlaceholderRegistryImpl();
-        this.register(registry);
-        this.setRegister(registry);
+        PlaceholderRegistryImpl<Component> registrySync = new PlaceholderRegistryImpl<>();
+        PlaceholderRegistryImpl<CompletableFuture<Component>> registryAsync = new PlaceholderRegistryImpl<>();
+        this.register(registrySync, registryAsync);
+        this.setSyncRegister(registrySync);
+        this.setAsyncRegister(registryAsync);
     }
 
-    private void register(PlaceholderRegistry registry) {
-        registry.register(PlaceholderDefinition.of(
-            LangTpa.TPA_SENDER,
-            AsyncPlaceholder.of(
-                    player -> this.set(player.getName()),
-                    offlinePlayer -> this.set(offlinePlayer.getName()))
+    private void register(PlaceholderRegistry<Component> registrySync,
+                          PlaceholderRegistry<CompletableFuture<Component>> registryAsync) {
+
+        registrySync.register(PlaceholderDefinition.of(
+                LangTpa.TPA_SENDER,
+                PlaceholderResolve.ofPlayer(player -> this.set(player.getName()))
         ));
-        registry.register(PlaceholderDefinition.of(
+        registrySync.register(PlaceholderDefinition.of(
                 LangTpa.TPA_BE_SENDER,
-                AsyncPlaceholder.of(player -> {
+                PlaceholderResolve.of(player -> {
                     List<PreEntityToEntityState> states = Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class).getStates(player);
                     if (states.isEmpty()) return this.empty();
                     PreEntityToEntityState first = states.getFirst();
                     return this.set(first.getTarget().getName());
                 }, offlinePlayer -> this.empty())
         ));
-        registry.register(PlaceholderDefinition.of(
+        registrySync.register(PlaceholderDefinition.of(
                 LangPlayer.DEATH_LOCATION,
-                AsyncPlaceholder.ofPlayer(player -> {
+                PlaceholderResolve.ofPlayer(player -> {
                     Location deathLocation = TELEPORT_LAST_LOCATION.get(player.getUniqueId());
                     if (deathLocation == null) return this.empty();
                     return this.set(FormatUtils.XYZText(deathLocation.getX(), deathLocation.getY(), deathLocation.getZ()));
                 })
         ));
-        registry.register(PlaceholderDefinition.of(
+        registrySync.register(PlaceholderDefinition.of(
                 LangTime.SLEEP_PLAYERS,
-                AsyncPlaceholder.ofPlayer(player -> {
+                PlaceholderResolve.ofPlayer(player -> {
                     int sleepingCount = 0;
                     World world = player.getWorld();
                     for (Player p : world.getPlayers()) {
@@ -86,73 +86,73 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                     return this.set(String.valueOf(sleepingCount));
                 })
         ));
-        registry.register(PlaceholderDefinition.of(
+        registrySync.register(PlaceholderDefinition.of(
                 LangTime.SKIP_NIGHT_TICK_INCREMENT,
-                AsyncPlaceholder.ofPlayer(player -> {
+                PlaceholderResolve.ofPlayer(player -> {
                     World world = player.getWorld();
                     SleepingWorld sleepingWorld = PlayerSkipNight.SLEEPING_WORLD.get(world);
                     return this.set(String.valueOf(sleepingWorld.getTimeManager().getAddTick()));
                 })
         ));
-        registry.register(PlaceholderDefinition.of(
+        registrySync.register(PlaceholderDefinition.of(
                 LangRTP.RTP_SEARCH_COUNT,
-                AsyncPlaceholder.ofPlayer(player -> {
+                PlaceholderResolve.ofPlayer(player -> {
                     List<RandomTpState> states = Ari.STATE_MACHINE_MANAGER.get(RandomTpStateService.class).getStates(player);
                     if (states.isEmpty()) return this.empty();
                     RandomTpState first = states.getFirst();
                     return this.set(String.valueOf(first.getMax_count() - first.getCount()));
                 })
         ));
-        registry.register(PlaceholderDefinition.of(
+        registrySync.register(PlaceholderDefinition.of(
                 LangTeleport.TELEPORT_DELAY,
-                AsyncPlaceholder.ofPlayer(player -> {
+                PlaceholderResolve.ofPlayer(player -> {
                     List<State> states = Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).getStates(player);
                     if (states.isEmpty()) return this.empty();
                     State first = states.getFirst();
                     return this.set(String.valueOf(first.getMax_count() - first.getCount()));
                 })
         ));
-        registry.register(PlaceholderDefinition.of(
+        registrySync.register(PlaceholderDefinition.of(
                 LangPlayer.PLAYER_NAME,
-                AsyncPlaceholder.of(
+                PlaceholderResolve.of(
                         player -> this.set(player.getName()),
                         offlinePlayer -> {
                             String name = offlinePlayer.getName();
                             return this.set(name == null ? "null":name);
                         })
         ));
-        registry.register(PlaceholderDefinition.of(
+        registryAsync.register(PlaceholderDefinition.of(
                 LangZakoInfo.FIRST_LOGIN_SERVER_TIME,
-                AsyncPlaceholder.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
                         .get(new PlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getFirstLoginTime(), ZakoInfoArgs.getPatternDatetime()))))
         ));
-        registry.register(PlaceholderDefinition.of(
+        registryAsync.register(PlaceholderDefinition.of(
                 LangZakoInfo.LAST_LOGIN_SERVER_TIME,
-                AsyncPlaceholder.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
                         .get(new PlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getLastLoginOffTime(), ZakoInfoArgs.getPatternDatetime()))))
         ));
-        registry.register(PlaceholderDefinition.of(
+        registryAsync.register(PlaceholderDefinition.of(
                 LangZakoInfo.TOTAL_TIME_ON_SERVER,
-                AsyncPlaceholder.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
                         .get(new PlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getTotalOnlineTime(), ZakoInfoArgs.getPatternDatetime()))))
         ));
-        registry.register(PlaceholderDefinition.of(
+        registryAsync.register(PlaceholderDefinition.of(
                 LangPlayer.PLAYER_WORLD,
-                AsyncPlaceholder.ofPlayer(player -> this.set(player.getWorld().getName()))
+                PlaceholderResolve.ofPlayer(player -> this.setAsync(player.getWorld().getName()))
         ));
-        registry.register(PlaceholderDefinition.of(
+        registryAsync.register(PlaceholderDefinition.of(
                 LangPlayer.PLAYER_LOCATION,
-                AsyncPlaceholder.ofPlayer(player -> this.set(FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())))
+                PlaceholderResolve.ofPlayer(player -> this.setAsync(FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())))
         ));
-        registry.register(PlaceholderDefinition.of(
+        registryAsync.register(PlaceholderDefinition.of(
                 LangZakoInfo.ZAKO_WHITELIST_OPERATOR,
-                AsyncPlaceholder.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(WhitelistInstance.class)
                         .get(new WhitelistManager.QueryKey(offlinePlayer.getUniqueId().toString()))
                         .thenApply(whitelistInstance -> {
@@ -165,9 +165,9 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                             return ComponentUtils.text(operator == null ? "null":operator);
                         }))
         ));
-        registry.register(PlaceholderDefinition.of(
+        registryAsync.register(PlaceholderDefinition.of(
                 LangZakoInfo.ZAKO_WHITELIST_ADD_TIME,
-                AsyncPlaceholder.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(WhitelistInstance.class)
                         .get(new WhitelistManager.QueryKey(offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getAddTime(), ZakoInfoArgs.getPatternDatetime()))))

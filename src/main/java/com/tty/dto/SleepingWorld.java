@@ -39,20 +39,14 @@ public class SleepingWorld {
             this.timeManager.timeAutomaticallyPasses(10, i -> {
                 for (Player player : this.world.getPlayers()) {
                     if (this.playerCondition(player.getWorld()) || !player.isSleeping() || !player.isDeeplySleeping()) continue;
-
-                    Ari.PLACEHOLDER.renderAsync("server.time.skip-to-night", player).thenAccept(c -> Lib.Scheduler.runAtEntity(
-                            Ari.instance,
-                            player,
-                            b ->
-                                    player.showTitle(
-                                            ComponentUtils.setPlayerTitle(
-                                                    timeManager.tickToTime(i),
-                                                    c,
-                                                    0L,
-                                                    1000L,
-                                                    500L)
-                                    ),
-                            null));
+                    Lib.Scheduler.runAtEntity(Ari.instance, player, b -> player.showTitle(
+                            ComponentUtils.setPlayerTitle(
+                                    timeManager.tickToTime(i),
+                                    Ari.PLACEHOLDER.renderSync("server.time.skip-to-night", player),
+                                    0L,
+                                    1000L,
+                                    500L)
+                    ), null);
                 }
             });
         }
@@ -61,8 +55,7 @@ public class SleepingWorld {
     private void sendTipsActionBar() {
         for (Player player : this.world.getPlayers()) {
             if (!player.isSleeping()) {
-                Ari.PLACEHOLDER.renderAsync("server.time.report-status", player).thenAccept(player::sendActionBar);
-
+                player.sendActionBar(Ari.PLACEHOLDER.renderSync("server.time.report-status", player));
             }
         }
     }

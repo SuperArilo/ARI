@@ -59,17 +59,17 @@ public class TeleportStateService extends StateService<State> {
 
         if (owner instanceof Player player) {
             if (state.isOver() || state.isDone()) return;
-            Ari.PLACEHOLDER.renderAsync("teleport.title.sub-title", player).thenAccept(i -> Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
+            Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
                 player.showTitle(ComponentUtils.setPlayerTitle(
                         Ari.C_INSTANCE.getValue("teleport.title.main", FilePath.LANG),
-                        i,
+                        Ari.PLACEHOLDER.renderSync("teleport.title.sub-title", player),
                         200,
                         1000,
                         200
                 ));
                 state.setPending(false);
                 Log.debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
-            }, null));
+            }, null);
         }
     }
 

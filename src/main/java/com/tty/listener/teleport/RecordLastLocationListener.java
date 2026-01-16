@@ -66,6 +66,6 @@ public class RecordLastLocationListener implements Listener {
 
     private void setPlayerLastLocation(PlayerEvent event) {
         Player player = event.getPlayer();
-        Ari.PLACEHOLDER.renderAsync("teleport.tips-back", player).thenAccept(i -> player.sendMessage(ComponentUtils.setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/back")));
+        player.sendMessage(ComponentUtils.setClickEventText(Ari.PLACEHOLDER.renderSync("teleport.tips-back", player), ClickEvent.Action.RUN_COMMAND, "/back"));
     }
 }
