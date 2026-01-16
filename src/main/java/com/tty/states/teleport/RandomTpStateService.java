@@ -151,7 +151,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 String.class,
                 "null");
         if (!player.isOnline()) return;
-        Ari.PLACEHOLDER.render("function.rtp.title-search-count", player).thenAccept(i -> Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
+        Ari.PLACEHOLDER.renderAsync("function.rtp.title-search-count", player).thenAccept(i -> Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
             Title title = ComponentUtils.setPlayerTitle(
                     Ari.C_INSTANCE.getValue("function.rtp.title-searching", FilePath.LANG, String.class, "null"),
                     i,

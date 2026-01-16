@@ -66,7 +66,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                 FilePath.LANG
         );
 
-       Ari.PLACEHOLDER.render("function.tpa." + (state.getType().getKey().equals("tpa") ? "to-message" : "here-message"), (OfflinePlayer) owner)
+       Ari.PLACEHOLDER.renderAsync("function.tpa." + (state.getType().getKey().equals("tpa") ? "to-message" : "here-message"), (OfflinePlayer) owner)
            .thenAccept(i -> target.sendMessage(
                    i.appendNewline()
                            .append(ComponentUtils.setClickEventText(
@@ -109,7 +109,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
         //检查是否已经发过请求了
         if (!this.getStates(owner).isEmpty()) {
-            Ari.PLACEHOLDER.render("function.tpa.again", (OfflinePlayer) owner).thenAccept(owner::sendMessage);
+            Ari.PLACEHOLDER.renderAsync("function.tpa.again", (OfflinePlayer) owner).thenAccept(owner::sendMessage);
             return false;
         }
 

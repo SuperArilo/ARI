@@ -50,7 +50,7 @@ public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
         if (this.checkAfterResponse(player, target) != null) {
             sender.sendMessage(ConfigUtils.t("function.tpa.refuse-success"));
             assert target != null;
-            Ari.PLACEHOLDER.render("function.tpa.refused", player).thenAccept(target::sendMessage);
+            Ari.PLACEHOLDER.renderAsync("function.tpa.refused", player).thenAccept(target::sendMessage);
         }
     }
 }

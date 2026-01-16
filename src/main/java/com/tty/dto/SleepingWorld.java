@@ -40,7 +40,7 @@ public class SleepingWorld {
                 for (Player player : this.world.getPlayers()) {
                     if (this.playerCondition(player.getWorld()) || !player.isSleeping() || !player.isDeeplySleeping()) continue;
 
-                    Ari.PLACEHOLDER.render("server.time.skip-to-night", player).thenAccept(c -> Lib.Scheduler.runAtEntity(
+                    Ari.PLACEHOLDER.renderAsync("server.time.skip-to-night", player).thenAccept(c -> Lib.Scheduler.runAtEntity(
                             Ari.instance,
                             player,
                             b ->
@@ -61,7 +61,7 @@ public class SleepingWorld {
     private void sendTipsActionBar() {
         for (Player player : this.world.getPlayers()) {
             if (!player.isSleeping()) {
-                Ari.PLACEHOLDER.render("server.time.report-status", player).thenAccept(player::sendActionBar);
+                Ari.PLACEHOLDER.renderAsync("server.time.report-status", player).thenAccept(player::sendActionBar);
 
             }
         }

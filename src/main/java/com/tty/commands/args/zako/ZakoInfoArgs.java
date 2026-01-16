@@ -58,7 +58,7 @@ public class ZakoInfoArgs extends BaseRequiredArgumentLiteralCommand<String> {
                sender.sendMessage(ConfigUtils.t("function.zako.zako-check-not-exist"));
                return CompletableFuture.completedFuture(null);
            }
-           return Ari.PLACEHOLDER.renderList("server.player.info", Bukkit.getServer().getOfflinePlayer(uuid));
+           return Ari.PLACEHOLDER.renderListAsync("server.player.info", Bukkit.getServer().getOfflinePlayer(uuid));
         }).thenAccept(message -> {
             if (message != null) {
                 sender.sendMessage(message);
