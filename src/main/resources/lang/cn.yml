@@ -19,7 +19,7 @@ function:
     agree: '&a✔ 您同意了此次传送请求'
     been-done: '&c该请求已经处理过，或者不存在！'
     refuse-success: '&a✔ 拒绝成功！'
-    refused: '&6玩家 &a<tpa_be_sender> &6拒绝了您的传送请求'
+    refused: '&6玩家 &a<tpa_sender> &6拒绝了您的传送请求'
     error: '&c传送状态错误，无法完成传送'
   home:
     create-success: '&a✔ 创建家成功！'
@@ -80,8 +80,8 @@ function:
   unknown: '&c未知指令，请重新输入'
 server:
   time:
-    tips: '&e将时间调整为 &6<time>'
-    not-exist-period: '&c不存在的时间段: &3<period>'
+    tips: '&e将时间调整为 &6<execute_target_time>'
+    not-exist-period: '&c不存在的时间段: &3<time_period>'
     not-allowed-world: '&c当前世界不允许调整时间'
     skip-to-night: '&e将加速跳过夜晚 &7速率: &5<skip_night_tick_increment>'
     report-status: '&7当前有 <sleep_players> 名玩家在睡觉，时间加速为 <skip_night_tick_increment>'

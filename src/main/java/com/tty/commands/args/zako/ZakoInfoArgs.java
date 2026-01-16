@@ -1,27 +1,11 @@
 package com.tty.commands.args.zako;
 
-import com.google.common.reflect.TypeToken;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
-import com.tty.entity.ServerPlayer;
-import com.tty.entity.WhitelistInstance;
-import com.tty.enumType.FilePath;
-import com.tty.function.PlayerManager;
-import com.tty.function.WhitelistManager;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.enum_type.LangType;
-import com.tty.lib.enum_type.Operator;
 import com.tty.lib.services.ConfigDataService;
-import com.tty.lib.services.EntityRepository;
-import com.tty.lib.tool.ComponentUtils;
-import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
-import com.tty.lib.tool.TimeFormatUtils;
-import com.tty.tool.ConfigUtils;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -65,59 +49,11 @@ public class ZakoInfoArgs extends BaseRequiredArgumentLiteralCommand<String> {
         String value = args[2];
         UUID uuid = PublicFunctionUtils.parseUUID(value);
         if (uuid == null) return;
-
-        String PATTERN_DATETIME = this.getPatternDatetime();
-
-        EntityRepository<Object, ServerPlayer> playerEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
-        EntityRepository<Object, WhitelistInstance> whitelistInstanceRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
-
-        playerEntityRepository.get(new PlayerManager.QueryKey(uuid.toString())).thenCombine(whitelistInstanceRepository.get(new WhitelistManager.QueryKey(uuid.toString())), (playerInstance, whitelistInstance) -> {
-            if (playerInstance == null || whitelistInstance == null) {
-                sender.sendMessage(ConfigUtils.t("function.zako.zako-check-not-exist"));
-                return null;
-            }
-
-            Map<String, Component> map = new HashMap<>();
-
-            map.put(LangType.PLAYER_NAME.getType(), ComponentUtils.text(playerInstance.getPlayerName()));
-            map.put(LangType.FIRST_LOGIN_SERVER_TIME.getType(), ComponentUtils.text(TimeFormatUtils.format(playerInstance.getFirstLoginTime(), PATTERN_DATETIME)));
-            map.put(LangType.LAST_LOGIN_SERVER_TIME.getType(), ComponentUtils.text(TimeFormatUtils.format(playerInstance.getLastLoginOffTime(), PATTERN_DATETIME)));
-            map.put(LangType.TOTAL_TIME_ON_SERVER.getType(), ComponentUtils.text(TimeFormatUtils.format(playerInstance.getTotalOnlineTime())));
-
-            return new Result(map, playerInstance, whitelistInstance);
-        })
-        .thenAccept(result -> {
-            if (result == null) return;
-            Lib.Scheduler.run(Ari.instance,
-                i -> {
-                    Map<String, Component> map = result.map;
-                    Player player = Bukkit.getPlayer(UUID.fromString(result.serverPlayer.getPlayerUUID()));
-                    WhitelistInstance whitelistInstance = result.whitelistInstance;
-                    map.put(LangType.PLAYER_WORLD.getType(), ComponentUtils.text(player == null ? Ari.DATA_SERVICE.getValue("base.no-record"):player.getWorld().getName()));
-                    map.put(LangType.PLAYER_LOCATION.getType(), ComponentUtils.text(player == null ? Ari.DATA_SERVICE.getValue("base.no-record"): FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())));
-
-                    String operator;
-                    if(whitelistInstance.getOperator().equals(Operator.CONSOLE.getUuid())) {
-                        operator = "CONSOLE";
-                    } else {
-                        operator = Bukkit.getOfflinePlayer(UUID.fromString(whitelistInstance.getOperator())).getName();
-                    }
-                    map.put(LangType.ZAKO_WHITELIST_OPERATOR.getType(), ComponentUtils.text(operator == null ? "null":operator));
-                    map.put(LangType.ZAKO_WHITELIST_ADD_TIME.getType(), ComponentUtils.text(TimeFormatUtils.format(whitelistInstance.getAddTime(), PATTERN_DATETIME)));
-
-                    List<String> list = Ari.C_INSTANCE.getValue("server.player.info", FilePath.LANG, new TypeToken<List<String>>(){}.getType(), List.of());
-                    sender.sendMessage(ComponentUtils.textList(list, map));
-                });
-        })
-        .exceptionally(i -> {
-            Log.error(i, "error");
-            return null;
-        });
+        Ari.PLACEHOLDER.renderList("server.player.info", Bukkit.getServer().getOfflinePlayer(uuid)).thenAccept(sender::sendMessage);
     }
 
-    private @NotNull String getPatternDatetime() {
+    public static @NotNull String getPatternDatetime() {
         ConfigDataService service = Ari.DATA_SERVICE;
-
         return "yyyy"
                 + Objects.toString(service.getValue("base.time-format.year"), "")
                 + "MM" + Objects.toString(service.getValue("base.time-format.month"), "")
@@ -126,7 +62,5 @@ public class ZakoInfoArgs extends BaseRequiredArgumentLiteralCommand<String> {
                 + "mm" + Objects.toString(service.getValue("base.time-format.minute"), "")
                 + "ss" + Objects.toString(service.getValue("base.time-format.second"), "");
     }
-
-    private record Result(Map<String, Component> map, ServerPlayer serverPlayer, WhitelistInstance whitelistInstance) { }
 
 }

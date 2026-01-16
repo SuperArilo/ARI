@@ -22,6 +22,7 @@ import com.tty.listener.warp.EditWarpListener;
 import com.tty.listener.warp.WarpListListener;
 import com.tty.states.teleport.RandomTpStateService;
 import com.tty.tool.*;
+import com.tty.tool.Placeholder;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -49,6 +50,7 @@ public class Ari extends JavaPlugin {
     public static ConfigDataService DATA_SERVICE;
     public static NBTDataService NBT_DATA_SERVICE;
     public static StateMachineManager STATE_MACHINE_MANAGER;
+    public static Placeholder PLACEHOLDER;
 
     @Override
     public void onLoad() {
@@ -76,6 +78,8 @@ public class Ari extends JavaPlugin {
 
         this.registerListener();
         CommandRegister.register(this, "com.tty.commands", FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
+
+        PLACEHOLDER = new Placeholder();
 
     }
 

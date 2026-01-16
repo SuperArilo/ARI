@@ -4,20 +4,18 @@ import com.tty.Ari;
 import com.tty.lib.Log;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
 import com.tty.enumType.FilePath;
-import com.tty.lib.enum_type.LangType;
 import com.tty.lib.services.StateService;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.states.CoolDownStateService;
 import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
-import java.util.Map;
 
 public class PreTeleportStateService extends StateService<PreEntityToEntityState> {
 
@@ -68,19 +66,19 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                 FilePath.LANG
         );
 
-        target.sendMessage(
-                ComponentUtils.text(message, Map.of(LangType.TPA_SENDER.getType(), ComponentUtils.text(owner.getName())))
-                        .appendNewline()
-                        .append(ComponentUtils.setClickEventText(
-                                Ari.DATA_SERVICE.getValue("function.public.agree"),
-                                ClickEvent.Action.RUN_COMMAND,
-                                "/ari tpaaccept " + owner.getName()))
-                        .append(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.center")))
-                        .append(ComponentUtils.setClickEventText(
-                                Ari.DATA_SERVICE.getValue("function.public.refuse"),
-                                ClickEvent.Action.RUN_COMMAND,
-                                "/ari tparefuse " + owner.getName()))
-        );
+       Ari.PLACEHOLDER.render("function.tpa." + (state.getType().getKey().equals("tpa") ? "to-message" : "here-message"), (OfflinePlayer) owner)
+           .thenAccept(i -> target.sendMessage(
+                   i.appendNewline()
+                           .append(ComponentUtils.setClickEventText(
+                                   Ari.DATA_SERVICE.getValue("function.public.agree"),
+                                   ClickEvent.Action.RUN_COMMAND,
+                                   "/ari tpaaccept " + owner.getName()))
+                           .append(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.center")))
+                           .append(ComponentUtils.setClickEventText(
+                                   Ari.DATA_SERVICE.getValue("function.public.refuse"),
+                                   ClickEvent.Action.RUN_COMMAND,
+                                   "/ari tparefuse " + owner.getName()))
+       ));
     }
 
     @Override
@@ -111,7 +109,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
         //检查是否已经发过请求了
         if (!this.getStates(owner).isEmpty()) {
-            owner.sendMessage(ConfigUtils.t("function.tpa.again", Map.of(LangType.TPA_BE_SENDER.getType(), Component.text(target.getName()))));
+            Ari.PLACEHOLDER.render("function.tpa.again", (OfflinePlayer) owner).thenAccept(owner::sendMessage);
             return false;
         }
 

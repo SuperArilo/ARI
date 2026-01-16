@@ -4,6 +4,7 @@ import com.tty.Ari;
 import com.tty.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
+import com.tty.enumType.lang.LangVault;
 import com.tty.lib.enum_type.GuiType;
 import com.tty.function.WarpManager;
 import com.tty.gui.warp.WarpEditor;
@@ -97,7 +98,7 @@ public class WarpListListener extends BaseGuiListener {
                                                 Ari.C_INSTANCE.getValue("main.cost", FilePath.WARP_CONFIG, Boolean.class, false) &&
                                                 !EconomyUtils.isNull()) {
                                             EconomyUtils.withdrawPlayer(player, instance.getCost());
-                                            player.sendMessage(ConfigUtils.t("teleport.costed", Map.of(LangType.COSTED.getType(), Component.text(instance.getCost().toString() + EconomyUtils.getNamePlural()))));
+                                            player.sendMessage(ConfigUtils.t("teleport.costed", Map.of(LangVault.COSTED.getType(), Component.text(instance.getCost().toString() + EconomyUtils.getNamePlural()))));
                                         }
                                     },
                                     TeleportType.WARP));

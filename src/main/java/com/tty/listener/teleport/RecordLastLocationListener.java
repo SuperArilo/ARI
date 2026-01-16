@@ -2,12 +2,9 @@ package com.tty.listener.teleport;
 
 import com.tty.Ari;
 import com.tty.dto.event.CustomPlayerRespawnEvent;
-import com.tty.enumType.FilePath;
 import com.tty.lib.Lib;
 import com.tty.lib.ServerPlatform;
-import com.tty.lib.enum_type.LangType;
 import com.tty.lib.tool.ComponentUtils;
-import com.tty.lib.tool.FormatUtils;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -69,11 +66,6 @@ public class RecordLastLocationListener implements Listener {
 
     private void setPlayerLastLocation(PlayerEvent event) {
         Player player = event.getPlayer();
-        Location deathLocation = TELEPORT_LAST_LOCATION.get(player.getUniqueId());
-        if (deathLocation == null) return;
-        //构建显示坐标
-        String location = FormatUtils.XYZText(deathLocation.getX(), deathLocation.getY(), deathLocation.getZ());
-        String value = Ari.C_INSTANCE.getValue("teleport.tips-back", FilePath.LANG);
-        event.getPlayer().sendMessage(ComponentUtils.setClickEventText(value, Map.of(LangType.DEATH_LOCATION.getType(), ComponentUtils.text(location)), ClickEvent.Action.RUN_COMMAND, "/back"));
+        Ari.PLACEHOLDER.render("teleport.tips-back", player).thenAccept(i -> player.sendMessage(ComponentUtils.setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/back")));
     }
 }
