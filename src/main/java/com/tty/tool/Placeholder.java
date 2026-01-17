@@ -49,7 +49,12 @@ public class Placeholder extends BasePlaceholder<FilePath> {
     private void register(PlaceholderRegistry registry) {
         registry.register(PlaceholderDefinition.of(
                 LangTpa.TPA_SENDER,
-                PlaceholderResolve.ofPlayer(player -> this.set(player.getName()))
+                PlaceholderResolve.ofPlayer(player -> {
+                    List<PreEntityToEntityState> states = Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class).getStates(player);
+                    if (states.isEmpty()) return this.empty();
+                    PreEntityToEntityState first = states.getFirst();
+                    return this.set(first.getOwner().getName());
+                })
         ));
         registry.register(PlaceholderDefinition.of(
                 LangTpa.TPA_BE_SENDER,
