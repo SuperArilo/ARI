@@ -109,7 +109,7 @@ server:
       - "&f累计在线时间: &6<total_online_time_on_server>"
       - "&f操作员: &6<zako_whitelist_operator>"
       - "&f白名单添加时间: &6<zako_whitelist_add_time>"
-      - "&f所在世界：&8<player_world>"
+      - "&f所在世界: &8<player_world>"
       - "&f当前位置: <player_location>"
     baned:
       - "&4你已经被此服务器封禁！"
