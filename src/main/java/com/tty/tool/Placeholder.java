@@ -135,7 +135,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
                         .get(new PlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
-                        .thenApply(i -> Component.text(TimeFormatUtils.format(i.getTotalOnlineTime(), ZakoInfoArgs.getPatternDatetime()))))
+                        .thenApply(i -> Component.text(TimeFormatUtils.format(i.getTotalOnlineTime()))))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangPlayer.PLAYER_WORLD,
