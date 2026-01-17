@@ -30,7 +30,6 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import static com.tty.listener.teleport.RecordLastLocationListener.TELEPORT_LAST_LOCATION;
 
@@ -42,21 +41,17 @@ public class Placeholder extends BasePlaceholder<FilePath> {
     }
 
     public void init() {
-        PlaceholderRegistryImpl<Component> registrySync = new PlaceholderRegistryImpl<>();
-        PlaceholderRegistryImpl<CompletableFuture<Component>> registryAsync = new PlaceholderRegistryImpl<>();
-        this.register(registrySync, registryAsync);
-        this.setSyncRegister(registrySync);
-        this.setAsyncRegister(registryAsync);
+        PlaceholderRegistryImpl registry = new PlaceholderRegistryImpl();
+        this.register(registry);
+        this.addRegister(registry);
     }
 
-    private void register(PlaceholderRegistry<Component> registrySync,
-                          PlaceholderRegistry<CompletableFuture<Component>> registryAsync) {
-
-        registrySync.register(PlaceholderDefinition.of(
+    private void register(PlaceholderRegistry registry) {
+        registry.register(PlaceholderDefinition.of(
                 LangTpa.TPA_SENDER,
                 PlaceholderResolve.ofPlayer(player -> this.set(player.getName()))
         ));
-        registrySync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangTpa.TPA_BE_SENDER,
                 PlaceholderResolve.of(player -> {
                     List<PreEntityToEntityState> states = Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class).getStates(player);
@@ -65,7 +60,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                     return this.set(first.getTarget().getName());
                 }, offlinePlayer -> this.empty())
         ));
-        registrySync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangPlayer.DEATH_LOCATION,
                 PlaceholderResolve.ofPlayer(player -> {
                     Location deathLocation = TELEPORT_LAST_LOCATION.get(player.getUniqueId());
@@ -73,7 +68,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                     return this.set(FormatUtils.XYZText(deathLocation.getX(), deathLocation.getY(), deathLocation.getZ()));
                 })
         ));
-        registrySync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangTime.SLEEP_PLAYERS,
                 PlaceholderResolve.ofPlayer(player -> {
                     int sleepingCount = 0;
@@ -86,7 +81,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                     return this.set(String.valueOf(sleepingCount));
                 })
         ));
-        registrySync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangTime.SKIP_NIGHT_TICK_INCREMENT,
                 PlaceholderResolve.ofPlayer(player -> {
                     World world = player.getWorld();
@@ -94,7 +89,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                     return this.set(String.valueOf(sleepingWorld.getTimeManager().getAddTick()));
                 })
         ));
-        registrySync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangRTP.RTP_SEARCH_COUNT,
                 PlaceholderResolve.ofPlayer(player -> {
                     List<RandomTpState> states = Ari.STATE_MACHINE_MANAGER.get(RandomTpStateService.class).getStates(player);
@@ -103,7 +98,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                     return this.set(String.valueOf(first.getMax_count() - first.getCount()));
                 })
         ));
-        registrySync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangTeleport.TELEPORT_DELAY,
                 PlaceholderResolve.ofPlayer(player -> {
                     List<State> states = Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).getStates(player);
@@ -112,7 +107,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                     return this.set(String.valueOf(first.getMax_count() - first.getCount()));
                 })
         ));
-        registrySync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangPlayer.PLAYER_NAME,
                 PlaceholderResolve.of(
                         player -> this.set(player.getName()),
@@ -121,36 +116,36 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                             return this.set(name == null ? "null":name);
                         })
         ));
-        registryAsync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangZakoInfo.FIRST_LOGIN_SERVER_TIME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
                         .get(new PlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getFirstLoginTime(), ZakoInfoArgs.getPatternDatetime()))))
         ));
-        registryAsync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangZakoInfo.LAST_LOGIN_SERVER_TIME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
                         .get(new PlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getLastLoginOffTime(), ZakoInfoArgs.getPatternDatetime()))))
         ));
-        registryAsync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangZakoInfo.TOTAL_TIME_ON_SERVER,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
                         .get(new PlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getTotalOnlineTime(), ZakoInfoArgs.getPatternDatetime()))))
         ));
-        registryAsync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangPlayer.PLAYER_WORLD,
-                PlaceholderResolve.ofPlayer(player -> this.setAsync(player.getWorld().getName()))
+                PlaceholderResolve.ofPlayer(player -> this.set(player.getWorld().getName()))
         ));
-        registryAsync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangPlayer.PLAYER_LOCATION,
-                PlaceholderResolve.ofPlayer(player -> this.setAsync(FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())))
+                PlaceholderResolve.ofPlayer(player -> this.set(FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())))
         ));
-        registryAsync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangZakoInfo.ZAKO_WHITELIST_OPERATOR,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(WhitelistInstance.class)
@@ -165,7 +160,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                             return ComponentUtils.text(operator == null ? "null":operator);
                         }))
         ));
-        registryAsync.register(PlaceholderDefinition.of(
+        registry.register(PlaceholderDefinition.of(
                 LangZakoInfo.ZAKO_WHITELIST_ADD_TIME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(WhitelistInstance.class)

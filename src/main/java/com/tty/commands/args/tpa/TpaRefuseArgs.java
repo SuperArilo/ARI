@@ -2,6 +2,7 @@ package com.tty.commands.args.tpa;
 
 import com.tty.Ari;
 import com.tty.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
+import com.tty.lib.Lib;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
@@ -50,7 +51,8 @@ public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
         if (this.checkAfterResponse(player, target) != null) {
             sender.sendMessage(ConfigUtils.t("function.tpa.refuse-success"));
             assert target != null;
-            target.sendMessage(Ari.PLACEHOLDER.renderSync("function.tpa.refused", player));
+            Ari.PLACEHOLDER.render("function.tpa.refused", player).thenAccept(i ->
+                    Lib.Scheduler.runAtEntity(Ari.instance, target, task -> target.sendMessage(i), null));
         }
     }
 }

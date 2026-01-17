@@ -1,6 +1,7 @@
 package com.tty.states.teleport;
 
 import com.tty.Ari;
+import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
 import com.tty.lib.services.StateService;
@@ -60,8 +61,10 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
         owner.sendMessage(ConfigUtils.t("function.tpa.send-message"));
 
-        target.sendMessage(
-                Ari.PLACEHOLDER.renderSync("function.tpa." + (state.getType().getKey().equals("tpa") ? "to-message" : "here-message"), (OfflinePlayer) owner)
+        Ari.PLACEHOLDER.render("function.tpa." + (state.getType().getKey().equals("tpa") ? "to-message" : "here-message"), (OfflinePlayer) owner)
+            .thenAccept(result ->
+                    Lib.Scheduler.runAtEntity(Ari.instance, target, task -> target.sendMessage(
+                        result
                         .appendNewline()
                         .append(ComponentUtils.setClickEventText(
                                 Ari.DATA_SERVICE.getValue("function.public.agree"),
@@ -71,7 +74,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                         .append(ComponentUtils.setClickEventText(
                                 Ari.DATA_SERVICE.getValue("function.public.refuse"),
                                 ClickEvent.Action.RUN_COMMAND,
-                                "/ari tparefuse " + owner.getName())));
+                                "/ari tparefuse " + owner.getName()))), null));
     }
 
     @Override
@@ -102,7 +105,8 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
         //检查是否已经发过请求了
         if (!this.getStates(owner).isEmpty()) {
-            owner.sendMessage(Ari.PLACEHOLDER.renderSync("function.tpa.again", (OfflinePlayer) owner));
+            Ari.PLACEHOLDER.render("function.tpa.again", (OfflinePlayer) owner).thenAccept(i ->
+                    Lib.Scheduler.runAtEntity(Ari.instance, owner, t -> owner.sendMessage(i), null));
             return false;
         }
 

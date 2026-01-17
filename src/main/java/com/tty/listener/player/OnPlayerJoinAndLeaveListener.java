@@ -160,6 +160,9 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                     player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                     return;
                 }
+                Ari.STATE_MACHINE_MANAGER
+                        .get(PlayerSaveStateService.class)
+                        .addState(new PlayerSaveState(player, nowLoginTime));
                 if(!player.hasPlayedBefore()) {
                     if (Ari.C_INSTANCE.getValue("main.first-join", FilePath.SPAWN_CONFIG, Boolean.class, false) &&
                             Ari.C_INSTANCE.getValue("main.enable", FilePath.SPAWN_CONFIG, Boolean.class, false)) {
@@ -182,24 +185,22 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                         }
                     }
                     if(first) {
-                        Lib.Scheduler.run(Ari.instance, t -> Bukkit.broadcast(Ari.PLACEHOLDER.renderSync("server.message.on-first-login", player)));
+                        Ari.PLACEHOLDER.render("server.message.on-first-login", player).thenAccept(t -> Lib.Scheduler.run(Ari.instance, task -> Bukkit.broadcast(t)));
+                        return;
                     }
                 }
                 if(login) {
-                    Lib.Scheduler.run(Ari.instance, t -> Bukkit.broadcast(Ari.PLACEHOLDER.renderSync("server.message.on-login", player)));
+                    Ari.PLACEHOLDER.render("server.message.on-login", player).thenAccept(t -> Lib.Scheduler.run(Ari.instance, task -> Bukkit.broadcast(t)));
                 }
-                Ari.STATE_MACHINE_MANAGER
-                        .get(PlayerSaveStateService.class)
-                        .addState(new PlayerSaveState(player, nowLoginTime));
             });
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        Log.debug(String.valueOf(event.isAsynchronous()));
         if(Ari.instance.getConfig().getBoolean("server.message.on-leave")) {
-            event.quitMessage(Ari.PLACEHOLDER.renderSync("server.message.on-leave", player));
+            event.quitMessage(null);
+            Ari.PLACEHOLDER.render("server.message.on-leave", player).thenAccept(i -> Lib.Scheduler.run(Ari.instance, t -> Bukkit.broadcast(i)));
         }
         List<PlayerSaveState> states = Ari.STATE_MACHINE_MANAGER
                 .get(PlayerSaveStateService.class)

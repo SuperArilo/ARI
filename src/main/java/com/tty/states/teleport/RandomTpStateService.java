@@ -16,7 +16,6 @@ import com.tty.lib.tool.SearchSafeLocation;
 import com.tty.states.CoolDownStateService;
 import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
-import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -146,15 +145,14 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     private void sendCountTitle(Player player) {
         if (!player.isOnline()) return;
-        Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
-            Title title = ComponentUtils.setPlayerTitle(
-                    Ari.C_INSTANCE.getValue("function.rtp.title-searching", FilePath.LANG, String.class, "null"),
-                    Ari.PLACEHOLDER.renderSync("function.rtp.title-search-count", player),
-                    0,
-                    1000L,
-                    1000L);
-            player.showTitle(title);
-        }, null);
+        Ari.PLACEHOLDER.render("function.rtp.title-search-count", player).thenAccept(result ->
+                Lib.Scheduler.runAtEntity(Ari.instance, player, task -> player.showTitle(ComponentUtils.setPlayerTitle(
+                        Ari.C_INSTANCE.getValue("function.rtp.title-searching", FilePath.LANG, String.class, "null"),
+                        result,
+                        0,
+                        1000L,
+                        1000L
+                )), null));
     }
 
     private RtpConfig rtpConfig(String worldName) {
