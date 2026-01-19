@@ -1,9 +1,9 @@
 package com.tty.commands.sub.zako;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
 import com.tty.commands.args.zako.ZakoListArgs;
 import com.tty.entity.WhitelistInstance;
-import com.tty.function.WhitelistManager;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
@@ -62,8 +62,8 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
         future.thenAccept(component -> {
             sender.sendMessage(component);
 
-            EntityRepository<Object, WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
-            repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new WhitelistManager.QueryKey(null)).thenAccept(result -> {
+            EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
+            repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new LambdaQueryWrapper<>(WhitelistInstance.class)).thenAccept(result -> {
                         List<WhitelistInstance> records = result.getRecords();
                         if (records.isEmpty()) {
                             sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next")));

@@ -12,28 +12,20 @@ import org.apache.ibatis.session.SqlSession;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class WarpManager extends BaseDataManager<WarpManager.QueryKey, ServerWarp> {
+public class WarpManager extends BaseDataManager<ServerWarp> {
 
     public WarpManager(boolean isAsync) {
         super(isAsync);
     }
 
     @Override
-    public CompletableFuture<PageResult<ServerWarp>> getList(int pageNum, int pageSize, WarpManager.QueryKey queryKey) {
+    public CompletableFuture<PageResult<ServerWarp>> getList(int pageNum, int pageSize, LambdaQueryWrapper<ServerWarp> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 WarpMapper mapper = session.getMapper(WarpMapper.class);
                 Page<ServerWarp> page = new Page<>(pageNum, pageSize);
-                LambdaQueryWrapper<ServerWarp> wrapper = new LambdaQueryWrapper<>();
-
-                if (queryKey.warpId != null) {
-                    wrapper.eq(ServerWarp::getWarpId, queryKey.warpId);
-                }
-                if (queryKey.playerUUID != null) {
-                    wrapper.eq(ServerWarp::getCreateBy, queryKey.playerUUID);
-                }
-                wrapper.orderByDesc(ServerWarp::isTopSlot);
-                Page<ServerWarp> resultPage = mapper.selectPage(page, wrapper);
+                key.orderByDesc(ServerWarp::isTopSlot);
+                Page<ServerWarp> resultPage = mapper.selectPage(page, key);
                 return PageResult.build(
                         resultPage.getRecords(),
                         resultPage.getTotal(),
@@ -44,11 +36,11 @@ public class WarpManager extends BaseDataManager<WarpManager.QueryKey, ServerWar
     }
 
     @Override
-    public CompletableFuture<ServerWarp> getInstance(WarpManager.QueryKey queryKey) {
+    public CompletableFuture<ServerWarp> getInstance(LambdaQueryWrapper<ServerWarp> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.selectOne(new LambdaQueryWrapper<ServerWarp>().eq(ServerWarp::getWarpId, queryKey.warpId));
+                return mapper.selectOne(key);
             }
         });
     }
@@ -57,7 +49,7 @@ public class WarpManager extends BaseDataManager<WarpManager.QueryKey, ServerWar
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.selectList(new Page<>(0, Integer.MAX_VALUE), new LambdaQueryWrapper<ServerWarp>().eq(ServerWarp::getCreateBy, uuid));
+                return mapper.selectList(new Page<>(0, Integer.MAX_VALUE), new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getCreateBy, uuid));
             }
         });
     }
@@ -77,7 +69,7 @@ public class WarpManager extends BaseDataManager<WarpManager.QueryKey, ServerWar
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
                 WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.delete(new LambdaQueryWrapper<ServerWarp>().eq(ServerWarp::getCreateBy, instance.getCreateBy()).eq(ServerWarp::getId, instance.getId())) == 1;
+                return mapper.delete(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getCreateBy, instance.getCreateBy()).eq(ServerWarp::getId, instance.getId())) == 1;
             }
         });
     }
@@ -87,11 +79,9 @@ public class WarpManager extends BaseDataManager<WarpManager.QueryKey, ServerWar
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
                 WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.update(instance, new LambdaQueryWrapper<ServerWarp>().eq(ServerWarp::getId, instance.getId()).eq(ServerWarp::getCreateBy, instance.getCreateBy())) == 1;
+                return mapper.update(instance, new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getId, instance.getId()).eq(ServerWarp::getCreateBy, instance.getCreateBy())) == 1;
             }
         });
     }
-
-    public record QueryKey(String warpId, String playerUUID) {}
 
 }

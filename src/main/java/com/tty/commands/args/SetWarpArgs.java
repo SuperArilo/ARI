@@ -1,11 +1,11 @@
 package com.tty.commands.args;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.ServerWarp;
 import com.tty.entity.cache.ServerWarpRepository;
 import com.tty.enumType.FilePath;
-import com.tty.function.WarpManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
@@ -61,10 +61,10 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
             return;
         }
 
-        EntityRepository<WarpManager.QueryKey, ServerWarp> repo = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
+        EntityRepository<ServerWarp> repo = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
         ServerWarpRepository repository = (ServerWarpRepository) repo;
 
-        repository.queryCount(new WarpManager.QueryKey(null, player.getUniqueId().toString()))
+        repository.queryCount(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getCreateBy, player.getUniqueId().toString()))
                 .thenCompose(result -> {
                     int max = PermissionUtils.getMaxCountInPermission(player, "warp");
                     if (result.getTotal() + 1 > max) {
@@ -79,7 +79,7 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
                         return CompletableFuture.completedFuture(null);
                     }
 
-                    return repository.get(new WarpManager.QueryKey(warpId, null))
+                    return repository.get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId))
                             .thenCompose(existing -> {
                                 if (existing != null) {
                                     return ConfigUtils.t("function.warp.exist", player)

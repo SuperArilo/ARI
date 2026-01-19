@@ -1,7 +1,7 @@
 package com.tty.gui.home;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
-import com.tty.function.HomeManager;
 import com.tty.lib.dto.PageResult;
 import com.tty.lib.entity.gui.BaseDataMenu;
 import com.tty.lib.entity.gui.FunctionItems;
@@ -41,7 +41,7 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
     @Override
     public CompletableFuture<PageResult<ServerHome>> requestData() {
         int size = this.baseDataInstance.getDataItems().getSlot().size();
-        return Ari.REPOSITORY_MANAGER.get(ServerHome.class).getList(this.pageNum, size, new HomeManager.QueryKey(this.player.getUniqueId().toString(), null));
+        return Ari.REPOSITORY_MANAGER.get(ServerHome.class).getList(this.pageNum, size, new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, this.player.getUniqueId().toString()));
     }
 
     @Override

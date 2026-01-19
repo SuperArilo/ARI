@@ -12,19 +12,19 @@ import org.apache.ibatis.session.SqlSession;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class WhitelistManager extends BaseDataManager<WhitelistManager.QueryKey, WhitelistInstance> {
+public class WhitelistManager extends BaseDataManager<WhitelistInstance> {
 
     public WhitelistManager(boolean isAsync) {
         super(isAsync);
     }
 
     @Override
-    public CompletableFuture<PageResult<WhitelistInstance>> getList(int pageNum, int pageSize, WhitelistManager.QueryKey queryKey) {
+    public CompletableFuture<PageResult<WhitelistInstance>> getList(int pageNum, int pageSize, LambdaQueryWrapper<WhitelistInstance> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
                 Page<WhitelistInstance> page = new Page<>(pageNum, pageSize);
-                Page<WhitelistInstance> resultPage = mapper.selectPage(page, new LambdaQueryWrapper<>());
+                Page<WhitelistInstance> resultPage = mapper.selectPage(page, key);
 
                 return PageResult.build(
                         resultPage.getRecords(),
@@ -36,13 +36,11 @@ public class WhitelistManager extends BaseDataManager<WhitelistManager.QueryKey,
     }
 
     @Override
-    public CompletableFuture<WhitelistInstance> getInstance(WhitelistManager.QueryKey queryKey) {
+    public CompletableFuture<WhitelistInstance> getInstance(LambdaQueryWrapper<WhitelistInstance> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
                 WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
-                LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>();
-                wrapper.eq(WhitelistInstance::getPlayerUUID, queryKey.playerUUID);
-                return mapper.selectOne(wrapper);
+                return mapper.selectOne(key);
             }
         });
     }
@@ -76,11 +74,9 @@ public class WhitelistManager extends BaseDataManager<WhitelistManager.QueryKey,
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
                 WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
-                return mapper.delete(new LambdaQueryWrapper<WhitelistInstance>().in(WhitelistInstance::getPlayerUUID, uuids));
+                return mapper.delete(new LambdaQueryWrapper<>(WhitelistInstance.class).in(WhitelistInstance::getPlayerUUID, uuids));
             }
         });
     }
-
-    public record QueryKey(String playerUUID) {}
 
 }

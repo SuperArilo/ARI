@@ -55,7 +55,7 @@ public class EditWarpListener extends OnGuiEditListener {
         NamespacedKey icon_type = new NamespacedKey(Ari.instance, "type");
         FunctionType type = FormatUtils.ItemNBT_TypeCheck(clickMeta.getPersistentDataContainer().get(icon_type, PersistentDataType.STRING));
         if(type == null) return;
-        EntityRepository<Object, ServerWarp> warpEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
+        EntityRepository<ServerWarp> warpEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
         switch (type) {
             case REBACK -> {
                 inventory.close();

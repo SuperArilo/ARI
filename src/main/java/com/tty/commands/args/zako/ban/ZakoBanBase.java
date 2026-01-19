@@ -1,11 +1,10 @@
 package com.tty.commands.args.zako.ban;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
 import com.tty.entity.BanPlayer;
 import com.tty.entity.WhitelistInstance;
-import com.tty.function.BanPlayerManager;
-import com.tty.function.WhitelistManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
@@ -42,10 +41,10 @@ public abstract class ZakoBanBase <T> extends BaseRequiredArgumentLiteralCommand
             }
             return;
         }
-        EntityRepository<Object, BanPlayer> banPlayerRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
-        EntityRepository<Object, WhitelistInstance> whitelistInstanceRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
+        EntityRepository<BanPlayer> banPlayerRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
+        EntityRepository<WhitelistInstance> whitelistInstanceRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
 
-        banPlayerRepository.get(new BanPlayerManager.QueryKey(uuid.toString()))
+        banPlayerRepository.get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString()))
             .thenCompose(banPlayer -> {
                 if (banPlayer != null) {
                     CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.had_baned", player):ConfigUtils.t("function.zako.had_baned");
@@ -80,7 +79,7 @@ public abstract class ZakoBanBase <T> extends BaseRequiredArgumentLiteralCommand
 
                 banPlayerRepository.create(banPlayer);
                 //同时移除白名单
-                whitelistInstanceRepository.get(new WhitelistManager.QueryKey(uuid.toString())).thenCompose(whitelistInstanceRepository::delete);
+                whitelistInstanceRepository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString())).thenCompose(whitelistInstanceRepository::delete);
 
                 String string = TimeFormatUtils.format(total);
                 Lib.Scheduler.run(Ari.instance, i -> {

@@ -1,9 +1,9 @@
 package com.tty.commands.args.zako;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.BanPlayer;
-import com.tty.function.BanPlayerManager;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
@@ -56,8 +56,8 @@ public class ZakoUnBanPlayerArgs extends BaseRequiredArgumentLiteralCommand<Stri
             }
             return;
         }
-        EntityRepository<Object, BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
-        repository.get(new BanPlayerManager.QueryKey(uuid.toString()))
+        EntityRepository<BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
+        repository.get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString()))
             .thenCompose(banPlayer -> {
                 if (banPlayer == null) {
                     CompletableFuture<Component> future = (sender instanceof Player player) ?ConfigUtils.t("function.zako.ban-remove-failure", player):ConfigUtils.t("function.zako.ban-remove-failure");

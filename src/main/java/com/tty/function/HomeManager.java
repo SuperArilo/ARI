@@ -11,23 +11,20 @@ import org.apache.ibatis.session.SqlSession;
 
 import java.util.concurrent.CompletableFuture;
 
-public class HomeManager extends BaseDataManager<HomeManager.QueryKey, ServerHome> {
+public class HomeManager extends BaseDataManager<ServerHome> {
 
     public HomeManager(boolean isAsync) {
         super(isAsync);
     }
 
     @Override
-    public CompletableFuture<PageResult<ServerHome>> getList(int pageNum, int pageSize , QueryKey key) {
+    public CompletableFuture<PageResult<ServerHome>> getList(int pageNum, int pageSize , LambdaQueryWrapper<ServerHome> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 HomeMapper mapper = session.getMapper(HomeMapper.class);
                 Page<ServerHome> page = new Page<>(pageNum, pageSize);
                 Page<ServerHome> resultPage = mapper.selectPage(
-                        page,
-                        new LambdaQueryWrapper<ServerHome>()
-                                .eq(ServerHome::getPlayerUUID, key.playerUUID)
-                                .orderByDesc(ServerHome::isTopSlot)
+                        page, key.orderByDesc(ServerHome::isTopSlot)
                 );
                 return PageResult.build(
                         resultPage.getRecords(),
@@ -39,11 +36,11 @@ public class HomeManager extends BaseDataManager<HomeManager.QueryKey, ServerHom
     }
 
     @Override
-    public CompletableFuture<ServerHome> getInstance(QueryKey key) {
+    public CompletableFuture<ServerHome> getInstance(LambdaQueryWrapper<ServerHome> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 HomeMapper mapper = session.getMapper(HomeMapper.class);
-                return mapper.selectOne(new LambdaQueryWrapper<ServerHome>().eq(ServerHome::getHomeId, key.homeId).eq(ServerHome::getPlayerUUID, key.playerUUID));
+                return mapper.selectOne(key);
             }
         });
     }
@@ -64,7 +61,7 @@ public class HomeManager extends BaseDataManager<HomeManager.QueryKey, ServerHom
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
                 HomeMapper mapper = session.getMapper(HomeMapper.class);
                 return mapper.delete(
-                        new LambdaQueryWrapper<ServerHome>()
+                        new LambdaQueryWrapper<>(ServerHome.class)
                                 .eq(ServerHome::getPlayerUUID, instance.getPlayerUUID())
                                 .eq(ServerHome::getHomeId, instance.getHomeId())
                 ) == 1;
@@ -81,7 +78,5 @@ public class HomeManager extends BaseDataManager<HomeManager.QueryKey, ServerHom
             }
         });
     }
-
-    public record QueryKey(String playerUUID, String homeId) {}
 
 }

@@ -10,23 +10,23 @@ import org.apache.ibatis.session.SqlSession;
 
 import java.util.concurrent.CompletableFuture;
 
-public class PlayerManager extends BaseDataManager<PlayerManager.QueryKey, ServerPlayer> {
+public class PlayerManager extends BaseDataManager<ServerPlayer> {
 
     public PlayerManager(boolean isAsync) {
         super(isAsync);
     }
 
     @Override
-    public CompletableFuture<PageResult<ServerPlayer>> getList(int pageNum, int pageSize, PlayerManager.QueryKey queryKey) {
+    public CompletableFuture<PageResult<ServerPlayer>> getList(int pageNum, int pageSize, LambdaQueryWrapper<ServerPlayer> key) {
         return null;
     }
 
     @Override
-    public CompletableFuture<ServerPlayer> getInstance(PlayerManager.QueryKey queryKey) {
+    public CompletableFuture<ServerPlayer> getInstance(LambdaQueryWrapper<ServerPlayer> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 PlayersMapper mapper = session.getMapper(PlayersMapper.class);
-                return mapper.selectOne(new LambdaQueryWrapper<ServerPlayer>().eq(ServerPlayer::getPlayerUUID, queryKey.playerUUID));
+                return mapper.selectOne(key);
             }
         });
     }
@@ -56,7 +56,5 @@ public class PlayerManager extends BaseDataManager<PlayerManager.QueryKey, Serve
             }
         });
     }
-
-    public record QueryKey(String playerUUID) {}
 
 }

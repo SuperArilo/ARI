@@ -56,7 +56,7 @@ public class EditHomeListener extends OnGuiEditListener {
         event.setCancelled(true);
         if (type == null) return;
 
-        EntityRepository<Object, ServerHome> repository = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
+        EntityRepository<ServerHome> repository = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
         switch (type) {
             case REBACK -> {
                 inventory.close();

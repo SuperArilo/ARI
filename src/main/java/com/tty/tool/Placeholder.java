@@ -1,5 +1,6 @@
 package com.tty.tool;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
 import com.tty.commands.args.zako.ZakoInfoArgs;
 import com.tty.dto.SleepingWorld;
@@ -10,9 +11,6 @@ import com.tty.entity.ServerPlayer;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.*;
-import com.tty.function.BanPlayerManager;
-import com.tty.function.PlayerManager;
-import com.tty.function.WhitelistManager;
 import com.tty.lib.dto.state.State;
 import com.tty.lib.enum_type.Operator;
 import com.tty.lib.services.impl.PlaceholderRegistryImpl;
@@ -127,21 +125,21 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 LangZakoInfo.FIRST_LOGIN_SERVER_TIME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
-                        .get(new PlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
+                        .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getFirstLoginTime(), ZakoInfoArgs.getPatternDatetime()))))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangZakoInfo.LAST_LOGIN_SERVER_TIME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
-                        .get(new PlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
+                        .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getLastLoginOffTime(), ZakoInfoArgs.getPatternDatetime()))))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangZakoInfo.TOTAL_TIME_ON_SERVER,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
-                        .get(new PlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
+                        .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getTotalOnlineTime()))))
         ));
         registry.register(PlaceholderDefinition.of(
@@ -156,7 +154,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 LangZakoInfo.ZAKO_WHITELIST_OPERATOR,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(WhitelistInstance.class)
-                        .get(new WhitelistManager.QueryKey(offlinePlayer.getUniqueId().toString()))
+                        .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                         .thenApply(whitelistInstance -> {
                             String operator;
                             if(whitelistInstance.getOperator().equals(Operator.CONSOLE.getUuid())) {
@@ -171,7 +169,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 LangZakoInfo.ZAKO_WHITELIST_ADD_TIME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(WhitelistInstance.class)
-                        .get(new WhitelistManager.QueryKey(offlinePlayer.getUniqueId().toString()))
+                        .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getAddTime(), ZakoInfoArgs.getPatternDatetime()))))
         ));
         registry.register(PlaceholderDefinition.of(
@@ -181,19 +179,19 @@ public class Placeholder extends BasePlaceholder<FilePath> {
         registry.register(PlaceholderDefinition.of(
                 LangBanPlayerType.BAN_T0TAL_TIME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
-                .get(new BanPlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
+                .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                 .thenApply(i -> Component.text(TimeFormatUtils.format(i.getEndTime() - i.getStartTime()))))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangBanPlayerType.BAN_END_TIME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
-                .get(new BanPlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
+                .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                 .thenApply(i -> Component.text(TimeFormatUtils.format(i.getEndTime() - System.currentTimeMillis()))))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangBanPlayerType.BAN_REASON,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
-                        .get(new BanPlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
+                        .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> ComponentUtils.text(i.getReason())))
         ));
     }

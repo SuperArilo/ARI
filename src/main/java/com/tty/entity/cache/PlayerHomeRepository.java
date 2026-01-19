@@ -1,7 +1,7 @@
 package com.tty.entity.cache;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.entity.ServerHome;
-import com.tty.function.HomeManager;
 import com.tty.lib.dto.PageResult;
 import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.BaseDataManager;
@@ -9,23 +9,23 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
-public class PlayerHomeRepository extends EntityRepository<HomeManager.QueryKey, ServerHome> {
+public class PlayerHomeRepository extends EntityRepository<ServerHome> {
 
-    public PlayerHomeRepository(BaseDataManager<HomeManager.QueryKey, ServerHome> manager) {
+    public PlayerHomeRepository(BaseDataManager<ServerHome> manager) {
         super(manager);
     }
 
     @Override
-    protected HomeManager.@NotNull QueryKey extractCacheKey(ServerHome entity) {
-        return new HomeManager.QueryKey(entity.getPlayerUUID(), entity.getHomeId());
+    protected @NotNull LambdaQueryWrapper<ServerHome> extractCacheKey(ServerHome entity) {
+        return new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, entity.getPlayerUUID()).eq(ServerHome::getHomeId, entity.getHomeId());
     }
 
     @Override
-    protected HomeManager.QueryKey extractPageQueryKey(ServerHome entity) {
-        return new HomeManager.QueryKey(entity.getPlayerUUID(), null);
+    protected LambdaQueryWrapper<ServerHome> extractPageQueryKey(ServerHome entity) {
+        return new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, entity.getPlayerUUID());
     }
 
-    public CompletableFuture<PageResult<ServerHome>> queryCount(HomeManager.QueryKey queryKey) {
+    public CompletableFuture<PageResult<ServerHome>> queryCount(LambdaQueryWrapper<ServerHome> queryKey) {
         return this.manager.getList(1, Integer.MAX_VALUE, queryKey);
     }
 

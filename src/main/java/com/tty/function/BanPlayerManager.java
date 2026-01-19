@@ -10,23 +10,23 @@ import org.apache.ibatis.session.SqlSession;
 
 import java.util.concurrent.CompletableFuture;
 
-public class BanPlayerManager extends BaseDataManager<BanPlayerManager.QueryKey, BanPlayer> {
+public class BanPlayerManager extends BaseDataManager<BanPlayer> {
 
     public BanPlayerManager(boolean isAsync) {
         super(isAsync);
     }
 
     @Override
-    public CompletableFuture<PageResult<BanPlayer>> getList(int pageNum, int pageSize, BanPlayerManager.QueryKey queryKey) {
+    public CompletableFuture<PageResult<BanPlayer>> getList(int pageNum, int pageSize, LambdaQueryWrapper<BanPlayer> key) {
         return null;
     }
 
     @Override
-    public CompletableFuture<BanPlayer> getInstance(BanPlayerManager.QueryKey queryKey) {
+    public CompletableFuture<BanPlayer> getInstance(LambdaQueryWrapper<BanPlayer> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 BanPlayerMapper mapper = session.getMapper(BanPlayerMapper.class);
-                return mapper.selectOne(new LambdaQueryWrapper<BanPlayer>().eq(BanPlayer::getPlayerUUID, queryKey.playerUUID));
+                return mapper.selectOne(key);
             }
         });
     }
@@ -46,7 +46,7 @@ public class BanPlayerManager extends BaseDataManager<BanPlayerManager.QueryKey,
         return this.executeTask(() -> {
            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
                BanPlayerMapper mapper = session.getMapper(BanPlayerMapper.class);
-               return mapper.delete(new LambdaQueryWrapper<BanPlayer>().eq(BanPlayer::getPlayerUUID, instance.getPlayerUUID())) == 1;
+               return mapper.delete(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, instance.getPlayerUUID())) == 1;
            }
         });
     }
@@ -56,10 +56,9 @@ public class BanPlayerManager extends BaseDataManager<BanPlayerManager.QueryKey,
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
                 BanPlayerMapper mapper = session.getMapper(BanPlayerMapper.class);
-                return mapper.update(instance, new LambdaQueryWrapper<BanPlayer>().eq(BanPlayer::getPlayerUUID, instance.getPlayerUUID())) == 1;
+                return mapper.update(instance, new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, instance.getPlayerUUID())) == 1;
             }
         });
     }
 
-    public record QueryKey(String playerUUID) {}
 }

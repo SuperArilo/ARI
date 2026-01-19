@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class RepositoryManager {
 
-    private final Map<Class<?>, EntityRepository<?, ?>> repositories =  new ConcurrentHashMap<>();
+    private final Map<Class<?>, EntityRepository<?>> repositories =  new ConcurrentHashMap<>();
 
     public RepositoryManager() {
         this.register(ServerHome.class, new PlayerHomeRepository(new HomeManager(true)));
@@ -20,20 +20,20 @@ public final class RepositoryManager {
         this.register(WhitelistInstance.class, new WhitelistRepository(new WhitelistManager(true)));
     }
 
-    public <K, T> void register(Class<T> entityClass, EntityRepository<K, T> repository) {
-        EntityRepository<?, ?> old = this.repositories.putIfAbsent(entityClass, repository);
+    public <T> void register(Class<T> entityClass, EntityRepository<T> repository) {
+        EntityRepository<?> old = this.repositories.putIfAbsent(entityClass, repository);
         if (old != null) {
             throw new RepositoryException("Repository already registered for entity: " + entityClass.getName());
         }
     }
 
     @SuppressWarnings("unchecked")
-    public <K, T> EntityRepository<K, T> get(Class<T> entityClass) {
-        EntityRepository<?, ?> repository = this.repositories.get(entityClass);
+    public <T> EntityRepository<T> get(Class<T> entityClass) {
+        EntityRepository<?> repository = this.repositories.get(entityClass);
         if (repository == null) {
             throw new RepositoryException("No repository registered for entity: " + entityClass.getName());
         }
-        return (EntityRepository<K, T>) repository;
+        return (EntityRepository<T>) repository;
     }
 
     public boolean isRegistered(Class<?> entityClass) {
@@ -41,7 +41,7 @@ public final class RepositoryManager {
     }
 
     public void clearAllCache() {
-        for (EntityRepository<?, ?> repository : this.repositories.values()) {
+        for (EntityRepository<?> repository : this.repositories.values()) {
             repository.clearAllCache();
         }
     }

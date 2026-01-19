@@ -1,10 +1,10 @@
 package com.tty.states;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
 import com.tty.dto.event.OnZakoSavedEvent;
 import com.tty.dto.state.player.PlayerSaveState;
 import com.tty.entity.ServerPlayer;
-import com.tty.function.PlayerManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.services.EntityRepository;
@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
-    private final EntityRepository<PlayerManager.QueryKey, ServerPlayer> repository;
+    private final EntityRepository<ServerPlayer> repository;
 
     public PlayerSaveStateService(long rate, long c, boolean isAsync, JavaPlugin javaPlugin) {
         super(rate, c, isAsync, javaPlugin);
@@ -75,7 +75,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
         long onlineDuration = System.currentTimeMillis() -  state.getLoginTime();
 
-        this.repository.get(new PlayerManager.QueryKey(uuid))
+        this.repository.get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid))
             .thenCompose(serverPlayer -> {
                 if (serverPlayer == null) {
                     Log.error("Player data not found: {}", uuid);

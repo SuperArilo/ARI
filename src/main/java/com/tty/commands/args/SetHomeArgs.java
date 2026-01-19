@@ -1,11 +1,11 @@
 package com.tty.commands.args;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.ServerHome;
 import com.tty.entity.cache.PlayerHomeRepository;
 import com.tty.enumType.FilePath;
-import com.tty.function.HomeManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
@@ -60,10 +60,10 @@ public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
             return;
         }
 
-        EntityRepository<HomeManager.QueryKey, ServerHome> repo = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
+        EntityRepository<ServerHome> repo = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
         PlayerHomeRepository repository = (PlayerHomeRepository) repo;
 
-        repository.queryCount(new HomeManager.QueryKey(player.getUniqueId().toString(), null))
+        repository.queryCount(new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, player.getUniqueId().toString()))
                 .thenCompose(result -> {
                     List<ServerHome> list = result.getRecords();
 

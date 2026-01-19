@@ -1,5 +1,6 @@
 package com.tty.listener.player;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
 import com.tty.commands.maintenance;
 import com.tty.dto.SpawnLocation;
@@ -9,12 +10,9 @@ import com.tty.entity.BanPlayer;
 import com.tty.entity.ServerPlayer;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
-import com.tty.function.BanPlayerManager;
-import com.tty.function.PlayerManager;
 import com.tty.lib.Lib;
 import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.Teleporting;
-import com.tty.function.WhitelistManager;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.Operator;
 import com.tty.lib.tool.ComponentUtils;
@@ -41,11 +39,11 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void banCheck(AsyncPlayerPreLoginEvent event) {
-        EntityRepository<Object, BanPlayer> banPlayerEntityRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
+        EntityRepository<BanPlayer> banPlayerEntityRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         UUID uuid = event.getUniqueId();
         BanPlayer banPlayer;
         try {
-            banPlayer = banPlayerEntityRepository.get(new BanPlayerManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
+            banPlayer = banPlayerEntityRepository.get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Log.error(e, "query ban list error on uuid {}", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
@@ -79,11 +77,11 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         if (event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.KICK_BANNED)) return;
         UUID uuid = event.getUniqueId();
         if(!Ari.instance.getConfig().getBoolean("server.whitelist.enable", false)) return;
-        EntityRepository<Object, ServerPlayer> playerEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
-        EntityRepository<Object, WhitelistInstance> whitelistInstanceEntityRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
+        EntityRepository<ServerPlayer> playerEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
+        EntityRepository<WhitelistInstance> whitelistInstanceEntityRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         WhitelistInstance instance;
         try {
-            instance = whitelistInstanceEntityRepository.get(new WhitelistManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
+            instance = whitelistInstanceEntityRepository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Log.error(e, "check whitelist on uuid {} error.", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(e.getMessage()));
@@ -110,7 +108,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         //判断玩家是否更改过名字
         ServerPlayer serverPlayer;
         try {
-            serverPlayer = playerEntityRepository.get(new PlayerManager.QueryKey(uuid.toString())).get(3, TimeUnit.SECONDS);
+            serverPlayer = playerEntityRepository.get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -125,7 +123,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        EntityRepository<Object, ServerPlayer> playerEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
+        EntityRepository<ServerPlayer> repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
         boolean first = Ari.instance.getConfig().getBoolean("server.message.on-first-login", false);
         boolean login = Ari.instance.getConfig().getBoolean("server.message.on-login", false);
 
@@ -133,17 +131,17 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             event.joinMessage(null);
         }
         long nowLoginTime = System.currentTimeMillis();
-        playerEntityRepository.get(new PlayerManager.QueryKey(player.getUniqueId().toString()))
+        repository.get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, player.getUniqueId().toString()))
             .thenCompose(i -> {
                 if(i == null) {
                     ServerPlayer serverPlayer = new ServerPlayer();
                     serverPlayer.setPlayerName(player.getName());
                     serverPlayer.setPlayerUUID(player.getUniqueId().toString());
                     serverPlayer.setFirstLoginTime(System.currentTimeMillis());
-                    playerEntityRepository.create(serverPlayer);
+                    repository.create(serverPlayer);
                 } else {
                     i.setLastLoginOffTime(nowLoginTime);
-                    playerEntityRepository.update(i);
+                    repository.update(i);
                 }
                 return CompletableFuture.completedFuture(null);
             })

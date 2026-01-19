@@ -1,9 +1,9 @@
 package com.tty.commands.args.zako;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.WhitelistInstance;
-import com.tty.function.WhitelistManager;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
@@ -52,8 +52,8 @@ public class ZakoRemoveArgs extends BaseRequiredArgumentLiteralCommand<String> {
         String value = args[2];
         UUID uuid = PublicFunctionUtils.parseUUID(value);
         if (uuid == null) return;
-        EntityRepository<Object, WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
-        repository.get(new WhitelistManager.QueryKey(uuid.toString())).thenCompose(instance -> {
+        EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
+        repository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString())).thenCompose(instance -> {
             if (instance == null) {
                 return CompletableFuture.completedFuture(false);
             }
