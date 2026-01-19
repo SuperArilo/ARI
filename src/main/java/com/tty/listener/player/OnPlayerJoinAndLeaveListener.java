@@ -1,6 +1,5 @@
 package com.tty.listener.player;
 
-import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.commands.maintenance;
 import com.tty.dto.SpawnLocation;
@@ -17,10 +16,8 @@ import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.Teleporting;
 import com.tty.function.WhitelistManager;
 import com.tty.lib.Log;
-import com.tty.lib.enum_type.LangType;
 import com.tty.lib.enum_type.Operator;
 import com.tty.lib.tool.ComponentUtils;
-import com.tty.lib.tool.TimeFormatUtils;
 import com.tty.states.PlayerSaveStateService;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
@@ -35,12 +32,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
 
 import static com.tty.commands.sub.EnderChestToPlayer.OFFLINE_ON_EDIT_ENDER_CHEST_LIST;
-
 
 public class OnPlayerJoinAndLeaveListener implements Listener {
 
@@ -61,19 +56,14 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             banPlayerEntityRepository.delete(banPlayer);
             Log.debug("free player uuid {}.", banPlayer.getPlayerUUID());
         } else {
-            List<String> value = Ari.C_INSTANCE.getValue("server.player.baned", FilePath.LANG, new TypeToken<List<String>>() {
-            }.getType(), List.of());
-
-            Component component = ComponentUtils.textList(value, Map.of(
-                    LangType.BAN_REASON.getType(), ComponentUtils.text(banPlayer.getReason()),
-                    LangType.BAN_END_TIME.getType(), ComponentUtils.text(TimeFormatUtils.format(banPlayer.getEndTime() - System.currentTimeMillis()))
-            ));
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, component);
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ConfigUtils.tList("server.player.baned", Bukkit.getOfflinePlayer(uuid)).join());
         }
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void maintenance(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.KICK_BANNED)) return;
         if (maintenance.MAINTENANCE_MODE) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join").join());
             return;
@@ -86,6 +76,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void whitelist(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.KICK_BANNED)) return;
         UUID uuid = event.getUniqueId();
         if(!Ari.instance.getConfig().getBoolean("server.whitelist.enable", false)) return;
         EntityRepository<Object, ServerPlayer> playerEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);

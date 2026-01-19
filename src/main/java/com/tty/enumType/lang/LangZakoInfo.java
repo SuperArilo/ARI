@@ -8,10 +8,7 @@ public enum LangZakoInfo implements LangTypeEnum {
     LAST_LOGIN_SERVER_TIME("last_login_server_time"),
     TOTAL_TIME_ON_SERVER("total_online_time_on_server"),
     ZAKO_WHITELIST_OPERATOR("zako_whitelist_operator"),
-    ZAKO_WHITELIST_ADD_TIME("zako_whitelist_add_time"),
-    BAN_T0TAL_TIME("ban_total_time"),
-    BAN_REASON("ban_reason"),
-    BAN_END_TIME("ban_end_time");
+    ZAKO_WHITELIST_ADD_TIME("zako_whitelist_add_time");
 
     private final String type;
 

@@ -10,7 +10,6 @@ import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.enum_type.FilePath;
-import com.tty.lib.enum_type.LangType;
 import com.tty.lib.enum_type.Operator;
 import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.ComponentUtils;
@@ -22,7 +21,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -89,11 +87,9 @@ public abstract class ZakoBanBase <T> extends BaseRequiredArgumentLiteralCommand
                     Player player = Bukkit.getPlayer(uuid);
                     if (player != null) {
                         player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
-
-                        Bukkit.getServer().broadcast(ConfigUtils.tAfter("function.zako.baned", Map.of(LangType.BAN_T0TAL_TIME.getType(), Component.text(string), LangType.BAN_REASON.getType(), ComponentUtils.text(args[3]))));
+                        ConfigUtils.t("function.zako.baned", player).thenAccept(Bukkit::broadcast);
                         Log.debug("baned player uuid {}. total {}", uuid.toString(), string);
                     }
-
                 });
 
             }).exceptionally(e -> {

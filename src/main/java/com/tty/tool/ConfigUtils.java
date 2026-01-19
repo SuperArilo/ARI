@@ -4,6 +4,7 @@ import com.tty.Ari;
 import com.tty.enumType.FilePath;
 import com.tty.lib.tool.ComponentUtils;
 import net.kyori.adventure.text.Component;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -13,6 +14,14 @@ public class ConfigUtils {
 
     public static CompletableFuture<Component> t(String key, Player player) {
         return Ari.PLACEHOLDER.render(key, player);
+    }
+
+    public static CompletableFuture<Component> t(String key, OfflinePlayer offlinePlayer) {
+        return Ari.PLACEHOLDER.render(key, offlinePlayer);
+    }
+
+    public static CompletableFuture<Component> tList(String key, OfflinePlayer offlinePlayer) {
+        return Ari.PLACEHOLDER.renderList(key, offlinePlayer);
     }
 
     public static CompletableFuture<Component> t(String key) {

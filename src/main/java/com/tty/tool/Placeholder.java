@@ -5,10 +5,12 @@ import com.tty.commands.args.zako.ZakoInfoArgs;
 import com.tty.dto.SleepingWorld;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
 import com.tty.dto.state.teleport.RandomTpState;
+import com.tty.entity.BanPlayer;
 import com.tty.entity.ServerPlayer;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.*;
+import com.tty.function.BanPlayerManager;
 import com.tty.function.PlayerManager;
 import com.tty.function.WhitelistManager;
 import com.tty.lib.dto.state.State;
@@ -175,6 +177,24 @@ public class Placeholder extends BasePlaceholder<FilePath> {
         registry.register(PlaceholderDefinition.of(
                 LangMaintenance.MAINTENANCE_KICK_DEALY,
                 PlaceholderResolve.ofPlayer(player -> this.set(String.valueOf(Ari.instance.getConfig().getInt("server.maintenance.kick_delay", 10))))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                LangBanPlayerType.BAN_T0TAL_TIME,
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
+                .get(new BanPlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
+                .thenApply(i -> Component.text(TimeFormatUtils.format(i.getEndTime() - i.getStartTime()))))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                LangBanPlayerType.BAN_END_TIME,
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
+                .get(new BanPlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
+                .thenApply(i -> Component.text(TimeFormatUtils.format(i.getEndTime() - System.currentTimeMillis()))))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                LangBanPlayerType.BAN_REASON,
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
+                        .get(new BanPlayerManager.QueryKey(offlinePlayer.getUniqueId().toString()))
+                        .thenApply(i -> ComponentUtils.text(i.getReason())))
         ));
     }
 
