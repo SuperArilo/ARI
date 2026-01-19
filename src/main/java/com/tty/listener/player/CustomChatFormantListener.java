@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.dto.event.CustomPluginReloadEvent;
 import com.tty.enumType.FilePath;
+import com.tty.enumType.lang.LangPlayerChat;
 import com.tty.lib.enum_type.LangType;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.PermissionUtils;
@@ -32,7 +33,7 @@ public class CustomChatFormantListener implements Listener {
         event.renderer((source, sourceDisplayName, msg, viewer) ->
                 ComponentUtils.text(
                         this.getPattern(source),
-                        Map.of(LangType.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), LangType.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
+                        Map.of(LangPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), LangPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
     }
     @EventHandler(priority = EventPriority.MONITOR)
     public void whenPluginReload(CustomPluginReloadEvent event) {

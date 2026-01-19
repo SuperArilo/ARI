@@ -4,6 +4,7 @@ import com.tty.Ari;
 import com.tty.dto.bar.PlayerAttackBar;
 import com.tty.dto.event.CustomPluginReloadEvent;
 import com.tty.enumType.FilePath;
+import com.tty.enumType.lang.LangPlayerDamageBar;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.LangType;
@@ -149,10 +150,10 @@ public class MobBossBarListener implements Listener {
         Component t = ConfigUtils.tAfter(
                 "server.boss-bar.player-attack",
                 Map.of(
-                        LangType.MOB.getType(), damageable.name(),
-                        LangType.MOB_CURRENT_HEALTH.getType(),
+                        LangPlayerDamageBar.MOB_UNRESOLVED.getType(), damageable.name(),
+                        LangPlayerDamageBar.MOB_CURRENT_HEALTH_UNRESOLVED.getType(),
                         Component.text(FormatUtils.formatTwoDecimalPlaces(currentHealth)).color(this.getMobHealthTextColor(healthRatio)),
-                        LangType.MOB_MAX_HEALTH.getType(),
+                        LangPlayerDamageBar.MOB_MAX_HEALTH_UNRESOLVED.getType(),
                         Component.text(FormatUtils.formatTwoDecimalPlaces(maxHealth))
                 )
         );

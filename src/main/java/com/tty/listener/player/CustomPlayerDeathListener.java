@@ -1,8 +1,8 @@
 package com.tty.listener.player;
 
 import com.tty.Ari;
+import com.tty.enumType.lang.LangPlayerDeath;
 import com.tty.lib.Log;
-import com.tty.lib.enum_type.LangType;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.tool.PlayerDeathInfoCollector;
 import net.kyori.adventure.text.Component;
@@ -34,9 +34,9 @@ public class CustomPlayerDeathListener implements Listener {
             event.deathMessage(ComponentUtils.text(
                     message,
                     Map.of(
-                            LangType.VICTIM.getType(), ComponentUtils.setEntityHoverText(info.victim),
-                            LangType.KILLER.getType(), info.killer != null ? ComponentUtils.setEntityHoverText(info.killer) : Component.empty(),
-                            LangType.KILLER_ITEM.getType(), ComponentUtils.setHoverItemText(info.weapon)
+                            LangPlayerDeath.VICTIM_UNRESOLVED.getType(), ComponentUtils.setEntityHoverText(info.victim),
+                            LangPlayerDeath.KILLER_UNRESOLVED.getType(), info.killer != null ? ComponentUtils.setEntityHoverText(info.killer) : Component.empty(),
+                            LangPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), ComponentUtils.setHoverItemText(info.weapon)
                     )
             ));
         }

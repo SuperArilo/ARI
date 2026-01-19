@@ -4,9 +4,9 @@ import com.tty.lib.enum_type.LangTypeEnum;
 
 public enum LangPlayerDeath implements LangTypeEnum {
 
-    KILLER("killer"),
-    VICTIM("victim"),
-    KILLER_ITEM("killer_item");
+    KILLER_UNRESOLVED("killer"),
+    VICTIM_UNRESOLVED("victim"),
+    KILLER_ITEM_UNRESOLVED("killer_item");
 
     private final String type;
 

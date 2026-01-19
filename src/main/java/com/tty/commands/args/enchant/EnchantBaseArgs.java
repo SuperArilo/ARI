@@ -2,8 +2,8 @@ package com.tty.commands.args.enchant;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
+import com.tty.enumType.lang.LangEnchant;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
-import com.tty.lib.enum_type.LangType;
 import com.tty.tool.ConfigUtils;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
@@ -97,6 +97,6 @@ public abstract class EnchantBaseArgs <T> extends BaseRequiredArgumentLiteralCom
 
         String value = Ari.DATA_SERVICE.getValue("enchantment." + enchantment.key().value());
         sender.sendMessage(ConfigUtils.tAfter("function.enchant.enchant-success",
-                Map.of(LangType.ENCHANT_NAME.getType(), Component.text(value), LangType.ENCHANT_LEVEL.getType(), Component.text(level))));
+                Map.of(LangEnchant.ENCHANT_NAME_UNRESOLVED.getType(), Component.text(value), LangEnchant.ENCHANT_LEVEL_UNRESOLVED.getType(), Component.text(level))));
     }
 }
