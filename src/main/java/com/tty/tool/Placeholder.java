@@ -172,6 +172,10 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .get(new WhitelistManager.QueryKey(offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getAddTime(), ZakoInfoArgs.getPatternDatetime()))))
         ));
+        registry.register(PlaceholderDefinition.of(
+                LangMaintenance.MAINTENANCE_KICK_DEALY,
+                PlaceholderResolve.ofPlayer(player -> this.set(String.valueOf(Ari.instance.getConfig().getInt("server.maintenance.kick_delay", 10))))
+        ));
     }
 
 }

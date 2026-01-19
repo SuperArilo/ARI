@@ -39,7 +39,7 @@ public class setspawn extends BaseLiteralArgumentLiteralCommand {
 
         Ari.C_INSTANCE.setValue(Ari.instance, "main.location", FilePath.SPAWN_CONFIG, spawnLocation.toMap());
 
-        player.sendMessage(ConfigUtils.t("function.spawn.create-success"));
+        ConfigUtils.t("function.spawn.create-success", player).thenAccept(player::sendMessage);
     }
 
     @Override

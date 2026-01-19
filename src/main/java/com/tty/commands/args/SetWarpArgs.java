@@ -11,7 +11,6 @@ import com.tty.lib.Log;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.services.EntityRepository;
-import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.lib.tool.PermissionUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -58,7 +57,7 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
         Player player = (Player) sender;
 
         if(!FormatUtils.checkIdName(warpId)) {
-            player.sendMessage(ConfigUtils.t("function.warp.id-error"));
+            ConfigUtils.t("function.warp.id-error", player).thenAccept(player::sendMessage);
             return;
         }
 
@@ -66,63 +65,65 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
         ServerWarpRepository repository = (ServerWarpRepository) repo;
 
         repository.queryCount(new WarpManager.QueryKey(null, player.getUniqueId().toString()))
-            .thenApply(list -> {
-                int max = PermissionUtils.getMaxCountInPermission(player, "warp");
-                if (list.getTotal() + 1 > max) {
-                    player.sendMessage(ConfigUtils.t("function.warp.exceeds"));
-                    return false;
-                }
-                return true;
-            })
-            .thenCompose(shouldProceed -> {
-                if (!shouldProceed) {
-                    return CompletableFuture.completedFuture(null);
-                }
-                return repository.get(new WarpManager.QueryKey(warpId, null)).thenCompose(existing -> {
-                    if (existing != null) {
-                        player.sendMessage(ConfigUtils.t("function.warp.exist", player));
+                .thenCompose(result -> {
+                    int max = PermissionUtils.getMaxCountInPermission(player, "warp");
+                    if (result.getTotal() + 1 > max) {
+                        return ConfigUtils.t("function.warp.exceeds", player)
+                                .thenAccept(player::sendMessage)
+                                .thenApply(v -> false);
+                    }
+                    return CompletableFuture.completedFuture(true);
+                })
+                .thenCompose(shouldProceed -> {
+                    if (!shouldProceed) {
                         return CompletableFuture.completedFuture(null);
                     }
 
-                    CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
-                    Lib.Scheduler.runAtRegion(
-                        Ari.instance,
-                        player.getLocation(),
-                        task -> {
-                            ServerWarp serverWarp = new ServerWarp();
-                            serverWarp.setWarpId(warpId);
-                            serverWarp.setWarpName(warpId);
-                            serverWarp.setCreateBy(player.getUniqueId().toString());
-                            serverWarp.setLocation(player.getLocation().toString());
-                            serverWarp.setShowMaterial(
-                                    PublicFunctionUtils
-                                            .checkIsItem(
-                                                    player.getLocation()
-                                                            .getBlock()
-                                                            .getRelative(BlockFace.DOWN)
-                                                            .getType()
-                                            ).name()
-                            );
-                            futureWarp.complete(serverWarp);
-                        }
-                    );
-                    return futureWarp.thenCompose(repository::create);
-                });
-            })
-            .thenAccept(created -> {
-                if (created != null) {
-                    player.sendMessage(ConfigUtils.t("function.warp.create-success"));
-                }
-            })
-            .exceptionally(e -> {
-                Log.error(e, "create warp error");
-                player.sendMessage(
-                        ComponentUtils.text(
-                                Ari.DATA_SERVICE.getValue("base.on-error")
-                        )
-                );
-                return null;
-            });
+                    return repository.get(new WarpManager.QueryKey(warpId, null))
+                            .thenCompose(existing -> {
+                                if (existing != null) {
+                                    return ConfigUtils.t("function.warp.exist", player)
+                                            .thenAccept(player::sendMessage)
+                                            .thenApply(v -> null);
+                                }
 
+                                CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
+
+                                Lib.Scheduler.runAtRegion(
+                                        Ari.instance,
+                                        player.getLocation(),
+                                        task -> {
+                                            ServerWarp serverWarp = new ServerWarp();
+                                            serverWarp.setWarpId(warpId);
+                                            serverWarp.setWarpName(warpId);
+                                            serverWarp.setCreateBy(player.getUniqueId().toString());
+                                            serverWarp.setLocation(player.getLocation().toString());
+                                            serverWarp.setShowMaterial(
+                                                    PublicFunctionUtils
+                                                            .checkIsItem(
+                                                                    player.getLocation()
+                                                                            .getBlock()
+                                                                            .getRelative(BlockFace.DOWN)
+                                                                            .getType()
+                                                            ).name()
+                                            );
+                                            futureWarp.complete(serverWarp);
+                                        }
+                                );
+
+                                return futureWarp.thenCompose(repository::create);
+                            });
+                })
+                .thenCompose(created -> {
+                    if (created == null) {
+                        return CompletableFuture.completedFuture(null);
+                    }
+                    return ConfigUtils.t("function.warp.create-success", player).thenAccept(player::sendMessage);
+                })
+                .exceptionally(e -> {
+                    Log.error(e);
+                    ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
+                    return null;
+                });
     }
 }

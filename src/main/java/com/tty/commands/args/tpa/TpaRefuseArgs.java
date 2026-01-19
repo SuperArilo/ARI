@@ -48,11 +48,11 @@ public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
 
         Player player = (Player) sender;
         Player target = Bukkit.getPlayerExact(args[1]);
-        if (this.checkAfterResponse(player, target) != null) {
-            sender.sendMessage(ConfigUtils.t("function.tpa.refuse-success"));
+        this.checkAfterResponse(player, target, state -> {
+            ConfigUtils.t("function.tpa.refuse-success", player).thenAccept(sender::sendMessage);
             assert target != null;
-            Ari.PLACEHOLDER.render("function.tpa.refused", player).thenAccept(i ->
+            Ari.PLACEHOLDER.render("function.tpa.refused", target).thenAccept(i ->
                     Lib.Scheduler.runAtEntity(Ari.instance, target, task -> target.sendMessage(i), null));
-        }
+        });
     }
 }

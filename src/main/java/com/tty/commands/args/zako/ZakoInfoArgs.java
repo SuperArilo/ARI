@@ -10,6 +10,7 @@ import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.services.ConfigDataService;
 import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -55,8 +56,8 @@ public class ZakoInfoArgs extends BaseRequiredArgumentLiteralCommand<String> {
         if (uuid == null) return;
         Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new PlayerManager.QueryKey(uuid.toString())).thenCompose(i -> {
            if (i == null) {
-               sender.sendMessage(ConfigUtils.t("function.zako.zako-check-not-exist"));
-               return CompletableFuture.completedFuture(null);
+               CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.zako-check-not-exist", player):ConfigUtils.t("function.zako.zako-check-not-exist");
+               return future.thenAccept(sender::sendMessage).thenApply(t -> null);
            }
            return Ari.PLACEHOLDER.renderList("server.player.info", Bukkit.getServer().getOfflinePlayer(uuid));
         }).thenAccept(message -> {
@@ -65,7 +66,11 @@ public class ZakoInfoArgs extends BaseRequiredArgumentLiteralCommand<String> {
             }
         }).exceptionally(e -> {
             Log.error(e);
-            sender.sendMessage(ConfigUtils.t("function.zako.list-request-error"));
+            if (sender instanceof Player player) {
+                ConfigUtils.t("function.zako.list-request-error", player).thenAccept(sender::sendMessage);
+            } else {
+                ConfigUtils.t("function.zako.list-request-error").thenAccept(sender::sendMessage);
+            }
             return null;
         });
 

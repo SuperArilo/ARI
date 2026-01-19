@@ -79,13 +79,13 @@ public class WarpListListener extends BaseGuiListener {
                                         if(permission != null && !permission.isEmpty()) {
                                             boolean hasPermission = PermissionUtils.hasPermission(player, permission);
                                             if (!hasPermission && !isOwner) {
-                                                player.sendMessage(ConfigUtils.t("function.warp.no-permission-teleport"));
+                                                ConfigUtils.t("function.warp.no-permission-teleport", player).thenAccept(player::sendMessage);
                                                 return false;
                                             }
                                         }
                                         if(!EconomyUtils.hasEnoughBalance(player, instance.getCost()) && !isOwner &&
                                                 Ari.C_INSTANCE.getValue("main.permission", FilePath.WARP_CONFIG, Boolean.class, true)) {
-                                            player.sendMessage(ConfigUtils.t("function.warp.not-enough-money"));
+                                            ConfigUtils.t("function.warp.not-enough-money", player).thenAccept(player::sendMessage);
                                             return false;
                                         }
                                         return true;
@@ -97,7 +97,7 @@ public class WarpListListener extends BaseGuiListener {
                                                 Ari.C_INSTANCE.getValue("main.cost", FilePath.WARP_CONFIG, Boolean.class, false) &&
                                                 !EconomyUtils.isNull()) {
                                             EconomyUtils.withdrawPlayer(player, instance.getCost());
-                                            player.sendMessage(ConfigUtils.t("teleport.costed", Map.of(LangVault.COSTED.getType(), Component.text(instance.getCost().toString() + EconomyUtils.getNamePlural()))));
+                                            player.sendMessage(ConfigUtils.tAfter("teleport.costed", Map.of(LangVault.COSTED_UNRESOLVED.getType(), Component.text(instance.getCost().toString() + EconomyUtils.getNamePlural()))));
                                         }
                                     },
                                     TeleportType.WARP));
@@ -110,7 +110,7 @@ public class WarpListListener extends BaseGuiListener {
                                     new WarpEditor(instance, player).open();
                                 });
                             } else {
-                                player.sendMessage(ConfigUtils.t("function.warp.no-permission-edit"));
+                                ConfigUtils.t("function.warp.no-permission-edit", player).thenAccept(player::sendMessage);
                             }
                         }
                     }

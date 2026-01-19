@@ -61,15 +61,15 @@ public class EditWarpListener extends OnGuiEditListener {
                 inventory.close();
                 new WarpList(player).open();
             }
-            case DELETE -> warpEntityRepository.delete(warpEditor.currentWarp).thenAccept(i -> {
+            case DELETE -> warpEntityRepository.delete(warpEditor.currentWarp).thenCompose(i -> {
                 if (i) {
-                    player.sendMessage(ConfigUtils.t("function.warp.delete-success"));
-                    Lib.Scheduler.run(Ari.instance, ab -> {
-                        inventory.close();
-                        new WarpList(player).open();
-                    });
+                    return ConfigUtils.t("function.warp.delete-success", player).thenAccept(player::sendMessage)
+                            .thenRun(() -> Lib.Scheduler.run(Ari.instance, ab -> {
+                                inventory.close();
+                                new WarpList(player).open();
+                            }));
                 } else {
-                    player.sendMessage(ConfigUtils.t("function.warp.not-found"));
+                    return ConfigUtils.t("function.warp.not-found").thenAccept(player::sendMessage);
                 }
             }).exceptionally(i -> {
                 Log.error(i, "deleting warp error");

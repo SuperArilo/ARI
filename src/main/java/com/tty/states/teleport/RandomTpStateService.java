@@ -18,7 +18,6 @@ import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -35,17 +34,17 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     @Override
     protected boolean canAddState(RandomTpState state) {
-        Entity owner = state.getOwner();
+        Player owner = (Player) state.getOwner();
         RtpConfig rtpConfig = this.rtpConfig(state.getWorld().getName());
         if (rtpConfig == null || !rtpConfig.isEnable()) {
-            state.getOwner().sendMessage(ConfigUtils.t("function.rtp.world-disable"));
+            ConfigUtils.t("function.rtp.world-disable", owner).thenAccept(owner::sendMessage);
             return false;
         }
         StateMachineManager manager = Ari.STATE_MACHINE_MANAGER;
 
         //判断当前实体是否在传送冷却中
         if (!manager.get(CoolDownStateService.class).getStates(owner).isEmpty()) {
-            owner.sendMessage(ConfigUtils.t("teleport.cooling"));
+            ConfigUtils.t("teleport.cooling", owner).thenAccept(owner::sendMessage);
             return false;
         }
 
@@ -53,7 +52,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         if (!manager.get(TeleportStateService.class).getStates(owner).isEmpty() ||
                 !this.getStates(owner).isEmpty() ||
                 !manager.get(PreTeleportStateService.class).getStates(owner).isEmpty()) {
-            owner.sendMessage(ConfigUtils.t("teleport.has-teleport"));
+            ConfigUtils.t("teleport.has-teleport", owner).thenAccept(owner::sendMessage);
             return false;
         }
 
@@ -69,7 +68,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 || owner.isFlying()
                 || owner.isGliding()
                 || owner.isInsideVehicle()) {
-            owner.sendMessage(ConfigUtils.t("teleport.break"));
+            ConfigUtils.t("teleport.break", owner).thenAccept(owner::sendMessage);
             state.setOver(true);
             return;
         }
@@ -117,9 +116,9 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     @Override
     protected void onEarlyExit(RandomTpState state) {
         if (state.getTrueLocation() == null) return;
-        Entity owner = state.getOwner();
+        Player owner = (Player) state.getOwner();
         owner.clearTitle();
-        owner.sendMessage(ConfigUtils.t("function.rtp.location-found"));
+        ConfigUtils.t("function.rtp.location-found", owner).thenAccept(owner::sendMessage);
 
         Ari.STATE_MACHINE_MANAGER
             .get(TeleportStateService.class)
@@ -133,9 +132,9 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     @Override
     protected void onFinished(RandomTpState state) {
-        Entity owner = state.getOwner();
+        Player owner = (Player) state.getOwner();
         owner.clearTitle();
-        owner.sendMessage(ConfigUtils.t("function.rtp.search-failure"));
+        ConfigUtils.t("function.rtp.search-failure", owner).thenAccept(owner::sendMessage);
     }
 
     @Override

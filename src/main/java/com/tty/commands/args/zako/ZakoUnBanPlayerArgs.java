@@ -10,7 +10,9 @@ import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;
@@ -47,23 +49,47 @@ public class ZakoUnBanPlayerArgs extends BaseRequiredArgumentLiteralCommand<Stri
     public void execute(CommandSender sender, String[] args) {
         UUID uuid = PublicFunctionUtils.parseUUID(args[2]);
         if (uuid == null) {
-            sender.sendMessage(ConfigUtils.t("function.zako.zako-not-exist"));
+            if (sender instanceof Player player) {
+                ConfigUtils.t("function.zako.zako-not-exist", player).thenAccept(sender::sendMessage);
+            } else {
+                ConfigUtils.t("function.zako.zako-not-exist").thenAccept(sender::sendMessage);
+            }
             return;
         }
         EntityRepository<Object, BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         repository.get(new BanPlayerManager.QueryKey(uuid.toString()))
-            .thenCompose(CompletableFuture::completedFuture)
-            .thenAccept(banPlayer -> {
+            .thenCompose(banPlayer -> {
                 if (banPlayer == null) {
-                    sender.sendMessage(ConfigUtils.t("function.zako.ban-remove-failure"));
-                    return;
+                    CompletableFuture<Component> future = (sender instanceof Player player) ?ConfigUtils.t("function.zako.ban-remove-failure", player):ConfigUtils.t("function.zako.ban-remove-failure");
+                    return future.thenAccept(sender::sendMessage).thenApply(v -> false);
                 }
-                repository.delete(banPlayer);
-                sender.sendMessage(ConfigUtils.t("function.zako.ban-remove-success"));
+
+                return repository.delete(banPlayer)
+                    .thenCompose(deleted -> {
+                        if (!deleted) {
+                            CompletableFuture<Component> msgFuture =
+                                    (sender instanceof Player player)
+                                            ? ConfigUtils.t("function.zako.ban-remove-failure", player)
+                                            : ConfigUtils.t("function.zako.ban-remove-failure");
+
+                            return msgFuture
+                                    .thenAccept(sender::sendMessage)
+                                    .thenApply(v -> false);
+                        }
+
+                        CompletableFuture<Component> successFuture =
+                                (sender instanceof Player player)
+                                        ? ConfigUtils.t("function.zako.ban-remove-success", player)
+                                        : ConfigUtils.t("function.zako.ban-remove-success");
+
+                        return successFuture
+                                .thenAccept(sender::sendMessage)
+                                .thenApply(v -> true);
+                    });
             })
-            .whenComplete((i, e) -> {
-                if (e == null) return;
-                Log.error("delete ban player uuid {} error.", uuid.toString());
+            .exceptionally(e -> {
+                Log.error("delete ban player uuid {} error.", uuid.toString(), e);
+                return null;
             });
     }
 }

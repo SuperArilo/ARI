@@ -37,7 +37,7 @@ public class spawn extends BaseLiteralArgumentLiteralCommand {
         SpawnLocation value = Ari.C_INSTANCE.getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
         if(value == null) {
             Log.debug("location null");
-            player.sendMessage(ConfigUtils.t("function.spawn.no-spawn"));
+            ConfigUtils.t("function.spawn.no-spawn", player).thenAccept(player::sendMessage);
             return;
         }
         Ari.STATE_MACHINE_MANAGER

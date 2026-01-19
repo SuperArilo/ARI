@@ -34,7 +34,7 @@ public class back extends BaseLiteralArgumentLiteralCommand {
         Player player = (Player) sender;
         Location beforeLocation = TELEPORT_LAST_LOCATION.get(player.getUniqueId());
         if(beforeLocation == null) {
-            player.sendMessage(ConfigUtils.t("teleport.none-location"));
+            ConfigUtils.t("teleport.none-location", player).thenAccept(player::sendMessage);
             return;
         }
 

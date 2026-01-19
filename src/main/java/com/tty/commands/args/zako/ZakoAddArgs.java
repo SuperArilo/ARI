@@ -12,7 +12,9 @@ import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;
@@ -55,8 +57,14 @@ public class ZakoAddArgs extends BaseRequiredArgumentLiteralCommand<String> {
         repository.get(new WhitelistManager.QueryKey(uuid.toString()))
             .thenCompose(s -> {
                 if (s != null) {
-                    sender.sendMessage(ConfigUtils.t("function.zako.zako-add-exist"));
-                    return CompletableFuture.completedFuture(false);
+                    CompletableFuture<Component> msgFuture =
+                            (sender instanceof Player player)
+                                    ? ConfigUtils.t("function.zako.zako-add-exist", player)
+                                    : ConfigUtils.t("function.zako.zako-add-exist");
+
+                    return msgFuture
+                            .thenAccept(sender::sendMessage)
+                            .thenApply(v -> false);
                 }
                 return CompletableFuture.completedFuture(true);
             })
@@ -72,7 +80,8 @@ public class ZakoAddArgs extends BaseRequiredArgumentLiteralCommand<String> {
             })
             .thenAccept(status -> {
                 if (status == null) return;
-                sender.sendMessage(ConfigUtils.t("function.zako.zako-add-success"));
+                CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.zako-add-success", player):ConfigUtils.t("function.zako.zako-add-success");
+                future.thenAccept(sender::sendMessage);
             })
             .whenComplete((v, ex) -> {
                 if (ex != null) {

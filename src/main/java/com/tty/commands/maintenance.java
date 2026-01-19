@@ -4,17 +4,13 @@ import com.tty.Ari;
 import com.tty.lib.Lib;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.enum_type.LangType;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.tool.ConfigUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Map;
 
 public class maintenance extends BaseLiteralArgumentLiteralCommand {
 
@@ -42,26 +38,25 @@ public class maintenance extends BaseLiteralArgumentLiteralCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         MAINTENANCE_MODE = !MAINTENANCE_MODE;
-        TextComponent t = ConfigUtils.t("server.maintenance." + (MAINTENANCE_MODE ? "on-enable" : "on-disable"));
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.isOp()) {
-                player.sendMessage(t);
-                continue;
+        ConfigUtils.t("server.maintenance." + (MAINTENANCE_MODE ? "on-enable" : "on-disable"), (Player) sender).thenAccept(t -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player.isOp()) {
+                    player.sendMessage(t);
+                    continue;
+                }
+                ConfigUtils.t("server.maintenance.to-player").thenAccept(player::sendMessage);
+                Lib.Scheduler.runAtEntityLater(
+                        Ari.instance,
+                        player,
+                        i -> {
+                            if (!player.isOnline()) return;
+                            player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
+                        },
+                        () -> {},
+                        this.getMaintenanceKickDelay() * 20L);
             }
-            player.sendMessage(ConfigUtils.t(
-                    "server.maintenance.to-player",
-                    Map.of(LangType.MAINTENANCE_KICK_DEALY.getType(), Component.text(this.getMaintenanceKickDelay()))));
-            Lib.Scheduler.runAtEntityLater(
-                    Ari.instance,
-                    player,
-                    i -> {
-                        if (!player.isOnline()) return;
-                        player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
-                    },
-                    () -> {},
-                    this.getMaintenanceKickDelay() * 20L);
-        }
-        sender.sendMessage(t);
+            sender.sendMessage(t);
+        });
     }
 
     private int getMaintenanceKickDelay() {

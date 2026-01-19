@@ -74,9 +74,11 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void maintenance(AsyncPlayerPreLoginEvent event) {
-        if (maintenance.MAINTENANCE_MODE){
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join"));
+        if (maintenance.MAINTENANCE_MODE) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join").join());
+            return;
         }
+
         if (OFFLINE_ON_EDIT_ENDER_CHEST_LIST.contains(event.getUniqueId())) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
         }
@@ -109,7 +111,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                         return null;
                     });
             } else {
-                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, ConfigUtils.t("server.message.on-whitelist-login"));
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, ConfigUtils.t("server.message.on-whitelist-login").join());
                 return;
             }
         }
@@ -185,12 +187,12 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                         }
                     }
                     if(first) {
-                        Ari.PLACEHOLDER.render("server.message.on-first-login", player).thenAccept(t -> Lib.Scheduler.run(Ari.instance, task -> Bukkit.broadcast(t)));
+                        ConfigUtils.t("server.message.on-first-login", player).thenAccept(t -> Lib.Scheduler.run(Ari.instance, task -> Bukkit.broadcast(t)));
                         return;
                     }
                 }
                 if(login) {
-                    Ari.PLACEHOLDER.render("server.message.on-login", player).thenAccept(t -> Lib.Scheduler.run(Ari.instance, task -> Bukkit.broadcast(t)));
+                    ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Lib.Scheduler.run(Ari.instance, task -> Bukkit.broadcast(t)));
                 }
             });
     }

@@ -59,12 +59,12 @@ public class TimeArgs extends BaseRequiredArgumentLiteralCommand<String> {
         try {
             period = TimePeriod.valueOf(timePeriod.toUpperCase());
         } catch (Exception e) {
-            player.sendMessage(ConfigUtils.t("server.time.not-exist-period", Map.of(LangType.PERIOD_UNRESOLVED.getType(), Component.text(timePeriod))));
+            player.sendMessage(ConfigUtils.tAfter("server.time.not-exist-period", Map.of(LangType.PERIOD_UNRESOLVED.getType(), Component.text(timePeriod))));
             return;
         }
         World world = player.getWorld();
         if (!isBedWorksRe(world)) {
-            player.sendMessage(ConfigUtils.t("server.time.not-allowed-world"));
+            ConfigUtils.t("server.time.not-allowed-world", player).thenAccept(player::sendMessage);
             return;
         }
         TimeManager.build(world).timeSet(period.getStart());
@@ -73,6 +73,6 @@ public class TimeArgs extends BaseRequiredArgumentLiteralCommand<String> {
             player.sendMessage("no content " + timePeriod + "in lang");
             return;
         }
-        player.sendMessage(ComponentUtils.text(value, Map.of(LangTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.t("server.time.name." + period.getDescription()))));
+        player.sendMessage(ComponentUtils.text(value, Map.of(LangTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.tAfter("server.time.name." + period.getDescription()))));
     }
 }

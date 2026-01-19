@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgumentLiteralCommand<PlayerSelectorArgumentResolver> {
@@ -53,12 +54,11 @@ public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgument
      * 检查执行逻辑
      * @param sender 接收者
      * @param target 发起者
-     * @return 如果满足则返回 发起者的 PreEntityToEntityState 对象
      */
-    public PreEntityToEntityState checkAfterResponse(Player sender, Player target) {
+    public void checkAfterResponse(Player sender, Player target, Consumer<PreEntityToEntityState> consumer) {
         if (target == null) {
-            sender.sendMessage(ConfigUtils.t("teleport.unable-player"));
-            return null;
+            ConfigUtils.t("teleport.unable-player", sender).thenAccept(sender::sendMessage);
+            return;
         }
         PreTeleportStateService machine = Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class);
         //检查这个请求是否存在
@@ -67,12 +67,12 @@ public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgument
                 .stream()
                 .filter(i -> i instanceof PreEntityToEntityState state && state.getTarget().equals(sender)).findFirst().orElse(null);
         if (anElse == null) {
-            sender.sendMessage(ConfigUtils.t("function.tpa.been-done"));
-            return null;
+            ConfigUtils.t("function.tpa.been-done", sender).thenAccept(sender::sendMessage);
+            return;
         }
+        consumer.accept(anElse);
         //移除发起者的请求
         machine.removeState(anElse);
-        return anElse;
     }
 
 
@@ -80,7 +80,7 @@ public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgument
         if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.TPA_CONFIG.name()))) return true;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
         if (player == null || sender.getName().equals(player.getName())) {
-            sender.sendMessage(ConfigUtils.t("teleport.unable-player"));
+            ConfigUtils.t("teleport.unable-player", (Player) sender).thenAccept(sender::sendMessage);
             return true;
         }
         return false;

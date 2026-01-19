@@ -4,7 +4,7 @@ import com.tty.lib.enum_type.LangTypeEnum;
 
 public enum LangVault implements LangTypeEnum {
 
-    COSTED("costed");
+    COSTED_UNRESOLVED("costed");
 
     private final String type;
 

@@ -63,17 +63,19 @@ public class EditHomeListener extends OnGuiEditListener {
                 new HomeList(player).open();
             }
             case DELETE ->
-                repository.delete(homeEditor.currentHome).thenAccept(i -> {
-                    if (i) {
-                        player.sendMessage(ConfigUtils.t("function.home.delete-success"));
-                        Lib.Scheduler.run(Ari.instance, j -> {
-                            inventory.close();
-                            new HomeList(player).open();
-                        });
-                    } else {
-                        player.sendMessage(ConfigUtils.t("function.home.not-found"));
-                    }
-                });
+                repository.delete(homeEditor.currentHome)
+                    .thenCompose(success -> {
+                        if (success) {
+                            return ConfigUtils.t("function.home.delete-success", player)
+                                    .thenAccept(player::sendMessage)
+                                    .thenRun(() -> Lib.Scheduler.run(Ari.instance, j -> {
+                                        inventory.close();
+                                        new HomeList(player).open();
+                                    }));
+                        } else {
+                            return ConfigUtils.t("function.home.not-found", player).thenAccept(player::sendMessage);
+                        }
+                    });
             case RENAME -> {
                 Ari.STATE_MACHINE_MANAGER
                         .get(GuiEditStateService.class)

@@ -54,8 +54,9 @@ public class HomeListListener extends BaseGuiListener {
                 Ari.REPOSITORY_MANAGER.get(ServerHome.class).get(new HomeManager.QueryKey(player.getUniqueId().toString(), homeId))
                     .thenCompose(home -> {
                         if (home == null) {
-                            player.sendMessage(ConfigUtils.t("function.home.not-found"));
-                            return CompletableFuture.completedFuture(false);
+                            return ConfigUtils.t("function.home.not-found", player)
+                                    .thenAccept(player::sendMessage)
+                                    .thenApply(v -> false);
                         }
                         if (event.isLeftClick()) {
                             Ari.STATE_MACHINE_MANAGER

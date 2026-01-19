@@ -11,7 +11,6 @@ import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -26,8 +25,8 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
     @Override
     protected void loopExecution(PreEntityToEntityState state) {
 
-        Entity owner = state.getOwner();
-        Entity target = state.getTarget();
+        Player owner = (Player) state.getOwner();
+        Player target = (Player) state.getTarget();
 
         // 基本合法性检查
         if (target instanceof Player p && !p.isOnline()) {
@@ -36,13 +35,13 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
         }
 
         if (target == null) {
-            owner.sendMessage(ConfigUtils.t("teleport.unable-player"));
+            ConfigUtils.t("teleport.unable-player", owner).thenAccept(owner::sendMessage);
             state.setOver(true);
             return;
         }
 
         if (target.getName().equals(owner.getName())) {
-            owner.sendMessage(ConfigUtils.t("function.public.fail"));
+            ConfigUtils.t("function.public.fail", owner).thenAccept(owner::sendMessage);
             state.setOver(true);
             return;
         }
@@ -56,10 +55,10 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
     @Override
     protected void passAddState(PreEntityToEntityState state) {
-        Entity owner = state.getOwner();
-        Entity target = state.getTarget();
+        Player owner = (Player) state.getOwner();
+        Player target = (Player) state.getTarget();
 
-        owner.sendMessage(ConfigUtils.t("function.tpa.send-message"));
+        ConfigUtils.t("function.tpa.send-message", owner).thenAccept(owner::sendMessage);
 
         Ari.PLACEHOLDER.render("function.tpa." + (state.getType().getKey().equals("tpa") ? "to-message" : "here-message"), (OfflinePlayer) owner)
             .thenAccept(result ->
@@ -93,13 +92,12 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
     @Override
     protected boolean canAddState(PreEntityToEntityState state) {
-
-        Entity owner = state.getOwner();
-        Entity target = state.getTarget();
+        Player owner = (Player) state.getOwner();
+        Player target = (Player) state.getTarget();
         StateMachineManager manager = Ari.STATE_MACHINE_MANAGER;
         //判断当前实体是否在传送冷却中
         if (!manager.get(CoolDownStateService.class).getStates(owner).isEmpty()) {
-            owner.sendMessage(ConfigUtils.t("teleport.cooling"));
+            ConfigUtils.t("teleport.cooling").thenAccept(owner::sendMessage);
             return false;
         }
 
@@ -115,7 +113,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                 !manager.get(RandomTpStateService.class).getStates(owner).isEmpty() ||
                 !manager.get(TeleportStateService.class).getStates(target).isEmpty() ||
                 !manager.get(RandomTpStateService.class).getStates(target).isEmpty()) {
-            owner.sendMessage(ConfigUtils.t("teleport.has-teleport"));
+            ConfigUtils.t("teleport.has-teleport", owner).thenAccept(owner::sendMessage);
             return false;
         }
 

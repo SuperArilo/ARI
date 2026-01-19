@@ -19,7 +19,7 @@ function:
     agree: '&a✔ 您同意了此次传送请求'
     been-done: '&c该请求已经处理过，或者不存在！'
     refuse-success: '&a✔ 拒绝成功！'
-    refused: '&6玩家 &a<tpa_sender> &6拒绝了您的传送请求'
+    refused: '&6玩家 &a<tpa_be_sender> &6拒绝了您的传送请求'
     error: '&c传送状态错误，无法完成传送'
   home:
     create-success: '&a✔ 创建家成功！'

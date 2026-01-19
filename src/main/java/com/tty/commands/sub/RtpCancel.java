@@ -30,11 +30,11 @@ public class RtpCancel extends BaseLiteralArgumentLiteralCommand {
         RandomTpStateService machine = Ari.STATE_MACHINE_MANAGER.get(RandomTpStateService.class);
         List<RandomTpState> states = machine.getStates((Entity) sender);
         if (states.isEmpty()) {
-            player.sendMessage(ConfigUtils.t("function.rtp.no-rtp"));
+            ConfigUtils.t("function.rtp.no-rtp", player).thenAccept(player::sendMessage);
             return;
         }
         if(machine.removeState(states.getFirst())) {
-            player.sendMessage(ConfigUtils.t("function.rtp.rtp-cancel"));
+            ConfigUtils.t("function.rtp.rtp-cancel", player).thenAccept(player::sendMessage);
         }
     }
 

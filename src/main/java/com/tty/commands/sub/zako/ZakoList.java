@@ -19,10 +19,12 @@ import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class ZakoList extends BaseLiteralArgumentLiteralCommand {
 
@@ -56,43 +58,52 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
         String baseCommand = "/ari zako list ";
         String suggestCommand = "/ari zako info ";
 
-        sender.sendMessage(ConfigUtils.t("function.zako.list-requesting"));
-        EntityRepository<Object, WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
-        repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new WhitelistManager.QueryKey(null)).thenAccept(result -> {
-            List<WhitelistInstance> records = result.getRecords();
-            if (records.isEmpty()) {
-                sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next")));
-                return;
-            }
-            ComponentListPage dataPage = Ari.DATA_SERVICE
-                    .createComponentDataPage(
-                            ConfigUtils.t("function.zako.list-title"),
-                            baseCommand + (pageNum == 1 ? pageNum:pageNum - 1),
-                            baseCommand + (pageNum + 1),
-                            (int) result.getCurrentPage(),
-                            (int) result.getTotalPages(),
-                            (int) result.getTotal());
+        CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.list-requesting", player):ConfigUtils.t("function.zako.list-requesting");
+        future.thenAccept(component -> {
+            sender.sendMessage(component);
 
-            for (WhitelistInstance instance : records) {
-                String instancePlayerUUID = instance.getPlayerUUID();
-                OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(instancePlayerUUID));
-                String name = offlinePlayer.getName();
-                if (name == null) {
-                    Log.debug("uuid {} player is null. the possible reason is that the player has not logged into the server.", instancePlayerUUID);
-                }
-                TextComponent set = ComponentUtils.setClickEventText(Ari.C_INSTANCE.getValue("server.player.zako." + (name == null ? "unable-record":"list-show"), FilePath.LANG),
-                        Map.of(LangType.PLAYER_NAME_UNRESOLVED.getType(), Component.text(name == null ? instancePlayerUUID:name)),
-                        ClickEvent.Action.RUN_COMMAND,
-                        suggestCommand + instancePlayerUUID);
-                dataPage.addLine(set);
-            }
+            EntityRepository<Object, WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
+            repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new WhitelistManager.QueryKey(null)).thenAccept(result -> {
+                        List<WhitelistInstance> records = result.getRecords();
+                        if (records.isEmpty()) {
+                            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next")));
+                            return;
+                        }
+                        ComponentListPage dataPage = Ari.DATA_SERVICE
+                                .createComponentDataPage(
+                                        ConfigUtils.tAfter("function.zako.list-title"),
+                                        baseCommand + (pageNum == 1 ? pageNum:pageNum - 1),
+                                        baseCommand + (pageNum + 1),
+                                        (int) result.getCurrentPage(),
+                                        (int) result.getTotalPages(),
+                                        (int) result.getTotal());
 
-            sender.sendMessage(dataPage.build());
-        })
-        .exceptionally(i -> {
-            Log.error(i);
-            sender.sendMessage(ConfigUtils.t("function.zako.list-request-error"));
-            return null;
+                        for (WhitelistInstance instance : records) {
+                            String instancePlayerUUID = instance.getPlayerUUID();
+                            OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(instancePlayerUUID));
+                            String name = offlinePlayer.getName();
+                            if (name == null) {
+                                Log.debug("uuid {} player is null. the possible reason is that the player has not logged into the server.", instancePlayerUUID);
+                            }
+                            TextComponent set = ComponentUtils.setClickEventText(Ari.C_INSTANCE.getValue("server.player.zako." + (name == null ? "unable-record":"list-show"), FilePath.LANG),
+                                    Map.of(LangType.PLAYER_NAME_UNRESOLVED.getType(), Component.text(name == null ? instancePlayerUUID:name)),
+                                    ClickEvent.Action.RUN_COMMAND,
+                                    suggestCommand + instancePlayerUUID);
+                            dataPage.addLine(set);
+                        }
+
+                        sender.sendMessage(dataPage.build());
+                    })
+                    .exceptionally(i -> {
+                        Log.error(i);
+                        if (sender instanceof Player player) {
+                            ConfigUtils.t("function.zako.list-request-error", player).thenAccept(sender::sendMessage);
+                        } else {
+                            ConfigUtils.t("function.zako.list-request-error").thenAccept(sender::sendMessage);
+                        }
+                        return null;
+                    });
+
         });
     }
 

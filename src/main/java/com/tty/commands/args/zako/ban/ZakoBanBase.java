@@ -37,7 +37,11 @@ public abstract class ZakoBanBase <T> extends BaseRequiredArgumentLiteralCommand
         UUID uuid = PublicFunctionUtils.parseUUID(args[2]);
 
         if (uuid == null) {
-            sender.sendMessage(ConfigUtils.t("function.zako.zako-not-exist"));
+            if (sender instanceof Player player) {
+                ConfigUtils.t("function.zako.zako-not-exist", player).thenAccept(sender::sendMessage);
+            } else {
+                ConfigUtils.t("function.zako.zako-not-exist").thenAccept(sender::sendMessage);
+            }
             return;
         }
         EntityRepository<Object, BanPlayer> banPlayerRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
@@ -46,8 +50,8 @@ public abstract class ZakoBanBase <T> extends BaseRequiredArgumentLiteralCommand
         banPlayerRepository.get(new BanPlayerManager.QueryKey(uuid.toString()))
             .thenCompose(banPlayer -> {
                 if (banPlayer != null) {
-                    sender.sendMessage(ConfigUtils.t("function.zako.had_baned"));
-                    return CompletableFuture.completedFuture(false);
+                    CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.had_baned", player):ConfigUtils.t("function.zako.had_baned");
+                    return future.thenAccept(sender::sendMessage).thenApply(i -> false);
                 }
                 return CompletableFuture.completedFuture(true);
             })
@@ -86,7 +90,7 @@ public abstract class ZakoBanBase <T> extends BaseRequiredArgumentLiteralCommand
                     if (player != null) {
                         player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
 
-                        Bukkit.getServer().broadcast(ConfigUtils.t("function.zako.baned", Map.of(LangType.BAN_T0TAL_TIME.getType(), Component.text(string), LangType.BAN_REASON.getType(), ComponentUtils.text(args[3]))));
+                        Bukkit.getServer().broadcast(ConfigUtils.tAfter("function.zako.baned", Map.of(LangType.BAN_T0TAL_TIME.getType(), Component.text(string), LangType.BAN_REASON.getType(), ComponentUtils.text(args[3]))));
                         Log.debug("baned player uuid {}. total {}", uuid.toString(), string);
                     }
 

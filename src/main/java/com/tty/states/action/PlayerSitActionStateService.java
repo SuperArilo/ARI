@@ -7,6 +7,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import com.tty.Ari;
+import com.tty.lib.Lib;
 import com.tty.lib.Log;
 import com.tty.dto.state.action.PlayerSitActionState;
 import com.tty.enumType.FilePath;
@@ -53,7 +54,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         }
 
         if (!this.worldGuardCanInteract(owner, sitBlock)) {
-            owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
+            ConfigUtils.t("function.sit.error-location", owner).thenAccept(owner::sendActionBar);
             return false;
         }
 
@@ -66,7 +67,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                     this.isBlockNotFullyInWater(sitBlock)) {
                 status = true;
             } else {
-                owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
+                ConfigUtils.t("function.sit.error-location", owner).thenAccept(owner::sendActionBar);
             }
         }
         //如果为半砖
@@ -74,7 +75,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             if (this.checkBlockTopIsAllow(owner, sitBlock) && this.isBlockNotFullyInWater(sitBlock)) {
                 status = true;
             } else {
-                owner.sendActionBar(ConfigUtils.t("function.sit.error-location"));
+                ConfigUtils.t("function.sit.error-location", owner).thenAccept(owner::sendActionBar);
             }
         }
         return status;
@@ -118,11 +119,13 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         state.createToolEntity(
             player.getWorld(),
             location,
-            i -> {
-                player.setRotation(location.getYaw(), 0);
-                player.sendActionBar(ConfigUtils.t("function.sit.tips"));
-                i.addPassenger(player);
-            }
+            i ->
+                ConfigUtils.t("function.sit.tips", player).thenAccept(t ->
+                    Lib.Scheduler.runAtEntity(Ari.instance, player, p -> {
+                        player.setRotation(location.getYaw(), 0);
+                        player.sendActionBar(t);
+                        i.addPassenger(player);
+                    }, null))
         );
 
         Log.debug("player {} sit block {}.", state.getOwner().getName(), sitBlock.getType().name());

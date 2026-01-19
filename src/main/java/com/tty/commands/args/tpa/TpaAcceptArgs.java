@@ -3,7 +3,6 @@ package com.tty.commands.args.tpa;
 import com.tty.Ari;
 import com.tty.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
 import com.tty.dto.state.teleport.PlayerToPlayerState;
-import com.tty.dto.state.teleport.PreEntityToEntityState;
 import com.tty.enumType.FilePath;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -51,21 +50,20 @@ public class TpaAcceptArgs extends TpaBaseLiteralLiteralArgument {
         Player player = (Player) sender;
         Player target = Ari.instance.getServer().getPlayerExact(args[1]);
 
-        PreEntityToEntityState anElse = this.checkAfterResponse(player, target);
-        if (anElse == null) return;
+        this.checkAfterResponse(player, target, s -> {
+            assert target != null;
+            int value = Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.TPA_CONFIG, Integer.class, 3);
+            PlayerToPlayerState state;
+            if (s.getType().getKey().equals("tpa")) {
+                state = new PlayerToPlayerState(target, player, value, "tpa");
+            } else {
+                state = new PlayerToPlayerState(player, target, value, "tpahere");
+            }
 
-        assert target != null;
-        int value = Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.TPA_CONFIG, Integer.class, 3);
-        PlayerToPlayerState state;
-        if (anElse.getType().getKey().equals("tpa")) {
-            state = new PlayerToPlayerState(target, player, value, "tpa");
-        } else {
-            state = new PlayerToPlayerState(player, target, value, "tpahere");
-        }
-
-        //添加传送请求
-        if (Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).addState(state)) {
-            player.sendMessage(ConfigUtils.t("function.tpa.agree"));
-        }
+            //添加传送请求
+            if (Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).addState(state)) {
+                ConfigUtils.t("function.tpa.agree", player).thenAccept(player::sendMessage);
+            }
+        });
     }
 }

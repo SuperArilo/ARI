@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +46,7 @@ public abstract class EnchantBaseArgs <T> extends BaseRequiredArgumentLiteralCom
         String enchantArg = args[1];
         Enchantment enchantParse = this.parseEnchant(enchantArg);
         if (enchantParse == null) {
-            sender.sendMessage(ConfigUtils.t("function.enchant.not-exist"));
+            ConfigUtils.t("function.enchant.not-exist", (Player) sender).thenAccept(sender::sendMessage);
             return null;
         }
         int level = Integer.parseInt(args[2]);
@@ -78,14 +79,15 @@ public abstract class EnchantBaseArgs <T> extends BaseRequiredArgumentLiteralCom
         int level = args.getLevel();
         boolean forceEnchant = args.isForceEnchant();
         boolean forceLevel = args.isForceLevel();
+        Player player = (Player) sender;
 
         if (!enchantment.canEnchantItem(itemStack) && !forceEnchant) {
-            sender.sendMessage(ConfigUtils.t("function.enchant.can-not-apply-item"));
+            ConfigUtils.t("function.enchant.can-not-apply-item", player).thenAccept(sender::sendMessage);
             return;
         }
 
         if (!forceLevel && level > enchantment.getMaxLevel()) {
-            sender.sendMessage(ConfigUtils.t("function.enchant.level-too-high"));
+            ConfigUtils.t("function.enchant.level-too-high", player).thenAccept(sender::sendMessage);
             return;
         }
 
@@ -94,7 +96,7 @@ public abstract class EnchantBaseArgs <T> extends BaseRequiredArgumentLiteralCom
         itemStack.setItemMeta(itemMeta);
 
         String value = Ari.DATA_SERVICE.getValue("enchantment." + enchantment.key().value());
-        sender.sendMessage(ConfigUtils.t("function.enchant.enchant-success",
+        sender.sendMessage(ConfigUtils.tAfter("function.enchant.enchant-success",
                 Map.of(LangType.ENCHANT_NAME.getType(), Component.text(value), LangType.ENCHANT_LEVEL.getType(), Component.text(level))));
     }
 }

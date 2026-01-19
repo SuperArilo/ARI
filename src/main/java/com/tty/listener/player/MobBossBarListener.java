@@ -13,7 +13,6 @@ import com.tty.tool.ConfigUtils;
 import com.tty.tool.LastDamageTracker;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
@@ -147,7 +146,7 @@ public class MobBossBarListener implements Listener {
         double currentHealth = Math.max(0, Math.min(maxHealth, damageable.getHealth() - finalDamage));
         double healthRatio = (currentHealth / Math.max(1, maxHealth));
 
-        TextComponent t = ConfigUtils.t(
+        Component t = ConfigUtils.tAfter(
                 "server.boss-bar.player-attack",
                 Map.of(
                         LangType.MOB.getType(), damageable.name(),

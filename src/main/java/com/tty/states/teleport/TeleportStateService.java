@@ -34,8 +34,7 @@ public class TeleportStateService extends StateService<State> {
     @Override
     protected void loopExecution(State state) {
         Entity owner = state.getOwner();
-
-        if (owner instanceof Player player && !player.isOnline()) {
+        if (!(owner instanceof Player player && player.isOnline())) {
             state.setOver(true);
             return;
         }
@@ -43,49 +42,48 @@ public class TeleportStateService extends StateService<State> {
         if (state instanceof PlayerToPlayerState playerToPlayerState) {
             Entity target = playerToPlayerState.getTarget();
             if (target instanceof Player targetPlayer && !targetPlayer.isOnline()) {
-                owner.sendMessage(ConfigUtils.t("teleport.break"));
+                ConfigUtils.t("teleport.break", player).thenAccept(owner::sendMessage);
                 state.setOver(true);
                 return;
             }
         }
 
-        if (owner instanceof Damageable damageable) {
-            if (this.hasMoved(owner) || this.hasLostHealth(damageable)) {
-                owner.sendMessage(ConfigUtils.t("teleport.break"));
-                state.setOver(true);
-                return;
-            }
+        if (this.hasMoved(owner) || this.hasLostHealth(player)) {
+            ConfigUtils.t("teleport.break", player).thenAccept(owner::sendMessage);
+            state.setOver(true);
+            return;
         }
 
-        if (owner instanceof Player player) {
-            if (state.isOver() || state.isDone()) return;
-            Ari.PLACEHOLDER.render("teleport.title.sub-title", player).thenAccept(result ->
-                    Lib.Scheduler.runAtEntity(Ari.instance, player, task -> {
-                        player.showTitle(ComponentUtils.setPlayerTitle(
-                                Ari.C_INSTANCE.getValue("teleport.title.main", FilePath.LANG),
-                                result,
-                                200,
-                                1000,
-                                200
-                        ));
-                        state.setPending(false);
-                        Log.debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
-                    }, null));
-        }
+        if (state.isOver() || state.isDone()) return;
+        Ari.PLACEHOLDER.render("teleport.title.sub-title", player).thenAccept(result ->
+                Lib.Scheduler.runAtEntity(Ari.instance, player, task -> {
+                    player.showTitle(ComponentUtils.setPlayerTitle(
+                            Ari.C_INSTANCE.getValue("teleport.title.main", FilePath.LANG),
+                            result,
+                            200,
+                            1000,
+                            200
+                    ));
+                    state.setPending(false);
+                    Log.debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
+                }, null));
     }
 
 
     @Override
     protected boolean canAddState(State state) {
         Entity owner = state.getOwner();
+        if (!(owner instanceof Player player && player.isOnline())) {
+            return false;
+        }
         //判断当前实体是否在传送冷却中
         if (!Ari.STATE_MACHINE_MANAGER.get(CoolDownStateService.class).getStates(owner).isEmpty()) {
-            owner.sendMessage(ConfigUtils.t("teleport.cooling"));
+            ConfigUtils.t("teleport.cooling", player).thenAccept(owner::sendMessage);
             return false;
         }
 
         if(!Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).getStates(owner).isEmpty()) {
-            owner.sendMessage(ConfigUtils.t("teleport.has-teleport"));
+            ConfigUtils.t("teleport.has-teleport", player).thenAccept(owner::sendMessage);
             return false;
         }
 

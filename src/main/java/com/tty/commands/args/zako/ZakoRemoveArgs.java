@@ -61,9 +61,16 @@ public class ZakoRemoveArgs extends BaseRequiredArgumentLiteralCommand<String> {
         }).thenAccept(status -> {
             Player player = Bukkit.getPlayer(uuid);
             if(player != null) {
-                Lib.Scheduler.runAtEntity(Ari.instance, player, (i)->player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), () -> player.sendMessage(ConfigUtils.t("on-error")));
+                Lib.Scheduler.runAtEntity(Ari.instance,
+                        player, i->
+                                player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
             }
-            sender.sendMessage(ConfigUtils.t("function.zako.whitelist-remove-" + (status ? "success":"failure")));
+            String key = "function.zako.whitelist-remove-" + (status ? "success":"failure");
+            if (sender instanceof Player p) {
+                ConfigUtils.t(key, p).thenAccept(sender::sendMessage);
+            } else {
+                ConfigUtils.t(key).thenAccept(sender::sendMessage);
+            }
         }).exceptionally(i -> {
             Log.error(i);
             sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
