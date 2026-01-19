@@ -7,7 +7,6 @@ import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.LangPlayerDamageBar;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
-import com.tty.lib.enum_type.LangType;
 import com.tty.lib.task.CancellableTask;
 import com.tty.lib.tool.FormatUtils;
 import com.tty.tool.ConfigUtils;
