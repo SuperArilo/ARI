@@ -5,7 +5,7 @@ import com.tty.Ari;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
 import com.tty.enumType.FilePath;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
-import com.tty.lib.enum_type.TeleportType;
+import com.tty.enumType.TeleportType;
 import com.tty.states.teleport.PreTeleportStateService;
 import com.tty.tool.ConfigUtils;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;

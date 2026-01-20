@@ -1,7 +1,7 @@
 package com.tty.dto.state.teleport;
 
 import com.tty.dto.state.AsyncState;
-import com.tty.lib.enum_type.TeleportType;
+import com.tty.enumType.TeleportType;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;

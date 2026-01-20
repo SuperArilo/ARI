@@ -71,7 +71,6 @@ function:
     list-requesting: '&3查询数据中...'
     list-request-error: '&c数据查询失败，请检查控制台'
     list-title: '&7白名单列表'
-    list-show: "&e- &6<zako_list_item_name>"
   enchant:
     not-exist: '&c✖ 该附魔类型不存在'
     can-not-apply-item: '&c✖ 该类型的附魔无法作用在此物品上'
@@ -116,8 +115,8 @@ server:
       - "&3原因&f: <ban_reason>"
       - "&3剩余时间&f: &6<ban_end_time>"
     zako:
-      list-show: "&e- &6<player_name>"
-      unable-record: "&e- &6<player_name> &7(可能原因：玩家尚未登录服务器)"
+      list-show: "&e- &6<zako_list_item_name>"
+      unable-record: "&e- &6<zako_list_item_name> &7(可能原因：玩家尚未登录服务器)"
   boss-bar:
     player-attack: "<mob> &6<mob_current_health>&f / &3<mob_max_health>"
   maintenance:

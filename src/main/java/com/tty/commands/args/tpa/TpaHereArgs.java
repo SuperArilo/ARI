@@ -5,7 +5,7 @@ import com.tty.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
 import com.tty.enumType.FilePath;
 import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.enum_type.TeleportType;
+import com.tty.enumType.TeleportType;
 import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.states.teleport.PreTeleportStateService;
 import org.bukkit.command.CommandSender;

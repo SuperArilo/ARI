@@ -5,7 +5,7 @@ import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.enum_type.TeleportType;
+import com.tty.enumType.TeleportType;
 import com.tty.states.teleport.TeleportStateService;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.Location;

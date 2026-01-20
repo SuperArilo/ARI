@@ -3,7 +3,6 @@ package com.tty.enumType;
 
 import com.tty.lib.Log;
 import com.tty.lib.enum_type.FilePathEnum;
-import com.tty.lib.enum_type.TeleportType;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -36,17 +35,6 @@ public enum FilePath implements FilePathEnum {
     @Override
     public String getPath() {
         return this.path;
-    }
-
-    public static FilePath get(TeleportType type) {
-        FilePath filePath;
-        try {
-            filePath = Arrays.stream(FilePath.values()).filter(i -> i.nickName.equals(type.getKey())).findFirst().orElse(null);
-        } catch (Exception e) {
-            Log.debug("type {} is not in FilePath", type.getKey());
-            filePath = null;
-        }
-        return filePath;
     }
 
 }

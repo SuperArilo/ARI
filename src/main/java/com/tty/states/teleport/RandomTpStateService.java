@@ -8,7 +8,7 @@ import com.tty.lib.Log;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.dto.state.teleport.RandomTpState;
 import com.tty.enumType.FilePath;
-import com.tty.lib.enum_type.TeleportType;
+import com.tty.enumType.TeleportType;
 import com.tty.lib.services.StateService;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.PublicFunctionUtils;
