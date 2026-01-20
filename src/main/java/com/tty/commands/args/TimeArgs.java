@@ -7,7 +7,6 @@ import com.tty.enumType.lang.LangTime;
 import com.tty.function.TimeManager;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.enum_type.LangType;
 import com.tty.lib.enum_type.TimePeriod;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.tool.ConfigUtils;
@@ -59,7 +58,7 @@ public class TimeArgs extends BaseRequiredArgumentLiteralCommand<String> {
         try {
             period = TimePeriod.valueOf(timePeriod.toUpperCase());
         } catch (Exception e) {
-            player.sendMessage(ConfigUtils.tAfter("server.time.not-exist-period", Map.of(LangType.PERIOD_UNRESOLVED.getType(), Component.text(timePeriod))));
+            player.sendMessage(ConfigUtils.tAfter("server.time.not-exist-period", Map.of(LangTime.TIME_PERIOD_UNRESOLVED.getType(), Component.text(timePeriod))));
             return;
         }
         World world = player.getWorld();

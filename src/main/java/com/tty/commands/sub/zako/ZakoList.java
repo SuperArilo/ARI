@@ -4,12 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
 import com.tty.commands.args.zako.ZakoListArgs;
 import com.tty.entity.WhitelistInstance;
+import com.tty.enumType.lang.LangZakoList;
 import com.tty.lib.Log;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.dto.ComponentListPage;
 import com.tty.enumType.FilePath;
-import com.tty.lib.enum_type.LangType;
 import com.tty.lib.services.EntityRepository;
 import com.tty.lib.tool.ComponentUtils;
 import com.tty.tool.ConfigUtils;
@@ -86,7 +86,7 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
                                 Log.debug("uuid {} player is null. the possible reason is that the player has not logged into the server.", instancePlayerUUID);
                             }
                             TextComponent set = ComponentUtils.setClickEventText(Ari.C_INSTANCE.getValue("server.player.zako." + (name == null ? "unable-record":"list-show"), FilePath.LANG),
-                                    Map.of(LangType.PLAYER_NAME_UNRESOLVED.getType(), Component.text(name == null ? instancePlayerUUID:name)),
+                                    Map.of(LangZakoList.ZAKO_LIST_ITEM_NAME.getType(), Component.text(name == null ? instancePlayerUUID:name)),
                                     ClickEvent.Action.RUN_COMMAND,
                                     suggestCommand + instancePlayerUUID);
                             dataPage.addLine(set);
