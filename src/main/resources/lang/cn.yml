@@ -12,7 +12,7 @@ teleport:
   tips-back: '&b上次死亡的地点: <death_location> &7/back返回或者点击此消息'
 function:
   tpa:
-    again: '&e您已经发送过请求给 <tpa_be_sender>'
+    again: '&e您已经发送过请求给 &a<tpa_be_sender> &e了'
     send-message: '&e已发送传送请求给玩家...'
     to-message: '&6玩家 &a<tpa_sender> &6想传送到您这里'
     here-message: '&6玩家 &a<tpa_sender> &6想让您传送到TA那'
