@@ -33,33 +33,60 @@ public class SQLInstance {
     }
 
     public void start() {
-        Log.debug("Start connecting");
-        try {
-            sqlType = SQLType.valueOf(Ari.instance.getConfig().getString("data.storage-type", "null").toUpperCase());
-        } catch (Exception e) {
-            Log.warn("storage-type is null, Running sqlite mode");
-            sqlType = SQLType.SQLITE;
-        }
-        Log.debug("The database type is {}", sqlType.getType());
-        switch (sqlType) {
-            case MYSQL -> this.createMysql();
-            case SQLITE -> this.createSQLite();
+        Log.debug("initializing database connection");
+
+        if (Ari.instance == null) {
+            Log.error("plugin instance not initialized; database startup aborted");
+            return;
         }
 
-        try (SqlSession connection = SESSION_FACTORY.openSession()) {
-            for (SqlTable value : SqlTable.values()) {
-                try (Statement statement = connection.getConnection().createStatement()) {
-                    statement.execute(value.getSql(this.getTablePrefix(), this.getSqlType()));
+        String storageType = Ari.instance.getConfig().getString("data.storage-type");
+
+        if (storageType == null) {
+            Log.warn("data.storage-type not configured; defaulting to SQLITE");
+            sqlType = SQLType.SQLITE;
+        } else {
+            try {
+                sqlType = SQLType.valueOf(storageType.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                Log.error(e, "invalid data.storage-type '{}'; supported values: MYSQL, SQLITE", storageType);
+                return;
+            }
+        }
+
+        Log.info("using database type: {}", sqlType.getType());
+
+        try {
+            switch (sqlType) {
+                case MYSQL -> createMysql();
+                case SQLITE -> createSQLite();
+                default -> {
+                    Log.error("unsupported SQL type: {}", sqlType);
+                    return;
                 }
             }
         } catch (Exception e) {
-            Log.error(e);
+            Log.error(e, "failed to initialize database connection factory");
+            return;
         }
+        Log.debug("initializing database schema");
 
+        try (SqlSession session = SESSION_FACTORY.openSession()) {
+            for (SqlTable table : SqlTable.values()) {
+                Log.debug("creating or updating table: {}", table.name());
+                try (Statement statement = session.getConnection().createStatement()) {
+                    statement.execute(table.getSql(this.getTablePrefix(), this.getSqlType()));
+                }
+            }
+            session.commit();
+            Log.info("database schema initialized successfully");
+        } catch (Exception e) {
+            Log.error(e, "failed to initialize database schema");
+        }
     }
 
     public void reconnect() {
-        Log.debug("Connection is closing...");
+        Log.debug("connection is closing...");
         close();
         this.start();
     }
