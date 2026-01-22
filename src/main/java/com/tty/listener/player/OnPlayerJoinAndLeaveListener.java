@@ -110,7 +110,9 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         try {
             serverPlayer = playerEntityRepository.get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            Log.error(e, "error on query player {} to check name.", uuid.toString());
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
+            return;
         }
         if (serverPlayer == null) return;
         if (serverPlayer.getPlayerName().equals(event.getName())) return;
