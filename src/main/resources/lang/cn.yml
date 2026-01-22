@@ -76,6 +76,9 @@ function:
     can-not-apply-item: '&c✖ 该类型的附魔无法作用在此物品上'
     level-too-high: '&c✖ 等级超出该附魔类型的上限'
     enchant-success: '&a✔ 已添加附魔 &b<enchant_name> &a等级 &6<enchant_level>'
+  itemshow:
+    no-item-in-hand: '&e当前主手上没有任何物品'
+    show-to-players: '&a玩家 &6<player_name> &a展示了TA手中的物品 <show_item>'
   unknown: '&c未知指令，请重新输入'
 server:
   time:

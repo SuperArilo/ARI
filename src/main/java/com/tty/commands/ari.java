@@ -20,6 +20,7 @@ public class ari extends BaseLiteralArgumentLiteralCommand {
             new home(),
             new itemlore(),
             new itemname(),
+            new itemshow(),
             new rtp(),
             new sethome(),
             new setspawn(),

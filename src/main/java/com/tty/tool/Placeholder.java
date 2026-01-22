@@ -30,6 +30,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static com.tty.listener.teleport.RecordLastLocationListener.TELEPORT_LAST_LOCATION;
 
@@ -193,6 +194,10 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
                         .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> ComponentUtils.text(i.getReason())))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                LangShowItem.SHOW_ITEM,
+                PlaceholderResolve.ofPlayer(player -> CompletableFuture.completedFuture(ComponentUtils.setHoverItemText(player.getInventory().getItemInMainHand())))
         ));
     }
 

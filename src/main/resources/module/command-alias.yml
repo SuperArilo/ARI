@@ -46,6 +46,9 @@ itemname:
 itemlore:
   enable: true
   usage: '/itemlore <add | remove> <content> 对当前手持物品的lore进行添加和修改'
+itemshow:
+  enable: true
+  usage: '/itemshow 对当前主手手持物品进行展示在聊天窗'
 zako:
   enable: true
   usage: '/zako <add | info | remove> 对服务器白名单进行添加或移除，查询当前服务器玩家的信息'
