@@ -87,7 +87,7 @@ public class SQLInstance {
 
     public void reconnect() {
         Log.debug("connection is closing...");
-        close();
+        this.close();
         this.start();
     }
 
@@ -138,7 +138,7 @@ public class SQLInstance {
         return Ari.instance.getConfig().getString("data.table-prefix", "ari");
     }
 
-    public static void close() {
+    public void close() {
         if (SQLInstance.SESSION_FACTORY != null) {
             SQLInstance.SESSION_FACTORY = null;
             Log.debug("Connection closed successfully");
