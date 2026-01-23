@@ -1,7 +1,9 @@
 package com.tty.commands.sub;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.entity.ServerPlayer;
 import com.tty.gui.OfflineNBTEnderCheat;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
@@ -55,35 +57,47 @@ public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<Strin
             sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             return;
         }
-        if (OFFLINE_ON_EDIT_ENDER_CHEST_LIST.contains(uuid)) {
-            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.task-occupied")));
-            return;
-        }
-        Player b = Bukkit.getServer().getPlayer(uuid);
-        if (b == null) {
-            Log.debug("player {} is offline to open ender chest.", uuid.toString());
-            OFFLINE_ON_EDIT_ENDER_CHEST_LIST.add(uuid);
-            Lib.Scheduler.runAsync(Ari.instance, i -> {
-                NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(uuid.toString());
-                ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
-                OfflineNBTEnderCheat cheat = new OfflineNBTEnderCheat(player, data, uuid);
-                Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
-                    cheat.open();
-                    for (ReadWriteNBT enderItem : enderItems) {
-                        int slot = enderItem.getByte("Slot") & 0xFF;
-                        ItemStack itemStack = NBT.itemStackFromNBT(enderItem);
-                        cheat.setItem(slot, itemStack);
-                    }
-                }, () -> {
-                    Log.error("read player {} nbt error.");
-                    OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(uuid);
-                });
+        Ari.REPOSITORY_MANAGER.get(ServerPlayer.class)
+            .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()))
+            .thenCompose(serverPlayer -> CompletableFuture.completedFuture(serverPlayer != null))
+            .thenAccept(status -> {
+                if (!status) {
+                    sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                    return;
+                }
+                if (OFFLINE_ON_EDIT_ENDER_CHEST_LIST.contains(uuid)) {
+                    sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.task-occupied")));
+                    return;
+                }
+                Player b = Bukkit.getServer().getPlayer(uuid);
+                if (b == null) {
+                    Log.debug("player {} is offline to open ender chest.", uuid.toString());
+                    OFFLINE_ON_EDIT_ENDER_CHEST_LIST.add(uuid);
+                    Lib.Scheduler.runAsync(Ari.instance, i -> {
+                        NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(uuid.toString());
+                        if (data == null) {
+                            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                            Log.error("uuid is not exist.", uuid.toString());
+                            return;
+                        }
+                        ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
+                        OfflineNBTEnderCheat cheat = new OfflineNBTEnderCheat(player, data, uuid);
+                        Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
+                            cheat.open();
+                            for (ReadWriteNBT enderItem : enderItems) {
+                                int slot = enderItem.getByte("Slot") & 0xFF;
+                                ItemStack itemStack = NBT.itemStackFromNBT(enderItem);
+                                cheat.setItem(slot, itemStack);
+                            }
+                        }, () -> {
+                            Log.error("read player {} nbt error.");
+                            OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(uuid);
+                        });
+                    });
+                } else {
+                    player.openInventory(b.getEnderChest());
+                }
             });
-
-
-        } else {
-            player.openInventory(b.getEnderChest());
-        }
     }
 
     @Override
