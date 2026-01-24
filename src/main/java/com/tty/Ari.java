@@ -42,7 +42,6 @@ import static com.tty.lib.tool.PublicFunctionUtils.checkServerVersion;
 public class Ari extends JavaPlugin {
 
     public static Ari instance;
-    public static boolean PLUGIN_IS_DISABLED = false;
     public static Boolean DEBUG = false;
     public static final ConfigInstance C_INSTANCE = new ConfigInstance();
     public static SQLInstance SQL_INSTANCE;
@@ -85,7 +84,6 @@ public class Ari extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        PLUGIN_IS_DISABLED = true;
         if (STATE_MACHINE_MANAGER != null) {
             STATE_MACHINE_MANAGER.forEach(StateService::abort);
         }

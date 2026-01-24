@@ -99,7 +99,6 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                 owner.isInsideVehicle();
         if (b) {
             state.setPending(false);
-            Log.debug("player {} is sitting now.", owner.getName());
         } else {
             state.setOver(true);
         }

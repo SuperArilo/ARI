@@ -53,24 +53,23 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
     @Override
     protected void onFinished(PlayerSaveState state) {
         Log.debug("start save player data {}.", state.getOwner().getName());
-        this.savePlayerData(state, true);
+        this.savePlayerData(state);
     }
 
     @Override
     protected void onServiceAbort(PlayerSaveState state) {
         Log.debug("player save service abort. saving {}.", state.getOwner().getName());
-        this.savePlayerData(state, !Ari.PLUGIN_IS_DISABLED);
+        this.savePlayerData(state);
     }
 
     /**
      * 保存玩家在线时长数据数据
      * @param state 玩家的状态服务
-     * @param asyncMode 保存模式。同步和异步
      */
-    public void savePlayerData(PlayerSaveState state, boolean asyncMode) {
+    public void savePlayerData(PlayerSaveState state) {
 
         Player player = (Player) state.getOwner();
-        this.repository.setExecutionMode(asyncMode);
+        this.repository.setExecutionMode(!Bukkit.getServer().isStopping());
         String uuid = player.getUniqueId().toString();
 
         long onlineDuration = System.currentTimeMillis() -  state.getLoginTime();
