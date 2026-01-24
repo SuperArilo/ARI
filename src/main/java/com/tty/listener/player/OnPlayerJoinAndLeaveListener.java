@@ -21,6 +21,8 @@ import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -153,6 +155,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                     player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                     return;
                 }
+                //添加玩家登录的状态
                 Ari.STATE_MACHINE_MANAGER
                         .get(PlayerSaveStateService.class)
                         .addState(new PlayerSaveState(player, nowLoginTime));
@@ -185,6 +188,14 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 if(login) {
                     ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Lib.Scheduler.run(Ari.instance, task -> Bukkit.broadcast(t)));
                 }
+
+                Location spawnLocation = player.getLocation();
+                if (spawnLocation.getBlock().isSolid()) {
+                    Log.debug("player {} inside block, teleport safe location.", player.getName());
+                    Location safeLocation = this.findSafeLocationAbove(spawnLocation);
+                    Teleporting.create(Ari.instance, player, safeLocation).teleport().after(() ->
+                            ConfigUtils.t("teleport.not-safe-location", player).thenAccept(player::sendMessage));
+                }
             });
     }
 
@@ -212,6 +223,27 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         Ari.STATE_MACHINE_MANAGER
                 .get(PlayerSaveStateService.class)
                 .addState(new PlayerSaveState(player, System.currentTimeMillis()));
+    }
+
+    //当玩家的进入服务器后的位置嵌在方块里，则往上查到非固定方块为止
+    private Location findSafeLocationAbove(Location start) {
+
+        World world = start.getWorld();
+        int x = start.getBlockX();
+        int z = start.getBlockZ();
+        int y = start.getBlockY();
+
+        int worldMaxY = world.getMaxHeight();
+
+        for (int currentY = y; currentY <= worldMaxY; currentY++) {
+            Block block = world.getBlockAt(x, currentY, z);
+            Block above = world.getBlockAt(x, currentY + 1, z);
+            if (!block.getType().isSolid() && !above.getType().isSolid()) {
+                return new Location(world, x + 0.5, currentY, z + 0.5);
+            }
+        }
+
+        return world.getSpawnLocation();
     }
 
 }

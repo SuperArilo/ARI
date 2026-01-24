@@ -10,6 +10,7 @@ teleport:
   has-teleport: '&e你有一个传送正在进行中'
   again: '&e你已经发起过传送请求了，请等待一段时间再重试。'
   tips-back: '&b上次死亡的地点: <death_location> &7/back返回或者点击此消息'
+  not-safe-location: '&e检测到当前位置不安全，已经对位置进行了修改'
 function:
   tpa:
     again: '&e您已经发送过请求给 &a<tpa_be_sender> &e了'
