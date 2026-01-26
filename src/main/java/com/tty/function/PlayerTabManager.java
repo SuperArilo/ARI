@@ -86,7 +86,7 @@ public class PlayerTabManager implements Listener {
                 buildComponent(this.headers, player),
                 buildComponent(this.footers, player)
         );
-        player.playerListName(ComponentUtils.text(group.line().getPrefix() + player.getName() + group.line().getSuffix()));
+        player.playerListName(ComponentUtils.text(group.line().prefix() + player.getName() + group.line().suffix()));
         player.setPlayerListOrder(order);
     }
 
