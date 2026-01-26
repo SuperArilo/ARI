@@ -31,6 +31,7 @@
 | 📋 `Tab自定义`        | 完全自定义玩家Tab列表显示格式              |
 | 📃 `白名单功能(Zako)`   | 自定义服务器玩家的管理方式                 |
 | 👓️ `物品属性修改`       | 可快捷修改物品名称和lore属性              |
+| 📺 `展示物品到聊天栏`      | 可将自己手中的物品展示到聊天栏               |
 | 🪑 `Sit`           | 可在指定的楼梯或者半砖上坐下                |
 | 👨‍🦽 `Player Sit` | 玩家之间可相互骑乘                     |
 | 💥 `防爆保护`          | 防止服务器被熊。可自定义配置                |
@@ -57,6 +58,7 @@
 | `ari.command.time`        | 控制时间流逝          |
 | `ari.command.itemname`    | 修改物品名称          |
 | `ari.command.itemlore`    | 修改物品描述          |
+| `ari.command.itemshow`    | 展示物品            |
 | `ari.command.zako`        | 服务器玩家设置         |
 | `ari.command.enchant`     | 使用自定义附魔         |
 | `ari.command.reload`      | 重载插件配置          |
