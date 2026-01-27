@@ -7,6 +7,9 @@ import com.tty.lib.Log;
 import com.tty.lib.tool.PublicFunctionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attributable;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -142,7 +145,7 @@ public class PlayerDeathInfoCollector {
                 info.isEscapeAttempt = this.evaluateEscape(firstAttackLocation, info.victim.getLocation(), info.deathCause);
 
                 // 判断是否为"注定"死亡
-                info.isDestine = this.determineIfDestine(records, firstAttacker, lastAttacker, info.deathCause);
+                info.isDestine = this.determineIfDestine(records, info.victim, firstAttacker, lastAttacker, info.deathCause);
 
                 Log.debug("combat analysis success, killer: {}, weapon: {}", info.killer.getType().name(), info.weapon != null ? info.weapon.getType().name() : "null");
                 Log.debug("escape attempt: {}, destine: {}", info.isEscapeAttempt, info.isDestine);
@@ -181,10 +184,27 @@ public class PlayerDeathInfoCollector {
      * 1. 玩家试图逃跑但被杀死（isEscapeAttempt为true）
      * 2. 玩家被多个不同攻击者围攻致死
      * 3. 玩家死于间接伤害，但之前曾被其他攻击者攻击
+     * 4. 如果玩家被直接秒杀，不算注定
      */
     private boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records,
-                                       Entity firstAttacker, Entity lastAttacker,
+                                       Entity victim, Entity firstAttacker, Entity lastAttacker,
                                        EntityDamageEvent.DamageCause deathCause) {
+        
+        if (records.size() == 1) {
+            LastDamageTracker.DamageRecord last = records.getLast();
+            if (last != null && victim instanceof Damageable && victim instanceof Attributable attributable) {
+                double damage = last.damage();
+                AttributeInstance attribute = attributable.getAttribute(Attribute.MAX_HEALTH);
+                if (attribute != null) {
+                    double value = attribute.getValue();
+                    if (damage >= value) {
+                        Log.debug("destine: instant kill, not destine");
+                        return false;
+                    }
+                }
+            }
+        }
+
         // 统计不同的攻击者数量
         Set<Entity> uniqueAttackers = new HashSet<>();
         for (LastDamageTracker.DamageRecord record : records) {
