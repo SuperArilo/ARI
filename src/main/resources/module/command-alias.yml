@@ -61,3 +61,6 @@ enchant:
 enderchest:
   enable: true
   usage: '/enderchest <player> 打开自己或者指定玩家的末影箱'
+infinitytotem:
+  enable: true
+  usage: ""

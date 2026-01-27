@@ -47,6 +47,6 @@ attack-boss-bar:
   #用于定时清理对玩家产生的显示实体的血条（清理满足大于 clear_last_attack_record 的记录） 单位秒
   tick_clear_dealy: 30
 totem:
-  allow-inventory-trigger: false
+  allow-inventory-trigger: true
   disable-world:
     - 'disable'

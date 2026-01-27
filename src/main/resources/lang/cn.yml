@@ -80,6 +80,9 @@ function:
   itemshow:
     no-item-in-hand: '&e当前主手上没有任何物品'
     show-to-players: '&a玩家 &6<player_name> &a展示了TA手中的物品 <show_item>'
+  infinitytotem:
+    enable: '&a无限不死图腾使用已开启'
+    disable: '&e无限不死图腾使用已关闭'
   unknown: '&c未知指令，请重新输入'
 server:
   time:

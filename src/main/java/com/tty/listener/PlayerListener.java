@@ -1,6 +1,7 @@
 package com.tty.listener;
 
 import com.tty.Ari;
+import com.tty.commands.infinitytotem;
 import com.tty.dto.SpawnLocation;
 import com.tty.dto.event.CustomPlayerRespawnEvent;
 import com.tty.enumType.FilePath;
@@ -12,9 +13,11 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerListener implements Listener {
@@ -31,6 +34,11 @@ public class PlayerListener implements Listener {
             }
             Bukkit.getPluginManager().callEvent(new CustomPlayerRespawnEvent(player, respawnLocation, player.getLocation()));
         }, null);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerExit(PlayerQuitEvent event) {
+        infinitytotem.INFINITY_TOTEM_PLAYER_LIST.remove(event.getPlayer());
     }
 
     public static Location getRespawnLocation(@NotNull World world) {

@@ -2,6 +2,7 @@ package com.tty.listener.player;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
+import com.tty.commands.infinitytotem;
 import com.tty.dto.event.CustomPluginReloadEvent;
 import com.tty.enumType.FilePath;
 import com.tty.lib.Log;
@@ -73,6 +74,7 @@ public class CustomTotemCostListener implements Listener {
      * @return 有 true 无 false
      */
     private boolean hasTotemToUse(Player player) {
+        if (infinitytotem.INFINITY_TOTEM_PLAYER_LIST.contains(player)) return true;
         PlayerInventory inventory = player.getInventory();
         for (int i = 0; i <= inventory.getSize();i++) {
             ItemStack item = inventory.getItem(i);
