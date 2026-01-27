@@ -16,7 +16,6 @@ import com.tty.listener.*;
 import com.tty.listener.home.EditHomeListener;
 import com.tty.listener.home.HomeListListener;
 import com.tty.listener.player.*;
-import com.tty.listener.player.PlayerSkipNight;
 import com.tty.listener.teleport.RecordLastLocationListener;
 import com.tty.listener.warp.EditWarpListener;
 import com.tty.listener.warp.WarpListListener;
@@ -45,7 +44,7 @@ public class Ari extends JavaPlugin {
     public static Boolean DEBUG = false;
     public static final ConfigInstance C_INSTANCE = new ConfigInstance();
     public static SQLInstance SQL_INSTANCE;
-    public static RepositoryManager REPOSITORY_MANAGER = new RepositoryManager();
+    public static final RepositoryManager REPOSITORY_MANAGER = new RepositoryManager();
     public static ConfigDataService DATA_SERVICE;
     public static NBTDataService NBT_DATA_SERVICE;
     public static StateMachineManager STATE_MACHINE_MANAGER;

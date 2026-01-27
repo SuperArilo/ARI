@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<String> {
 
-    public static List<UUID> OFFLINE_ON_EDIT_ENDER_CHEST_LIST = new CopyOnWriteArrayList<>();
+    public static final List<UUID> OFFLINE_ON_EDIT_ENDER_CHEST_LIST = new CopyOnWriteArrayList<>();
 
     public EnderChestToPlayer() {
         super(2, StringArgumentType.string(), true);

@@ -28,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ZakoList extends BaseLiteralArgumentLiteralCommand {
 
-    public static Integer MAX_ZAKO_LIST_PAGE_SIZE = 10;
+    public static final Integer MAX_ZAKO_LIST_PAGE_SIZE = 10;
 
     public ZakoList() {
         super(true, 2, true);
