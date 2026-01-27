@@ -113,6 +113,7 @@ public class Ari extends JavaPlugin {
         pluginManager.registerEvents(new AutoSeedListener(), this);
         pluginManager.registerEvents(new MobBossBarListener(), this);
         pluginManager.registerEvents(new DisableMobSpawnListener(), this);
+        pluginManager.registerEvents(new CustomTotemCostListener(), this);
     }
 
     public static void reloadAllConfig() {

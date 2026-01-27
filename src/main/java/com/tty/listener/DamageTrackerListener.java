@@ -38,7 +38,7 @@ public class DamageTrackerListener implements Listener {
         this.cleanTask = this.createCleanTask();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onEntity(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         if (!(entity instanceof Damageable victim)) return;

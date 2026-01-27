@@ -41,33 +41,34 @@
 | 📕 `附魔指令`          | 可通过指令快速对手中的物品进行附魔             |
 | 🛠️ `服务器维护模式`      | 启动服务器维护模式                     |
 ## 🗯️ 权限列表
-| 功能                        | 描述              |
-|---------------------------|-----------------|
-| `ari.command.home`        | 打开自己的家列表        |
-| `ari.command.sethome`     | 设置家位置           |
-| `ari.command.warp`        | 打开服务器公共传送点      |
-| `ari.command.setwarp`     | 设置公共传送点         |
-| `ari.command.back`        | 返回上一次传送位置       |
-| `ari.command.tpa`         | 传送到其他玩家         |
-| `ari.command.tpahere`     | 请求其他玩家传送到自己     |
-| `ari.command.tpaaccept`   | 接受传送请求          |
-| `ari.command.tparefuse`   | 拒绝传送请求          |
-| `ari.command.spawn`       | 传送至出生点          |
-| `ari.command.setspawn`    | 设置出生点           |
-| `ari.command.rtp`         | 随机传送            |
-| `ari.command.time`        | 控制时间流逝          |
-| `ari.command.itemname`    | 修改物品名称          |
-| `ari.command.itemlore`    | 修改物品描述          |
-| `ari.command.itemshow`    | 展示物品            |
-| `ari.command.zako`        | 服务器玩家设置         |
-| `ari.command.enchant`     | 使用自定义附魔         |
-| `ari.command.reload`      | 重载插件配置          |
-| `ari.command.maintenance` | 启动服务器维护模式       |
-| `ari.count.home.<数量>`     | 设置玩家可拥有的最大家数量限制 |
-| `ari.count.warp.<数量>`     | 指定玩家可添加地标的最大数量  |
-| `ari.keepinventory`       | 玩家死亡时保留背包内的物品   |
-| `ari.keepexperience`      | 玩家死亡时保留经验值和等级   |
-| `ari.cooldown.<传送类型>`     | 指定某种传送类型没有CD时间  |
+| 功能                            | 描述              |
+|-------------------------------|-----------------|
+| `ari.command.home`            | 打开自己的家列表        |
+| `ari.command.sethome`         | 设置家位置           |
+| `ari.command.warp`            | 打开服务器公共传送点      |
+| `ari.command.setwarp`         | 设置公共传送点         |
+| `ari.command.back`            | 返回上一次传送位置       |
+| `ari.command.tpa`             | 传送到其他玩家         |
+| `ari.command.tpahere`         | 请求其他玩家传送到自己     |
+| `ari.command.tpaaccept`       | 接受传送请求          |
+| `ari.command.tparefuse`       | 拒绝传送请求          |
+| `ari.command.spawn`           | 传送至出生点          |
+| `ari.command.setspawn`        | 设置出生点           |
+| `ari.command.rtp`             | 随机传送            |
+| `ari.command.time`            | 控制时间流逝          |
+| `ari.command.itemname`        | 修改物品名称          |
+| `ari.command.itemlore`        | 修改物品描述          |
+| `ari.command.itemshow`        | 展示物品            |
+| `ari.command.zako`            | 服务器玩家设置         |
+| `ari.command.enchant`         | 使用自定义附魔         |
+| `ari.command.reload`          | 重载插件配置          |
+| `ari.command.maintenance`     | 启动服务器维护模式       |
+| `ari.count.home.<数量>`         | 设置玩家可拥有的最大家数量限制 |
+| `ari.count.warp.<数量>`         | 指定玩家可添加地标的最大数量  |
+| `ari.keepinventory`           | 玩家死亡时保留背包内的物品   |
+| `ari.keepexperience`          | 玩家死亡时保留经验值和等级   |
+| `ari.cooldown.<传送类型>`         | 指定某种传送类型没有CD时间  |
+| `ari.totem.inventory-trigger` | 可将不死图腾放在背包里直接使用 |
 ## 🛠️ 安装指南
 
 ### 环境要求
