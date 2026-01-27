@@ -38,10 +38,6 @@ action:
       - 'example'
   player-sit-player:
     enable: true
-anti-explosion:
-  enable: true
-  pass-list:
-    - "tnt"
 attack-boss-bar:
   enable: true
   #最多给玩家显示的 bar 数量
