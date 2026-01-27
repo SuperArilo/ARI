@@ -21,6 +21,7 @@ import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -64,7 +65,8 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void maintenance(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.KICK_BANNED)) return;
-        if (maintenance.MAINTENANCE_MODE) {
+        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(event.getUniqueId());
+        if (maintenance.MAINTENANCE_MODE && !offlinePlayer.isOp()) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join").join());
             return;
         }
