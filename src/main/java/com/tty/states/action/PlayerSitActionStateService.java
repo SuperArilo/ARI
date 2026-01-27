@@ -58,25 +58,27 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             return false;
         }
 
-        boolean status = false;
+        boolean status = true;
         BlockData blockData = sitBlock.getBlockData();
         //如果为楼梯
         if (blockData instanceof Stairs stairs) {
             //如果为倒放楼梯，不允许
-            if ((this.checkBlockTopIsAllow(owner, sitBlock) || stairs.getHalf().equals(Bisected.Half.TOP)) &&
-                    this.isBlockNotFullyInWater(sitBlock)) {
-                status = true;
-            } else {
-                ConfigUtils.t("function.sit.error-location", owner).thenAccept(owner::sendActionBar);
+            if (this.checkBlockTopIsNotAllow(owner, sitBlock) || stairs.getHalf().equals(Bisected.Half.TOP)) {
+                status = false;
             }
         }
         //如果为半砖
         if (blockData instanceof Slab) {
-            if (this.checkBlockTopIsAllow(owner, sitBlock) && this.isBlockNotFullyInWater(sitBlock)) {
-                status = true;
-            } else {
-                ConfigUtils.t("function.sit.error-location", owner).thenAccept(owner::sendActionBar);
+            if (this.checkBlockTopIsNotAllow(owner, sitBlock)) {
+                status = false;
             }
+            //判断方块是否在水里
+        }
+        if (this.isBlockNotFullyInWater(sitBlock)){
+            status = false;
+        }
+        if (!status) {
+            ConfigUtils.t("function.sit.error-location", owner).thenAccept(owner::sendActionBar);
         }
         return status;
     }
@@ -166,11 +168,11 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         return location;
     }
 
-    private boolean checkBlockTopIsAllow(Player p, Block actionBlock) {
-        if (actionBlock == null) return false;
+    private boolean checkBlockTopIsNotAllow(Player p, Block actionBlock) {
+        if (actionBlock == null) return true;
         Location location = actionBlock.getLocation();
         World world = location.getWorld();
-        if (world == null) return false;
+        if (world == null) return true;
 
         double x = location.getX();
         double y = location.getY();
@@ -195,7 +197,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                     Material type = b.getType();
                     VoxelShape shape = b.getCollisionShape();
                     if (shape.overlaps(seatBox)) {
-                        return false;
+                        return true;
                     }
                     String name = type.name();
                     if (name.endsWith("_CARPET")
@@ -208,11 +210,11 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                             || type == Material.DRAGON_EGG
                             || type == Material.FIRE
                             || type == Material.LAVA) {
-                        return false;
+                        return true;
                     }
 
                     if (!b.isEmpty() && !b.isPassable()) {
-                        return false;
+                        return true;
                     }
                 }
             }
@@ -222,11 +224,11 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             if (entity instanceof Player other &&
                     !other.equals(p) &&
                     other.getGameMode() != GameMode.SPECTATOR) {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     private List<String> getDisableList() {
