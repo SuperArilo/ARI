@@ -15,11 +15,11 @@ public class KeepInventoryAndExperience implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getPlayer();
         FileConfiguration config = Ari.instance.getConfig();
-        if (PermissionUtils.hasPermission(player, "ari.keepinventory") && config.getBoolean("server.enable-keep-inventory", false)) {
+        if (PermissionUtils.hasPermission(player, "ari.keep-inventory") && config.getBoolean("server.enable-keep-inventory", false)) {
             event.setKeepInventory(true);
             event.getDrops().clear();
         }
-        if (PermissionUtils.hasPermission(player, "ari.keepexperience") && config.getBoolean("server.enable-keep-experience", false)) {
+        if (PermissionUtils.hasPermission(player, "ari.keep-experience") && config.getBoolean("server.enable-keep-experience", false)) {
             event.setKeepLevel(true);
             event.setDroppedExp(0);
         }
