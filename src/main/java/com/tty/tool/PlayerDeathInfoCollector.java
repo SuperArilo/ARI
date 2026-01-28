@@ -142,7 +142,7 @@ public class PlayerDeathInfoCollector {
                 info.weapon = lastWeapon;
 
                 // 首先判断是否试图逃跑
-                info.isEscapeAttempt = this.evaluateEscape(firstAttackLocation, info.victim.getLocation(), info.deathCause);
+                info.isEscapeAttempt = this.evaluateEscape(info.victim, info.killer, firstAttackLocation, info.victim.getLocation(), info.deathCause);
 
                 // 判断是否为"注定"死亡
                 info.isDestine = this.determineIfDestine(records, info.victim, firstAttacker, lastAttacker, info.deathCause);
@@ -236,8 +236,11 @@ public class PlayerDeathInfoCollector {
         return false;
     }
 
-    private boolean evaluateEscape(Location firstAttackLocation, Location deathLocation,
+    private boolean evaluateEscape(Entity victim, Entity killer, Location firstAttackLocation, Location deathLocation,
                                    EntityDamageEvent.DamageCause cause) {
+
+        if (victim.equals(killer)) return false;
+
         if (firstAttackLocation == null || deathLocation == null) {
             Log.debug("escape check skipped: location missing");
             return false;

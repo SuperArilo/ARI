@@ -50,7 +50,7 @@ public class CustomPlayerDeathListener implements Listener {
                 return info.getRandomOfList(baseKey + (info.killer instanceof Explosive ? "player.explosion" : "mob.explosion"), info.isDestine);
             }
             case ENTITY_ATTACK, ENTITY_SWEEP_ATTACK, PROJECTILE, POISON -> {
-                String weaponKey = getWeaponKey(info);
+                String weaponKey = this.getWeaponKey(info);
                 String targetKey = info.killer instanceof Player ? "player" : "mob";
                 String message = info.getRandomOfList(baseKey + targetKey + "." + weaponKey, info.isDestine);
 
@@ -117,6 +117,8 @@ public class CustomPlayerDeathListener implements Listener {
             return "air";
         } else if (info.isProjectile) {
             return "projectile";
+        } else if (info.weapon.getType().equals(Material.POTION)){
+            return "magic";
         } else {
             return "item";
         }
