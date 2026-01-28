@@ -58,27 +58,24 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             return false;
         }
 
-        boolean status = true;
+        boolean status = false;
         BlockData blockData = sitBlock.getBlockData();
         //如果为楼梯
         if (blockData instanceof Stairs stairs) {
             //如果为倒放楼梯，不允许
-            if (this.checkBlockTopIsNotAllow(owner, sitBlock) || stairs.getHalf().equals(Bisected.Half.TOP)) {
-                status = false;
+            if (this.checkBlockTopIsNotAllow(owner, sitBlock) || stairs.getHalf().equals(Bisected.Half.TOP) || this.isBlockFullyInWater(sitBlock)) {
+                ConfigUtils.t("function.sit.error-location", owner).thenAccept(owner::sendActionBar);
+            } else {
+                status = true;
             }
         }
         //如果为半砖
         if (blockData instanceof Slab) {
-            if (this.checkBlockTopIsNotAllow(owner, sitBlock)) {
-                status = false;
+            if (this.checkBlockTopIsNotAllow(owner, sitBlock) || this.isBlockFullyInWater(sitBlock)) {
+                ConfigUtils.t("function.sit.error-location", owner).thenAccept(owner::sendActionBar);
+            } else {
+                status = true;
             }
-            //判断方块是否在水里
-        }
-        if (this.isBlockNotFullyInWater(sitBlock)){
-            status = false;
-        }
-        if (!status) {
-            ConfigUtils.t("function.sit.error-location", owner).thenAccept(owner::sendActionBar);
         }
         return status;
     }
@@ -120,13 +117,12 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         state.createToolEntity(
             player.getWorld(),
             location,
-            i ->
+            i -> {
+                i.addPassenger(player);
+                player.setRotation(location.getYaw(), 0);
                 ConfigUtils.t("function.sit.tips", player).thenAccept(t ->
-                    Lib.Scheduler.runAtEntity(Ari.instance, player, p -> {
-                        player.setRotation(location.getYaw(), 0);
-                        player.sendActionBar(t);
-                        i.addPassenger(player);
-                    }, null))
+                    Lib.Scheduler.runAtEntity(Ari.instance, player, p -> player.sendActionBar(t), null));
+            }
         );
 
         Log.debug("player {} sit block {}.", state.getOwner().getName(), sitBlock.getType().name());
@@ -268,9 +264,9 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         );
     }
 
-    public boolean isBlockNotFullyInWater(Block block) {
-        return block.getType() != Material.WATER
-                && (!(block.getBlockData() instanceof Waterlogged wl) || !wl.isWaterlogged());
+    public boolean isBlockFullyInWater(Block block) {
+        return block.getType() == Material.WATER
+                || (block.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged());
     }
 
 }
