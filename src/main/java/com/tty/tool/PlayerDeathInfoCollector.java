@@ -208,11 +208,11 @@ public class PlayerDeathInfoCollector {
         // 统计不同的攻击者数量
         Set<Entity> uniqueAttackers = new HashSet<>();
         for (LastDamageTracker.DamageRecord record : records) {
-            if (record.damager() != null) {
-                Entity attacker = resolveAttacker(record.damager());
-                if (attacker != null) {
-                    uniqueAttackers.add(attacker);
-                }
+            Entity damager = record.damager();
+            if (damager == null) continue;
+            Entity attacker = this.resolveAttacker(damager);
+            if (attacker != null) {
+                uniqueAttackers.add(attacker);
             }
         }
 

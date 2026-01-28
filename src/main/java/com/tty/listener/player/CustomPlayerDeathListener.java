@@ -29,13 +29,16 @@ public class CustomPlayerDeathListener implements Listener {
         Log.debug(info.toString());
 
         String message = getDeathMessage(info, event);
-
+        Component killerInfo = info.killer != null ?
+                (info.killer.equals(info.victim) ?
+                        ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.self")):ComponentUtils.setEntityHoverText(info.killer))
+                :Component.empty();
         if (message != null) {
             event.deathMessage(ComponentUtils.text(
                     message,
                     Map.of(
                             LangPlayerDeath.VICTIM_UNRESOLVED.getType(), ComponentUtils.setEntityHoverText(info.victim),
-                            LangPlayerDeath.KILLER_UNRESOLVED.getType(), info.killer != null ? ComponentUtils.setEntityHoverText(info.killer) : Component.empty(),
+                            LangPlayerDeath.KILLER_UNRESOLVED.getType(), killerInfo,
                             LangPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), ComponentUtils.setHoverItemText(info.weapon)
                     )
             ));
