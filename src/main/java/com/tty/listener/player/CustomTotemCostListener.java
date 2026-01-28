@@ -76,7 +76,7 @@ public class CustomTotemCostListener implements Listener {
     private boolean hasTotemToUse(Player player) {
         if (infinitytotem.INFINITY_TOTEM_PLAYER_LIST.contains(player)) return true;
         PlayerInventory inventory = player.getInventory();
-        for (int i = 0; i <= inventory.getSize();i++) {
+        for (int i = 0; i < inventory.getSize();i++) {
             ItemStack item = inventory.getItem(i);
             if (item == null || item.isEmpty()) continue;
             if (item.getType().equals(Material.TOTEM_OF_UNDYING)) {
