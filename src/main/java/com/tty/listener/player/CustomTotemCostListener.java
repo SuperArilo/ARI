@@ -23,11 +23,27 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public class CustomTotemCostListener implements Listener {
 
     private boolean enable;
     private List<String> disableWorlds = new ArrayList<>();
+
+    private static final Set<PotionEffectType> NEGATIVE_EFFECTS = Set.of(
+            PotionEffectType.BAD_OMEN,
+            PotionEffectType.BLINDNESS,
+            PotionEffectType.DARKNESS,
+            PotionEffectType.HUNGER,
+            PotionEffectType.MINING_FATIGUE,
+            PotionEffectType.NAUSEA,
+            PotionEffectType.POISON,
+            PotionEffectType.SLOWNESS,
+            PotionEffectType.WEAKNESS,
+            PotionEffectType.WITHER,
+            PotionEffectType.UNLUCK,
+            PotionEffectType.LEVITATION
+    );
 
     public CustomTotemCostListener() {
         this.enable = this.isEnable();
@@ -95,12 +111,24 @@ public class CustomTotemCostListener implements Listener {
      * @param player 被复活的玩家
      */
     private void resurrectPlayer(Player player) {
+
         player.setHealth(1.0);
+        player.setFallDistance(0);
+        player.setNoDamageTicks(20);
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            PotionEffectType type = effect.getType();
+            if (NEGATIVE_EFFECTS.contains(type)) {
+                player.removePotionEffect(type);
+            }
+        }
         player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 900, 1));
         player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 100, 1));
         player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 800, 0));
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, SoundCategory.PLAYERS, 1.0f, 1.0f);
+        player.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, player.getLocation().add(0, 1.0, 0), 30);
         player.playEffect(EntityEffect.PROTECTED_FROM_DEATH);
     }
+
 
     /**
      * 手动完成玩家的不死图腾成就
@@ -113,14 +141,13 @@ public class CustomTotemCostListener implements Listener {
             return;
         }
         AdvancementProgress progress = player.getAdvancementProgress(advancement);
-        if (progress.isDone()) {
-            Log.debug("advancement adventure/totem_of_undying for player {} is done.", player.getName());
-            return;
+        if (!progress.isDone()) {
+            Collection<String> awardedCriteria = progress.getRemainingCriteria();
+            for (String awardedCriterion : awardedCriteria) {
+                progress.awardCriteria(awardedCriterion);
+            }
         }
-        Collection<String> awardedCriteria = progress.getRemainingCriteria();
-        for (String awardedCriterion : awardedCriteria) {
-            progress.awardCriteria(awardedCriterion);
-        }
+        player.incrementStatistic(Statistic.USE_ITEM, Material.TOTEM_OF_UNDYING);
     }
 
     private boolean isEnable() {
