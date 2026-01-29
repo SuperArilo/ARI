@@ -1,17 +1,17 @@
 package com.tty.commands;
 
 import com.tty.commands.args.SetWarpArgs;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
+@CommandMeta(displayName = "setwarp", permission = "ari.command.setwarp", tokenLength = 2)
+@LiteralCommand
 public class setwarp extends BaseLiteralArgumentLiteralCommand {
-
-    public setwarp() {
-        super(false, 2);
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -23,13 +23,4 @@ public class setwarp extends BaseLiteralArgumentLiteralCommand {
 
     }
 
-    @Override
-    public String name() {
-        return "setwarp";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.setwarp";
-    }
 }

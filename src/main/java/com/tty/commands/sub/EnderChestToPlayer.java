@@ -7,6 +7,8 @@ import com.tty.entity.ServerPlayer;
 import com.tty.gui.OfflineNBTEnderCheat;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.ComponentUtils;
@@ -25,27 +27,19 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
+@CommandMeta(displayName = "name or uuid (string)", permission = "ari.command.enderchest.player", tokenLength = 2)
+@ArgumentCommand(isSuggests = true)
 public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<String> {
 
     public static final List<UUID> OFFLINE_ON_EDIT_ENDER_CHEST_LIST = new CopyOnWriteArrayList<>();
 
     public EnderChestToPlayer() {
-        super(2, StringArgumentType.string(), true);
+        super(StringArgumentType.string());
     }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public String name() {
-        return "name or uuid (string)";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.enderchest.player";
     }
 
     @Override

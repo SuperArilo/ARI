@@ -6,6 +6,8 @@ import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.TeleportType;
 import com.tty.lib.Log;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.states.teleport.TeleportStateService;
@@ -17,11 +19,9 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+@CommandMeta(displayName = "spawn", permission = "ari.command.spawn", tokenLength = 1)
+@LiteralCommand(directExecute = true)
 public class spawn extends BaseLiteralArgumentLiteralCommand {
-
-    public spawn() {
-        super(false, 1, true);
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -49,13 +49,4 @@ public class spawn extends BaseLiteralArgumentLiteralCommand {
                     TeleportType.SPAWN));
     }
 
-    @Override
-    public String name() {
-        return "spawn";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.spawn";
-    }
 }

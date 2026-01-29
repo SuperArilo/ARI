@@ -3,6 +3,8 @@ package com.tty.commands.args.tpa;
 import com.tty.Ari;
 import com.tty.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
 import com.tty.lib.Lib;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
@@ -14,11 +16,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+@CommandMeta(displayName = "name (string)", permission = "ari.command.tparefuse", tokenLength = 2)
+@ArgumentCommand(isSuggests = true)
 public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
-
-    public TpaRefuseArgs() {
-        super(2);
-    }
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
@@ -30,16 +30,6 @@ public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public String name() {
-        return "name (string)";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.tparefuse";
     }
 
     @Override

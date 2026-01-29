@@ -2,6 +2,8 @@ package com.tty.commands.sub.enchant;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.commands.args.enchant.EnchantLevelArgs;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.PublicFunctionUtils;
@@ -17,10 +19,12 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+@CommandMeta(displayName = "enchant", permission = "ari.command.enchant", tokenLength = 3)
+@ArgumentCommand(isSuggests = true)
 public class EnchantShowList extends BaseRequiredArgumentLiteralCommand<String> {
 
     public EnchantShowList() {
-        super(2, StringArgumentType.string(), true);
+        super(StringArgumentType.string());
     }
 
     @Override
@@ -29,18 +33,7 @@ public class EnchantShowList extends BaseRequiredArgumentLiteralCommand<String> 
     }
 
     @Override
-    public String name() {
-        return "enchant";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.enchant";
-    }
-
-    @Override
-    public void execute(CommandSender sender, String[] args) {
-    }
+    public void execute(CommandSender sender, String[] args) { }
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {

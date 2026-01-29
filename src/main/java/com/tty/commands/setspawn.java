@@ -3,6 +3,8 @@ package com.tty.commands;
 import com.tty.Ari;
 import com.tty.dto.SpawnLocation;
 import com.tty.enumType.FilePath;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.tool.ConfigUtils;
@@ -12,11 +14,9 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+@CommandMeta(displayName = "setspawn", permission = "ari.command.setspawn", tokenLength = 1)
+@LiteralCommand(directExecute = true)
 public class setspawn extends BaseLiteralArgumentLiteralCommand {
-
-    public setspawn() {
-        super(false, 1, true);
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -42,13 +42,4 @@ public class setspawn extends BaseLiteralArgumentLiteralCommand {
         ConfigUtils.t("function.spawn.create-success", player).thenAccept(player::sendMessage);
     }
 
-    @Override
-    public String name() {
-        return "setspawn";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.setspawn";
-    }
 }

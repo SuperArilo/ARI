@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.WhitelistInstance;
 import com.tty.lib.Log;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.Operator;
@@ -21,30 +23,22 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+@CommandMeta(displayName = "name | uuid (string)", permission = "ari.command.zako.add", tokenLength = 3, allowConsole = true)
+@ArgumentCommand
 public class ZakoAddArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public ZakoAddArgs() {
-        super(true, 3, StringArgumentType.string(), false);
+        super(StringArgumentType.string());
     }
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        return CompletableFuture.completedFuture(Set.of());
+        return null;
     }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public String name() {
-        return "name | uuid (string)";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.zako.add";
     }
 
     @Override

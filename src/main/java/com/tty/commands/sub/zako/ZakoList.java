@@ -6,6 +6,8 @@ import com.tty.commands.args.zako.ZakoListArgs;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.lang.LangZakoList;
 import com.tty.lib.Log;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.dto.ComponentListPage;
@@ -26,27 +28,15 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+@CommandMeta(displayName = "list", permission = "ari.command.zako.list", tokenLength = 2, allowConsole = true)
+@LiteralCommand(directExecute = true)
 public class ZakoList extends BaseLiteralArgumentLiteralCommand {
 
     public static final Integer MAX_ZAKO_LIST_PAGE_SIZE = 10;
 
-    public ZakoList() {
-        super(true, 2, true);
-    }
-
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of(new ZakoListArgs());
-    }
-
-    @Override
-    public String name() {
-        return "list";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.zako.list";
     }
 
     @Override

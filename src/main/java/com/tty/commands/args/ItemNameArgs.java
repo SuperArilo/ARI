@@ -2,6 +2,8 @@ package com.tty.commands.args;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.ComponentUtils;
@@ -14,30 +16,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+@CommandMeta(displayName = "\"content\" (string)", permission = "ari.command.itemname", tokenLength = 2)
+@ArgumentCommand
 public class ItemNameArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public ItemNameArgs() {
-        super(2, StringArgumentType.string());
+        super(StringArgumentType.string());
     }
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        return CompletableFuture.completedFuture(Set.of());
+        return null;
     }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public String name() {
-        return "\"content\" (string)";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.itemname";
     }
 
     @Override

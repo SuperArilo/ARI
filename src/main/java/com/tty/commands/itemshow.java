@@ -2,6 +2,8 @@ package com.tty.commands;
 
 import com.tty.Ari;
 import com.tty.lib.Lib;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.tool.ConfigUtils;
@@ -12,25 +14,13 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
+@CommandMeta(displayName = "itemshow", permission = "ari.command.itemshow", tokenLength = 1)
+@LiteralCommand(directExecute = true)
 public class itemshow extends BaseLiteralArgumentLiteralCommand {
-
-    public itemshow() {
-        super(false, 1, true);
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public String name() {
-        return "itemshow";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.itemshow";
     }
 
     @Override

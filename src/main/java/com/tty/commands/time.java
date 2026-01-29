@@ -1,17 +1,17 @@
 package com.tty.commands;
 
 import com.tty.commands.args.TimeArgs;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
+@CommandMeta(displayName = "time", permission = "ari.command.time", tokenLength = 2)
+@LiteralCommand
 public class time extends BaseLiteralArgumentLiteralCommand {
-
-    public time() {
-        super(false, 2);
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -23,13 +23,4 @@ public class time extends BaseLiteralArgumentLiteralCommand {
 
     }
 
-    @Override
-    public String name() {
-        return "time";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.time";
-    }
 }

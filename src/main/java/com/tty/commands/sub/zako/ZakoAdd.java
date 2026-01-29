@@ -1,17 +1,17 @@
 package com.tty.commands.sub.zako;
 
 import com.tty.commands.args.zako.ZakoAddArgs;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
+@CommandMeta(displayName = "add", permission = "ari.command.zako.add", tokenLength = 2, allowConsole = true)
+@LiteralCommand
 public class ZakoAdd extends BaseLiteralArgumentLiteralCommand {
-
-    public ZakoAdd() {
-        super(true, 2);
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -23,13 +23,4 @@ public class ZakoAdd extends BaseLiteralArgumentLiteralCommand {
 
     }
 
-    @Override
-    public String name() {
-        return "add";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.zako.add";
-    }
 }

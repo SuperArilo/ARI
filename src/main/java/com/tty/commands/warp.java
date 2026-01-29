@@ -3,6 +3,8 @@ package com.tty.commands;
 import com.tty.Ari;
 import com.tty.enumType.FilePath;
 import com.tty.gui.warp.WarpList;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
@@ -10,11 +12,9 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+@CommandMeta(displayName = "warp", permission = "ari.command.warp", tokenLength = 1)
+@LiteralCommand(directExecute = true)
 public class warp extends BaseLiteralArgumentLiteralCommand {
-
-    public warp() {
-        super(false, 1, true);
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -27,13 +27,4 @@ public class warp extends BaseLiteralArgumentLiteralCommand {
         new WarpList((Player) sender).open();
     }
 
-    @Override
-    public String name() {
-        return "warp";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.warp";
-    }
 }

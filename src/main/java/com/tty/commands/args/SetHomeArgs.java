@@ -8,6 +8,8 @@ import com.tty.entity.cache.PlayerHomeRepository;
 import com.tty.enumType.FilePath;
 import com.tty.lib.Lib;
 import com.tty.lib.Log;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.services.EntityRepository;
@@ -23,30 +25,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+@CommandMeta(displayName = "name (string)", permission = "ari.command.sethome", tokenLength = 2)
+@ArgumentCommand
 public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public SetHomeArgs() {
-        super(2, StringArgumentType.string());
+        super( StringArgumentType.string());
     }
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        return CompletableFuture.completedFuture(Set.of());
+        return null;
     }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public String name() {
-        return "name (string)";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.sethome";
     }
 
     @Override

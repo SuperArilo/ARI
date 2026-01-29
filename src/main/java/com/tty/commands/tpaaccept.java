@@ -1,17 +1,17 @@
 package com.tty.commands;
 
 import com.tty.commands.args.tpa.TpaAcceptArgs;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
+@CommandMeta(displayName = "tpaaccept", permission = "ri.command.tpaaccept", tokenLength = 2)
+@LiteralCommand
 public class tpaaccept extends BaseLiteralArgumentLiteralCommand {
-
-    public tpaaccept() {
-        super(false, 2);
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -23,13 +23,4 @@ public class tpaaccept extends BaseLiteralArgumentLiteralCommand {
 
     }
 
-    @Override
-    public String name() {
-        return "tpaaccept";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.tpaaccept";
-    }
 }

@@ -2,6 +2,8 @@ package com.tty.commands;
 
 import com.tty.Ari;
 import com.tty.lib.Lib;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.ComponentUtils;
@@ -13,27 +15,15 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+@CommandMeta(displayName = "maintenance", permission = "ari.command.maintenance", tokenLength = 1, allowConsole = true)
+@LiteralCommand(directExecute = true)
 public class maintenance extends BaseLiteralArgumentLiteralCommand {
 
     public static boolean MAINTENANCE_MODE = false;
 
-    public maintenance() {
-        super(true, 1, true);
-    }
-
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public String name() {
-        return "maintenance";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.maintenance";
     }
 
     @Override

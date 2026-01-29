@@ -4,6 +4,8 @@ import com.tty.Ari;
 import com.tty.commands.sub.RtpCancel;
 import com.tty.dto.state.teleport.RandomTpState;
 import com.tty.enumType.FilePath;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.states.teleport.RandomTpStateService;
@@ -12,12 +14,9 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-
+@CommandMeta(displayName = "rtp", permission = "ari.command.rtp", tokenLength = 1)
+@LiteralCommand(directExecute = true)
 public class rtp extends BaseLiteralArgumentLiteralCommand {
-
-    public rtp() {
-        super(false, 1, true);
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -34,16 +33,6 @@ public class rtp extends BaseLiteralArgumentLiteralCommand {
                         player,
                         Ari.C_INSTANCE.getValue("main.search-count", FilePath.RTP_CONFIG, Integer.class, 10),
                         player.getWorld()));
-    }
-
-    @Override
-    public String name() {
-        return "rtp";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.rtp";
     }
 
 }

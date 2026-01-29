@@ -1,5 +1,7 @@
 package com.tty.commands;
 
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.tool.ConfigUtils;
@@ -9,27 +11,15 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+@CommandMeta(displayName = "infinitytotem", permission = "ari.command.infinitytotem", tokenLength = 1)
+@LiteralCommand(directExecute = true)
 public class infinitytotem extends BaseLiteralArgumentLiteralCommand {
 
     public static final List<Player> INFINITY_TOTEM_PLAYER_LIST = new ArrayList<>();
 
-    public infinitytotem() {
-        super(false, 1, true);
-    }
-
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public String name() {
-        return "infinitytotem";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.infinitytotem";
     }
 
     @Override

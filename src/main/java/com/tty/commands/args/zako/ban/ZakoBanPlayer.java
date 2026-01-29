@@ -1,6 +1,8 @@
 package com.tty.commands.args.zako.ban;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -11,10 +13,12 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+@CommandMeta(displayName = "player name or uuid (string)", permission = "ari.command.zako.ban", tokenLength = 4, allowConsole = true)
+@ArgumentCommand(isSuggests = true)
 public class ZakoBanPlayer extends ZakoBanBase<String> {
 
     public ZakoBanPlayer() {
-        super(true, 4, StringArgumentType.string(), true);
+        super(StringArgumentType.string());
     }
 
     @Override
@@ -37,16 +41,6 @@ public class ZakoBanPlayer extends ZakoBanBase<String> {
                 .collect(Collectors.toSet());
         if (filtered.isEmpty()) return CompletableFuture.completedFuture(Set.of("<player name or uuid (string)>"));
         return CompletableFuture.completedFuture(filtered);
-    }
-
-    @Override
-    public String name() {
-        return "player name or uuid (string)";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.zako.ban";
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.tty.commands.args.zako;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
@@ -11,30 +13,22 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.tty.commands.sub.zako.ZakoList.Build_Zako_List;
 
+@CommandMeta(displayName = "page (int)", permission = "ari.command.zako.list", tokenLength = 3, allowConsole = true)
+@ArgumentCommand
 public class ZakoListArgs extends BaseRequiredArgumentLiteralCommand<Integer> {
 
     public ZakoListArgs() {
-        super(true, 3, IntegerArgumentType.integer(1), true);
+        super(IntegerArgumentType.integer(1));
     }
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        return CompletableFuture.completedFuture(Set.of());
+        return null;
     }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public String name() {
-        return "list";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.zako.list";
     }
 
     @Override

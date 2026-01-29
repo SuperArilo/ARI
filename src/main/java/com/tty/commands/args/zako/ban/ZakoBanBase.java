@@ -26,8 +26,8 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class ZakoBanBase <T> extends BaseRequiredArgumentLiteralCommand<T> {
 
-    public ZakoBanBase(boolean allowConsole, Integer correctArgsLength, ArgumentType<T> type, boolean isSuggests) {
-        super(allowConsole, correctArgsLength, type, isSuggests);
+    public ZakoBanBase(ArgumentType<T> type) {
+        super(type);
     }
 
     public void ban(CommandSender sender, String[] args) {

@@ -1,6 +1,8 @@
 package com.tty.commands.args.enchant;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -10,10 +12,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+@CommandMeta(displayName = "force enchant (boolean)", permission = "ari.command.enchant", tokenLength = 4)
+@ArgumentCommand
 public class EnchantForceEnchant extends EnchantBaseArgs<Boolean> {
 
     protected EnchantForceEnchant() {
-        super(4, BoolArgumentType.bool(), false);
+        super(BoolArgumentType.bool());
     }
 
     @Override
@@ -24,16 +28,6 @@ public class EnchantForceEnchant extends EnchantBaseArgs<Boolean> {
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of(new EnchantForceLevel());
-    }
-
-    @Override
-    public String name() {
-        return "force enchant (boolean)";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.enchant";
     }
 
     @Override

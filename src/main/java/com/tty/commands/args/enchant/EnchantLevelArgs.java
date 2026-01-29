@@ -1,6 +1,8 @@
 package com.tty.commands.args.enchant;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -12,10 +14,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+@CommandMeta(displayName = "enchant", permission = "ari.command.enchant", tokenLength = 3)
+@ArgumentCommand(isSuggests = true)
 public class EnchantLevelArgs extends EnchantBaseArgs<Integer> {
 
     public EnchantLevelArgs() {
-        super(3, IntegerArgumentType.integer(0), true);
+        super(IntegerArgumentType.integer(0));
     }
 
     @Override
@@ -33,16 +37,6 @@ public class EnchantLevelArgs extends EnchantBaseArgs<Integer> {
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of(new EnchantForceEnchant());
-    }
-
-    @Override
-    public String name() {
-        return "enchant";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.enchant";
     }
 
     @Override

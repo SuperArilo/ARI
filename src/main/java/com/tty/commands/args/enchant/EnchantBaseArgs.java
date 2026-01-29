@@ -22,8 +22,8 @@ import java.util.Map;
 
 public abstract class EnchantBaseArgs <T> extends BaseRequiredArgumentLiteralCommand<T> {
 
-    protected EnchantBaseArgs(int correctArgsLength, ArgumentType<T> type, boolean isSuggests) {
-        super(correctArgsLength, type, isSuggests);
+    protected EnchantBaseArgs(ArgumentType<T> type) {
+        super(type);
     }
 
     @Data

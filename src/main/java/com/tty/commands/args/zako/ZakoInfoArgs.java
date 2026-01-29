@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.ServerPlayer;
 import com.tty.lib.Log;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.services.ConfigDataService;
@@ -20,10 +22,12 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+@CommandMeta(displayName = "name or uuid (string)", permission = "ari.command.zako.info", tokenLength = 3, allowConsole = true)
+@ArgumentCommand(isSuggests = true)
 public class ZakoInfoArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public ZakoInfoArgs() {
-        super(true, 3, StringArgumentType.string(), true);
+        super(StringArgumentType.string());
     }
 
     @Override
@@ -37,16 +41,6 @@ public class ZakoInfoArgs extends BaseRequiredArgumentLiteralCommand<String> {
         Set<String> strings = onlinePlayers.stream().map(Player::getName).collect(Collectors.toSet());
         if (onlinePlayers.isEmpty() || args.length != 3) return CompletableFuture.completedFuture(strings);
         return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[2], strings));
-    }
-
-    @Override
-    public String name() {
-        return "name or uuid (string)";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.zako.info";
     }
 
     @Override

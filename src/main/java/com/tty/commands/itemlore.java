@@ -2,17 +2,17 @@ package com.tty.commands;
 
 import com.tty.commands.sub.itemlore.ItemLoreAdd;
 import com.tty.commands.sub.itemlore.ItemLoreRemove;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
+@CommandMeta(displayName = "itemlore", permission = "ari.command.itemlore", tokenLength = 2)
+@LiteralCommand
 public class itemlore extends BaseLiteralArgumentLiteralCommand {
-
-    public itemlore() {
-        super(false, 2);
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -25,14 +25,4 @@ public class itemlore extends BaseLiteralArgumentLiteralCommand {
 
     }
 
-
-    @Override
-    public String name() {
-        return "itemlore";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.itemlore";
-    }
 }

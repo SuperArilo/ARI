@@ -1,17 +1,17 @@
 package com.tty.commands;
 
 import com.tty.commands.args.ItemNameArgs;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
+@CommandMeta(displayName = "itemname", permission = "ari.command.itemname", tokenLength = 2)
+@LiteralCommand
 public class itemname extends BaseLiteralArgumentLiteralCommand {
-
-    public itemname() {
-        super(2);
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -22,13 +22,4 @@ public class itemname extends BaseLiteralArgumentLiteralCommand {
     public void execute(CommandSender sender, String[] args) {
     }
 
-    @Override
-    public String name() {
-        return "itemname";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.itemname";
-    }
 }

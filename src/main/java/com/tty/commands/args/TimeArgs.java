@@ -5,6 +5,8 @@ import com.tty.Ari;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.LangTime;
 import com.tty.function.TimeManager;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.enum_type.TimePeriod;
@@ -20,10 +22,12 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.tty.listener.player.PlayerSkipNight.isBedWorksRe;
 
+@CommandMeta(displayName = "period (string)", permission = "ari.command.time", tokenLength = 2)
+@ArgumentCommand(isSuggests = true)
 public class TimeArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public TimeArgs() {
-        super(false, 2, StringArgumentType.string(), true);
+        super(StringArgumentType.string());
     }
 
     @Override
@@ -38,16 +42,6 @@ public class TimeArgs extends BaseRequiredArgumentLiteralCommand<String> {
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
-    }
-
-    @Override
-    public String name() {
-        return "period (string)";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.time";
     }
 
     @Override

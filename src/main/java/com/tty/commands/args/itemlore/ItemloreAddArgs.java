@@ -2,6 +2,8 @@ package com.tty.commands.args.itemlore;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.lib.annotations.ArgumentCommand;
+import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.lib.tool.ComponentUtils;
@@ -16,10 +18,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+@CommandMeta(displayName = "\"content\" (string)", permission = "ari.command.itemlore.add", tokenLength = 3)
+@ArgumentCommand
 public class ItemloreAddArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
     public ItemloreAddArgs() {
-        super(3, StringArgumentType.string());
+        super(StringArgumentType.string());
     }
 
     @Override
@@ -29,17 +33,7 @@ public class ItemloreAddArgs extends BaseRequiredArgumentLiteralCommand<String> 
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        return CompletableFuture.completedFuture(Set.of());
-    }
-
-    @Override
-    public String name() {
-        return "\"content\" (string)";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.itemlore.add";
+        return null;
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.tty.commands.sub;
 
 import com.tty.Ari;
 import com.tty.dto.state.teleport.RandomTpState;
+import com.tty.lib.annotations.CommandMeta;
+import com.tty.lib.annotations.LiteralCommand;
 import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.lib.command.SuperHandsomeCommand;
 import com.tty.states.teleport.RandomTpStateService;
@@ -12,12 +14,9 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-
+@CommandMeta(displayName = "cancel", permission = "ari.command.rtp.cancel", tokenLength = 2)
+@LiteralCommand(directExecute = true)
 public class RtpCancel extends BaseLiteralArgumentLiteralCommand {
-
-    public RtpCancel() {
-        super(false, 2, true);
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -38,13 +37,4 @@ public class RtpCancel extends BaseLiteralArgumentLiteralCommand {
         }
     }
 
-    @Override
-    public String name() {
-        return "cancel";
-    }
-
-    @Override
-    public String permission() {
-        return "ari.command.rtp.cancel";
-    }
 }
