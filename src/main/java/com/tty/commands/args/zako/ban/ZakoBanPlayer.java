@@ -1,5 +1,6 @@
 package com.tty.commands.args.zako.ban;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.lib.annotations.ArgumentCommand;
 import com.tty.lib.annotations.CommandMeta;
@@ -7,6 +8,7 @@ import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
@@ -17,13 +19,14 @@ import java.util.stream.Collectors;
 @ArgumentCommand(isSuggests = true)
 public class ZakoBanPlayer extends ZakoBanBase<String> {
 
-    public ZakoBanPlayer() {
-        super(StringArgumentType.string());
-    }
-
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of(new ZakoBanReason());
+    }
+
+    @Override
+    protected @NotNull ArgumentType<String> argumentType() {
+        return StringArgumentType.string();
     }
 
     @Override

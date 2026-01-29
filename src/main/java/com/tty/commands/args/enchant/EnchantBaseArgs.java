@@ -1,6 +1,5 @@
 package com.tty.commands.args.enchant;
 
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
 import com.tty.enumType.lang.LangEnchant;
 import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
@@ -21,10 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 public abstract class EnchantBaseArgs <T> extends BaseRequiredArgumentLiteralCommand<T> {
-
-    protected EnchantBaseArgs(ArgumentType<T> type) {
-        super(type);
-    }
 
     @Data
     protected static class ResultArgs {

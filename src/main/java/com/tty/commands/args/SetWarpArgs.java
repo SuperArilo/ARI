@@ -1,6 +1,7 @@
 package com.tty.commands.args;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.ServerWarp;
@@ -20,6 +21,7 @@ import com.tty.tool.ConfigUtils;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
@@ -29,8 +31,9 @@ import java.util.concurrent.CompletableFuture;
 @ArgumentCommand
 public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
-    public SetWarpArgs() {
-        super(StringArgumentType.string());
+    @Override
+    protected @NotNull ArgumentType<String> argumentType() {
+        return StringArgumentType.string();
     }
 
     @Override

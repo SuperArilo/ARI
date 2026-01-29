@@ -1,5 +1,6 @@
 package com.tty.commands.sub.enchant;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.commands.args.enchant.EnchantLevelArgs;
 import com.tty.lib.annotations.ArgumentCommand;
@@ -23,10 +24,6 @@ import java.util.stream.Collectors;
 @ArgumentCommand(isSuggests = true)
 public class EnchantShowList extends BaseRequiredArgumentLiteralCommand<String> {
 
-    public EnchantShowList() {
-        super(StringArgumentType.string());
-    }
-
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of(new EnchantLevelArgs());
@@ -34,6 +31,11 @@ public class EnchantShowList extends BaseRequiredArgumentLiteralCommand<String> 
 
     @Override
     public void execute(CommandSender sender, String[] args) { }
+
+    @Override
+    protected @NotNull ArgumentType<String> argumentType() {
+        return StringArgumentType.string();
+    }
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {

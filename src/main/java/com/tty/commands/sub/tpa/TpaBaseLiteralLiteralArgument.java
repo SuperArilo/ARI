@@ -1,6 +1,7 @@
 package com.tty.commands.sub.tpa;
 
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
 import com.tty.enumType.FilePath;
@@ -13,6 +14,7 @@ import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSele
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -20,8 +22,9 @@ import java.util.stream.Collectors;
 
 public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgumentLiteralCommand<PlayerSelectorArgumentResolver> {
 
-    public TpaBaseLiteralLiteralArgument() {
-        super(ArgumentTypes.player());
+    @Override
+    protected @NotNull ArgumentType<PlayerSelectorArgumentResolver> argumentType() {
+        return ArgumentTypes.player();
     }
 
     /**

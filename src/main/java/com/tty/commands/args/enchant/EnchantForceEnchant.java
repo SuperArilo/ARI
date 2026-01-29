@@ -1,5 +1,6 @@
 package com.tty.commands.args.enchant;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.tty.lib.annotations.ArgumentCommand;
 import com.tty.lib.annotations.CommandMeta;
@@ -7,6 +8,7 @@ import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
@@ -16,8 +18,9 @@ import java.util.concurrent.CompletableFuture;
 @ArgumentCommand
 public class EnchantForceEnchant extends EnchantBaseArgs<Boolean> {
 
-    protected EnchantForceEnchant() {
-        super(BoolArgumentType.bool());
+    @Override
+    protected @NotNull ArgumentType<Boolean> argumentType() {
+        return BoolArgumentType.bool();
     }
 
     @Override

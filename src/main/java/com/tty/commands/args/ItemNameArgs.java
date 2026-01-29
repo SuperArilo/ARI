@@ -1,5 +1,6 @@
 package com.tty.commands.args;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.lib.annotations.ArgumentCommand;
@@ -11,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
@@ -20,8 +22,9 @@ import java.util.concurrent.CompletableFuture;
 @ArgumentCommand
 public class ItemNameArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
-    public ItemNameArgs() {
-        super(StringArgumentType.string());
+    @Override
+    protected @NotNull ArgumentType<String> argumentType() {
+        return StringArgumentType.string();
     }
 
     @Override

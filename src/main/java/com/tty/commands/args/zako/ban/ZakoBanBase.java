@@ -1,7 +1,6 @@
 package com.tty.commands.args.zako.ban;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
 import com.tty.entity.BanPlayer;
 import com.tty.entity.WhitelistInstance;
@@ -24,11 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-public abstract class ZakoBanBase <T> extends BaseRequiredArgumentLiteralCommand<T> {
-
-    public ZakoBanBase(ArgumentType<T> type) {
-        super(type);
-    }
+public abstract class ZakoBanBase<T> extends BaseRequiredArgumentLiteralCommand<T> {
 
     public void ban(CommandSender sender, String[] args) {
         UUID uuid = PublicFunctionUtils.parseUUID(args[2]);

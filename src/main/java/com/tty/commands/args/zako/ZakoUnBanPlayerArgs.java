@@ -1,6 +1,7 @@
 package com.tty.commands.args.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.BanPlayer;
@@ -15,6 +16,7 @@ import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
@@ -25,8 +27,9 @@ import java.util.concurrent.CompletableFuture;
 @ArgumentCommand
 public class ZakoUnBanPlayerArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
-    public ZakoUnBanPlayerArgs() {
-        super(StringArgumentType.string());
+    @Override
+    protected @NotNull ArgumentType<String> argumentType() {
+        return StringArgumentType.string();
     }
 
     @Override

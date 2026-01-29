@@ -1,6 +1,7 @@
 package com.tty.commands.args.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.ServerPlayer;
@@ -26,13 +27,14 @@ import java.util.stream.Collectors;
 @ArgumentCommand(isSuggests = true)
 public class ZakoInfoArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
-    public ZakoInfoArgs() {
-        super(StringArgumentType.string());
-    }
-
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
+    }
+
+    @Override
+    protected @NotNull ArgumentType<String> argumentType() {
+        return StringArgumentType.string();
     }
 
     @Override

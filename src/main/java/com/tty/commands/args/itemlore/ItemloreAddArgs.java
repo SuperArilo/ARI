@@ -1,5 +1,6 @@
 package com.tty.commands.args.itemlore;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.lib.annotations.ArgumentCommand;
@@ -12,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +24,14 @@ import java.util.concurrent.CompletableFuture;
 @ArgumentCommand
 public class ItemloreAddArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
-    public ItemloreAddArgs() {
-        super(StringArgumentType.string());
-    }
-
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
+    }
+
+    @Override
+    protected @NotNull ArgumentType<String> argumentType() {
+        return StringArgumentType.string();
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.tty.commands.args.zako.ban;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.tty.lib.annotations.ArgumentCommand;
 import com.tty.lib.annotations.CommandMeta;
 import com.tty.lib.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
@@ -14,8 +16,9 @@ import java.util.concurrent.CompletableFuture;
 @ArgumentCommand
 public class ZakoBanMinute extends ZakoBanBase<Integer>{
 
-    public ZakoBanMinute() {
-        super(IntegerArgumentType.integer());
+    @Override
+    protected @NotNull ArgumentType<Integer> argumentType() {
+        return IntegerArgumentType.integer(0);
     }
 
     @Override

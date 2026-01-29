@@ -1,6 +1,7 @@
 package com.tty.commands.sub;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.ServerPlayer;
@@ -21,6 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -32,10 +34,6 @@ import java.util.stream.Collectors;
 public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<String> {
 
     public static final List<UUID> OFFLINE_ON_EDIT_ENDER_CHEST_LIST = new CopyOnWriteArrayList<>();
-
-    public EnderChestToPlayer() {
-        super(StringArgumentType.string());
-    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -92,6 +90,11 @@ public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<Strin
                     player.openInventory(b.getEnderChest());
                 }
             });
+    }
+
+    @Override
+    protected @NotNull ArgumentType<String> argumentType() {
+        return StringArgumentType.string();
     }
 
     @Override
