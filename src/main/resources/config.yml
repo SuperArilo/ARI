@@ -17,15 +17,15 @@ data:
 server:
   custom-death: false
   skip-night:
-    enable: true
+    enable: false
     tick-increment: 5
     max-tick-increment: 50
   message:
-    on-first-login: true
-    on-login: true
-    on-leave: true
+    on-first-login: false
+    on-login: false
+    on-leave: false
   whitelist:
-    enable: true
+    enable: false
   # 开启死亡保留物品栏的功能（需要对应玩家添加权限
   enable-keep-inventory: false
   # 开启死亡保留经验的功能（需要对应玩家添加权限
@@ -36,7 +36,7 @@ server:
   auto-seed: false
   #阻止爆炸破坏
   anti-explosion:
-    enable: true
+    enable: false
     pass-list:
       - "tnt"
   #阻止耕地踩踏

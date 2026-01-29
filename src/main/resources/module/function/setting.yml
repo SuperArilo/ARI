@@ -1,5 +1,5 @@
 tab:
-  enable: true
+  enable: false
   # tick
   update-interval: 20
   layout:
@@ -25,7 +25,7 @@ tab:
     - 'admin'
     - 'default'
 chat:
-  enable: true
+  enable: false
   groups-pattern:
     owner: '<<color:#CD5555>腐竹</color>> <color:#FFAA00><source_display_name></color><color:#AAAAAA>:</color> <color:#ffffff><message></color>'
     admin: '<<color:#EEEE00>管理员</color>> <color:#FFAA00><source_display_name></color><color:#AAAAAA>:</color> <color:#ffffff><message></color>'
@@ -33,13 +33,13 @@ chat:
     _default_: '<color:#FFAA00><source_display_name></color><color:#AAAAAA>:</color> <color:#ffffff><message></color>'
 action:
   sit:
-    enable: true
+    enable: false
     disable-block:
       - 'example'
   player-sit-player:
-    enable: true
+    enable: false
 attack-boss-bar:
-  enable: true
+  enable: false
   #最多给玩家显示的 bar 数量
   max-bar: 3
   #清理超过20秒后的没有继续被攻击的实体对应的血条 单位秒
