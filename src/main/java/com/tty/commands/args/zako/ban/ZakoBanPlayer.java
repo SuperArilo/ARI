@@ -29,20 +29,12 @@ public class ZakoBanPlayer extends ZakoBanBase<String> {
                 .filter(name -> !name.equals(sender.getName()))
                 .collect(Collectors.toSet());
 
-        if (args.length == 2) {
-            return CompletableFuture.completedFuture(players);
-        }
-
-        if (args.length < 3) {
-            return CompletableFuture.completedFuture(players);
-        }
-
+        if (args.length == 2 && players.isEmpty()) return CompletableFuture.completedFuture(Set.of("<player name or uuid (string)>"));
+        if (args.length == 2) return CompletableFuture.completedFuture(players);
         String prefix = args[2];
-
         Set<String> filtered = players.stream()
                 .filter(name -> name.startsWith(prefix))
                 .collect(Collectors.toSet());
-
         if (filtered.isEmpty()) return CompletableFuture.completedFuture(Set.of("<player name or uuid (string)>"));
         return CompletableFuture.completedFuture(filtered);
     }
