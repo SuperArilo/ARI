@@ -38,6 +38,7 @@ import java.util.Map;
 import static com.tty.lib.tool.PublicFunctionUtils.checkServerVersion;
 
 
+@SuppressWarnings("UnstableApiUsage")
 public class Ari extends JavaPlugin {
 
     public static Ari instance;
