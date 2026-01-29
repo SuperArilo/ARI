@@ -33,6 +33,7 @@ public class ari extends BaseLiteralArgumentLiteralCommand {
             new tparefuse(),
             new warp(),
             new zako(),
+            new infinitytotem(),
             new Reload()
         );
     }
