@@ -35,16 +35,18 @@ public class maintenance extends BaseLiteralArgumentLiteralCommand {
                 player.sendMessage(component);
                 continue;
             }
-            ConfigUtils.t("server.maintenance.to-player", player).thenAccept(player::sendMessage);
-            Lib.Scheduler.runAtEntityLater(
-                    Ari.instance,
-                    player,
-                    i -> {
-                        if (!player.isOnline()) return;
-                        player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
-                    },
-                    () -> {},
-                    this.getMaintenanceKickDelay() * 20L);
+            if (MAINTENANCE_MODE) {
+                ConfigUtils.t("server.maintenance.to-player", player).thenAccept(player::sendMessage);
+                Lib.Scheduler.runAtEntityLater(
+                        Ari.instance,
+                        player,
+                        i -> {
+                            if (!player.isOnline()) return;
+                            player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
+                        },
+                        () -> {},
+                        this.getMaintenanceKickDelay() * 20L);
+            }
         }
         if(!(sender instanceof Player player)) {
             sender.sendMessage(component);
