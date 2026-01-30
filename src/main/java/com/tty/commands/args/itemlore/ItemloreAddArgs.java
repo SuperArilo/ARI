@@ -5,8 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.api.annotations.ArgumentCommand;
 import com.tty.api.annotations.CommandMeta;
-import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.command.RequiredArgumentCommand;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "\"content\" (string)", permission = "ari.command.itemlore.add", tokenLength = 3)
 @ArgumentCommand
-public class ItemloreAddArgs extends BaseRequiredArgumentLiteralCommand<String> {
+public class ItemloreAddArgs extends RequiredArgumentCommand<String> {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {

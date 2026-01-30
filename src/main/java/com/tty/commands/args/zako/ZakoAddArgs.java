@@ -4,11 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.WhitelistInstance;
 import com.tty.api.Log;
 import com.tty.api.annotations.ArgumentCommand;
 import com.tty.api.annotations.CommandMeta;
-import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "name | uuid (string)", permission = "ari.command.zako.add", tokenLength = 3, allowConsole = true)
 @ArgumentCommand
-public class ZakoAddArgs extends BaseRequiredArgumentLiteralCommand<String> {
+public class ZakoAddArgs extends RequiredArgumentCommand<String> {
 
     @Override
     protected @NotNull ArgumentType<String> argumentType() {

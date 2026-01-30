@@ -1,8 +1,8 @@
 package com.tty.commands.args.enchant;
 
 import com.tty.Ari;
+import com.tty.command.RequiredArgumentCommand;
 import com.tty.enumType.lang.LangEnchant;
-import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.tool.ConfigUtils;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public abstract class EnchantBaseArgs <T> extends BaseRequiredArgumentLiteralCommand<T> {
+public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
 
     @Data
     protected static class ResultArgs {

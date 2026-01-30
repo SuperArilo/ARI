@@ -1,9 +1,9 @@
 package com.tty.commands;
 
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.args.ItemNameArgs;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
@@ -11,7 +11,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "itemname", permission = "ari.command.itemname", tokenLength = 2)
 @LiteralCommand
-public class itemname extends BaseLiteralArgumentLiteralCommand {
+public class itemname extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {

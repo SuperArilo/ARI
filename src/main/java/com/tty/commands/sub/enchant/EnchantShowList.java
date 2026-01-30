@@ -2,10 +2,10 @@ package com.tty.commands.sub.enchant;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.tty.command.RequiredArgumentCommand;
 import com.tty.commands.args.enchant.EnchantLevelArgs;
 import com.tty.api.annotations.ArgumentCommand;
 import com.tty.api.annotations.CommandMeta;
-import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.PublicFunctionUtils;
 import io.papermc.paper.registry.RegistryAccess;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @CommandMeta(displayName = "enchant", permission = "ari.command.enchant", tokenLength = 3)
 @ArgumentCommand(isSuggests = true)
-public class EnchantShowList extends BaseRequiredArgumentLiteralCommand<String> {
+public class EnchantShowList extends RequiredArgumentCommand<String> {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {

@@ -5,8 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.api.annotations.ArgumentCommand;
 import com.tty.api.annotations.CommandMeta;
-import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.command.RequiredArgumentCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "\"content\" (string)", permission = "ari.command.itemname", tokenLength = 2)
 @ArgumentCommand
-public class ItemNameArgs extends BaseRequiredArgumentLiteralCommand<String> {
+public class ItemNameArgs extends RequiredArgumentCommand<String> {
 
     @Override
     protected @NotNull ArgumentType<String> argumentType() {

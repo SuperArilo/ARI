@@ -1,9 +1,9 @@
 package com.tty.commands;
 
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.sub.zako.*;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
@@ -11,11 +11,12 @@ import java.util.List;
 
 @CommandMeta(displayName = "zako", permission = "ari.command.zako", tokenLength = 2)
 @LiteralCommand
-public class zako extends BaseLiteralArgumentLiteralCommand {
+public class zako extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new ZakoAdd(),
+        return List.of(
+                new ZakoAdd(),
                 new ZakoList(),
                 new ZakoInfo(),
                 new ZakoBan(),

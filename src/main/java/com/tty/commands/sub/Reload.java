@@ -3,9 +3,9 @@ package com.tty.commands.sub;
 import com.tty.Ari;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.event.CustomPluginReloadEvent;
+import com.tty.command.LiteralArgumentCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -13,7 +13,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "reload", permission = "ari.command.reload", tokenLength = 1, allowConsole = true)
 @LiteralCommand(directExecute = true)
-public class Reload extends BaseLiteralArgumentLiteralCommand {
+public class Reload extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {

@@ -1,9 +1,9 @@
 package com.tty.commands;
 
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.sub.Reload;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
@@ -11,7 +11,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "ari", allowConsole = true, tokenLength = 1)
 @LiteralCommand
-public class ari extends BaseLiteralArgumentLiteralCommand {
+public class ari extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -34,6 +34,7 @@ public class ari extends BaseLiteralArgumentLiteralCommand {
             new warp(),
             new zako(),
             new infinitytotem(),
+            new enderchest(),
             new Reload()
         );
     }

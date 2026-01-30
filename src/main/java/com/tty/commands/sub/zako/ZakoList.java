@@ -2,13 +2,13 @@ package com.tty.commands.sub.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.args.zako.ZakoListArgs;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.lang.LangZakoList;
 import com.tty.api.Log;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.dto.ComponentListPage;
 import com.tty.enumType.FilePath;
@@ -29,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "list", permission = "ari.command.zako.list", tokenLength = 2, allowConsole = true)
 @LiteralCommand(directExecute = true)
-public class ZakoList extends BaseLiteralArgumentLiteralCommand {
+public class ZakoList extends LiteralArgumentCommand {
 
     public static final Integer MAX_ZAKO_LIST_PAGE_SIZE = 10;
 

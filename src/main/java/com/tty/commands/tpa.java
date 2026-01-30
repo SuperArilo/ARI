@@ -1,9 +1,9 @@
 package com.tty.commands;
 
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.args.tpa.TpaArgs;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
@@ -11,7 +11,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "tpa", permission = "ari.command.tpa", tokenLength = 2)
 @LiteralCommand
-public class tpa extends BaseLiteralArgumentLiteralCommand {
+public class tpa extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {

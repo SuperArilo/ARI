@@ -3,12 +3,12 @@ package com.tty.commands.args;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.command.RequiredArgumentCommand;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.LangTime;
 import com.tty.function.TimeManager;
 import com.tty.api.annotations.ArgumentCommand;
 import com.tty.api.annotations.CommandMeta;
-import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.enumType.TimePeriod;
 import com.tty.tool.ConfigUtils;
@@ -25,7 +25,7 @@ import static com.tty.listener.player.PlayerSkipNight.isBedWorksRe;
 
 @CommandMeta(displayName = "period (string)", permission = "ari.command.time", tokenLength = 2)
 @ArgumentCommand(isSuggests = true)
-public class TimeArgs extends BaseRequiredArgumentLiteralCommand<String> {
+public class TimeArgs extends RequiredArgumentCommand<String> {
 
     @Override
     protected @NotNull ArgumentType<String> argumentType() {

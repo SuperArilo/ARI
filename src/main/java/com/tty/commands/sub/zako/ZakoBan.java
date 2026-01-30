@@ -1,9 +1,9 @@
 package com.tty.commands.sub.zako;
 
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.args.zako.ban.ZakoBanPlayer;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
@@ -11,7 +11,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "ban", permission = "ari.command.zako.ban", tokenLength = 2, allowConsole = true)
 @LiteralCommand
-public class ZakoBan extends BaseLiteralArgumentLiteralCommand {
+public class ZakoBan extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {

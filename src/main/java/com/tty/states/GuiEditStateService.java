@@ -2,7 +2,7 @@ package com.tty.states;
 
 import com.tty.Ari;
 import com.tty.lib.Lib;
-import com.tty.api.state.PlayerEditGuiState;
+import com.tty.dto.state.PlayerEditGuiState;
 import com.tty.api.Log;
 import com.tty.lib.enum_type.FilePath;
 import com.tty.lib.services.StateService;

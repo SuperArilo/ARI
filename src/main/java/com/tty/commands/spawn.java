@@ -1,6 +1,7 @@
 package com.tty.commands;
 
 import com.tty.Ari;
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.dto.SpawnLocation;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
@@ -8,7 +9,6 @@ import com.tty.enumType.TeleportType;
 import com.tty.api.Log;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.states.teleport.TeleportStateService;
 import com.tty.tool.ConfigUtils;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "spawn", permission = "ari.command.spawn", tokenLength = 1)
 @LiteralCommand(directExecute = true)
-public class spawn extends BaseLiteralArgumentLiteralCommand {
+public class spawn extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {

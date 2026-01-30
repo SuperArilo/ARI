@@ -3,9 +3,9 @@ package com.tty.commands.sub.tpa;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
+import com.tty.command.RequiredArgumentCommand;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
 import com.tty.enumType.FilePath;
-import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.enumType.TeleportType;
 import com.tty.states.teleport.PreTeleportStateService;
 import com.tty.tool.ConfigUtils;
@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public abstract class TpaBaseLiteralLiteralArgument extends BaseRequiredArgumentLiteralCommand<PlayerSelectorArgumentResolver> {
+public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentCommand<PlayerSelectorArgumentResolver> {
 
     @Override
     protected @NotNull ArgumentType<PlayerSelectorArgumentResolver> argumentType() {

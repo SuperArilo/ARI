@@ -4,12 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.ServerPlayer;
 import com.tty.gui.OfflineNBTEnderCheat;
 import com.tty.api.Log;
 import com.tty.api.annotations.ArgumentCommand;
 import com.tty.api.annotations.CommandMeta;
-import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.PublicFunctionUtils;
 import de.tr7zw.nbtapi.NBT;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 @CommandMeta(displayName = "name or uuid (string)", permission = "ari.command.enderchest.player", tokenLength = 2)
 @ArgumentCommand(isSuggests = true)
-public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<String> {
+public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
 
     public static final List<UUID> OFFLINE_ON_EDIT_ENDER_CHEST_LIST = new CopyOnWriteArrayList<>();
 

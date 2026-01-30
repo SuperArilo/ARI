@@ -1,10 +1,10 @@
 package com.tty.commands.sub;
 
 import com.tty.Ari;
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.dto.state.teleport.RandomTpState;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.states.teleport.RandomTpStateService;
 import com.tty.tool.ConfigUtils;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "cancel", permission = "ari.command.rtp.cancel", tokenLength = 2)
 @LiteralCommand(directExecute = true)
-public class RtpCancel extends BaseLiteralArgumentLiteralCommand {
+public class RtpCancel extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {

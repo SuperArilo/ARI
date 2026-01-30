@@ -2,10 +2,10 @@ package com.tty.commands.args.zako.ban;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.BanPlayer;
 import com.tty.entity.WhitelistInstance;
 import com.tty.api.Log;
-import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.enum_type.FilePath;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-public abstract class ZakoBanBase<T> extends BaseRequiredArgumentLiteralCommand<T> {
+public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
 
     public void ban(CommandSender sender, String[] args) {
         UUID uuid = PublicFunctionUtils.parseUUID(args[2]);

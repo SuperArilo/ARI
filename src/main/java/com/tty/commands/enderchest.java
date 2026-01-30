@@ -1,9 +1,9 @@
 package com.tty.commands;
 
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.sub.EnderChestToPlayer;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "enderchest", permission = "ari.command.enderchest", tokenLength = 1)
 @LiteralCommand(directExecute = true)
-public class enderchest extends BaseLiteralArgumentLiteralCommand {
+public class enderchest extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
@@ -24,4 +24,5 @@ public class enderchest extends BaseLiteralArgumentLiteralCommand {
         Player player = (Player) sender;
         player.openInventory(player.getEnderChest());
     }
+
 }

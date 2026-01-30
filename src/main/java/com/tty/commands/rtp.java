@@ -1,12 +1,12 @@
 package com.tty.commands;
 
 import com.tty.Ari;
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.sub.RtpCancel;
 import com.tty.dto.state.teleport.RandomTpState;
 import com.tty.enumType.FilePath;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.states.teleport.RandomTpStateService;
 import org.bukkit.command.CommandSender;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "rtp", permission = "ari.command.rtp", tokenLength = 1)
 @LiteralCommand(directExecute = true)
-public class rtp extends BaseLiteralArgumentLiteralCommand {
+public class rtp extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {

@@ -2,8 +2,8 @@ package com.tty.commands;
 
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "infinitytotem", permission = "ari.command.infinitytotem", tokenLength = 1)
 @LiteralCommand(directExecute = true)
-public class infinitytotem extends BaseLiteralArgumentLiteralCommand {
+public class infinitytotem extends LiteralArgumentCommand {
 
     public static final List<Player> INFINITY_TOTEM_PLAYER_LIST = new ArrayList<>();
 

@@ -3,8 +3,8 @@ package com.tty.commands;
 import com.tty.Ari;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "maintenance", permission = "ari.command.maintenance", tokenLength = 1, allowConsole = true)
 @LiteralCommand(directExecute = true)
-public class maintenance extends BaseLiteralArgumentLiteralCommand {
+public class maintenance extends LiteralArgumentCommand {
 
     public static boolean MAINTENANCE_MODE = false;
 
@@ -46,7 +46,7 @@ public class maintenance extends BaseLiteralArgumentLiteralCommand {
                         this.getMaintenanceKickDelay() * 20L);
             }
         }
-        if(!(sender instanceof Player player)) {
+        if(!(sender instanceof Player)) {
             sender.sendMessage(component);
         }
     }

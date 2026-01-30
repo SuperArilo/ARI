@@ -1,11 +1,11 @@
 package com.tty.commands;
 
 import com.tty.Ari;
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.enumType.TeleportType;
 import com.tty.states.teleport.TeleportStateService;
@@ -20,7 +20,7 @@ import static com.tty.listener.teleport.RecordLastLocationListener.TELEPORT_LAST
 
 @CommandMeta(displayName = "back", permission = "ari.command.back", tokenLength = 1)
 @LiteralCommand(directExecute = true)
-public class back extends BaseLiteralArgumentLiteralCommand {
+public class back extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {

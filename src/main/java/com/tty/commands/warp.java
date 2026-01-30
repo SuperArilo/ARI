@@ -1,11 +1,11 @@
 package com.tty.commands;
 
 import com.tty.Ari;
+import com.tty.command.LiteralArgumentCommand;
 import com.tty.enumType.FilePath;
 import com.tty.gui.warp.WarpList;
 import com.tty.api.annotations.CommandMeta;
 import com.tty.api.annotations.LiteralCommand;
-import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "warp", permission = "ari.command.warp", tokenLength = 1)
 @LiteralCommand(directExecute = true)
-public class warp extends BaseLiteralArgumentLiteralCommand {
+public class warp extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
