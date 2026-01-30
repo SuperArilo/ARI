@@ -48,7 +48,7 @@ public class WarpListListener extends BaseGuiListener {
 
         FunctionType type = this.ItemNBT_TypeCheck(currentItem.getItemMeta().getPersistentDataContainer().get(this.TYPE_KEY, PersistentDataType.STRING));
         if(type == null) return;
-        Player player = warpList.player;
+        if (!(event.getWhoClicked() instanceof Player player)) return;
 
         switch (type) {
             case BACK -> inventory.close();
@@ -104,7 +104,7 @@ public class WarpListListener extends BaseGuiListener {
                             if(isOwner || player.isOp()) {
                                 Ari.SCHEDULER.run(Ari.instance, i -> {
                                     inventory.close();
-                                    new WarpEditor(instance, player).open();
+                                    player.openInventory(new WarpEditor(instance, player).getInventory());
                                 });
                             } else {
                                 ConfigUtils.t("function.warp.no-permission-edit", player).thenAccept(player::sendMessage);

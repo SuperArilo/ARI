@@ -1,8 +1,10 @@
 package com.tty.states;
 
 import com.tty.Ari;
+import com.tty.api.annotations.gui.GuiMeta;
+import com.tty.api.gui.BaseInventory;
 import com.tty.lib.Lib;
-import com.tty.dto.state.PlayerEditGuiState;
+import com.tty.api.state.PlayerEditGuiState;
 import com.tty.api.Log;
 import com.tty.lib.enum_type.FilePath;
 import com.tty.lib.services.StateService;
@@ -30,7 +32,9 @@ public class GuiEditStateService extends StateService<PlayerEditGuiState> {
             return;
         }
         state.setPending(false);
-        Log.debug("checking player {} edit gui {}. type {}", owner.getName(), state.getI().type, state.getFunctionType());
+        BaseInventory i = state.getI();
+        GuiMeta annotation = i.getClass().getAnnotation(GuiMeta.class);
+        Log.debug("checking player {} edit gui {}. type {}", owner.getName(), annotation.type(), state.getFunctionType());
     }
 
     @Override

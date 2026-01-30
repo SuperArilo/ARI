@@ -1,6 +1,7 @@
 package com.tty.listener;
 
 import com.tty.Ari;
+import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.gui.OfflineNBTEnderCheat;
 import com.tty.api.Log;
 import com.tty.api.enumType.GuiType;
@@ -39,7 +40,9 @@ public class GuiCleanupListener implements Listener {
 
     private void clean(Inventory inventory) {
         if (inventory.getHolder() instanceof BaseInventory baseInventory) {
-            if (baseInventory.type.equals(GuiType.OFFLINE_ENDERCHEST) && baseInventory instanceof OfflineNBTEnderCheat cheat) {
+            GuiMeta annotation = baseInventory.getClass().getAnnotation(GuiMeta.class);
+            if (annotation == null) return;
+            if (annotation.type().equals(GuiType.OFFLINE_ENDERCHEST) && baseInventory instanceof OfflineNBTEnderCheat cheat) {
                 NBTFileHandle data = cheat.getData();
                 data.removeKey("EnderItems");
                 ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");

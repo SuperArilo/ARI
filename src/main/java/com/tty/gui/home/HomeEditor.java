@@ -2,33 +2,37 @@ package com.tty.gui.home;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
+import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
+import com.tty.api.enumType.GuiType;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
-import com.tty.api.enumType.GuiType;
 import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.FormatUtils;
 import com.tty.api.PublicFunctionUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@GuiMeta(type = GuiType.HOME_EDIT)
 public class HomeEditor extends BaseConfigInventory {
 
     public ServerHome currentHome;
 
     public HomeEditor(ServerHome serverHome, Player player) {
-        super(Ari.instance,
-                FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_EDIT_GUI.name()).saveToString(), BaseMenu.class),
-                player,
-                GuiType.HOME_EDIT,
-                Ari.COMPONENT_SERVICE);
+        super(Ari.instance, player, Ari.COMPONENT_SERVICE);
         this.currentHome = serverHome;
+    }
+
+    @Override
+    protected @NotNull BaseMenu config() {
+        return FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_EDIT_GUI.name()).saveToString(), BaseMenu.class);
     }
 
     @Override
@@ -38,7 +42,7 @@ public class HomeEditor extends BaseConfigInventory {
 
     @Override
     protected Map<String, FunctionItems> renderCustomFunctionItems() {
-        Map<String, FunctionItems> functionItems = PublicFunctionUtils.deepCopy(this.baseInstance.getFunctionItems(), new TypeToken<Map<String, FunctionItems>>(){}.getType());
+        Map<String, FunctionItems> functionItems = PublicFunctionUtils.deepCopy(this.getBaseMenu().getFunctionItems(), new TypeToken<Map<String, FunctionItems>>(){}.getType());
         if (functionItems != null) {
             for (FunctionItems item : functionItems.values()) {
                 switch (item.getType()) {
@@ -60,13 +64,7 @@ public class HomeEditor extends BaseConfigInventory {
     }
 
     @Override
-    protected void afterOpen() {
-
-    }
-
-    @Override
     public void clean() {
-        super.clean();
         this.currentHome = null;
     }
 

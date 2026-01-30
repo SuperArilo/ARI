@@ -2,8 +2,8 @@ package com.tty.commands.args.zako;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.tty.api.annotations.ArgumentCommand;
-import com.tty.api.annotations.CommandMeta;
+import com.tty.api.annotations.command.ArgumentCommand;
+import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.command.RequiredArgumentCommand;
 import org.bukkit.command.CommandSender;

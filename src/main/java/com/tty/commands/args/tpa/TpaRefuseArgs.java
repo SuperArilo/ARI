@@ -2,8 +2,8 @@ package com.tty.commands.args.tpa;
 
 import com.tty.Ari;
 import com.tty.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
-import com.tty.api.annotations.ArgumentCommand;
-import com.tty.api.annotations.CommandMeta;
+import com.tty.api.annotations.command.ArgumentCommand;
+import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;

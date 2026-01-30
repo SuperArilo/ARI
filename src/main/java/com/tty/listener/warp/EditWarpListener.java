@@ -2,7 +2,7 @@ package com.tty.listener.warp;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.dto.state.PlayerEditGuiState;
+import com.tty.api.state.PlayerEditGuiState;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.api.enumType.GuiType;
@@ -56,14 +56,14 @@ public class EditWarpListener extends OnGuiEditListener {
         switch (type) {
             case REBACK -> {
                 inventory.close();
-                new WarpList(player).open();
+                player.openInventory(new WarpList(player).getInventory());
             }
             case DELETE -> warpEntityRepository.delete(warpEditor.currentWarp).thenCompose(i -> {
                 if (i) {
                     return ConfigUtils.t("function.warp.delete-success", player).thenAccept(player::sendMessage)
                             .thenRun(() -> Ari.SCHEDULER.run(Ari.instance, ab -> {
                                 inventory.close();
-                                new WarpList(player).open();
+                                player.openInventory(new WarpList(player).getInventory());
                             }));
                 } else {
                     return ConfigUtils.t("function.warp.not-found").thenAccept(player::sendMessage);
@@ -138,7 +138,7 @@ public class EditWarpListener extends OnGuiEditListener {
             }
             case TOP_SLOT -> {
                 warpEditor.currentWarp.setTopSlot(!warpEditor.currentWarp.isTopSlot());
-                warpEditor.baseInstance.getFunctionItems().forEach((k, v) -> {
+                warpEditor.getBaseMenu().getFunctionItems().forEach((k, v) -> {
                     if (v.getType().equals(FunctionType.TOP_SLOT)) {
                         List<String> lore = v.getLore();
                         List<TextComponent> list = lore.stream().map(p -> Ari.COMPONENT_SERVICE.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue(warpEditor.currentWarp.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
@@ -190,8 +190,13 @@ public class EditWarpListener extends OnGuiEditListener {
                 }
             }
         }
-        Ari.SCHEDULER.runAtEntity(Ari.instance, player, i -> warpEditor.open(), () -> {});
+        Ari.SCHEDULER.runAtEntity(Ari.instance, player, i -> player.openInventory(warpEditor.getInventory()), () -> {});
         return true;
+    }
+
+    @Override
+    public void whenTimeout(Player player) {
+        player.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
     }
 
 }

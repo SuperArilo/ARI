@@ -2,13 +2,14 @@ package com.tty.gui.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
+import com.tty.api.enumType.GuiType;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
-import com.tty.api.enumType.GuiType;
 import com.tty.api.gui.BaseDataItemConfigInventory;
 import com.tty.api.Log;
 import com.tty.api.enumType.FunctionType;
@@ -21,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,27 +30,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+@GuiMeta(type = GuiType.HOME_LIST)
 public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     public HomeList(Player player) {
-        super(Ari.instance,
-                FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_LIST_GUI.name()).saveToString(), BaseDataMenu.class),
-                player,
-                GuiType.HOME_LIST,
-                Ari.COMPONENT_SERVICE);
+        super(Ari.instance, player, Ari.COMPONENT_SERVICE);
     }
 
     @Override
     public CompletableFuture<PageResult<ServerHome>> requestData() {
-        int size = this.baseDataInstance.getDataItems().getSlot().size();
-        return Ari.REPOSITORY_MANAGER.get(ServerHome.class).getList(this.pageNum, size, new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, this.player.getUniqueId().toString()));
+        return Ari.REPOSITORY_MANAGER.get(ServerHome.class).getList(this.pageNum, ((BaseDataMenu)this.getBaseMenu()).getDataItems().getSlot().size(), new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, this.player.getUniqueId().toString()));
     }
 
     @Override
     protected Map<Integer, ItemStack> getRenderItem() {
         Map<Integer, ItemStack> map = new HashMap<>();
-        List<Integer> dataSlot = this.baseDataInstance.getDataItems().getSlot();
-        List<String> rawLore = this.baseDataInstance.getDataItems().getLore();
+        BaseDataMenu baseDataMenu = (BaseDataMenu) this.getBaseMenu();
+        List<Integer> dataSlot = baseDataMenu.getDataItems().getSlot();
+        List<String> rawLore = baseDataMenu.getDataItems().getLore();
         for (int i = 0; i < this.data.size(); i++) {
             ServerHome ph = this.data.get(i);
             ItemStack itemStack = this.createItemStack(ph.getShowMaterial());
@@ -87,6 +86,11 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             map.put(dataSlot.get(i), itemStack);
         }
         return map;
+    }
+
+    @Override
+    protected @NotNull BaseDataMenu config() {
+        return FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_LIST_GUI.name()).saveToString(), BaseDataMenu.class);
     }
 
     @Override

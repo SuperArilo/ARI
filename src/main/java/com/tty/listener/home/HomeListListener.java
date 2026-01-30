@@ -43,8 +43,7 @@ public class HomeListListener extends BaseGuiListener {
         assert homeList != null;
         FunctionType type = this.ItemNBT_TypeCheck(currentItem.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Ari.instance, "type"), PersistentDataType.STRING));
         if(type == null) return;
-        Player player = homeList.player;
-
+        if (!(event.getWhoClicked() instanceof Player player)) return;
         switch (type) {
             case BACK -> inventory.close();
             case DATA -> {
@@ -68,7 +67,7 @@ public class HomeListListener extends BaseGuiListener {
                         } else if (event.isRightClick()) {
                             Ari.SCHEDULER.run(Ari.instance, p -> {
                                 inventory.close();
-                                new HomeEditor(home, player).open();
+                                player.openInventory(new HomeEditor(home, player).getInventory());
                             });
                         }
                         return CompletableFuture.completedFuture(true);

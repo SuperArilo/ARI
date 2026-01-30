@@ -1,20 +1,19 @@
 package com.tty.gui;
 
-import com.tty.Ari;
 import com.tty.api.Log;
+import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.enumType.GuiType;
 import com.tty.api.gui.BaseInventory;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import net.kyori.adventure.text.Component;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-
+@GuiMeta(type = GuiType.OFFLINE_ENDERCHEST)
 public class OfflineNBTEnderCheat extends BaseInventory {
 
     @Getter
@@ -22,15 +21,24 @@ public class OfflineNBTEnderCheat extends BaseInventory {
     @Getter
     private UUID target;
 
-    public OfflineNBTEnderCheat(Player player, NBTFileHandle data, UUID target) {
-        super(Ari.instance, player, GuiType.OFFLINE_ENDERCHEST);
+    public OfflineNBTEnderCheat(NBTFileHandle data, UUID target) {
         this.data = data;
         this.target = target;
     }
 
     @Override
-    protected Inventory createInventory() {
-        return Bukkit.createInventory(this, InventoryType.ENDER_CHEST);
+    protected int size() {
+        return InventoryType.ENDER_CHEST.getDefaultSize();
+    }
+
+    @Override
+    protected @NotNull Component title() {
+        return InventoryType.ENDER_CHEST.defaultTitle();
+    }
+
+    @Override
+    protected void beforeCreate() {
+
     }
 
     @Override

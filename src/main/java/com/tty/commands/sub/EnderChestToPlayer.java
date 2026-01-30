@@ -8,8 +8,8 @@ import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.ServerPlayer;
 import com.tty.gui.OfflineNBTEnderCheat;
 import com.tty.api.Log;
-import com.tty.api.annotations.ArgumentCommand;
-import com.tty.api.annotations.CommandMeta;
+import com.tty.api.annotations.command.ArgumentCommand;
+import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.PublicFunctionUtils;
 import de.tr7zw.nbtapi.NBT;
@@ -71,9 +71,9 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
                             return;
                         }
                         ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
-                        OfflineNBTEnderCheat cheat = new OfflineNBTEnderCheat(player, data, uuid);
+                        OfflineNBTEnderCheat cheat = new OfflineNBTEnderCheat(data, uuid);
                         Ari.SCHEDULER.runAtEntity(Ari.instance, player, t -> {
-                            cheat.open();
+                            player.openInventory(cheat.getInventory());
                             for (ReadWriteNBT enderItem : enderItems) {
                                 int slot = enderItem.getByte("Slot") & 0xFF;
                                 ItemStack itemStack = NBT.itemStackFromNBT(enderItem);

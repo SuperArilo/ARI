@@ -2,7 +2,7 @@ package com.tty.listener.home;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.dto.state.PlayerEditGuiState;
+import com.tty.api.state.PlayerEditGuiState;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.api.enumType.GuiType;
@@ -58,7 +58,7 @@ public class EditHomeListener extends OnGuiEditListener {
         switch (type) {
             case REBACK -> {
                 inventory.close();
-                new HomeList(player).open();
+                player.openInventory(new HomeList(player).getInventory());
             }
             case DELETE ->
                 repository.delete(homeEditor.currentHome)
@@ -68,7 +68,7 @@ public class EditHomeListener extends OnGuiEditListener {
                                     .thenAccept(player::sendMessage)
                                     .thenRun(() -> Ari.SCHEDULER.run(Ari.instance, j -> {
                                         inventory.close();
-                                        new HomeList(player).open();
+                                        player.openInventory(new HomeList(player).getInventory());
                                     }));
                         } else {
                             return ConfigUtils.t("function.home.not-found", player).thenAccept(player::sendMessage);
@@ -109,7 +109,7 @@ public class EditHomeListener extends OnGuiEditListener {
             }
             case TOP_SLOT -> {
                 homeEditor.currentHome.setTopSlot(!homeEditor.currentHome.isTopSlot());
-                homeEditor.baseInstance.getFunctionItems().forEach((k, v) -> {
+                homeEditor.getBaseMenu().getFunctionItems().forEach((k, v) -> {
                     if (v.getType().equals(FunctionType.TOP_SLOT)) {
                         List<String> lore = v.getLore();
                         List<TextComponent> list = lore.stream().map(p -> Ari.COMPONENT_SERVICE.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue(homeEditor.currentHome.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
@@ -159,8 +159,13 @@ public class EditHomeListener extends OnGuiEditListener {
         }
         HomeEditor homeEditor = (HomeEditor) state.getI();
         homeEditor.currentHome.setHomeName(message);
-        Ari.SCHEDULER.runAtEntity(Ari.instance, player, p -> homeEditor.open(), () -> {});
+        Ari.SCHEDULER.runAtEntity(Ari.instance, player, p -> player.openInventory(homeEditor.getInventory()), () -> {});
         return true;
+    }
+
+    @Override
+    public void whenTimeout(Player player) {
+        player.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
     }
 
 }

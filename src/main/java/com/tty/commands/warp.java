@@ -4,8 +4,8 @@ import com.tty.Ari;
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.enumType.FilePath;
 import com.tty.gui.warp.WarpList;
-import com.tty.api.annotations.CommandMeta;
-import com.tty.api.annotations.LiteralCommand;
+import com.tty.api.annotations.command.CommandMeta;
+import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,7 +24,8 @@ public class warp extends LiteralArgumentCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.WARP_CONFIG.name()))) return;
-        new WarpList((Player) sender).open();
+        Player player = (Player) sender;
+        player.openInventory(new WarpList(player).getInventory());
     }
 
 }

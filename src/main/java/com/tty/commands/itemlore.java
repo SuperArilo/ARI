@@ -3,8 +3,8 @@ package com.tty.commands;
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.sub.itemlore.ItemLoreAdd;
 import com.tty.commands.sub.itemlore.ItemLoreRemove;
-import com.tty.api.annotations.CommandMeta;
-import com.tty.api.annotations.LiteralCommand;
+import com.tty.api.annotations.command.CommandMeta;
+import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 

@@ -6,7 +6,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
 import com.tty.Ari;
-import com.tty.api.annotations.CommandMeta;
+import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.ArgumentCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -31,7 +31,7 @@ public abstract class RequiredArgumentCommand<T> extends PreCommand implements A
         RequiredArgumentBuilder<CommandSourceStack, T> builder = Commands.argument(meta.displayName(), this.argumentType());
         builder.requires(ctx -> Ari.PERMISSION_SERVICE.hasPermission(ctx.getSender(), meta.permission()));
         builder.executes(this::preExecute);
-        com.tty.api.annotations.ArgumentCommand annotation = this.getClass().getAnnotation(com.tty.api.annotations.ArgumentCommand.class);
+        com.tty.api.annotations.command.ArgumentCommand annotation = this.getClass().getAnnotation(com.tty.api.annotations.command.ArgumentCommand.class);
         if (annotation != null && annotation.isSuggests()) {
             builder.suggests((ctx, b) -> {
                 String input = ctx.getInput().trim().replaceFirst("/", "");

@@ -2,8 +2,8 @@ package com.tty.commands.sub.itemlore;
 
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.args.itemlore.ItemloreAddArgs;
-import com.tty.api.annotations.CommandMeta;
-import com.tty.api.annotations.LiteralCommand;
+import com.tty.api.annotations.command.CommandMeta;
+import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 
 import org.bukkit.command.CommandSender;

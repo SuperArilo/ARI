@@ -3,13 +3,15 @@ package com.tty.gui.warp;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
 import com.tty.api.FormatUtils;
+import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
+import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
+import com.tty.api.enumType.GuiType;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
-import com.tty.api.enumType.GuiType;
 import com.tty.api.gui.BaseDataItemConfigInventory;
 import com.tty.api.Log;
 import com.tty.api.enumType.FunctionType;
@@ -21,32 +23,31 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+@GuiMeta(type = GuiType.WARP_LIST)
 public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     private final String baseFree = Ari.DATA_SERVICE.getValue("base.free");
 
     public WarpList(Player player) {
-        super(Ari.instance,
-                FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.WARP_LIST_GUI.name()).saveToString(), BaseDataMenu.class),
-                player,
-                GuiType.WARP_LIST,
-                Ari.COMPONENT_SERVICE);
+        super(Ari.instance, player,  Ari.COMPONENT_SERVICE);
     }
 
     @Override
     public CompletableFuture<PageResult<ServerWarp>> requestData() {
-        return Ari.REPOSITORY_MANAGER.get(ServerWarp.class).getList(this.pageNum, this.pageSize, new LambdaQueryWrapper<>(ServerWarp.class));
+        return Ari.REPOSITORY_MANAGER.get(ServerWarp.class).getList(this.pageNum, ((BaseDataMenu) this.getBaseMenu()).getDataItems().getSlot().size(), new LambdaQueryWrapper<>(ServerWarp.class));
     }
 
     @Override
     protected Map<Integer, ItemStack> getRenderItem() {
         Map<Integer, ItemStack> map = new HashMap<>();
-        List<Integer> dataSlot = this.baseDataInstance.getDataItems().getSlot();
-        List<String> rawLore = this.baseDataInstance.getDataItems().getLore();
+        BaseDataMenu baseDataMenu = (BaseDataMenu) this.getBaseMenu();
+        List<Integer> dataSlot = baseDataMenu.getDataItems().getSlot();
+        List<String> rawLore = baseDataMenu.getDataItems().getLore();
 
         for (int i = 0; i < this.data.size(); i++) {
             ServerWarp serverWarp = this.data.get(i);
@@ -109,6 +110,11 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
         }
 
         return map;
+    }
+
+    @Override
+    protected @NotNull BaseMenu config() {
+        return FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.WARP_LIST_GUI.name()).saveToString(), BaseDataMenu.class);
     }
 
     @Override
