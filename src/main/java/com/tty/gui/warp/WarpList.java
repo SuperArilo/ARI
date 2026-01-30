@@ -31,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 @GuiMeta(type = GuiType.WARP_LIST)
 public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
-    private final String baseFree = Ari.DATA_SERVICE.getValue("base.free");
+    private String baseFree = Ari.DATA_SERVICE.getValue("base.free");
 
     public WarpList(Player player) {
         super(Ari.instance, player,  Ari.COMPONENT_SERVICE);
@@ -125,6 +125,12 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
     @Override
     protected Map<String, FunctionItems> renderCustomFunctionItems() {
         return null;
+    }
+
+    @Override
+    public void clean() {
+        super.clean();
+        this.baseFree = null;
     }
 
 }
