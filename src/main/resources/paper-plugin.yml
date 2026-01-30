@@ -6,7 +6,6 @@ authors:
   - Arilo007
 folia-supported: true
 loader: com.tty.Loader
-has-open-classloader: true
 dependencies:
   server:
     arilib:
