@@ -1,9 +1,8 @@
 package com.tty.dto.bar;
 
 import com.tty.Ari;
-import com.tty.lib.dto.BaseBossBar;
-import com.tty.lib.Lib;
-import com.tty.lib.task.CancellableTask;
+import com.tty.api.dto.BaseBossBar;
+import com.tty.api.task.CancellableTask;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -31,7 +30,7 @@ public class PlayerAttackBar extends BaseBossBar {
     }
 
     private void autoRemove() {
-        this.task = Lib.Scheduler.runAtEntityLater(
+        this.task = Ari.SCHEDULER.runAtEntityLater(
                 Ari.instance,
                 this.player,
                 i -> this.remove(this.player),

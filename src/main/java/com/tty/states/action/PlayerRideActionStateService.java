@@ -1,9 +1,8 @@
 package com.tty.states.action;
 
 import com.tty.Ari;
-import com.tty.lib.Log;
+import com.tty.api.Log;
 import com.tty.dto.state.action.PlayerRideActionState;
-import com.tty.lib.Lib;
 import com.tty.lib.services.StateService;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -37,7 +36,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
         Player beRidePlayer = state.getBeRidePlayer();
         Player owner = (Player) state.getOwner();
         Entity toolEntity = state.getTool_entity();
-        Lib.Scheduler.runAtEntity(Ari.instance, toolEntity, i -> {
+        Ari.SCHEDULER.runAtEntity(Ari.instance, toolEntity, i -> {
             boolean b = toolEntity.getPassengers().isEmpty() ||
                     !toolEntity.isInsideVehicle() ||
                     beRidePlayer.isDead() ||

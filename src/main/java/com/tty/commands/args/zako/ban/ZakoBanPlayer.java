@@ -2,9 +2,9 @@ package com.tty.commands.args.zako.ban;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.tty.lib.annotations.ArgumentCommand;
-import com.tty.lib.annotations.CommandMeta;
-import com.tty.lib.command.SuperHandsomeCommand;
+import com.tty.api.annotations.ArgumentCommand;
+import com.tty.api.annotations.CommandMeta;
+import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

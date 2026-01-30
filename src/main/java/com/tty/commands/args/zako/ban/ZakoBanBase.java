@@ -4,15 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
 import com.tty.entity.BanPlayer;
 import com.tty.entity.WhitelistInstance;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
+import com.tty.api.Log;
+import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.lib.enum_type.FilePath;
-import com.tty.lib.enum_type.Operator;
-import com.tty.lib.services.EntityRepository;
-import com.tty.lib.tool.ComponentUtils;
-import com.tty.lib.tool.PublicFunctionUtils;
-import com.tty.lib.tool.TimeFormatUtils;
+import com.tty.api.enumType.Operator;
+import com.tty.api.repository.EntityRepository;
+import com.tty.api.PublicFunctionUtils;
+import com.tty.api.TimeFormatUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -77,10 +75,10 @@ public abstract class ZakoBanBase<T> extends BaseRequiredArgumentLiteralCommand<
                 whitelistInstanceRepository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString())).thenCompose(whitelistInstanceRepository::delete);
 
                 String string = TimeFormatUtils.format(total);
-                Lib.Scheduler.run(Ari.instance, i -> {
+                Ari.SCHEDULER.run(Ari.instance, i -> {
                     Player player = Bukkit.getPlayer(uuid);
                     if (player != null) {
-                        player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
+                        player.kick(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
                         ConfigUtils.t("function.zako.baned", player).thenAccept(Bukkit::broadcast);
                         Log.debug("baned player uuid {}. total {}", uuid.toString(), string);
                     }

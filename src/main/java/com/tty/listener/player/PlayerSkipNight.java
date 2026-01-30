@@ -2,8 +2,7 @@ package com.tty.listener.player;
 
 import com.tty.Ari;
 import com.tty.dto.SleepingWorld;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
+import com.tty.api.Log;
 import io.papermc.paper.event.player.PlayerDeepSleepEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -27,7 +26,7 @@ public class PlayerSkipNight implements Listener {
             Log.error("cannot found world {} to sleep skipping.", world.getName());
             return;
         }
-        Lib.Scheduler.run(Ari.instance, i -> sleepingWorld.update());
+        Ari.SCHEDULER.run(Ari.instance, i -> sleepingWorld.update());
     }
 
     @EventHandler

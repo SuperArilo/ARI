@@ -6,17 +6,14 @@ import com.tty.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.LangVault;
-import com.tty.lib.enum_type.GuiType;
+import com.tty.api.enumType.GuiType;
 import com.tty.gui.warp.WarpEditor;
 import com.tty.gui.warp.WarpList;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.enum_type.FunctionType;
+import com.tty.api.Log;
+import com.tty.api.enumType.FunctionType;
 import com.tty.enumType.TeleportType;
-import com.tty.lib.tool.EconomyUtils;
-import com.tty.lib.tool.FormatUtils;
-import com.tty.lib.tool.PermissionUtils;
-import com.tty.lib.listener.BaseGuiListener;
+import com.tty.api.FormatUtils;
+import com.tty.api.listener.BaseGuiListener;
 import com.tty.states.teleport.TeleportStateService;
 import com.tty.tool.*;
 import net.kyori.adventure.text.Component;
@@ -49,7 +46,7 @@ public class WarpListListener extends BaseGuiListener {
         WarpList warpList = (WarpList) inventory.getHolder();
         assert warpList != null;
 
-        FunctionType type = FormatUtils.ItemNBT_TypeCheck(currentItem.getItemMeta().getPersistentDataContainer().get(this.TYPE_KEY, PersistentDataType.STRING));
+        FunctionType type = this.ItemNBT_TypeCheck(currentItem.getItemMeta().getPersistentDataContainer().get(this.TYPE_KEY, PersistentDataType.STRING));
         if(type == null) return;
         Player player = warpList.player;
 
@@ -77,13 +74,13 @@ public class WarpListListener extends BaseGuiListener {
                                     () -> {
                                         String permission = instance.getPermission();
                                         if(permission != null && !permission.isEmpty()) {
-                                            boolean hasPermission = PermissionUtils.hasPermission(player, permission);
+                                            boolean hasPermission = Ari.PERMISSION_SERVICE.hasPermission(player, permission);
                                             if (!hasPermission && !isOwner) {
                                                 ConfigUtils.t("function.warp.no-permission-teleport", player).thenAccept(player::sendMessage);
                                                 return false;
                                             }
                                         }
-                                        if(!EconomyUtils.hasEnoughBalance(player, instance.getCost()) && !isOwner &&
+                                        if(!Ari.ECONOMY_SERVICE.hasEnoughBalance(player, instance.getCost()) && !isOwner &&
                                                 Ari.C_INSTANCE.getValue("main.permission", FilePath.WARP_CONFIG, Boolean.class, true)) {
                                             ConfigUtils.t("function.warp.not-enough-money", player).thenAccept(player::sendMessage);
                                             return false;
@@ -95,17 +92,17 @@ public class WarpListListener extends BaseGuiListener {
                                         if(!isOwner &&
                                                 !player.isOp() &&
                                                 Ari.C_INSTANCE.getValue("main.cost", FilePath.WARP_CONFIG, Boolean.class, false) &&
-                                                !EconomyUtils.isNull()) {
-                                            EconomyUtils.withdrawPlayer(player, instance.getCost());
-                                            player.sendMessage(ConfigUtils.tAfter("teleport.costed", Map.of(LangVault.COSTED_UNRESOLVED.getType(), Component.text(instance.getCost().toString() + EconomyUtils.getNamePlural()))));
+                                                !Ari.ECONOMY_SERVICE.isNull()) {
+                                            Ari.ECONOMY_SERVICE.withdrawPlayer(player, instance.getCost());
+                                            player.sendMessage(ConfigUtils.tAfter("teleport.costed", Map.of(LangVault.COSTED_UNRESOLVED.getType(), Component.text(instance.getCost().toString() + Ari.ECONOMY_SERVICE.getNamePlural()))));
                                         }
                                     },
                                     TeleportType.WARP));
-                            Lib.Scheduler.runAtEntity(Ari.instance, player, i -> inventory.close(), null);
+                            Ari.SCHEDULER.runAtEntity(Ari.instance, player, i -> inventory.close(), null);
                         }
                         case RIGHT -> {
                             if(isOwner || player.isOp()) {
-                                Lib.Scheduler.run(Ari.instance, i -> {
+                                Ari.SCHEDULER.run(Ari.instance, i -> {
                                     inventory.close();
                                     new WarpEditor(instance, player).open();
                                 });

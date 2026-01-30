@@ -1,6 +1,6 @@
 package com.tty.enumType.lang;
 
-import com.tty.lib.enum_type.LangTypeEnum;
+import com.tty.api.enumType.LangTypeEnum;
 
 public enum LangPlayer implements LangTypeEnum {
 

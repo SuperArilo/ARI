@@ -1,17 +1,14 @@
 package com.tty;
 
 import com.google.gson.reflect.TypeToken;
+import com.tty.api.*;
+import com.tty.api.service.ComponentService;
 import com.tty.enumType.FilePath;
 import com.tty.function.*;
-import com.tty.lib.enum_type.GuiType;
-import com.tty.lib.Log;
-import com.tty.lib.ServerPlatform;
-import com.tty.lib.command.CommandRegister;
-import com.tty.lib.dto.AliasItem;
-import com.tty.lib.services.ConfigDataService;
-import com.tty.lib.services.NBTDataService;
-import com.tty.lib.services.StateService;
-import com.tty.lib.tool.*;
+import com.tty.api.enumType.GuiType;
+import com.tty.api.command.CommandRegister;
+import com.tty.api.dto.AliasItem;
+import com.tty.lib.services.*;
 import com.tty.listener.*;
 import com.tty.listener.home.EditHomeListener;
 import com.tty.listener.home.HomeListListener;
@@ -21,10 +18,7 @@ import com.tty.listener.warp.EditWarpListener;
 import com.tty.listener.warp.WarpListListener;
 import com.tty.states.teleport.RandomTpStateService;
 import com.tty.tool.*;
-import com.tty.tool.Placeholder;
 import io.papermc.paper.plugin.configuration.PluginMeta;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -35,19 +29,25 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.Map;
 
-import static com.tty.lib.tool.PublicFunctionUtils.checkServerVersion;
+import static com.tty.api.PublicFunctionUtils.checkServerVersion;
 
 
 @SuppressWarnings("UnstableApiUsage")
 public class Ari extends JavaPlugin {
 
     public static Ari instance;
+    public static final Scheduler SCHEDULER = Scheduler.create();
     public static Boolean DEBUG = false;
     public static final ConfigInstance C_INSTANCE = new ConfigInstance();
     public static SQLInstance SQL_INSTANCE;
     public static final RepositoryManager REPOSITORY_MANAGER = new RepositoryManager();
+    public static ComponentService COMPONENT_SERVICE;
+    public static PermissionService PERMISSION_SERVICE;
+    public static EconomyService ECONOMY_SERVICE;
     public static ConfigDataService DATA_SERVICE;
     public static NBTDataService NBT_DATA_SERVICE;
+    public static FireworkService FIREWORK_SERVICE;
+    public static TeleportingService TELEPORTING_SERVICE;
     public static StateMachineManager STATE_MACHINE_MANAGER;
     public static Placeholder PLACEHOLDER;
 
@@ -67,10 +67,13 @@ public class Ari extends JavaPlugin {
         }
         SQL_INSTANCE = new SQLInstance();
         STATE_MACHINE_MANAGER = new StateMachineManager(this);
-        PublicFunctionUtils.loadPlugin("Vault", Economy.class, EconomyUtils::setInstance);
-        PublicFunctionUtils.loadPlugin("Vault", Permission.class, PermissionUtils::setInstance);
+        PublicFunctionUtils.loadPlugin("arilib", ComponentService.class, i -> COMPONENT_SERVICE = i);
+        PublicFunctionUtils.loadPlugin("arilib", PermissionService.class, i -> PERMISSION_SERVICE = i);
+        PublicFunctionUtils.loadPlugin("arilib", EconomyService.class, i -> ECONOMY_SERVICE = i);
         PublicFunctionUtils.loadPlugin("arilib", ConfigDataService.class, i -> DATA_SERVICE = i);
         PublicFunctionUtils.loadPlugin("arilib", NBTDataService.class, i -> NBT_DATA_SERVICE = i);
+        PublicFunctionUtils.loadPlugin("arilib", FireworkService.class, i -> FIREWORK_SERVICE = i);
+        PublicFunctionUtils.loadPlugin("arilib", TeleportingService.class, i -> TELEPORTING_SERVICE = i);
 
         //初始化rtp
         RandomTpStateService.setRtpWorldConfig();

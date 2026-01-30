@@ -2,11 +2,10 @@ package com.tty.listener.player;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
+import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.commands.infinitytotem;
-import com.tty.dto.event.CustomPluginReloadEvent;
 import com.tty.enumType.FilePath;
-import com.tty.lib.Log;
-import com.tty.lib.tool.PermissionUtils;
+import com.tty.api.Log;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -57,7 +56,7 @@ public class CustomTotemCostListener implements Listener {
         if (!(event.getEntity() instanceof Player player)) return;
         if (!this.enable) return;
         if (this.disableWorlds.contains(player.getWorld().getName())) return;
-        if (!PermissionUtils.hasPermission(player, "ari.totem.inventory-trigger")) return;
+        if (!Ari.PERMISSION_SERVICE.hasPermission(player, "ari.totem.inventory-trigger")) return;
 
         double finalDamage = event.getFinalDamage();
         if (player.getHealth() - finalDamage > 0) return;

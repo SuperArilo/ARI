@@ -6,12 +6,11 @@ import com.tty.Ari;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.LangTime;
 import com.tty.function.TimeManager;
-import com.tty.lib.annotations.ArgumentCommand;
-import com.tty.lib.annotations.CommandMeta;
-import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
-import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.enum_type.TimePeriod;
-import com.tty.lib.tool.ComponentUtils;
+import com.tty.api.annotations.ArgumentCommand;
+import com.tty.api.annotations.CommandMeta;
+import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
+import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.api.enumType.TimePeriod;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.World;
@@ -69,6 +68,6 @@ public class TimeArgs extends BaseRequiredArgumentLiteralCommand<String> {
             player.sendMessage("no content " + timePeriod + "in lang");
             return;
         }
-        player.sendMessage(ComponentUtils.text(value, Map.of(LangTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.tAfter("server.time.name." + period.getDescription()))));
+        player.sendMessage(Ari.COMPONENT_SERVICE.text(value, Map.of(LangTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.tAfter("server.time.name." + period.getDescription()))));
     }
 }

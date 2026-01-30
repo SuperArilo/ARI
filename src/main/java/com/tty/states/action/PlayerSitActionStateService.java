@@ -7,8 +7,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import com.tty.Ari;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
+import com.tty.api.Log;
 import com.tty.dto.state.action.PlayerSitActionState;
 import com.tty.enumType.FilePath;
 import com.tty.lib.services.StateService;
@@ -121,7 +120,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                 i.addPassenger(player);
                 player.setRotation(location.getYaw(), 0);
                 ConfigUtils.t("function.sit.tips", player).thenAccept(t ->
-                    Lib.Scheduler.runAtEntity(Ari.instance, player, p -> player.sendActionBar(t), null));
+                    Ari.SCHEDULER.runAtEntity(Ari.instance, player, p -> player.sendActionBar(t), null));
             }
         );
 

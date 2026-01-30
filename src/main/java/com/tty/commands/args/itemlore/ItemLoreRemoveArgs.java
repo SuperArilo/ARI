@@ -3,11 +3,10 @@ package com.tty.commands.args.itemlore;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.tty.Ari;
-import com.tty.lib.annotations.ArgumentCommand;
-import com.tty.lib.annotations.CommandMeta;
-import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
-import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.tool.ComponentUtils;
+import com.tty.api.annotations.ArgumentCommand;
+import com.tty.api.annotations.CommandMeta;
+import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
+import com.tty.api.command.SuperHandsomeCommand;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -45,7 +44,7 @@ public class ItemLoreRemoveArgs extends BaseRequiredArgumentLiteralCommand<Integ
         String content = args[2];
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         if (mainHand.isEmpty()) {
-            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
+            player.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
             return;
         }
         ItemMeta itemMeta = mainHand.getItemMeta();
@@ -60,7 +59,7 @@ public class ItemLoreRemoveArgs extends BaseRequiredArgumentLiteralCommand<Integ
             }
             lore.remove(index);
         } catch (Exception e) {
-            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.input-error")));
+            player.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-edit.input-error")));
         }
         itemMeta.lore(lore);
         mainHand.setItemMeta(itemMeta);

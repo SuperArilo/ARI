@@ -1,6 +1,6 @@
 package com.tty.enumType;
 
-import com.tty.lib.enum_type.SQLType;
+import com.tty.api.enumType.SQLType;
 
 public enum SqlTable {
 

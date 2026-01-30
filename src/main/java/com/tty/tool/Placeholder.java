@@ -11,13 +11,12 @@ import com.tty.entity.ServerPlayer;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.*;
-import com.tty.lib.dto.state.State;
-import com.tty.lib.enum_type.Operator;
+import com.tty.api.state.State;
+import com.tty.api.enumType.Operator;
 import com.tty.lib.services.impl.PlaceholderRegistryImpl;
 import com.tty.lib.services.placeholder.*;
-import com.tty.lib.tool.ComponentUtils;
-import com.tty.lib.tool.FormatUtils;
-import com.tty.lib.tool.TimeFormatUtils;
+import com.tty.api.FormatUtils;
+import com.tty.api.TimeFormatUtils;
 import com.tty.listener.player.PlayerSkipNight;
 import com.tty.states.teleport.PreTeleportStateService;
 import com.tty.states.teleport.RandomTpStateService;
@@ -163,7 +162,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                             } else {
                                 operator = Bukkit.getOfflinePlayer(UUID.fromString(whitelistInstance.getOperator())).getName();
                             }
-                            return ComponentUtils.text(operator == null ? "null":operator);
+                            return Ari.COMPONENT_SERVICE.text(operator == null ? "null":operator);
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
@@ -193,11 +192,11 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 LangBanPlayerType.BAN_REASON,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
                         .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
-                        .thenApply(i -> ComponentUtils.text(i.getReason())))
+                        .thenApply(i -> Ari.COMPONENT_SERVICE.text(i.getReason())))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangShowItem.SHOW_ITEM,
-                PlaceholderResolve.ofPlayer(player -> CompletableFuture.completedFuture(ComponentUtils.setHoverItemText(player.getInventory().getItemInMainHand())))
+                PlaceholderResolve.ofPlayer(player -> CompletableFuture.completedFuture(Ari.COMPONENT_SERVICE.setHoverItemText(player.getInventory().getItemInMainHand())))
         ));
     }
 

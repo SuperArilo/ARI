@@ -2,18 +2,18 @@ package com.tty.gui.warp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
-import com.tty.lib.dto.PageResult;
-import com.tty.lib.entity.gui.BaseDataMenu;
-import com.tty.lib.entity.gui.FunctionItems;
-import com.tty.lib.entity.gui.Mask;
+import com.tty.api.FormatUtils;
+import com.tty.api.dto.PageResult;
+import com.tty.api.dto.gui.BaseDataMenu;
+import com.tty.api.dto.gui.FunctionItems;
+import com.tty.api.dto.gui.Mask;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
-import com.tty.lib.enum_type.GuiType;
-import com.tty.lib.gui.BaseDataItemConfigInventory;
-import com.tty.lib.Log;
-import com.tty.lib.enum_type.FunctionType;
-import com.tty.lib.enum_type.IconKeyType;
-import com.tty.lib.tool.*;
+import com.tty.api.enumType.GuiType;
+import com.tty.api.gui.BaseDataItemConfigInventory;
+import com.tty.api.Log;
+import com.tty.api.enumType.FunctionType;
+import com.tty.api.enumType.IconKeyType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.*;
@@ -33,7 +33,8 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
         super(Ari.instance,
                 FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.WARP_LIST_GUI.name()).saveToString(), BaseDataMenu.class),
                 player,
-                GuiType.WARP_LIST);
+                GuiType.WARP_LIST,
+                Ari.COMPONENT_SERVICE);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
             boolean hasPermission = serverWarp.getPermission() == null ||
                     serverWarp.getPermission().isEmpty() ||
-                    PermissionUtils.hasPermission(this.player, serverWarp.getPermission()) ||
+                    Ari.PERMISSION_SERVICE.hasPermission(this.player, serverWarp.getPermission()) ||
                     UUID.fromString(serverWarp.getCreateBy()).equals(this.player.getUniqueId());
 
             Map<String, Component> types = new HashMap<>();
@@ -82,19 +83,19 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             types.put(IconKeyType.Y.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getY())));
             types.put(IconKeyType.Z.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
             types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
-            types.put(IconKeyType.PLAYER_NAME.getKey(), ComponentUtils.text(playName));
+            types.put(IconKeyType.PLAYER_NAME.getKey(), Ari.COMPONENT_SERVICE.text(playName));
             Double cost = serverWarp.getCost();
-            types.put(IconKeyType.COST.getKey(), ComponentUtils.text(cost == null || cost == 0 || EconomyUtils.isNull() ? baseFree : cost + EconomyUtils.getNamePlural()));
-            types.put(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
-            types.put(IconKeyType.PERMISSION.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(hasPermission ? "base.yes_re":"base.no_re")));
+            types.put(IconKeyType.COST.getKey(), Ari.COMPONENT_SERVICE.text(cost == null || cost == 0 || Ari.ECONOMY_SERVICE.isNull() ? baseFree : cost + Ari.ECONOMY_SERVICE.getNamePlural()));
+            types.put(IconKeyType.TOP_SLOT.getKey(), Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
+            types.put(IconKeyType.PERMISSION.getKey(), Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue(hasPermission ? "base.yes_re":"base.no_re")));
 
 
             for (String s : rawLore) {
-                textComponents.add(ComponentUtils.text(s, types));
+                textComponents.add(Ari.COMPONENT_SERVICE.text(s, types));
             }
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(ComponentUtils.text(serverWarp.getWarpName(), this.player));
+            itemMeta.displayName(Ari.COMPONENT_SERVICE.text(serverWarp.getWarpName(), this.player));
             itemMeta.lore(textComponents);
 
             this.setNBT(itemMeta, "warp_id", PersistentDataType.STRING, serverWarp.getWarpId());

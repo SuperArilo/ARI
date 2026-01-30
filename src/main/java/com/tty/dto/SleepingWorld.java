@@ -2,10 +2,8 @@ package com.tty.dto;
 
 import com.tty.Ari;
 import com.tty.function.TimeManager;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.enum_type.TimePeriod;
-import com.tty.lib.tool.ComponentUtils;
+import com.tty.api.Log;
+import com.tty.api.enumType.TimePeriod;
 import lombok.Getter;
 import org.bukkit.GameRule;
 import org.bukkit.World;
@@ -40,8 +38,8 @@ public class SleepingWorld {
                 for (Player player : this.world.getPlayers()) {
                     if (this.playerCondition(player.getWorld()) || !player.isSleeping() || !player.isDeeplySleeping()) continue;
                     Ari.PLACEHOLDER.render("server.time.skip-to-night", player).thenAccept(result ->
-                            Lib.Scheduler.runAtEntity(Ari.instance, player, b ->
-                                    player.showTitle(ComponentUtils.setPlayerTitle(
+                            Ari.SCHEDULER.runAtEntity(Ari.instance, player, b ->
+                                    player.showTitle(Ari.COMPONENT_SERVICE.setPlayerTitle(
                                         timeManager.tickToTime(i),
                                         result,
                                         0L,
@@ -57,7 +55,7 @@ public class SleepingWorld {
         for (Player player : this.world.getPlayers()) {
             if (!player.isSleeping()) {
                 Ari.PLACEHOLDER.render("server.time.report-status", player).thenAccept(result ->
-                        Lib.Scheduler.runAtEntity(Ari.instance, player, t ->
+                        Ari.SCHEDULER.runAtEntity(Ari.instance, player, t ->
                                 player.sendActionBar(result), null));
             }
         }
@@ -83,7 +81,7 @@ public class SleepingWorld {
                     (worldTime > 0 && worldTime < TimePeriod.SUNRISE.getEnd())) ||
                     (world.isThundering() || world.hasStorm()) &&
                             !this.skipNightOver) {
-                Lib.Scheduler.run(Ari.instance, i-> {
+                Ari.SCHEDULER.run(Ari.instance, i-> {
                     world.setStorm(false);
                     world.setThundering(false);
                 });

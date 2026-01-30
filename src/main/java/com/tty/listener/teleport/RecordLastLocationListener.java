@@ -2,9 +2,7 @@ package com.tty.listener.teleport;
 
 import com.tty.Ari;
 import com.tty.dto.event.CustomPlayerRespawnEvent;
-import com.tty.lib.Lib;
-import com.tty.lib.ServerPlatform;
-import com.tty.lib.tool.ComponentUtils;
+import com.tty.api.ServerPlatform;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -43,7 +41,7 @@ public class RecordLastLocationListener implements Listener {
         Player player = event.getPlayer();
         Location respawnLocation = event.getRespawnLocation();
         player.setRespawnLocation(respawnLocation);
-        Lib.Scheduler.runAtRegion(
+        Ari.SCHEDULER.runAtRegion(
             Ari.instance,
             respawnLocation,
             i -> player.teleportAsync(respawnLocation).thenAccept(t -> this.setPlayerLastLocation(event))
@@ -67,8 +65,7 @@ public class RecordLastLocationListener implements Listener {
     private void setPlayerLastLocation(PlayerEvent event) {
         Player player = event.getPlayer();
         Ari.PLACEHOLDER.render("teleport.tips-back", player).thenAccept(i ->
-                Lib.Scheduler.runAtEntity(Ari.instance, player, t ->
-                        player.sendMessage(
-                                ComponentUtils.setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/back")), null));
+                Ari.SCHEDULER.runAtEntity(Ari.instance, player, t ->
+                        player.sendMessage(Ari.COMPONENT_SERVICE.setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/back")), null));
     }
 }

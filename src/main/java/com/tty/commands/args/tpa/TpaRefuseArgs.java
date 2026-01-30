@@ -2,11 +2,10 @@ package com.tty.commands.args.tpa;
 
 import com.tty.Ari;
 import com.tty.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
-import com.tty.lib.Lib;
-import com.tty.lib.annotations.ArgumentCommand;
-import com.tty.lib.annotations.CommandMeta;
-import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.tool.PublicFunctionUtils;
+import com.tty.api.annotations.ArgumentCommand;
+import com.tty.api.annotations.CommandMeta;
+import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.api.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -42,7 +41,7 @@ public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
             ConfigUtils.t("function.tpa.refuse-success", player).thenAccept(sender::sendMessage);
             assert target != null;
             Ari.PLACEHOLDER.render("function.tpa.refused", target).thenAccept(i ->
-                    Lib.Scheduler.runAtEntity(Ari.instance, target, task -> target.sendMessage(i), null));
+                    Ari.SCHEDULER.runAtEntity(Ari.instance, target, task -> target.sendMessage(i), null));
         });
     }
 }

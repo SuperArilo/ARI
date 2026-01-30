@@ -10,12 +10,9 @@ import com.tty.entity.BanPlayer;
 import com.tty.entity.ServerPlayer;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
-import com.tty.lib.Lib;
-import com.tty.lib.services.EntityRepository;
-import com.tty.lib.tool.Teleporting;
-import com.tty.lib.Log;
-import com.tty.lib.enum_type.Operator;
-import com.tty.lib.tool.ComponentUtils;
+import com.tty.api.repository.EntityRepository;
+import com.tty.api.Log;
+import com.tty.api.enumType.Operator;
 import com.tty.states.PlayerSaveStateService;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
@@ -72,7 +69,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         }
 
         if (OFFLINE_ON_EDIT_ENDER_CHEST_LIST.contains(event.getUniqueId())) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
         }
     }
 
@@ -88,7 +85,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             instance = whitelistInstanceEntityRepository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Log.error(e, "check whitelist on uuid {} error.", uuid.toString());
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(e.getMessage()));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Ari.COMPONENT_SERVICE.text(e.getMessage()));
             return;
         }
         if (instance == null) {
@@ -154,7 +151,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             .whenComplete((i, ex) -> {
                 if (ex != null) {
                     Log.error("player {} login in server error.", player.getName());
-                    player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
+                    player.kick(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                     return;
                 }
                 //添加玩家登录的状态
@@ -166,37 +163,32 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                             Ari.C_INSTANCE.getValue("main.enable", FilePath.SPAWN_CONFIG, Boolean.class, false)) {
                         SpawnLocation value = Ari.C_INSTANCE.getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
                         if (value != null) {
-                            Teleporting.create(
-                                    Ari.instance,
-                                    player,
-                                new Location(
+                            Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), new Location(
                                     Bukkit.getWorld(value.getWorldName()),
                                     value.getX(),
                                     value.getY(),
                                     value.getZ(),
                                     value.getYaw(),
                                     value.getPitch()
-                                )
-                            ).teleport();
+                            ));
                         } else {
                             Log.info("server not set spawn location.");
                         }
                     }
                     if(first) {
-                        ConfigUtils.t("server.message.on-first-login", player).thenAccept(t -> Lib.Scheduler.run(Ari.instance, task -> Bukkit.broadcast(t)));
+                        ConfigUtils.t("server.message.on-first-login", player).thenAccept(t -> Ari.SCHEDULER.run(Ari.instance, task -> Bukkit.broadcast(t)));
                         return;
                     }
                 }
                 if(login) {
-                    ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Lib.Scheduler.run(Ari.instance, task -> Bukkit.broadcast(t)));
+                    ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.SCHEDULER.run(Ari.instance, task -> Bukkit.broadcast(t)));
                 }
 
                 Location spawnLocation = player.getLocation();
                 if (spawnLocation.getBlock().isSolid()) {
                     Log.debug("player {} inside block, teleport safe location.", player.getName());
                     Location safeLocation = this.findSafeLocationAbove(spawnLocation);
-                    Teleporting.create(Ari.instance, player, safeLocation).teleport().after(() ->
-                            ConfigUtils.t("teleport.not-safe-location", player).thenAccept(player::sendMessage));
+                    Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> ConfigUtils.t("teleport.not-safe-location", player).thenAccept(player::sendMessage));
                 }
             });
     }
@@ -206,7 +198,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         Player player = event.getPlayer();
         if(Ari.instance.getConfig().getBoolean("server.message.on-leave")) {
             event.quitMessage(null);
-            Ari.PLACEHOLDER.render("server.message.on-leave", player).thenAccept(i -> Lib.Scheduler.run(Ari.instance, t -> Bukkit.broadcast(i)));
+            Ari.PLACEHOLDER.render("server.message.on-leave", player).thenAccept(i -> Ari.SCHEDULER.run(Ari.instance, t -> Bukkit.broadcast(i)));
         }
         List<PlayerSaveState> states = Ari.STATE_MACHINE_MANAGER
                 .get(PlayerSaveStateService.class)

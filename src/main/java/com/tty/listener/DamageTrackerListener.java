@@ -1,11 +1,10 @@
 package com.tty.listener;
 
 import com.tty.Ari;
-import com.tty.dto.event.CustomPluginReloadEvent;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.task.CancellableTask;
-import com.tty.lib.tool.PublicFunctionUtils;
+import com.tty.api.Log;
+import com.tty.api.event.CustomPluginReloadEvent;
+import com.tty.api.task.CancellableTask;
+import com.tty.api.PublicFunctionUtils;
 import com.tty.tool.LastDamageTracker;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
@@ -88,7 +87,7 @@ public class DamageTrackerListener implements Listener {
             this.cleanTask.cancel();
             this.cleanTask = null;
         }
-        return Lib.Scheduler.runAtFixedRate(Ari.instance, i -> {
+        return Ari.SCHEDULER.runAtFixedRate(Ari.instance, i -> {
             long now = System.currentTimeMillis();
             Set<Entity> victims = DAMAGE_TRACKER.getVictimsSnapshot();
             for (Entity e : victims) {
@@ -96,7 +95,7 @@ public class DamageTrackerListener implements Listener {
                 long lastTs = DAMAGE_TRACKER.getLastTimestamp(damageable);
                 if (lastTs == 0L || (now - lastTs) > this.clear_last_attack_record * 1000L) {
                     DAMAGE_TRACKER.clearRecords(damageable);
-                    Lib.Scheduler.runAtEntity(
+                    Ari.SCHEDULER.runAtEntity(
                             Ari.instance,
                             e,
                             t -> Log.debug("damage_tracker: remove victim entity {} record.", e.getName()),

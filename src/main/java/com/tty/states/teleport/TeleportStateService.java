@@ -3,16 +3,13 @@ package com.tty.states.teleport;
 import com.tty.Ari;
 import com.tty.dto.state.teleport.PlayerToPlayerState;
 import com.tty.enumType.TeleportType;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.dto.state.State;
+import com.tty.api.Log;
+import com.tty.api.state.State;
 import com.tty.dto.state.CooldownState;
 import com.tty.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
-import com.tty.lib.tool.Teleporting;
 import com.tty.lib.services.StateService;
-import com.tty.lib.tool.ComponentUtils;
 import com.tty.states.CoolDownStateService;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.Location;
@@ -57,8 +54,8 @@ public class TeleportStateService extends StateService<State> {
 
         if (state.isOver() || state.isDone()) return;
         Ari.PLACEHOLDER.render("teleport.title.sub-title", player).thenAccept(result ->
-                Lib.Scheduler.runAtEntity(Ari.instance, player, task -> {
-                    player.showTitle(ComponentUtils.setPlayerTitle(
+                Ari.SCHEDULER.runAtEntity(Ari.instance, player, task -> {
+                    player.showTitle(Ari.COMPONENT_SERVICE.setPlayerTitle(
                             Ari.C_INSTANCE.getValue("teleport.title.main", FilePath.LANG),
                             result,
                             200,
@@ -153,7 +150,7 @@ public class TeleportStateService extends StateService<State> {
                 return;
             }
         }
-        Teleporting.create(Ari.instance, owner, targetLocation).teleport().after(afterAction);
+        Ari.TELEPORTING_SERVICE.teleport(owner, owner.getLocation(), targetLocation).after(afterAction);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.tty.enumType;
 
-import com.tty.lib.enum_type.FilePathEnum;
+import com.tty.api.enumType.FilePathEnum;
 import lombok.Getter;
 
 public enum FilePath implements FilePathEnum {

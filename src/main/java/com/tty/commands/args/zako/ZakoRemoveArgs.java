@@ -5,15 +5,13 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.WhitelistInstance;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.annotations.ArgumentCommand;
-import com.tty.lib.annotations.CommandMeta;
-import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
-import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.services.EntityRepository;
-import com.tty.lib.tool.ComponentUtils;
-import com.tty.lib.tool.PublicFunctionUtils;
+import com.tty.api.Log;
+import com.tty.api.annotations.ArgumentCommand;
+import com.tty.api.annotations.CommandMeta;
+import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
+import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.api.repository.EntityRepository;
+import com.tty.api.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -58,9 +56,9 @@ public class ZakoRemoveArgs extends BaseRequiredArgumentLiteralCommand<String> {
         }).thenAccept(status -> {
             Player player = Bukkit.getPlayer(uuid);
             if(player != null) {
-                Lib.Scheduler.runAtEntity(Ari.instance,
+                Ari.SCHEDULER.runAtEntity(Ari.instance,
                         player, i->
-                                player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
+                                player.kick(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
             }
             String key = "function.zako.whitelist-remove-" + (status ? "success":"failure");
             if (sender instanceof Player p) {
@@ -70,7 +68,7 @@ public class ZakoRemoveArgs extends BaseRequiredArgumentLiteralCommand<String> {
             }
         }).exceptionally(i -> {
             Log.error(i);
-            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
+            sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             return null;
         });
     }

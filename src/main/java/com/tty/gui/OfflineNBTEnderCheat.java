@@ -1,9 +1,9 @@
 package com.tty.gui;
 
 import com.tty.Ari;
-import com.tty.lib.Log;
-import com.tty.lib.enum_type.GuiType;
-import com.tty.lib.gui.BaseInventory;
+import com.tty.api.Log;
+import com.tty.api.enumType.GuiType;
+import com.tty.api.gui.BaseInventory;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -26,11 +26,6 @@ public class OfflineNBTEnderCheat extends BaseInventory {
         super(Ari.instance, player, GuiType.OFFLINE_ENDERCHEST);
         this.data = data;
         this.target = target;
-    }
-
-    @Override
-    protected void beforeOpen() {
-
     }
 
     @Override

@@ -3,8 +3,6 @@ package com.tty;
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
 import io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver;
-import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.repository.RemoteRepository;
 
 @SuppressWarnings("ALL")
@@ -14,12 +12,6 @@ public class Loader implements PluginLoader {
     public void classloader(PluginClasspathBuilder pluginClasspathBuilder) {
 
         MavenLibraryResolver resolver = new MavenLibraryResolver();
-        resolver.addDependency(new Dependency(new DefaultArtifact("com.zaxxer", "HikariCP", "jar", "5.1.0"), "provided"));
-        resolver.addDependency(new Dependency(new DefaultArtifact("org.sql2o", "sql2o", "jar", "1.9.1"), "provided"));
-        resolver.addDependency(new Dependency(new DefaultArtifact("com.mysql", "mysql-connector-j", "jar", "9.5.0"), "provided"));
-        resolver.addDependency(new Dependency(new DefaultArtifact("com.baomidou", "mybatis-plus-core", "jar", "3.5.15"), "provided"));
-        resolver.addDependency(new Dependency(new DefaultArtifact("com.baomidou", "mybatis-plus-extension", "jar", "3.5.15"), "provided"));
-        resolver.addDependency(new Dependency(new DefaultArtifact("com.baomidou", "mybatis-plus-jsqlparser", "jar", "3.5.15"), "provided"));
 
         resolver.addRepository(new RemoteRepository.Builder("paper", "default", "https://repo.papermc.io/repository/maven-public/").build());
         resolver.addRepository(new RemoteRepository.Builder("central", "default", "https://maven-central.storage-download.googleapis.com/maven2").build());

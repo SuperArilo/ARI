@@ -1,12 +1,10 @@
 package com.tty.commands;
 
 import com.tty.Ari;
-import com.tty.lib.Lib;
-import com.tty.lib.annotations.CommandMeta;
-import com.tty.lib.annotations.LiteralCommand;
-import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
-import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.tool.ComponentUtils;
+import com.tty.api.annotations.CommandMeta;
+import com.tty.api.annotations.LiteralCommand;
+import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
+import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -37,12 +35,12 @@ public class maintenance extends BaseLiteralArgumentLiteralCommand {
             }
             if (MAINTENANCE_MODE) {
                 ConfigUtils.t("server.maintenance.to-player", player).thenAccept(player::sendMessage);
-                Lib.Scheduler.runAtEntityLater(
+                Ari.SCHEDULER.runAtEntityLater(
                         Ari.instance,
                         player,
                         i -> {
                             if (!player.isOnline()) return;
-                            player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
+                            player.kick(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
                         },
                         () -> {},
                         this.getMaintenanceKickDelay() * 20L);

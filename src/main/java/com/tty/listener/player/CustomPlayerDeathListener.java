@@ -2,8 +2,7 @@ package com.tty.listener.player;
 
 import com.tty.Ari;
 import com.tty.enumType.lang.LangPlayerDeath;
-import com.tty.lib.Log;
-import com.tty.lib.tool.ComponentUtils;
+import com.tty.api.Log;
 import com.tty.tool.PlayerDeathInfoCollector;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -31,15 +30,15 @@ public class CustomPlayerDeathListener implements Listener {
         String message = getDeathMessage(info, event);
         Component killerInfo = info.killer != null ?
                 (info.killer.equals(info.victim) ?
-                        ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.self")):ComponentUtils.setEntityHoverText(info.killer))
+                        Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.self")):Ari.COMPONENT_SERVICE.setEntityHoverText(info.killer))
                 :Component.empty();
         if (message != null) {
-            event.deathMessage(ComponentUtils.text(
+            event.deathMessage(Ari.COMPONENT_SERVICE.text(
                     message,
                     Map.of(
-                            LangPlayerDeath.VICTIM_UNRESOLVED.getType(), ComponentUtils.setEntityHoverText(info.victim),
+                            LangPlayerDeath.VICTIM_UNRESOLVED.getType(), Ari.COMPONENT_SERVICE.setEntityHoverText(info.victim),
                             LangPlayerDeath.KILLER_UNRESOLVED.getType(), killerInfo,
-                            LangPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), ComponentUtils.setHoverItemText(info.weapon)
+                            LangPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), Ari.COMPONENT_SERVICE.setHoverItemText(info.weapon)
                     )
             ));
         }

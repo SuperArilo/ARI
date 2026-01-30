@@ -1,7 +1,7 @@
 package com.tty.dto.state.teleport;
 
 import com.tty.dto.state.CallbackState;
-import com.tty.lib.dto.state.StateCondition;
+import com.tty.api.state.StateCondition;
 import com.tty.enumType.TeleportType;
 import lombok.Getter;
 import org.bukkit.Location;

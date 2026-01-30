@@ -7,16 +7,14 @@ import com.tty.Ari;
 import com.tty.entity.ServerWarp;
 import com.tty.entity.cache.ServerWarpRepository;
 import com.tty.enumType.FilePath;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.annotations.ArgumentCommand;
-import com.tty.lib.annotations.CommandMeta;
-import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
-import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.services.EntityRepository;
-import com.tty.lib.tool.FormatUtils;
-import com.tty.lib.tool.PermissionUtils;
-import com.tty.lib.tool.PublicFunctionUtils;
+import com.tty.api.Log;
+import com.tty.api.annotations.ArgumentCommand;
+import com.tty.api.annotations.CommandMeta;
+import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
+import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.api.repository.EntityRepository;
+import com.tty.api.FormatUtils;
+import com.tty.api.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
@@ -63,8 +61,8 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
         repository.queryCount(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getCreateBy, player.getUniqueId().toString()))
                 .thenCompose(result -> {
-                    int max = PermissionUtils.getMaxCountInPermission(player, "warp");
-                    if (result.getTotal() + 1 > max) {
+                    int max = Ari.PERMISSION_SERVICE.getMaxCountInPermission(player, "warp");
+                    if (result.total() + 1 > max) {
                         return ConfigUtils.t("function.warp.exceeds", player)
                                 .thenAccept(player::sendMessage)
                                 .thenApply(v -> false);
@@ -86,7 +84,7 @@ public class SetWarpArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
                                 CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
 
-                                Lib.Scheduler.runAtRegion(
+                                Ari.SCHEDULER.runAtRegion(
                                         Ari.instance,
                                         player.getLocation(),
                                         task -> {

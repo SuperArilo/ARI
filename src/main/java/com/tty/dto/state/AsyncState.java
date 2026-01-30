@@ -1,6 +1,6 @@
 package com.tty.dto.state;
 
-import com.tty.lib.dto.state.State;
+import com.tty.api.state.State;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Entity;

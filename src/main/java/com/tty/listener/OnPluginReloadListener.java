@@ -1,9 +1,8 @@
 package com.tty.listener;
 
 import com.tty.Ari;
-import com.tty.dto.event.CustomPluginReloadEvent;
-import com.tty.lib.Log;
-import com.tty.lib.tool.ComponentUtils;
+import com.tty.api.Log;
+import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.states.PlayerSaveStateService;
 import com.tty.states.teleport.RandomTpStateService;
 import com.tty.lib.services.StateService;
@@ -26,7 +25,6 @@ public class OnPluginReloadListener implements Listener {
 
         //重新添加玩家保存state
         PlayerSaveStateService.addPlayerState();
-        event.getSender().sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.reload.success")));
     }
 
 }

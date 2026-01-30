@@ -7,16 +7,14 @@ import com.tty.Ari;
 import com.tty.entity.ServerHome;
 import com.tty.entity.cache.PlayerHomeRepository;
 import com.tty.enumType.FilePath;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.annotations.ArgumentCommand;
-import com.tty.lib.annotations.CommandMeta;
-import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
-import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.services.EntityRepository;
-import com.tty.lib.tool.FormatUtils;
-import com.tty.lib.tool.PermissionUtils;
-import com.tty.lib.tool.PublicFunctionUtils;
+import com.tty.api.Log;
+import com.tty.api.annotations.ArgumentCommand;
+import com.tty.api.annotations.CommandMeta;
+import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
+import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.api.repository.EntityRepository;
+import com.tty.api.FormatUtils;
+import com.tty.api.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
@@ -62,9 +60,9 @@ public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
         repository.queryCount(new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, player.getUniqueId().toString()))
                 .thenCompose(result -> {
-                    List<ServerHome> list = result.getRecords();
+                    List<ServerHome> list = result.records();
 
-                    if (list.size() + 1 > PermissionUtils.getMaxCountInPermission(player, "home")) {
+                    if (list.size() + 1 > Ari.PERMISSION_SERVICE.getMaxCountInPermission(player, "home")) {
                         return ConfigUtils.t("function.home.exceeds", player)
                                 .thenAccept(sender::sendMessage)
                                 .thenApply(v -> null);
@@ -80,7 +78,7 @@ public class SetHomeArgs extends BaseRequiredArgumentLiteralCommand<String> {
 
                     CompletableFuture<ServerHome> buildHomeFuture = new CompletableFuture<>();
 
-                    Lib.Scheduler.runAtRegion(Ari.instance, player.getLocation(), task -> {
+                    Ari.SCHEDULER.runAtRegion(Ari.instance, player.getLocation(), task -> {
                         ServerHome serverHome = new ServerHome();
                         serverHome.setHomeId(homeId);
                         serverHome.setHomeName(homeId);

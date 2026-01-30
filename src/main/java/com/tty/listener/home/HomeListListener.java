@@ -5,15 +5,14 @@ import com.tty.Ari;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
-import com.tty.lib.enum_type.GuiType;
+import com.tty.api.enumType.GuiType;
 import com.tty.gui.home.HomeEditor;
 import com.tty.gui.home.HomeList;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.enum_type.FunctionType;
+import com.tty.api.Log;
+import com.tty.api.enumType.FunctionType;
 import com.tty.enumType.TeleportType;
-import com.tty.lib.tool.FormatUtils;
-import com.tty.lib.listener.BaseGuiListener;
+import com.tty.api.FormatUtils;
+import com.tty.api.listener.BaseGuiListener;
 import com.tty.states.teleport.TeleportStateService;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.NamespacedKey;
@@ -42,7 +41,7 @@ public class HomeListListener extends BaseGuiListener {
         assert currentItem != null;
 
         assert homeList != null;
-        FunctionType type = FormatUtils.ItemNBT_TypeCheck(currentItem.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Ari.instance, "type"), PersistentDataType.STRING));
+        FunctionType type = this.ItemNBT_TypeCheck(currentItem.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Ari.instance, "type"), PersistentDataType.STRING));
         if(type == null) return;
         Player player = homeList.player;
 
@@ -67,7 +66,7 @@ public class HomeListListener extends BaseGuiListener {
                                     FormatUtils.parseLocation(home.getLocation()),
                                     TeleportType.HOME));
                         } else if (event.isRightClick()) {
-                            Lib.Scheduler.run(Ari.instance, p -> {
+                            Ari.SCHEDULER.run(Ari.instance, p -> {
                                 inventory.close();
                                 new HomeEditor(home, player).open();
                             });
@@ -77,7 +76,7 @@ public class HomeListListener extends BaseGuiListener {
                        if (ex != null) {
                            Log.error(ex, "error on get player homes");
                        }
-                        Lib.Scheduler.run(Ari.instance, o -> inventory.close());
+                        Ari.SCHEDULER.run(Ari.instance, o -> inventory.close());
                     });
             }
             case PREV -> homeList.prev();

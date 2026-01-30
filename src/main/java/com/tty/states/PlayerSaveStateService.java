@@ -5,9 +5,8 @@ import com.tty.Ari;
 import com.tty.dto.event.OnZakoSavedEvent;
 import com.tty.dto.state.player.PlayerSaveState;
 import com.tty.entity.ServerPlayer;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.services.EntityRepository;
+import com.tty.api.Log;
+import com.tty.api.repository.EntityRepository;
 import com.tty.lib.services.StateService;
 
 import org.bukkit.Bukkit;
@@ -95,7 +94,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
                     Log.error(ex, "Error saving player data for {}", player.getName());
                 }
                 if (this.repository.isAsync() && player.isOnline()) {
-                    Lib.Scheduler.run(Ari.instance, i -> Bukkit.getPluginManager().callEvent(new OnZakoSavedEvent(player)));
+                    Ari.SCHEDULER.run(Ari.instance, i -> Bukkit.getPluginManager().callEvent(new OnZakoSavedEvent(player)));
                 } else {
                     Log.debug("skip player {} save event.", player.getName());
                 }

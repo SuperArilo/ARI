@@ -6,12 +6,10 @@ authors:
   - Arilo007
 folia-supported: true
 loader: com.tty.Loader
+has-open-classloader: true
 dependencies:
   server:
     arilib:
-      load: 'BEFORE'
-      required: true
-    Vault:
       required: true
     PlaceholderAPI:
       required: false

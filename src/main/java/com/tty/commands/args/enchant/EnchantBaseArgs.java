@@ -2,7 +2,7 @@ package com.tty.commands.args.enchant;
 
 import com.tty.Ari;
 import com.tty.enumType.lang.LangEnchant;
-import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
+import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
 import com.tty.tool.ConfigUtils;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;

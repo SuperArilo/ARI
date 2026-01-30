@@ -34,3 +34,7 @@ dataItems:
     - "&2世界: &6<world_name>"
     - "&7左击: &6传送"
     - "&7右击: &6编辑"
+pageDisable:
+  name: ''
+  type: PAGE_DISABLE
+  material: BARRIER

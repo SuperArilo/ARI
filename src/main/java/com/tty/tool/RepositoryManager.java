@@ -2,8 +2,8 @@ package com.tty.tool;
 import com.tty.entity.*;
 import com.tty.entity.cache.*;
 import com.tty.function.*;
-import com.tty.lib.dto.RepositoryException;
-import com.tty.lib.services.EntityRepository;
+import com.tty.api.exception.RepositoryException;
+import com.tty.api.repository.EntityRepository;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

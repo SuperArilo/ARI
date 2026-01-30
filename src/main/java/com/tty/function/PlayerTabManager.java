@@ -2,14 +2,11 @@ package com.tty.function;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.dto.event.CustomPluginReloadEvent;
+import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.dto.tab.TabGroup;
 import com.tty.dto.tab.TabGroupLine;
 import com.tty.enumType.FilePath;
-import com.tty.lib.Lib;
-import com.tty.lib.task.CancellableTask;
-import com.tty.lib.tool.ComponentUtils;
-import com.tty.lib.tool.PermissionUtils;
+import com.tty.api.task.CancellableTask;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import org.bukkit.Bukkit;
@@ -46,7 +43,7 @@ public class PlayerTabManager implements Listener {
         this.stop();
         if (!this.enable) return;
 
-        this.task = Lib.Scheduler.runAtFixedRate(
+        this.task = Ari.SCHEDULER.runAtFixedRate(
                 Ari.instance,
                 i -> this.updateTab(Bukkit.getOnlinePlayers()),
                 1L,
@@ -86,7 +83,7 @@ public class PlayerTabManager implements Listener {
                 buildComponent(this.headers, player),
                 buildComponent(this.footers, player)
         );
-        player.playerListName(ComponentUtils.text(group.line().prefix() + player.getName() + group.line().suffix()));
+        player.playerListName(Ari.COMPONENT_SERVICE.text(group.line().prefix() + player.getName() + group.line().suffix()));
         player.setPlayerListOrder(order);
     }
 
@@ -107,7 +104,7 @@ public class PlayerTabManager implements Listener {
 
     private String resolveGroup(Player player) {
         for (String group : this.groupOrder) {
-            if (PermissionUtils.getPlayerIsInGroup(player, group)) {
+            if (Ari.PERMISSION_SERVICE.getPlayerIsInGroup(player, group)) {
                 return group;
             }
         }
@@ -116,7 +113,7 @@ public class PlayerTabManager implements Listener {
 
     private Component buildComponent(List<String> lines, Player player) {
         if (lines.isEmpty()) return Component.empty();
-        return Component.join(NEW_LINE, lines.stream().map(line -> ComponentUtils.text(line, player)).toList());
+        return Component.join(NEW_LINE, lines.stream().map(line -> Ari.COMPONENT_SERVICE.text(line, player)).toList());
     }
 
     private void reloadConfig() {

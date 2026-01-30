@@ -5,9 +5,8 @@ import com.tty.commands.infinitytotem;
 import com.tty.dto.SpawnLocation;
 import com.tty.dto.event.CustomPlayerRespawnEvent;
 import com.tty.enumType.FilePath;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.ServerPlatform;
+import com.tty.api.Log;
+import com.tty.api.ServerPlatform;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -27,7 +26,7 @@ public class PlayerListener implements Listener {
         if (event.getInventory().getType() != InventoryType.CRAFTING || !player.isDead() || !player.isConnected() || player.getHealth() > 0) return;
         // do stuff
         if (!ServerPlatform.isFolia()) return;
-        Lib.Scheduler.runAtEntity(Ari.instance, player,i -> {
+        Ari.SCHEDULER.runAtEntity(Ari.instance, player,i -> {
             Location respawnLocation = ((Player) event.getPlayer()).getRespawnLocation();
             if (respawnLocation == null) {
                 respawnLocation = getRespawnLocation(player.getWorld());

@@ -1,9 +1,9 @@
 package com.tty.states;
 
-import com.tty.lib.Log;
+import com.tty.Ari;
+import com.tty.api.Log;
 import com.tty.dto.state.CooldownState;
 import com.tty.lib.services.StateService;
-import com.tty.lib.tool.PermissionUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,7 +23,7 @@ public class CoolDownStateService extends StateService<CooldownState> {
     protected void loopExecution(CooldownState state) {
 
         Entity owner = state.getOwner();
-        if (PermissionUtils.hasPermission(owner, "ari.cooldown." + state.getType().getKey())) {
+        if (Ari.PERMISSION_SERVICE.hasPermission(owner, "ari.cooldown." + state.getType().getKey())) {
             state.setOver(true);
             return;
         }

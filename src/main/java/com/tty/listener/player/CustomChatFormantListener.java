@@ -2,11 +2,9 @@ package com.tty.listener.player;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.dto.event.CustomPluginReloadEvent;
+import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.LangPlayerChat;
-import com.tty.lib.tool.ComponentUtils;
-import com.tty.lib.tool.PermissionUtils;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -30,7 +28,7 @@ public class CustomChatFormantListener implements Listener {
     public void playerSendMessage(AsyncChatEvent event) {
         if (this.isNotEnable()) return;
         event.renderer((source, sourceDisplayName, msg, viewer) ->
-                ComponentUtils.text(
+                Ari.COMPONENT_SERVICE.text(
                         this.getPattern(source),
                         Map.of(LangPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), LangPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
     }
@@ -48,7 +46,7 @@ public class CustomChatFormantListener implements Listener {
         AtomicReference<String> s = new AtomicReference<>("");
         this.groupsPattern.forEach((k, v) -> {
             if (!s.get().isEmpty()) return;
-            if (PermissionUtils.getPlayerIsInGroup(player, k)) {
+            if (Ari.PERMISSION_SERVICE.getPlayerIsInGroup(player, k)) {
                 s.set(v);
             }
         });

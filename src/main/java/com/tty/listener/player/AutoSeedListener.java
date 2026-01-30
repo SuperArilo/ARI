@@ -1,8 +1,7 @@
 package com.tty.listener.player;
 
 import com.tty.Ari;
-import com.tty.lib.Lib;
-import com.tty.lib.tool.PublicFunctionUtils;
+import com.tty.api.PublicFunctionUtils;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -52,7 +51,7 @@ public class AutoSeedListener implements Listener {
         if (damageable.getDamage() >= mainHand.getType().getMaxDurability()) return;
 
 
-        Lib.Scheduler.runAtEntity(Ari.instance, player, i -> {
+        Ari.SCHEDULER.runAtEntity(Ari.instance, player, i -> {
 
             // 随机消耗耐久
             if(PublicFunctionUtils.randomGenerator(0, 1) == 0 && !player.getGameMode().equals(GameMode.CREATIVE)) {

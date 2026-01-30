@@ -1,11 +1,11 @@
 package com.tty.states;
 
-import com.tty.lib.dto.state.PlayerEditGuiState;
+import com.tty.Ari;
 import com.tty.lib.Lib;
-import com.tty.lib.Log;
+import com.tty.api.state.PlayerEditGuiState;
+import com.tty.api.Log;
 import com.tty.lib.enum_type.FilePath;
 import com.tty.lib.services.StateService;
-import com.tty.lib.tool.ComponentUtils;
 import com.tty.lib.tool.LibConfigUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,7 +43,7 @@ public class GuiEditStateService extends StateService<PlayerEditGuiState> {
         Player owner = (Player) state.getOwner();
         int i = Lib.instance.getConfig().getInt("server.gui-edit-timeout", 10);
         owner.showTitle(
-                ComponentUtils.setPlayerTitle(
+                Ari.COMPONENT_SERVICE.setPlayerTitle(
                         Lib.C_INSTANCE.getValue("base.on-edit.title", FilePath.Lang),
                         Lib.C_INSTANCE.getValue("base.on-edit.sub-title", FilePath.Lang),
                         1000,

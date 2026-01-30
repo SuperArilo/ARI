@@ -1,14 +1,13 @@
 package com.tty.listener.player;
 
 import com.tty.Ari;
+import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.dto.bar.PlayerAttackBar;
-import com.tty.dto.event.CustomPluginReloadEvent;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.LangPlayerDamageBar;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.task.CancellableTask;
-import com.tty.lib.tool.FormatUtils;
+import com.tty.api.Log;
+import com.tty.api.task.CancellableTask;
+import com.tty.api.FormatUtils;
 import com.tty.tool.ConfigUtils;
 import com.tty.tool.LastDamageTracker;
 import net.kyori.adventure.bossbar.BossBar;
@@ -194,7 +193,7 @@ public class MobBossBarListener implements Listener {
             });
             if (affectedPlayers.isEmpty()) return;
 
-            Lib.Scheduler.runAtEntity(Ari.instance, deadEntity, i ->
+            Ari.SCHEDULER.runAtEntity(Ari.instance, deadEntity, i ->
                     affectedPlayers.forEach((player, bar) -> {
                         LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.get(player);
                         if (bars != null) bars.remove(deadEntity);
@@ -251,7 +250,7 @@ public class MobBossBarListener implements Listener {
             this.cleanTask.cancel();
             this.cleanTask = null;
         }
-        return Lib.Scheduler.runAtFixedRate(Ari.instance, i -> {
+        return Ari.SCHEDULER.runAtFixedRate(Ari.instance, i -> {
             long now = System.currentTimeMillis();
             Map<Player, Integer> removedCountByPlayer = new LinkedHashMap<>();
             for (Map.Entry<Player, LinkedHashMap<Damageable, PlayerAttackBar>> entry : this.playerBars.entrySet()) {

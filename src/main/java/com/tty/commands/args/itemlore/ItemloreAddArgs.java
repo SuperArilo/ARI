@@ -3,11 +3,10 @@ package com.tty.commands.args.itemlore;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
-import com.tty.lib.annotations.ArgumentCommand;
-import com.tty.lib.annotations.CommandMeta;
-import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
-import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.tool.ComponentUtils;
+import com.tty.api.annotations.ArgumentCommand;
+import com.tty.api.annotations.CommandMeta;
+import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
+import com.tty.api.command.SuperHandsomeCommand;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -44,7 +43,7 @@ public class ItemloreAddArgs extends BaseRequiredArgumentLiteralCommand<String> 
         Player player = (Player) sender;
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         if (mainHand.isEmpty()) {
-            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
+            player.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
             return;
         }
         ItemMeta itemMeta = mainHand.getItemMeta();
@@ -52,7 +51,7 @@ public class ItemloreAddArgs extends BaseRequiredArgumentLiteralCommand<String> 
         if (lore == null) {
             lore = new ArrayList<>();
         }
-        lore.add(ComponentUtils.text(args[2]));
+        lore.add(Ari.COMPONENT_SERVICE.text(args[2]));
         itemMeta.lore(lore);
         mainHand.setItemMeta(itemMeta);
     }

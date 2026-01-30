@@ -1,11 +1,9 @@
 package com.tty.states.teleport;
 
 import com.tty.Ari;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
+import com.tty.api.Log;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
 import com.tty.lib.services.StateService;
-import com.tty.lib.tool.ComponentUtils;
 import com.tty.states.CoolDownStateService;
 import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
@@ -62,15 +60,15 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
         Ari.PLACEHOLDER.render("function.tpa." + (state.getType().getKey().equals("tpa") ? "to-message" : "here-message"), (OfflinePlayer) owner)
             .thenAccept(result ->
-                    Lib.Scheduler.runAtEntity(Ari.instance, target, task -> target.sendMessage(
+                    Ari.SCHEDULER.runAtEntity(Ari.instance, target, task -> target.sendMessage(
                         result
                         .appendNewline()
-                        .append(ComponentUtils.setClickEventText(
+                        .append(Ari.COMPONENT_SERVICE.setClickEventText(
                                 Ari.DATA_SERVICE.getValue("function.public.agree"),
                                 ClickEvent.Action.RUN_COMMAND,
                                 "/ari tpaaccept " + owner.getName()))
-                        .append(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.center")))
-                        .append(ComponentUtils.setClickEventText(
+                        .append(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("function.public.center")))
+                        .append(Ari.COMPONENT_SERVICE.setClickEventText(
                                 Ari.DATA_SERVICE.getValue("function.public.refuse"),
                                 ClickEvent.Action.RUN_COMMAND,
                                 "/ari tparefuse " + owner.getName()))), null));
@@ -104,7 +102,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
         //检查是否已经发过请求了
         if (!this.getStates(owner).isEmpty()) {
             Ari.PLACEHOLDER.render("function.tpa.again", (OfflinePlayer) owner).thenAccept(i ->
-                    Lib.Scheduler.runAtEntity(Ari.instance, owner, t -> owner.sendMessage(i), null));
+                    Ari.SCHEDULER.runAtEntity(Ari.instance, owner, t -> owner.sendMessage(i), null));
             return false;
         }
 

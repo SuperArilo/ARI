@@ -2,10 +2,9 @@ package com.tty.listener;
 
 import com.tty.Ari;
 import com.tty.gui.OfflineNBTEnderCheat;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.enum_type.GuiType;
-import com.tty.lib.gui.BaseInventory;
+import com.tty.api.Log;
+import com.tty.api.enumType.GuiType;
+import com.tty.api.gui.BaseInventory;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
@@ -52,12 +51,12 @@ public class GuiCleanupListener implements Listener {
                     itemNBT.setByte("Slot", (byte) slot);
                     enderItems.addCompound(itemNBT);
                 }
-                Lib.Scheduler.runAsync(Ari.instance, i -> {
+                Ari.SCHEDULER.runAsync(Ari.instance, i -> {
                     try {
                         data.save();
                         Log.debug("ender chest nbt save player {} success.", cheat.getTarget().toString());
                         OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(cheat.getTarget());
-                        Lib.Scheduler.run(Ari.instance, t -> baseInventory.cleanup());
+                        Ari.SCHEDULER.run(Ari.instance, t -> baseInventory.cleanup());
                     } catch (IOException e) {
                         Log.error(e, "ender chest nbt save error. ");
                     }

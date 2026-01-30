@@ -1,8 +1,7 @@
 package com.tty.function;
 
 import com.tty.Ari;
-import com.tty.lib.Lib;
-import com.tty.lib.task.CancellableTask;
+import com.tty.api.task.CancellableTask;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.World;
@@ -36,7 +35,7 @@ public class TimeManager {
     }
 
     public void timeSet(long tick, Consumer<Long> consumer) {
-        this.task = Lib.Scheduler.runAtFixedRate(
+        this.task = Ari.SCHEDULER.runAtFixedRate(
             Ari.instance,
             i -> {
                 long currentTime = this.world.getTime();
@@ -68,7 +67,7 @@ public class TimeManager {
     }
 
     public void timeAutomaticallyPasses(long delayRate, Consumer<Long> consumer) {
-        this.task = Lib.Scheduler.runAtFixedRate(
+        this.task = Ari.SCHEDULER.runAtFixedRate(
             Ari.instance,
             t -> {
                 long newTime = this.world.getTime() + this.addTick;

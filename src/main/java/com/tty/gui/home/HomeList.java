@@ -2,19 +2,18 @@ package com.tty.gui.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
-import com.tty.lib.dto.PageResult;
-import com.tty.lib.entity.gui.BaseDataMenu;
-import com.tty.lib.entity.gui.FunctionItems;
-import com.tty.lib.entity.gui.Mask;
+import com.tty.api.dto.PageResult;
+import com.tty.api.dto.gui.BaseDataMenu;
+import com.tty.api.dto.gui.FunctionItems;
+import com.tty.api.dto.gui.Mask;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
-import com.tty.lib.enum_type.GuiType;
-import com.tty.lib.gui.BaseDataItemConfigInventory;
-import com.tty.lib.Log;
-import com.tty.lib.enum_type.FunctionType;
-import com.tty.lib.enum_type.IconKeyType;
-import com.tty.lib.tool.ComponentUtils;
-import com.tty.lib.tool.FormatUtils;
+import com.tty.api.enumType.GuiType;
+import com.tty.api.gui.BaseDataItemConfigInventory;
+import com.tty.api.Log;
+import com.tty.api.enumType.FunctionType;
+import com.tty.api.enumType.IconKeyType;
+import com.tty.api.FormatUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
@@ -35,7 +34,8 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
         super(Ari.instance,
                 FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_LIST_GUI.name()).saveToString(), BaseDataMenu.class),
                 player,
-                GuiType.HOME_LIST);
+                GuiType.HOME_LIST,
+                Ari.COMPONENT_SERVICE);
     }
 
     @Override
@@ -70,11 +70,11 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
 
             for (String line : rawLore) {
-                textComponents.add(ComponentUtils.text(line, types));
+                textComponents.add(Ari.COMPONENT_SERVICE.text(line, types));
             }
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(ComponentUtils.text(ph.getHomeName(), this.player));
+            itemMeta.displayName(Ari.COMPONENT_SERVICE.text(ph.getHomeName(), this.player));
             itemMeta.lore(textComponents);
 
             this.setNBT(itemMeta, "home_id", PersistentDataType.STRING, ph.getHomeId());

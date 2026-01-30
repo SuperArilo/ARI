@@ -2,10 +2,10 @@ package com.tty.commands;
 
 import com.tty.commands.sub.itemlore.ItemLoreAdd;
 import com.tty.commands.sub.itemlore.ItemLoreRemove;
-import com.tty.lib.annotations.CommandMeta;
-import com.tty.lib.annotations.LiteralCommand;
-import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
-import com.tty.lib.command.SuperHandsomeCommand;
+import com.tty.api.annotations.CommandMeta;
+import com.tty.api.annotations.LiteralCommand;
+import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
+import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;

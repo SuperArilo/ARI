@@ -2,17 +2,16 @@ package com.tty.gui.warp;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.lib.entity.gui.BaseMenu;
-import com.tty.lib.entity.gui.FunctionItems;
-import com.tty.lib.entity.gui.Mask;
+import com.tty.api.dto.gui.BaseMenu;
+import com.tty.api.dto.gui.FunctionItems;
+import com.tty.api.dto.gui.Mask;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
-import com.tty.lib.enum_type.GuiType;
-import com.tty.lib.gui.BaseConfigInventory;
-import com.tty.lib.enum_type.IconKeyType;
-import com.tty.lib.tool.FormatUtils;
-import com.tty.lib.tool.PublicFunctionUtils;
-import com.tty.lib.tool.EconomyUtils;
+import com.tty.api.enumType.GuiType;
+import com.tty.api.gui.BaseConfigInventory;
+import com.tty.api.enumType.IconKeyType;
+import com.tty.api.FormatUtils;
+import com.tty.api.PublicFunctionUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -27,7 +26,8 @@ public class WarpEditor extends BaseConfigInventory {
         super(Ari.instance,
                 FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.WARP_EDIT_GUI.name()).saveToString(), BaseMenu.class),
                 player,
-                GuiType.WARP_EDIT);
+                GuiType.WARP_EDIT,
+                Ari.COMPONENT_SERVICE);
         this.currentWarp = serverWarp;
     }
 
@@ -57,7 +57,7 @@ public class WarpEditor extends BaseConfigInventory {
                         item.setName(permission == null ? "":permission);
                     }
                     case COST -> {
-                        if (EconomyUtils.isNull()) {
+                        if (Ari.ECONOMY_SERVICE.isNull()) {
                             item.setName(Ari.C_INSTANCE.getValue("server.message.no-economy", FilePath.LANG));
                             item.setMaterial("barrier");
                         } else {
@@ -73,7 +73,7 @@ public class WarpEditor extends BaseConfigInventory {
     }
 
     @Override
-    protected void beforeOpen() {
+    protected void afterOpen() {
 
     }
 

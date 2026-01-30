@@ -1,8 +1,7 @@
 package com.tty.listener;
 
 import com.tty.Ari;
-import com.tty.dto.event.CustomPluginReloadEvent;
-import com.tty.lib.tool.FireworkUtils;
+import com.tty.api.event.CustomPluginReloadEvent;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.World;
@@ -27,8 +26,6 @@ import java.util.List;
 
 public class BreakAndExplodeListener implements Listener {
 
-    private final FireworkUtils utils = new FireworkUtils(Ari.instance);
-
     private List<String> passExplosionList;
     private boolean antiExplosion;
     private boolean antiTrampleFarmland;
@@ -48,7 +45,7 @@ public class BreakAndExplodeListener implements Listener {
         EntityType entityType = event.getEntityType();
         if (this.passExplosionList.contains(entityType.name())) return;
         event.blockList().clear();
-        this.utils.spawnFireworks(event.getLocation(), 1);
+        Ari.FIREWORK_SERVICE.spawnFireworks(event.getLocation(), 1);
     }
 
     @EventHandler
@@ -58,10 +55,7 @@ public class BreakAndExplodeListener implements Listener {
         if (material.isAir()) return;
         if (this.passExplosionList.contains(material.name())) return;
         event.blockList().clear();
-        this.utils.spawnFireworks(
-                event.getBlock().getLocation().add(0.5, 2, 0.5),
-                1
-        );
+        Ari.FIREWORK_SERVICE.spawnFireworks(event.getBlock().getLocation().add(0.5, 2, 0.5), 1);
     }
 
     @EventHandler

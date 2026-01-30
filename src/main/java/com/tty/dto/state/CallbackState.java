@@ -1,6 +1,6 @@
 package com.tty.dto.state;
 
-import com.tty.lib.dto.state.StateCondition;
+import com.tty.api.state.StateCondition;
 import com.tty.dto.TeleportState;
 import com.tty.enumType.TeleportType;
 import lombok.Getter;

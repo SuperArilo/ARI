@@ -1,10 +1,10 @@
 package com.tty.listener;
 
 import com.tty.Ari;
-import com.tty.lib.dto.state.PlayerEditGuiState;
-import com.tty.lib.Log;
-import com.tty.lib.enum_type.GuiType;
-import com.tty.lib.listener.BaseEditFunctionGuiListener;
+import com.tty.api.Log;
+import com.tty.api.listener.BaseEditFunctionGuiListener;
+import com.tty.api.state.PlayerEditGuiState;
+import com.tty.api.enumType.GuiType;
 import com.tty.states.GuiEditStateService;
 import org.bukkit.entity.Player;
 

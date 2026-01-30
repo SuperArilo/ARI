@@ -5,15 +5,14 @@ import com.tty.Ari;
 import com.tty.commands.args.zako.ZakoListArgs;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.lang.LangZakoList;
-import com.tty.lib.Log;
-import com.tty.lib.annotations.CommandMeta;
-import com.tty.lib.annotations.LiteralCommand;
-import com.tty.lib.command.BaseLiteralArgumentLiteralCommand;
-import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.dto.ComponentListPage;
+import com.tty.api.Log;
+import com.tty.api.annotations.CommandMeta;
+import com.tty.api.annotations.LiteralCommand;
+import com.tty.api.command.BaseLiteralArgumentLiteralCommand;
+import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.api.dto.ComponentListPage;
 import com.tty.enumType.FilePath;
-import com.tty.lib.services.EntityRepository;
-import com.tty.lib.tool.ComponentUtils;
+import com.tty.api.repository.EntityRepository;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -54,9 +53,9 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
 
             EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
             repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new LambdaQueryWrapper<>(WhitelistInstance.class)).thenAccept(result -> {
-                        List<WhitelistInstance> records = result.getRecords();
+                        List<WhitelistInstance> records = result.records();
                         if (records.isEmpty()) {
-                            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next")));
+                            sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next")));
                             return;
                         }
                         ComponentListPage dataPage = Ari.DATA_SERVICE
@@ -64,9 +63,9 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
                                         ConfigUtils.tAfter("function.zako.list-title"),
                                         baseCommand + (pageNum == 1 ? pageNum:pageNum - 1),
                                         baseCommand + (pageNum + 1),
-                                        (int) result.getCurrentPage(),
-                                        (int) result.getTotalPages(),
-                                        (int) result.getTotal());
+                                        (int) result.currentPage(),
+                                        (int) result.totalPages(),
+                                        (int) result.total());
 
                         for (WhitelistInstance instance : records) {
                             String instancePlayerUUID = instance.getPlayerUUID();
@@ -75,7 +74,7 @@ public class ZakoList extends BaseLiteralArgumentLiteralCommand {
                             if (name == null) {
                                 Log.debug("uuid {} player is null. the possible reason is that the player has not logged into the server.", instancePlayerUUID);
                             }
-                            TextComponent set = ComponentUtils.setClickEventText(Ari.C_INSTANCE.getValue("server.player.zako." + (name == null ? "unable-record":"list-show"), FilePath.LANG),
+                            TextComponent set = Ari.COMPONENT_SERVICE.setClickEventText(Ari.C_INSTANCE.getValue("server.player.zako." + (name == null ? "unable-record":"list-show"), FilePath.LANG),
                                     Map.of(LangZakoList.ZAKO_LIST_ITEM_NAME.getType(), Component.text(name == null ? instancePlayerUUID:name)),
                                     ClickEvent.Action.RUN_COMMAND,
                                     suggestCommand + instancePlayerUUID);

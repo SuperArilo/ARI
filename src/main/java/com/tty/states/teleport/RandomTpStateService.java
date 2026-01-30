@@ -3,16 +3,14 @@ package com.tty.states.teleport;
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.dto.rtp.RtpConfig;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
+import com.tty.api.Log;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.dto.state.teleport.RandomTpState;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.TeleportType;
 import com.tty.lib.services.StateService;
-import com.tty.lib.tool.ComponentUtils;
-import com.tty.lib.tool.PublicFunctionUtils;
-import com.tty.lib.tool.SearchSafeLocation;
+import com.tty.api.PublicFunctionUtils;
+import com.tty.api.SearchSafeLocation;
 import com.tty.states.CoolDownStateService;
 import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
@@ -26,7 +24,7 @@ import java.util.Map;
 
 public class RandomTpStateService extends StateService<RandomTpState> {
 
-    private final SearchSafeLocation searchSafeLocation = new SearchSafeLocation(Ari.instance);
+    private final SearchSafeLocation searchSafeLocation = new SearchSafeLocation(Ari.instance, Ari.SCHEDULER);
 
     public RandomTpStateService(long rate, long c, boolean isAsync, JavaPlugin javaPlugin) {
         super(rate, c, isAsync, javaPlugin);
@@ -90,7 +88,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         }
         this.searchSafeLocation.search(world, x, z)
             .thenAccept((location) ->
-                Lib.Scheduler.run(Ari.instance, i -> {
+                Ari.SCHEDULER.run(Ari.instance, i -> {
                     state.setPending(false);
                     state.setRunning(false);
                     if (location == null) return;
@@ -145,7 +143,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     private void sendCountTitle(Player player) {
         if (!player.isOnline()) return;
         Ari.PLACEHOLDER.render("function.rtp.title-search-count", player).thenAccept(result ->
-                Lib.Scheduler.runAtEntity(Ari.instance, player, task -> player.showTitle(ComponentUtils.setPlayerTitle(
+                Ari.SCHEDULER.runAtEntity(Ari.instance, player, task -> player.showTitle(Ari.COMPONENT_SERVICE.setPlayerTitle(
                         Ari.C_INSTANCE.getValue("function.rtp.title-searching", FilePath.LANG, String.class, "null"),
                         result,
                         0,

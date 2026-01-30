@@ -6,14 +6,12 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.entity.ServerPlayer;
 import com.tty.gui.OfflineNBTEnderCheat;
-import com.tty.lib.Lib;
-import com.tty.lib.Log;
-import com.tty.lib.annotations.ArgumentCommand;
-import com.tty.lib.annotations.CommandMeta;
-import com.tty.lib.command.BaseRequiredArgumentLiteralCommand;
-import com.tty.lib.command.SuperHandsomeCommand;
-import com.tty.lib.tool.ComponentUtils;
-import com.tty.lib.tool.PublicFunctionUtils;
+import com.tty.api.Log;
+import com.tty.api.annotations.ArgumentCommand;
+import com.tty.api.annotations.CommandMeta;
+import com.tty.api.command.BaseRequiredArgumentLiteralCommand;
+import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.api.PublicFunctionUtils;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
@@ -46,7 +44,7 @@ public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<Strin
         Player player = (Player) sender;
         UUID uuid = PublicFunctionUtils.parseUUID(args[1]);
         if (uuid == null) {
-            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             return;
         }
         Ari.REPOSITORY_MANAGER.get(ServerPlayer.class)
@@ -54,27 +52,27 @@ public class EnderChestToPlayer extends BaseRequiredArgumentLiteralCommand<Strin
             .thenCompose(serverPlayer -> CompletableFuture.completedFuture(serverPlayer != null))
             .thenAccept(status -> {
                 if (!status) {
-                    sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                    sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                     return;
                 }
                 if (OFFLINE_ON_EDIT_ENDER_CHEST_LIST.contains(uuid)) {
-                    sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.task-occupied")));
+                    sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.task-occupied")));
                     return;
                 }
                 Player b = Bukkit.getServer().getPlayer(uuid);
                 if (b == null) {
                     Log.debug("player {} is offline to open ender chest.", uuid.toString());
                     OFFLINE_ON_EDIT_ENDER_CHEST_LIST.add(uuid);
-                    Lib.Scheduler.runAsync(Ari.instance, i -> {
+                    Ari.SCHEDULER.runAsync(Ari.instance, i -> {
                         NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(uuid.toString());
                         if (data == null) {
-                            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                            sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                             Log.error("uuid is not exist.", uuid.toString());
                             return;
                         }
                         ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
                         OfflineNBTEnderCheat cheat = new OfflineNBTEnderCheat(player, data, uuid);
-                        Lib.Scheduler.runAtEntity(Ari.instance, player, t -> {
+                        Ari.SCHEDULER.runAtEntity(Ari.instance, player, t -> {
                             cheat.open();
                             for (ReadWriteNBT enderItem : enderItems) {
                                 int slot = enderItem.getByte("Slot") & 0xFF;

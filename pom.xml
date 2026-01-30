@@ -176,6 +176,12 @@
             <version>2.15.5</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.tty</groupId>
+            <artifactId>api</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
