@@ -37,4 +37,4 @@ dataItems:
 pageDisable:
   name: ''
   type: PAGE_DISABLE
-  material: BARRIER
+  material: glass_pane
