@@ -14,43 +14,52 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 拉取代码
+      - name: PULL SOURCE CODE
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 设置 JDK 环境 ${{ env.JAVA_VERSION }}
+      - name: SETTING JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: 设置 Maven
+      - name: SETTING Maven
         uses: stCarolas/setup-maven@v4
         with:
           maven-version: ${{ env.MAVEN_VERSION }}
 
-      - name: 克隆前置插件源码仓库到子目录
+      - name: CLONE API
+        run: git clone https://github.com/SuperArilo/ARILIB-API.git arilib-api
+
+      - name: INSTALL API
+        run: |
+          cd arilib-api
+          mvn clean install -DskipTests
+          cd ..
+
+      - name: CLONE ARILIB
         run: git clone https://github.com/SuperArilo/ARILIB.git arilib
 
-      - name: 安装前置插件到本地 Maven 仓库
+      - name: INSTALL ARILIB
         run: |
           cd arilib
           mvn clean install -DskipTests
           cd ..
 
-      - name: 构建
+      - name: BUILD ARI
         run: mvn clean package -DskipTests
 
-      - name: 收集所有构建
+      - name: COLLECT PRODUCTS
         run: |
           mkdir -p build-artifacts
           find . -name "*.jar" -path "*/target/*" ! -name "*-sources.jar" ! -name "*-javadoc.jar" ! -name "original-*.jar" | while read jar; do
             cp "$jar" build-artifacts/
           done
 
-      - name: 上传构建结果
+      - name: UPLOAD
         uses: actions/upload-artifact@v4
         with:
           name: jar-files
@@ -63,13 +72,13 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
-      - name: 下载构建结果
+      - name: DOWNLOAD
         uses: actions/download-artifact@v4
         with:
           name: jar-files
           path: build-artifacts
 
-      - name: 创建 release
+      - name: CREATE RELEASE
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
