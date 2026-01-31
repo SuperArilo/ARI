@@ -3,20 +3,18 @@ package com.tty.states.teleport;
 import com.tty.Ari;
 import com.tty.dto.state.teleport.PlayerToPlayerState;
 import com.tty.enumType.TeleportType;
-import com.tty.Log;
 import com.tty.api.state.State;
 import com.tty.dto.state.CooldownState;
 import com.tty.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
-import com.tty.lib.services.StateService;
+import com.tty.api.state.StateService;
 import com.tty.states.CoolDownStateService;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
@@ -25,8 +23,8 @@ public class TeleportStateService extends StateService<State> {
     private final Map<UUID, Double> initHealthMap = new HashMap<>();
     private final Map<UUID, Location> initLocationMap = new HashMap<>();
 
-    public TeleportStateService(long rate, long c, boolean isAsync, JavaPlugin javaPlugin) {
-        super(rate, c, isAsync, javaPlugin);
+    public TeleportStateService(long rate, long c, boolean isAsync) {
+        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
     }
 
     @Override
@@ -63,7 +61,7 @@ public class TeleportStateService extends StateService<State> {
                             200
                     ));
                     state.setPending(false);
-                    Log.debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
+                    this.getLog().debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
                 }, null));
     }
 
@@ -107,7 +105,7 @@ public class TeleportStateService extends StateService<State> {
     protected void onEarlyExit(State state) {
         Entity owner = state.getOwner();
         owner.clearTitle();
-        Log.debug("entity {} teleport state break.", owner.getName());
+        this.getLog().debug("entity {} teleport state break.", owner.getName());
         this.removeEntityInitData(owner);
     }
 
@@ -204,7 +202,7 @@ public class TeleportStateService extends StateService<State> {
     private void handleTeleportAfter(Entity owner, Location location, Runnable removeInit, Runnable addState) {
         removeInit.run();
         addState.run();
-        Log.debug("entity {} teleport to x: {}, y: {}, z: {} success.", owner.getName(), location.getX(), location.getY(), location.getZ());
+        this.getLog().debug("entity {} teleport to x: {}, y: {}, z: {} success.", owner.getName(), location.getX(), location.getY(), location.getZ());
     }
 
 }

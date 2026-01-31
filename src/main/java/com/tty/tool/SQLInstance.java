@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInt
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.tty.Ari;
 import com.tty.enumType.SqlTable;
-import com.tty.Log;
 import com.tty.api.enumType.SQLType;
 import com.tty.mapper.*;
 import com.zaxxer.hikari.HikariDataSource;
@@ -33,60 +32,60 @@ public class SQLInstance {
     }
 
     public void start() {
-        Log.debug("initializing database connection");
+        Ari.LOG.debug("initializing database connection");
 
         if (Ari.instance == null) {
-            Log.error("plugin instance not initialized; database startup aborted");
+            Ari.LOG.error("plugin instance not initialized; database startup aborted");
             return;
         }
 
         String storageType = Ari.instance.getConfig().getString("data.storage-type");
 
         if (storageType == null) {
-            Log.warn("data.storage-type not configured; defaulting to SQLITE");
+            Ari.LOG.warn("data.storage-type not configured; defaulting to SQLITE");
             sqlType = SQLType.SQLITE;
         } else {
             try {
                 sqlType = SQLType.valueOf(storageType.toUpperCase());
             } catch (IllegalArgumentException e) {
-                Log.error(e, "invalid data.storage-type '{}'; supported values: MYSQL, SQLITE", storageType);
+                Ari.LOG.error(e, "invalid data.storage-type '{}'; supported values: MYSQL, SQLITE", storageType);
                 return;
             }
         }
 
-        Log.info("using database type: {}", sqlType.getType());
+        Ari.LOG.info("using database type: {}", sqlType.getType());
 
         try {
             switch (sqlType) {
                 case MYSQL -> createMysql();
                 case SQLITE -> createSQLite();
                 default -> {
-                    Log.error("unsupported SQL type: {}", sqlType);
+                    Ari.LOG.error("unsupported SQL type: {}", sqlType);
                     return;
                 }
             }
         } catch (Exception e) {
-            Log.error(e, "failed to initialize database connection factory");
+            Ari.LOG.error(e, "failed to initialize database connection factory");
             return;
         }
-        Log.debug("initializing database schema");
+        Ari.LOG.debug("initializing database schema");
 
         try (SqlSession session = SESSION_FACTORY.openSession()) {
             for (SqlTable table : SqlTable.values()) {
-                Log.debug("creating or updating table: {}", table.name());
+                Ari.LOG.debug("creating or updating table: {}", table.name());
                 try (Statement statement = session.getConnection().createStatement()) {
                     statement.execute(table.getSql(this.getTablePrefix(), this.getSqlType()));
                 }
             }
             session.commit();
-            Log.info("database schema initialized successfully");
+            Ari.LOG.info("database schema initialized successfully");
         } catch (Exception e) {
-            Log.error(e, "failed to initialize database schema");
+            Ari.LOG.error(e, "failed to initialize database schema");
         }
     }
 
     public void reconnect() {
-        Log.debug("connection is closing...");
+        Ari.LOG.debug("connection is closing...");
         this.close();
         this.start();
     }
@@ -141,7 +140,7 @@ public class SQLInstance {
     public void close() {
         if (SQLInstance.SESSION_FACTORY != null) {
             SQLInstance.SESSION_FACTORY = null;
-            Log.debug("Connection closed successfully");
+            Ari.LOG.debug("Connection closed successfully");
         }
         SQLInstance.SESSION_FACTORY = null;
     }

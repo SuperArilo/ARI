@@ -2,13 +2,12 @@ package com.tty.listener.warp;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.api.state.PlayerEditGuiState;
+import com.tty.api.state.EditGuiState;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
 import com.tty.gui.warp.WarpEditor;
 import com.tty.gui.warp.WarpList;
-import com.tty.Log;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.repository.EntityRepository;
@@ -69,7 +68,7 @@ public class EditWarpListener extends OnGuiEditListener {
                     return ConfigUtils.t("function.warp.not-found").thenAccept(player::sendMessage);
                 }
             }).exceptionally(i -> {
-                Log.error(i, "deleting warp error");
+                Ari.LOG.error(i, "deleting warp error");
                 return null;
             });
             case RENAME, COST, PERMISSION -> {
@@ -82,7 +81,7 @@ public class EditWarpListener extends OnGuiEditListener {
                     return;
                 }
                 Ari.STATE_MACHINE_MANAGER.get(GuiEditStateService.class)
-                        .addState(new PlayerEditGuiState(
+                        .addState(new EditGuiState(
                                         player,
                                 Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new com.google.common.reflect.TypeToken<Integer>(){}.getType()),
                                         new WarpEditor(PublicFunctionUtils.deepCopy(warpEditor.currentWarp, ServerWarp.class), player),
@@ -113,7 +112,7 @@ public class EditWarpListener extends OnGuiEditListener {
                 warpEditor.currentWarp.setShowMaterial(current.name());
             }
             case SAVE -> {
-                Log.debug("start saving warp id: {}", warpEditor.currentWarp.getWarpId());
+                Ari.LOG.debug("start saving warp id: {}", warpEditor.currentWarp.getWarpId());
                 clickMeta.lore(List.of(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
                 clickItem.setItemMeta(clickMeta);
                 CompletableFuture<Boolean> future = warpEntityRepository.update(warpEditor.currentWarp);
@@ -130,7 +129,7 @@ public class EditWarpListener extends OnGuiEditListener {
                         clickItem.setItemMeta(clickMeta);
                     }
                 }).exceptionally(i -> {
-                    Log.error(i, "saving warp error");
+                    Ari.LOG.error(i, "saving warp error");
                     clickMeta.lore(List.of(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
                     return null;
@@ -151,12 +150,12 @@ public class EditWarpListener extends OnGuiEditListener {
     }
 
     @Override
-    public boolean onTitleEditStatus(String message, PlayerEditGuiState state) {
+    public boolean onTitleEditStatus(String message, EditGuiState state) {
         FunctionType type = state.getFunctionType();
         Player player = (Player) state.getOwner();
         List<String> value = Ari.C_INSTANCE.getValue("main.name-check", FilePath.WARP_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
         if(value == null) {
-            Log.error("name-check list is null, check config");
+            Ari.LOG.error("name-check list is null, check config");
             player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
             return false;
         }

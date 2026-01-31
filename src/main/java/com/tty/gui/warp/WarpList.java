@@ -12,7 +12,6 @@ import com.tty.api.dto.gui.Mask;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseDataItemConfigInventory;
-import com.tty.Log;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import net.kyori.adventure.text.Component;
@@ -34,6 +33,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     public WarpList(Player player) {
         super(Ari.instance, player,  Ari.COMPONENT_SERVICE);
+        this.debug(Ari.DEBUG);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
             ItemStack itemStack = this.createItemStack(serverWarp.getShowMaterial());
             if (itemStack == null) {
-                Log.warn("There is a problem with the warpID: [{}] of the player: [{}]", serverWarp.getWarpId(), this.player.getName());
-                Log.error("Skip the rendering warpId [{}] process...", serverWarp.getWarpId());
+                Ari.LOG.warn("There is a problem with the warpID: [{}] of the player: [{}]", serverWarp.getWarpId(), this.player.getName());
+                Ari.LOG.error("Skip the rendering warpId [{}] process...", serverWarp.getWarpId());
                 this.player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
                 continue;
             }

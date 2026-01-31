@@ -26,6 +26,7 @@ public class HomeEditor extends BaseConfigInventory {
 
     public HomeEditor(ServerHome serverHome, Player player) {
         super(Ari.instance, player, Ari.COMPONENT_SERVICE);
+        this.debug(Ari.DEBUG);
         this.currentHome = serverHome;
     }
 

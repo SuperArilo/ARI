@@ -1,23 +1,21 @@
 package com.tty.states.teleport;
 
 import com.tty.Ari;
-import com.tty.Log;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
-import com.tty.lib.services.StateService;
+import com.tty.api.state.StateService;
 import com.tty.states.CoolDownStateService;
 import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
 public class PreTeleportStateService extends StateService<PreEntityToEntityState> {
 
-    public PreTeleportStateService(long rate, long c, boolean isAsync, JavaPlugin javaPlugin) {
-        super(rate, c, isAsync, javaPlugin);
+    public PreTeleportStateService(long rate, long c, boolean isAsync) {
+        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
     }
 
     @Override
@@ -44,7 +42,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
             return;
         }
         state.setPending(false);
-        Log.debug("checking player {} -> {} request. count {}, max_count {}", owner.getName(), target.getName(), state.getCount(), state.getMax_count());
+        this.getLog().debug("checking player {} -> {} request. count {}, max_count {}", owner.getName(), target.getName(), state.getCount(), state.getMax_count());
     }
 
     @Override
@@ -80,7 +78,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
     @Override
     protected void onFinished(PreEntityToEntityState state) {
-        Log.debug("player {} send to {} teleport request expired",  state.getOwner().getName(), state.getTarget().getName());
+        this.getLog().debug("player {} send to {} teleport request expired",  state.getOwner().getName(), state.getTarget().getName());
     }
 
     @Override

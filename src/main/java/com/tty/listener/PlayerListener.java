@@ -5,7 +5,6 @@ import com.tty.commands.infinitytotem;
 import com.tty.dto.SpawnLocation;
 import com.tty.dto.event.CustomPlayerRespawnEvent;
 import com.tty.enumType.FilePath;
-import com.tty.Log;
 import com.tty.api.ServerPlatform;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -46,7 +45,7 @@ public class PlayerListener implements Listener {
         if (value != null) {
             location = new Location(Bukkit.getWorld(value.getWorldName()), value.getX(), value.getY(), value.getZ(), value.getYaw(), value.getPitch());
         } else {
-            Log.debug("not setting spawn location.fallback server spawn location.");
+            Ari.LOG.debug("not setting spawn location.fallback server spawn location.");
             location = world.getSpawnLocation();
         }
         return location;

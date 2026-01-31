@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.ServerPlayer;
-import com.tty.Log;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -61,7 +60,7 @@ public class ZakoInfoArgs extends RequiredArgumentCommand<String> {
                 sender.sendMessage(message);
             }
         }).exceptionally(e -> {
-            Log.error(e);
+            Ari.LOG.error(e);
             if (sender instanceof Player player) {
                 ConfigUtils.t("function.zako.list-request-error", player).thenAccept(sender::sendMessage);
             } else {

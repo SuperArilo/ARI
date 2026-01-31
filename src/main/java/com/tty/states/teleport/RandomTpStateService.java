@@ -3,12 +3,11 @@ package com.tty.states.teleport;
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.dto.rtp.RtpConfig;
-import com.tty.Log;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.dto.state.teleport.RandomTpState;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.TeleportType;
-import com.tty.lib.services.StateService;
+import com.tty.api.state.StateService;
 import com.tty.api.PublicFunctionUtils;
 import com.tty.api.SearchSafeLocation;
 import com.tty.states.CoolDownStateService;
@@ -17,8 +16,8 @@ import com.tty.tool.StateMachineManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,8 +25,8 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     private final SearchSafeLocation searchSafeLocation = new SearchSafeLocation(Ari.instance, Ari.SCHEDULER);
 
-    public RandomTpStateService(long rate, long c, boolean isAsync, JavaPlugin javaPlugin) {
-        super(rate, c, isAsync, javaPlugin);
+    public RandomTpStateService(long rate, long c, boolean isAsync) {
+        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
     }
 
     @Override
@@ -81,7 +80,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
         int x = (int) Math.min(PublicFunctionUtils.randomGenerator((int) rtpConfig.getMin(), (int) rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
         int z = (int) Math.min(PublicFunctionUtils.randomGenerator((int) rtpConfig.getMin(), (int) rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
-        Log.debug("player {} search count {}. total {}.", state.getOwner().getName(), state.getCount(), state.getMax_count());
+        this.getLog().debug("player {} search count {}. total {}.", state.getOwner().getName(), state.getCount(), state.getMax_count());
         synchronized (state) {
             if (state.getTrueLocation() != null || state.isRunning() || state.isOver()) return;
             state.setRunning(true);
@@ -92,11 +91,12 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                     state.setPending(false);
                     state.setRunning(false);
                     if (location == null) return;
+                    this.getLog().debug("random location x: {}, y: {}, z: {}.", x, location.getY(), z);
                     state.setTrueLocation(location);
                     state.setOver(true);
                 }))
             .exceptionally(e -> {
-                Log.error(e);
+                this.getLog().error(e);
                 return null;
             });
     }
@@ -184,6 +184,10 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 value.put(world.getName(), createWorldRtp());
             }
         }
-        Ari.C_INSTANCE.setValue(Ari.instance,"main.worlds", FilePath.RTP_CONFIG, value);
+        try {
+            Ari.C_INSTANCE.setValue(Ari.instance,"main.worlds", FilePath.RTP_CONFIG, value);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

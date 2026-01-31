@@ -5,7 +5,6 @@ import com.tty.Ari;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.BanPlayer;
 import com.tty.entity.WhitelistInstance;
-import com.tty.Log;
 import com.tty.lib.enum_type.FilePath;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
@@ -80,12 +79,12 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
                     if (player != null) {
                         player.kick(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
                         ConfigUtils.t("function.zako.baned", player).thenAccept(Bukkit::broadcast);
-                        Log.debug("baned player uuid {}. total {}", uuid.toString(), string);
+                        Ari.LOG.debug("baned player uuid {}. total {}", uuid.toString(), string);
                     }
                 });
 
             }).exceptionally(e -> {
-                Log.error(e, Ari.C_INSTANCE.getValue("function.zako.add-failure", FilePath.Lang));
+                Ari.LOG.error(e, Ari.C_INSTANCE.getValue("function.zako.add-failure", FilePath.Lang));
                 return null;
             });
     }

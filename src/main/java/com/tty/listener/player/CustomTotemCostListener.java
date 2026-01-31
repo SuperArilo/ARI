@@ -5,7 +5,6 @@ import com.tty.Ari;
 import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.commands.infinitytotem;
 import com.tty.enumType.FilePath;
-import com.tty.Log;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -138,7 +137,7 @@ public class CustomTotemCostListener implements Listener {
     private void awardAdvancement(Player player) {
         Advancement advancement = Bukkit.getAdvancement(NamespacedKey.minecraft("adventure/totem_of_undying"));
         if (advancement == null) {
-            Log.error("not found advancement adventure/totem_of_undying. skipping...");
+            Ari.LOG.error("not found advancement adventure/totem_of_undying. skipping...");
             return;
         }
         AdvancementProgress progress = player.getAdvancementProgress(advancement);

@@ -5,13 +5,11 @@ import com.tty.Ari;
 import com.tty.dto.event.OnZakoSavedEvent;
 import com.tty.dto.state.player.PlayerSaveState;
 import com.tty.entity.ServerPlayer;
-import com.tty.Log;
 import com.tty.api.repository.EntityRepository;
-import com.tty.lib.services.StateService;
+import com.tty.api.state.StateService;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -19,8 +17,8 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
     private final EntityRepository<ServerPlayer> repository;
 
-    public PlayerSaveStateService(long rate, long c, boolean isAsync, JavaPlugin javaPlugin) {
-        super(rate, c, isAsync, javaPlugin);
+    public PlayerSaveStateService(long rate, long c, boolean isAsync) {
+        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
         this.repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
     }
 
@@ -41,23 +39,23 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
     @Override
     protected void passAddState(PlayerSaveState state) {
-        Log.debug("added player {} state to save.", state.getOwner().getName());
+        this.getLog().debug("added player {} state to save.", state.getOwner().getName());
     }
 
     @Override
     protected void onEarlyExit(PlayerSaveState state) {
-        Log.debug("stop save player {} data", state.getOwner().getName());
+        this.getLog().debug("stop save player {} data", state.getOwner().getName());
     }
 
     @Override
     protected void onFinished(PlayerSaveState state) {
-        Log.debug("start save player data {}.", state.getOwner().getName());
+        this.getLog().debug("start save player data {}.", state.getOwner().getName());
         this.savePlayerData(state);
     }
 
     @Override
     protected void onServiceAbort(PlayerSaveState state) {
-        Log.debug("player save service abort. saving {}.", state.getOwner().getName());
+        this.getLog().debug("player save service abort. saving {}.", state.getOwner().getName());
         this.savePlayerData(state);
     }
 
@@ -76,7 +74,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
         this.repository.get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid))
             .thenCompose(serverPlayer -> {
                 if (serverPlayer == null) {
-                    Log.error("Player data not found: {}", uuid);
+                    this.getLog().error("Player data not found: {}", uuid);
                     return CompletableFuture.completedFuture(false);
                 }
                 serverPlayer.setTotalOnlineTime(serverPlayer.getTotalOnlineTime() + onlineDuration);
@@ -84,19 +82,19 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
             })
             .thenAccept(success -> {
                 if (success) {
-                    Log.debug("Saved player data: {}", player.getName());
+                    this.getLog().debug("Saved player data: {}", player.getName());
                 } else {
-                    Log.error("Failed to save player data: {}", player.getName());
+                    this.getLog().error("Failed to save player data: {}", player.getName());
                 }
             })
             .whenComplete((result, ex) -> {
                 if (ex != null) {
-                    Log.error(ex, "Error saving player data for {}", player.getName());
+                    this.getLog().error(ex, "Error saving player data for {}", player.getName());
                 }
                 if (this.repository.isAsync() && player.isOnline()) {
                     Ari.SCHEDULER.run(Ari.instance, i -> Bukkit.getPluginManager().callEvent(new OnZakoSavedEvent(player)));
                 } else {
-                    Log.debug("skip player {} save event.", player.getName());
+                    this.getLog().debug("skip player {} save event.", player.getName());
                 }
             });
     }

@@ -1,7 +1,6 @@
 package com.tty.listener;
 
 import com.tty.Ari;
-import com.tty.Log;
 import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.api.task.CancellableTask;
 import com.tty.api.PublicFunctionUtils;
@@ -98,7 +97,7 @@ public class DamageTrackerListener implements Listener {
                     Ari.SCHEDULER.runAtEntity(
                             Ari.instance,
                             e,
-                            t -> Log.debug("damage_tracker: remove victim entity {} record.", e.getName()),
+                            t -> Ari.LOG.debug("damage_tracker: remove victim entity {} record.", e.getName()),
                             null
                     );
                 }

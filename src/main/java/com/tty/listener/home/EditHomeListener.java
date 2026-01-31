@@ -2,13 +2,12 @@ package com.tty.listener.home;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
-import com.tty.api.state.PlayerEditGuiState;
+import com.tty.api.state.EditGuiState;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
 import com.tty.gui.home.HomeEditor;
 import com.tty.gui.home.HomeList;
-import com.tty.Log;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.repository.EntityRepository;
@@ -77,7 +76,7 @@ public class EditHomeListener extends OnGuiEditListener {
             case RENAME -> {
                 Ari.STATE_MACHINE_MANAGER
                         .get(GuiEditStateService.class)
-                        .addState(new PlayerEditGuiState(
+                        .addState(new EditGuiState(
                                 player,
                                 Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new com.google.common.reflect.TypeToken<Integer>(){}.getType()),
                                 new HomeEditor(PublicFunctionUtils.deepCopy(homeEditor.currentHome, ServerHome.class), player),
@@ -129,7 +128,7 @@ public class EditHomeListener extends OnGuiEditListener {
                         clickItem.setItemMeta(clickMeta);
                     }, 20);
                 }).exceptionally(i -> {
-                    Log.error(i, "save home error");
+                    Ari.LOG.error(i, "save home error");
                     clickMeta.lore(List.of(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
                     player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
@@ -140,7 +139,7 @@ public class EditHomeListener extends OnGuiEditListener {
     }
 
     @Override
-    public boolean onTitleEditStatus(String message, PlayerEditGuiState state) {
+    public boolean onTitleEditStatus(String message, EditGuiState state) {
         Player player = (Player) state.getOwner();
         List<Object> checkList = Ari.C_INSTANCE
                 .getValue(

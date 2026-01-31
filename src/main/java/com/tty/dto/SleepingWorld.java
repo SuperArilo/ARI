@@ -2,7 +2,6 @@ package com.tty.dto;
 
 import com.tty.Ari;
 import com.tty.function.TimeManager;
-import com.tty.Log;
 import com.tty.api.enumType.TimePeriod;
 import lombok.Getter;
 import org.bukkit.GameRule;
@@ -76,7 +75,7 @@ public class SleepingWorld {
             //已经睡下的人
             long sleepers = this.getSleepPlayers();
             long worldTime = world.getTime();
-            Log.debug("world time: {}, abs: {}, need_to_sleep: {}, sleep_now: {}", world.getTime(), TimePeriod.WAKE_UP.getEnd(), numSleepersNeeded, sleepers);
+            Ari.LOG.debug("world time: {}, abs: {}, need_to_sleep: {}, sleep_now: {}", world.getTime(), TimePeriod.WAKE_UP.getEnd(), numSleepersNeeded, sleepers);
             if ((worldTime >= TimePeriod.WAKE_UP.getEnd() ||
                     (worldTime > 0 && worldTime < TimePeriod.SUNRISE.getEnd())) ||
                     (world.isThundering() || world.hasStorm()) &&

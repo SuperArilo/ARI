@@ -2,11 +2,12 @@ package com.tty;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.api.*;
+import com.tty.api.Log;
 import com.tty.api.service.ComponentService;
+import com.tty.api.state.StateService;
 import com.tty.enumType.FilePath;
 import com.tty.function.*;
 import com.tty.enumType.GuiType;
-import com.tty.api.command.CommandRegister;
 import com.tty.api.dto.AliasItem;
 import com.tty.lib.services.*;
 import com.tty.listener.*;
@@ -36,6 +37,7 @@ import static com.tty.api.PublicFunctionUtils.checkServerVersion;
 public class Ari extends JavaPlugin {
 
     public static Ari instance;
+    public static final Log LOG = Log.create();
     public static final Scheduler SCHEDULER = Scheduler.create();
     public static Boolean DEBUG = false;
     public static final ConfigInstance C_INSTANCE = new ConfigInstance();
@@ -55,7 +57,7 @@ public class Ari extends JavaPlugin {
     public void onLoad() {
         instance = this;
         reloadAllConfig();
-        Log.init(this.getLogger(), DEBUG);
+        LOG.setDebug(DEBUG);
         this.printLogo();
     }
 
@@ -66,14 +68,10 @@ public class Ari extends JavaPlugin {
             return;
         }
         SQL_INSTANCE = new SQLInstance();
-        STATE_MACHINE_MANAGER = new StateMachineManager(this);
-        PublicFunctionUtils.loadPlugin("arilib", ComponentService.class, i -> COMPONENT_SERVICE = i);
-        PublicFunctionUtils.loadPlugin("arilib", PermissionService.class, i -> PERMISSION_SERVICE = i);
-        PublicFunctionUtils.loadPlugin("arilib", EconomyService.class, i -> ECONOMY_SERVICE = i);
-        PublicFunctionUtils.loadPlugin("arilib", ConfigDataService.class, i -> DATA_SERVICE = i);
-        PublicFunctionUtils.loadPlugin("arilib", NBTDataService.class, i -> NBT_DATA_SERVICE = i);
-        PublicFunctionUtils.loadPlugin("arilib", FireworkService.class, i -> FIREWORK_SERVICE = i);
-        PublicFunctionUtils.loadPlugin("arilib", TeleportingService.class, i -> TELEPORTING_SERVICE = i);
+        STATE_MACHINE_MANAGER = new StateMachineManager();
+        setDebugStatus();
+
+        this.loadOtherPlugins();
 
         //初始化rtp
         RandomTpStateService.setRtpWorldConfig();
@@ -93,6 +91,16 @@ public class Ari extends JavaPlugin {
         REPOSITORY_MANAGER.clearAllCache();
         SQL_INSTANCE.close();
         C_INSTANCE.clearConfigs();
+    }
+
+    private void loadOtherPlugins() {
+        PublicFunctionUtils.loadPlugin("arilib", ComponentService.class, i -> COMPONENT_SERVICE = i);
+        PublicFunctionUtils.loadPlugin("arilib", PermissionService.class, i -> PERMISSION_SERVICE = i);
+        PublicFunctionUtils.loadPlugin("arilib", EconomyService.class, i -> ECONOMY_SERVICE = i);
+        PublicFunctionUtils.loadPlugin("arilib", ConfigDataService.class, i -> DATA_SERVICE = i);
+        PublicFunctionUtils.loadPlugin("arilib", NBTDataService.class, i -> NBT_DATA_SERVICE = i);
+        PublicFunctionUtils.loadPlugin("arilib", FireworkService.class, i -> FIREWORK_SERVICE = i);
+        PublicFunctionUtils.loadPlugin("arilib", TeleportingService.class, i -> TELEPORTING_SERVICE = i);
     }
 
     private void registerListener() {
@@ -120,6 +128,11 @@ public class Ari extends JavaPlugin {
         pluginManager.registerEvents(new CustomTotemCostListener(), this);
     }
 
+    public static void setDebugStatus() {
+        STATE_MACHINE_MANAGER.debug(DEBUG);
+        REPOSITORY_MANAGER.debug(DEBUG);
+    }
+
     public static void reloadAllConfig() {
         Ari.instance.saveDefaultConfig();
         Ari.instance.reloadConfig();
@@ -139,7 +152,7 @@ public class Ari extends JavaPlugin {
                 try {
                     Ari.instance.saveResource(path, true);
                 } catch (Exception e) {
-                    Log.error("can not find file {}, path {} .", filePath.getNickName(), path);
+                    Ari.LOG.error("can not find file {}, path {} .", filePath.getNickName(), path);
                 }
             }
             C_INSTANCE.setConfig(filePath.name(), YamlConfiguration.loadConfiguration(file));
@@ -158,10 +171,10 @@ public class Ari extends JavaPlugin {
         }
         String bukkitName = Bukkit.getName();
         String bukkitVersion = Bukkit.getServer().getVersion();
-        Log.info("");
-        Log.info("        _   ");
-        Log.info("  |    /_\\  {}", pluginInfo);
-        Log.info("  |___/   \\ Running on {} {}", bukkitName, bukkitVersion);
-        Log.info("");
+        Ari.LOG.info("");
+        Ari.LOG.info("        _   ");
+        Ari.LOG.info("  |    /_\\  {}", pluginInfo);
+        Ari.LOG.info("  |___/   \\ Running on {} {}", bukkitName, bukkitVersion);
+        Ari.LOG.info("");
     }
 }

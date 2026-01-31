@@ -7,7 +7,6 @@ import com.tty.Ari;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.ServerWarp;
 import com.tty.entity.cache.ServerWarpRepository;
-import com.tty.Log;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -115,7 +114,7 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
                     return ConfigUtils.t("function.warp.create-success", player).thenAccept(player::sendMessage);
                 })
                 .exceptionally(e -> {
-                    Log.error(e);
+                    Ari.LOG.error(e);
                     ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
                     return null;
                 });

@@ -11,7 +11,6 @@ import com.tty.entity.ServerPlayer;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
 import com.tty.api.repository.EntityRepository;
-import com.tty.Log;
 import com.tty.api.enumType.Operator;
 import com.tty.states.PlayerSaveStateService;
 import com.tty.tool.ConfigUtils;
@@ -45,14 +44,14 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         try {
             banPlayer = banPlayerEntityRepository.get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
-            Log.error(e, "query ban list error on uuid {}", uuid.toString());
+            Ari.LOG.error(e, "query ban list error on uuid {}", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
             return;
         }
         if (banPlayer == null) return;
         if (banPlayer.getEndTime() <= System.currentTimeMillis()) {
             banPlayerEntityRepository.delete(banPlayer);
-            Log.debug("free player uuid {}.", banPlayer.getPlayerUUID());
+            Ari.LOG.debug("free player uuid {}.", banPlayer.getPlayerUUID());
         } else {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ConfigUtils.tList("server.player.baned", Bukkit.getOfflinePlayer(uuid)).join());
@@ -84,7 +83,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         try {
             instance = whitelistInstanceEntityRepository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
-            Log.error(e, "check whitelist on uuid {} error.", uuid.toString());
+            Ari.LOG.error(e, "check whitelist on uuid {} error.", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Ari.COMPONENT_SERVICE.text(e.getMessage()));
             return;
         }
@@ -96,7 +95,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 n.setOperator(Operator.CONSOLE.getUuid());
                 whitelistInstanceEntityRepository.create(n)
                     .exceptionally(i -> {
-                        Log.error(i, "player uuid {} login error.", uuid.toString());
+                        Ari.LOG.error(i, "player uuid {} login error.", uuid.toString());
                         event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(i.getMessage()));
                         return null;
                     });
@@ -111,13 +110,13 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         try {
             serverPlayer = playerEntityRepository.get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
-            Log.error(e, "error on query player {} to check name.", uuid.toString());
+            Ari.LOG.error(e, "error on query player {} to check name.", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
             return;
         }
         if (serverPlayer == null) return;
         if (serverPlayer.getPlayerName().equals(event.getName())) return;
-        Log.debug("layer changed name. old: {}, new: {}", serverPlayer.getPlayerName(), event.getName());
+        Ari.LOG.debug("layer changed name. old: {}, new: {}", serverPlayer.getPlayerName(), event.getName());
         serverPlayer.setPlayerName(event.getName());
         playerEntityRepository.update(serverPlayer);
 
@@ -150,7 +149,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             })
             .whenComplete((i, ex) -> {
                 if (ex != null) {
-                    Log.error("player {} login in server error.", player.getName());
+                    Ari.LOG.error("player {} login in server error.", player.getName());
                     player.kick(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                     return;
                 }
@@ -172,7 +171,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                                     value.getPitch()
                             ));
                         } else {
-                            Log.info("server not set spawn location.");
+                            Ari.LOG.info("server not set spawn location.");
                         }
                     }
                     if(first) {
@@ -186,7 +185,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
                 Location spawnLocation = player.getLocation();
                 if (spawnLocation.getBlock().isSolid()) {
-                    Log.debug("player {} inside block, teleport safe location.", player.getName());
+                    Ari.LOG.debug("player {} inside block, teleport safe location.", player.getName());
                     Location safeLocation = this.findSafeLocationAbove(spawnLocation);
                     Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> ConfigUtils.t("teleport.not-safe-location", player).thenAccept(player::sendMessage));
                 }

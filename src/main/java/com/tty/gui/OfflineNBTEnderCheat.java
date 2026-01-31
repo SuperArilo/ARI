@@ -1,6 +1,6 @@
 package com.tty.gui;
 
-import com.tty.Log;
+import com.tty.Ari;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.gui.BaseInventory;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
@@ -21,6 +21,7 @@ public class OfflineNBTEnderCheat extends BaseInventory {
     private UUID target;
 
     public OfflineNBTEnderCheat(NBTFileHandle data, UUID target) {
+        this.debug(Ari.DEBUG);
         this.data = data;
         this.target = target;
     }
@@ -48,7 +49,7 @@ public class OfflineNBTEnderCheat extends BaseInventory {
 
     public void setItem(int index, ItemStack itemStack) {
         if (this.inventory == null) {
-            Log.error("you must first open to create inventory");
+            Ari.LOG.error("you must first open to create inventory");
             return;
         }
         this.inventory.setItem(index, itemStack);

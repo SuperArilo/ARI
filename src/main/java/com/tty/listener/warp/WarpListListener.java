@@ -9,7 +9,6 @@ import com.tty.enumType.lang.LangVault;
 import com.tty.enumType.GuiType;
 import com.tty.gui.warp.WarpEditor;
 import com.tty.gui.warp.WarpList;
-import com.tty.Log;
 import com.tty.api.enumType.FunctionType;
 import com.tty.enumType.TeleportType;
 import com.tty.api.FormatUtils;
@@ -57,7 +56,7 @@ public class WarpListListener extends BaseGuiListener {
                 //从数据库查询最新的
                 Ari.REPOSITORY_MANAGER.get(ServerWarp.class).get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId)).thenAccept((instance) -> {
                     if (instance == null) {
-                        Log.error("can't find warpId: {}", warpId);
+                        Ari.LOG.error("can't find warpId: {}", warpId);
                         return;
                     }
                     boolean isOwner = UUID.fromString(instance.getCreateBy()).equals(player.getUniqueId());
@@ -112,7 +111,7 @@ public class WarpListListener extends BaseGuiListener {
                         }
                     }
                 }).exceptionally(i -> {
-                   Log.error(i, "get warp id {} error", warpId);
+                    Ari.LOG.error(i, "get warp id {} error", warpId);
                    return null;
                 });
             }

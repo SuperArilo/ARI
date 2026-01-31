@@ -1,19 +1,16 @@
 package com.tty.states.action;
 
 import com.tty.Ari;
-import com.tty.Log;
 import com.tty.dto.state.action.PlayerRideActionState;
-import com.tty.lib.services.StateService;
+import com.tty.api.state.StateService;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-
 
 public class PlayerRideActionStateService extends StateService<PlayerRideActionState> {
 
-    public PlayerRideActionStateService(long rate, long c, boolean isAsync, JavaPlugin javaPlugin) {
-        super(rate, c, isAsync, javaPlugin);
+    public PlayerRideActionStateService(long rate, long c, boolean isAsync) {
+        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
     }
 
     @Override
@@ -23,7 +20,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
         String playerName = owner.getName();
         //判断玩家是否已经 ride 了
         if (!this.getStates(owner).isEmpty()) {
-            Log.debug("player {} is sited. skip...", playerName);
+            this.getLog().debug("player {} is sited. skip...", playerName);
             return false;
         }
         //被点击的玩家如果有乘客（隐藏实体
@@ -70,7 +67,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
                 beRidePlayer.addPassenger(i);
                 i.addPassenger(owner);
                 owner.setRotation(location.getYaw(), 0);
-                Log.debug("player {} riding player {}.", owner.getName(), beRidePlayer.getName());
+                this.getLog().debug("player {} riding player {}.", owner.getName(), beRidePlayer.getName());
             }
         );
     }
@@ -88,6 +85,6 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
     @Override
     protected void onServiceAbort(PlayerRideActionState state) {
         state.removeToolEntity(Ari.instance);
-        Log.info("ejected player {}", state.getOwner().getName());
+        this.getLog().info("ejected player {}", state.getOwner().getName());
     }
 }

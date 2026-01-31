@@ -6,7 +6,6 @@ import com.tty.dto.SpawnLocation;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.TeleportType;
-import com.tty.Log;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -35,7 +34,7 @@ public class spawn extends LiteralArgumentCommand {
 
         SpawnLocation value = Ari.C_INSTANCE.getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
         if(value == null) {
-            Log.debug("location null");
+            Ari.LOG.debug("location null");
             ConfigUtils.t("function.spawn.no-spawn", player).thenAccept(player::sendMessage);
             return;
         }

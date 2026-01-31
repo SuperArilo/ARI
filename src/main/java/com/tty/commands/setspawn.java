@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
 import java.util.List;
 
 @CommandMeta(displayName = "setspawn", permission = "ari.command.setspawn", tokenLength = 1)
@@ -36,7 +37,12 @@ public class setspawn extends LiteralArgumentCommand {
         spawnLocation.setPitch(location.getPitch());
         spawnLocation.setYaw(location.getYaw());
 
-        Ari.C_INSTANCE.setValue(Ari.instance, "main.location", FilePath.SPAWN_CONFIG, spawnLocation.toMap());
+        try {
+            Ari.C_INSTANCE.setValue(Ari.instance, "main.location", FilePath.SPAWN_CONFIG, spawnLocation.toMap());
+        } catch (IOException e) {
+            sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-error")));
+            throw new RuntimeException(e);
+        }
 
         ConfigUtils.t("function.spawn.create-success", player).thenAccept(player::sendMessage);
     }

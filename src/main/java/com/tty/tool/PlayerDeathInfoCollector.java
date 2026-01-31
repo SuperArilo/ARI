@@ -3,7 +3,6 @@ package com.tty.tool;
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.enumType.FilePath;
-import com.tty.Log;
 import com.tty.api.PublicFunctionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -65,7 +64,7 @@ public class PlayerDeathInfoCollector {
             List<String> resolvedKeys = new ArrayList<>();
             String basePath = isDestine ? keyPath + ".destine" : keyPath;
             findMessages(basePath, killerName, type, pool, resolvedKeys);
-            Log.debug("DeathMessage resolved keys: {}", String.join(", ", resolvedKeys));
+            Ari.LOG.debug("DeathMessage resolved keys: {}", String.join(", ", resolvedKeys));
             return pool.isEmpty() ? "" : pool.get(PublicFunctionUtils.randomGenerator(0, pool.size() - 1));
         }
 
@@ -105,10 +104,10 @@ public class PlayerDeathInfoCollector {
         info.isEscapeAttempt = false;
         info.isDestine = false;
 
-        Log.debug("death cause resolved: {}", info.deathCause);
+        Ari.LOG.debug("death cause resolved: {}", info.deathCause);
 
         List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(info.victim);
-        Log.debug("damage records count: {}", records.size());
+        Ari.LOG.debug("damage records count: {}", records.size());
 
         if (!records.isEmpty()) {
             Entity firstAttacker = null;
@@ -128,13 +127,13 @@ public class PlayerDeathInfoCollector {
                 if (firstAttacker == null) {
                     firstAttacker = actual;
                     firstAttackLocation = r.location();
-                    Log.debug("first attacker resolved: {}", actual.getType().name());
+                    Ari.LOG.debug("first attacker resolved: {}", actual.getType().name());
                 }
 
                 // 更新最后一个攻击者
                 lastAttacker = actual;
                 lastWeapon = r.weapon();
-                Log.debug("last attacker updated: {}", actual.getType().name());
+                Ari.LOG.debug("last attacker updated: {}", actual.getType().name());
             }
 
             if (lastAttacker != null) {
@@ -147,15 +146,15 @@ public class PlayerDeathInfoCollector {
                 // 判断是否为"注定"死亡
                 info.isDestine = this.determineIfDestine(records, info.victim, firstAttacker, lastAttacker, info.deathCause);
 
-                Log.debug("combat analysis success, killer: {}, weapon: {}", info.killer.getType().name(), info.weapon != null ? info.weapon.getType().name() : "null");
-                Log.debug("escape attempt: {}, destine: {}", info.isEscapeAttempt, info.isDestine);
+                Ari.LOG.debug("combat analysis success, killer: {}, weapon: {}", info.killer.getType().name(), info.weapon != null ? info.weapon.getType().name() : "null");
+                Ari.LOG.debug("escape attempt: {}, destine: {}", info.isEscapeAttempt, info.isDestine);
 
                 // 后备武器获取
                 if (info.weapon == null && info.killer instanceof LivingEntity living) {
                     EntityEquipment eq = living.getEquipment();
                     if (eq != null) {
                         info.weapon = eq.getItemInMainHand();
-                        Log.debug("weapon retrieved from killer's equipment: {}", info.weapon.getType().name());
+                        Ari.LOG.debug("weapon retrieved from killer's equipment: {}", info.weapon.getType().name());
                     }
                 }
 
@@ -173,7 +172,7 @@ public class PlayerDeathInfoCollector {
         }
 
         //无法判断是否为"注定"，默认为false
-        Log.debug("fallback analysis used, killer: {}",
+        Ari.LOG.debug("fallback analysis used, killer: {}",
                 info.killer != null ? info.killer.getType().name() : "null");
 
         return info;
@@ -198,7 +197,7 @@ public class PlayerDeathInfoCollector {
                 if (attribute != null) {
                     double value = attribute.getValue();
                     if (damage >= value) {
-                        Log.debug("destine: instant kill, not destine");
+                        Ari.LOG.debug("destine: instant kill, not destine");
                         return false;
                     }
                 }
@@ -218,7 +217,7 @@ public class PlayerDeathInfoCollector {
 
         // 如果有多个不同的攻击者，就是"注定"（被围攻）
         if (uniqueAttackers.size() > 1) {
-            Log.debug("destine: attacked by {} unique attackers", uniqueAttackers.size());
+            Ari.LOG.debug("destine: attacked by {} unique attackers", uniqueAttackers.size());
             return true;
         }
 
@@ -226,13 +225,13 @@ public class PlayerDeathInfoCollector {
         boolean isIndirectDamage = this.isIndirectDamageCause(deathCause);
         if (isIndirectDamage) {
             if (firstAttacker != null && lastAttacker != null) {
-                Log.debug("destine: indirect damage from different attacker");
+                Ari.LOG.debug("destine: indirect damage from different attacker");
                 return true;
             }
         }
 
         // 其他情况：非"注定"
-        Log.debug("destine: not destine (direct combat, single attacker)");
+        Ari.LOG.debug("destine: not destine (direct combat, single attacker)");
         return false;
     }
 
@@ -242,12 +241,12 @@ public class PlayerDeathInfoCollector {
         if (victim.equals(killer)) return false;
 
         if (firstAttackLocation == null || deathLocation == null) {
-            Log.debug("escape check skipped: location missing");
+            Ari.LOG.debug("escape check skipped: location missing");
             return false;
         }
 
         if (!Objects.equals(firstAttackLocation.getWorld(), deathLocation.getWorld())) {
-            Log.debug("escape check skipped: different worlds");
+            Ari.LOG.debug("escape check skipped: different worlds");
             return false;
         }
 
@@ -265,7 +264,7 @@ public class PlayerDeathInfoCollector {
         double threshold = escapeDistance * escapeDistance;
         boolean escaped = sqDist > threshold;
 
-        Log.debug("escape evaluated: sqDist={}, threshold={}, escaped={}, cause={}", sqDist, threshold, escaped, cause.name());
+        Ari.LOG.debug("escape evaluated: sqDist={}, threshold={}, escaped={}, cause={}", sqDist, threshold, escaped, cause.name());
         return escaped;
     }
 

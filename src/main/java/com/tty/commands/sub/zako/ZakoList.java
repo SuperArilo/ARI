@@ -6,7 +6,6 @@ import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.args.zako.ZakoListArgs;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.lang.LangZakoList;
-import com.tty.Log;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -72,7 +71,7 @@ public class ZakoList extends LiteralArgumentCommand {
                             OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(instancePlayerUUID));
                             String name = offlinePlayer.getName();
                             if (name == null) {
-                                Log.debug("uuid {} player is null. the possible reason is that the player has not logged into the server.", instancePlayerUUID);
+                                Ari.LOG.debug("uuid {} player is null. the possible reason is that the player has not logged into the server.", instancePlayerUUID);
                             }
                             TextComponent set = Ari.COMPONENT_SERVICE.setClickEventText(Ari.C_INSTANCE.getValue("server.player.zako." + (name == null ? "unable-record":"list-show"), FilePath.LANG),
                                     Map.of(LangZakoList.ZAKO_LIST_ITEM_NAME.getType(), Component.text(name == null ? instancePlayerUUID:name)),
@@ -84,7 +83,7 @@ public class ZakoList extends LiteralArgumentCommand {
                         sender.sendMessage(dataPage.build());
                     })
                     .exceptionally(i -> {
-                        Log.error(i);
+                        Ari.LOG.error(i);
                         if (sender instanceof Player player) {
                             ConfigUtils.t("function.zako.list-request-error", player).thenAccept(sender::sendMessage);
                         } else {

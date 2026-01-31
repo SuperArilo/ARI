@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.BanPlayer;
-import com.tty.Log;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -85,7 +84,7 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
                     });
             })
             .exceptionally(e -> {
-                Log.error("delete ban player uuid {} error.", uuid.toString(), e);
+                Ari.LOG.error("delete ban player uuid {} error.", uuid.toString(), e);
                 return null;
             });
     }

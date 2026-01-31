@@ -1,76 +1,79 @@
 package com.tty.states;
 
+import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.gui.BaseInventory;
-import com.tty.lib.Lib;
-import com.tty.api.state.PlayerEditGuiState;
-import com.tty.Log;
-import com.tty.lib.enum_type.FilePath;
-import com.tty.lib.services.StateService;
+import com.tty.api.state.EditGuiState;
+import com.tty.api.state.StateService;
 import com.tty.lib.tool.LibConfigUtils;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public class GuiEditStateService extends StateService<PlayerEditGuiState> {
+public class GuiEditStateService extends StateService<EditGuiState> {
 
-    public GuiEditStateService(long rate, long c, boolean isAsync, JavaPlugin javaPlugin) {
-        super(rate, c, isAsync, javaPlugin);
+    public GuiEditStateService(long rate, long c, boolean isAsync) {
+        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
     }
 
     @Override
-    protected boolean canAddState(PlayerEditGuiState state) {
+    protected boolean canAddState(EditGuiState state) {
         return this.isNotHaveState(state.getOwner());
     }
 
     @Override
-    protected void loopExecution(PlayerEditGuiState state) {
+    protected void loopExecution(EditGuiState state) {
 
         Player owner = (Player) state.getOwner();
-        if (!owner.isOnline()) {
+        if (!owner.isOnline() || owner.isDead()) {
             state.setOver(true);
             return;
         }
         state.setPending(false);
         BaseInventory i = state.getI();
         GuiMeta annotation = i.getClass().getAnnotation(GuiMeta.class);
-        Log.debug("checking player {} edit gui {}. type {}", owner.getName(), annotation.type(), state.getFunctionType());
+        this.getLog().debug("checking player {} edit gui {}, type {}. count = {} max_count = {}",
+                owner.getName(),
+                annotation.type(),
+                state.getFunctionType(),
+                state.getCount(),
+                state.getMax_count()
+        );
     }
 
     @Override
-    protected void abortAddState(PlayerEditGuiState state) {
+    protected void abortAddState(EditGuiState state) {
 
     }
 
     @Override
-    protected void passAddState(PlayerEditGuiState state) {
+    protected void passAddState(EditGuiState state) {
         Player owner = (Player) state.getOwner();
-        int i = Lib.instance.getConfig().getInt("server.gui-edit-timeout", 10);
+        int i = Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new TypeToken<Integer>(){}.getType());
         owner.showTitle(
                 Ari.COMPONENT_SERVICE.setPlayerTitle(
-                        Lib.C_INSTANCE.getValue("base.on-edit.title", FilePath.Lang),
-                        Lib.C_INSTANCE.getValue("base.on-edit.sub-title", FilePath.Lang),
+                        Ari.DATA_SERVICE.getValue("base.on-edit.title"),
+                        Ari.DATA_SERVICE.getValue("base.on-edit.sub-title"),
                         1000,
                         i * 1000L,
                         1000));
     }
 
     @Override
-    protected void onEarlyExit(PlayerEditGuiState state) {
+    protected void onEarlyExit(EditGuiState state) {
         Player owner = (Player) state.getOwner();
-        Log.debug("player {} edit status finish.", owner.getName());
+        this.getLog().debug("player {} edit status finish.", owner.getName());
     }
 
     @Override
-    protected void onFinished(PlayerEditGuiState state) {
+    protected void onFinished(EditGuiState state) {
         Player owner = (Player) state.getOwner();
         owner.sendMessage(LibConfigUtils.t("base.on-edit.timeout-cancel"));
         owner.clearTitle();
-        Log.debug("player {} edit status timeout.", owner.getName());
+        this.getLog().debug("player {} edit status timeout.", owner.getName());
     }
 
     @Override
-    protected void onServiceAbort(PlayerEditGuiState state) {
+    protected void onServiceAbort(EditGuiState state) {
 
     }
 }

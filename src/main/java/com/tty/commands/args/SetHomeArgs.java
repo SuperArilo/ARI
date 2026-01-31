@@ -7,7 +7,6 @@ import com.tty.Ari;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.ServerHome;
 import com.tty.entity.cache.PlayerHomeRepository;
-import com.tty.Log;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -103,7 +102,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
                     return ConfigUtils.t("function.home.create-success", player).thenAccept(sender::sendMessage);
                 })
                 .exceptionally(ex -> {
-                    Log.error(ex, "create home error");
+                    Ari.LOG.error(ex, "create home error");
                     ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
                     return null;
                 });

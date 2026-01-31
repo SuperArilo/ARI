@@ -10,7 +10,6 @@ import com.tty.api.dto.gui.Mask;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseDataItemConfigInventory;
-import com.tty.Log;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.FormatUtils;
@@ -34,6 +33,7 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     public HomeList(Player player) {
         super(Ari.instance, player, Ari.COMPONENT_SERVICE);
+        this.debug(Ari.DEBUG);
     }
 
     @Override
@@ -51,8 +51,8 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             ServerHome ph = this.data.get(i);
             ItemStack itemStack = this.createItemStack(ph.getShowMaterial());
             if (itemStack == null) {
-                Log.error("There is a problem with the homeID: [{}] of the player: [{}]", ph.getHomeId(), this.player.getName());
-                Log.warn("Skip the rendering homeId [{}] process...", ph.getHomeId());
+                Ari.LOG.error("There is a problem with the homeID: [{}] of the player: [{}]", ph.getHomeId(), this.player.getName());
+                Ari.LOG.warn("Skip the rendering homeId [{}] process...", ph.getHomeId());
                 this.player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
                 continue;
             }

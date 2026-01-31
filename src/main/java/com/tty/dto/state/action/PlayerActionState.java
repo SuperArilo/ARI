@@ -1,7 +1,6 @@
 package com.tty.dto.state.action;
 
 import com.tty.Ari;
-import com.tty.Log;
 import com.tty.api.FormatUtils;
 import com.tty.api.state.State;
 import lombok.Getter;
@@ -29,8 +28,8 @@ public class PlayerActionState extends State {
     public void createToolEntity(@NotNull World world, @NotNull Location location, Consumer<AreaEffectCloud> i) {
         if (this.tool_entity != null) {
             Location l = tool_entity.getLocation();
-            Log.error("tool_entity already exists. location {}", FormatUtils.XYZText(l.getX(), l.getY(), l.getZ()));
-            Log.warn("removing...");
+            Ari.LOG.error("tool_entity already exists. location {}", FormatUtils.XYZText(l.getX(), l.getY(), l.getZ()));
+            Ari.LOG.warn("removing...");
             this.tool_entity.remove();
             this.tool_entity = null;
         }
@@ -58,7 +57,7 @@ public class PlayerActionState extends State {
             Ari.SCHEDULER.runAtEntity(plugin,
                     this.tool_entity,
                     i-> this.cancelTaskEntity(),
-                    () -> Log.error("remove tool_entity error."));
+                    () -> Ari.LOG.error("remove tool_entity error."));
         } else {
             this.cancelTaskEntity();
         }
@@ -68,11 +67,11 @@ public class PlayerActionState extends State {
     private void cancelTaskEntity() {
         this.getOwner().eject();
         if (!Bukkit.getServer().isStopping()) {
-            Log.debug("remove entity.");
+            Ari.LOG.debug("remove entity.");
             this.tool_entity.remove();
         }
         this.tool_entity = null;
         this.setOver(true);
-        Log.debug("player {} ejected, remove tool entity", this.getOwner().getName());
+        Ari.LOG.debug("player {} ejected, remove tool entity", this.getOwner().getName());
     }
 }

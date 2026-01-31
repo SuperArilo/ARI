@@ -5,7 +5,6 @@ import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.dto.bar.PlayerAttackBar;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.LangPlayerDamageBar;
-import com.tty.Log;
 import com.tty.api.task.CancellableTask;
 import com.tty.api.FormatUtils;
 import com.tty.tool.ConfigUtils;
@@ -59,7 +58,7 @@ public class MobBossBarListener implements Listener {
         if (attacker == null) {
             attacker = event.getDamageSource().getDirectEntity();
         }
-        Log.debug("attacker: {}, event: {}, entity: {}, damage: {}, health: {}, damageType: {}, status: {}.",
+        Ari.LOG.debug("attacker: {}, event: {}, entity: {}, damage: {}, health: {}, damageType: {}, status: {}.",
                 attacker == null ? "null":attacker.getName(),
                 event.getEventName(),
                 victim.getName(),
@@ -273,7 +272,7 @@ public class MobBossBarListener implements Listener {
                 }
             }
             removedCountByPlayer.forEach((player, count) ->
-                    Log.debug("mob bar expired: player={}, removedEntities={}, current_bar_count={}, max_bar_count={}",
+                    Ari.LOG.debug("mob bar expired: player={}, removedEntities={}, current_bar_count={}, max_bar_count={}",
                             player.getName(), count, this.playerBars.getOrDefault(player, new LinkedHashMap<>()).size(), this.maxBar)
             );
         }, 1L, this.tick_clear_dealy * 20L);

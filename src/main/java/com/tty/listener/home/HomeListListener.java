@@ -8,7 +8,6 @@ import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
 import com.tty.gui.home.HomeEditor;
 import com.tty.gui.home.HomeList;
-import com.tty.Log;
 import com.tty.api.enumType.FunctionType;
 import com.tty.enumType.TeleportType;
 import com.tty.api.FormatUtils;
@@ -73,7 +72,7 @@ public class HomeListListener extends BaseGuiListener {
                         return CompletableFuture.completedFuture(true);
                     }).whenComplete((i, ex) -> {
                        if (ex != null) {
-                           Log.error(ex, "error on get player homes");
+                           Ari.LOG.error(ex, "error on get player homes");
                        }
                         Ari.SCHEDULER.run(Ari.instance, o -> inventory.close());
                     });

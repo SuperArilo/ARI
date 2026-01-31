@@ -26,6 +26,7 @@ public class WarpEditor extends BaseConfigInventory {
 
     public WarpEditor(ServerWarp serverWarp, Player player) {
         super(Ari.instance, player, Ari.COMPONENT_SERVICE);
+        this.debug(Ari.DEBUG);
         this.currentWarp = serverWarp;
     }
 

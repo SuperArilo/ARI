@@ -45,5 +45,9 @@ public final class RepositoryManager {
         }
     }
 
+    public void debug(boolean status) {
+        this.repositories.forEach((k, v) -> v.debug(status));
+    }
+
 }
 

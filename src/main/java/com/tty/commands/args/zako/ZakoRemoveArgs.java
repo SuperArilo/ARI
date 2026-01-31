@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.WhitelistInstance;
-import com.tty.Log;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -67,7 +66,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
                 ConfigUtils.t(key).thenAccept(sender::sendMessage);
             }
         }).exceptionally(i -> {
-            Log.error(i);
+            Ari.LOG.error(i);
             sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             return null;
         });

@@ -2,7 +2,6 @@ package com.tty.listener.player;
 
 import com.tty.Ari;
 import com.tty.enumType.lang.LangPlayerDeath;
-import com.tty.Log;
 import com.tty.tool.PlayerDeathInfoCollector;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -25,7 +24,7 @@ public class CustomPlayerDeathListener implements Listener {
         if (!Ari.instance.getConfig().getBoolean("server.custom-death", false)) return;
 
         PlayerDeathInfoCollector.DeathInfo info = collector.collect(event);
-        Log.debug(info.toString());
+        Ari.LOG.debug(info.toString());
 
         String message = getDeathMessage(info, event);
         Component killerInfo = info.killer != null ?
@@ -65,7 +64,7 @@ public class CustomPlayerDeathListener implements Listener {
                 if (event.getEntity().getLastDamageCause() instanceof EntityDamageByBlockEvent blockEvent) {
                     Block block = blockEvent.getDamager();
                     if (block == null) {
-                        Log.error("can not find contact block");
+                        Ari.LOG.error("can not find contact block");
                         return null;
                     }
                     return info.getRandomOfList(baseKey + "block." + block.getType().name().toLowerCase(), info.isDestine);
@@ -83,13 +82,13 @@ public class CustomPlayerDeathListener implements Listener {
                             default -> material.name().toLowerCase();
                         };
                     } else {
-                        Log.error("can not find falling block");
+                        Ari.LOG.error("can not find falling block");
                         return null;
                     }
                 }
 
                 if (material == null) {
-                    Log.error("custom-death: can not find material data");
+                    Ari.LOG.error("custom-death: can not find material data");
                     return null;
                 }
                 return info.getRandomOfList(baseKey + "falling-blocks." + key, info.isDestine);

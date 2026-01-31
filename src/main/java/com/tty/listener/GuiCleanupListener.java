@@ -3,7 +3,6 @@ package com.tty.listener;
 import com.tty.Ari;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.gui.OfflineNBTEnderCheat;
-import com.tty.Log;
 import com.tty.enumType.GuiType;
 import com.tty.api.gui.BaseInventory;
 import de.tr7zw.nbtapi.NBT;
@@ -57,11 +56,11 @@ public class GuiCleanupListener implements Listener {
                 Ari.SCHEDULER.runAsync(Ari.instance, i -> {
                     try {
                         data.save();
-                        Log.debug("ender chest nbt save player {} success.", cheat.getTarget().toString());
+                        Ari.LOG.debug("ender chest nbt save player {} success.", cheat.getTarget().toString());
                         OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(cheat.getTarget());
                         Ari.SCHEDULER.run(Ari.instance, t -> baseInventory.cleanup());
                     } catch (IOException e) {
-                        Log.error(e, "ender chest nbt save error. ");
+                        Ari.LOG.error(e, "ender chest nbt save error. ");
                     }
                 });
             } else {

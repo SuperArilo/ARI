@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.WhitelistInstance;
-import com.tty.Log;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -81,7 +80,7 @@ public class ZakoAddArgs extends RequiredArgumentCommand<String> {
             })
             .whenComplete((v, ex) -> {
                 if (ex != null) {
-                    Log.error(ex, "add zako error.");
+                    Ari.LOG.error(ex, "add zako error.");
                     sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                 }
             });

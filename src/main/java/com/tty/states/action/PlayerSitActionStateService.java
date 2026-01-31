@@ -7,10 +7,9 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import com.tty.Ari;
-import com.tty.Log;
 import com.tty.dto.state.action.PlayerSitActionState;
 import com.tty.enumType.FilePath;
-import com.tty.lib.services.StateService;
+import com.tty.api.state.StateService;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -22,7 +21,6 @@ import org.bukkit.block.data.type.Slab;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.bukkit.util.VoxelShape;
@@ -31,8 +29,8 @@ import java.util.List;
 
 public class PlayerSitActionStateService extends StateService<PlayerSitActionState> {
 
-    public PlayerSitActionStateService(long rate, long c, boolean isAsync, JavaPlugin javaPlugin) {
-        super(rate, c, isAsync, javaPlugin);
+    public PlayerSitActionStateService(long rate, long c, boolean isAsync) {
+        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
     }
 
     @Override
@@ -41,14 +39,14 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         String playerName = owner.getName();
         //判断玩家是否已经 sit 了
         if (!this.getStates(owner).isEmpty()) {
-            Log.debug("player {} is sited. skip...", playerName);
+            this.getLog().debug("player {} is sited. skip...", playerName);
             return false;
         }
         //获取列表判断是否满足的方块
         Block sitBlock = state.getSitBlock();
         String sitBlockName = sitBlock.getType().name();
         if (this.getDisableList().contains(sitBlockName)) {
-            Log.debug("player {} interact the block {} is disabled", playerName, sitBlockName);
+            this.getLog().debug("player {} interact the block {} is disabled", playerName, sitBlockName);
             return false;
         }
 
@@ -84,7 +82,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
 
         Player owner = (Player) state.getOwner();
         if (state.getTool_entity() == null) {
-            Log.error("player {} tool entity is null", owner.getName());
+            this.getLog().error("player {} tool entity is null", owner.getName());
             state.setOver(true);
             return;
         }
@@ -124,13 +122,13 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             }
         );
 
-        Log.debug("player {} sit block {}.", state.getOwner().getName(), sitBlock.getType().name());
+        this.getLog().debug("player {} sit block {}.", state.getOwner().getName(), sitBlock.getType().name());
     }
 
     @Override
     protected void onEarlyExit(PlayerSitActionState state) {
         String playerName = state.getOwner().getName();
-        Log.debug("player {} sit check status fail, remove tool entity", playerName);
+        this.getLog().debug("player {} sit check status fail, remove tool entity", playerName);
         state.removeToolEntity(Ari.instance);
     }
 
@@ -245,7 +243,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
 
     private boolean worldGuardCanInteract(Player player, Block block) {
         if (!this.hasWorldGuard()) {
-            Log.debug("not have WorldGuard. skip...");
+            this.getLog().debug("not have WorldGuard. skip...");
             return true;
         }
         RegionQuery query = WorldGuard.getInstance()
