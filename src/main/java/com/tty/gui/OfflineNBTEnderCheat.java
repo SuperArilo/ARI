@@ -2,7 +2,6 @@ package com.tty.gui;
 
 import com.tty.api.Log;
 import com.tty.api.annotations.gui.GuiMeta;
-import com.tty.enumType.GuiType;
 import com.tty.api.gui.BaseInventory;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import lombok.Getter;
