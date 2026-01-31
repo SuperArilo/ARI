@@ -5,7 +5,7 @@ import com.tty.Ari;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.BanPlayer;
 import com.tty.entity.WhitelistInstance;
-import com.tty.lib.enum_type.FilePath;
+import com.tty.enumType.FilePath;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.PublicFunctionUtils;
@@ -84,7 +84,8 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
                 });
 
             }).exceptionally(e -> {
-                Ari.LOG.error(e, Ari.C_INSTANCE.getValue("function.zako.add-failure", FilePath.Lang));
+                    Ari.C_INSTANCE.getValue("function.zako.add-failure", FilePath.LANG);
+                Ari.LOG.error(e);
                 return null;
             });
     }

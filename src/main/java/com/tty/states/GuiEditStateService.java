@@ -6,7 +6,6 @@ import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.gui.BaseInventory;
 import com.tty.api.state.EditGuiState;
 import com.tty.api.state.StateService;
-import com.tty.lib.tool.LibConfigUtils;
 import org.bukkit.entity.Player;
 
 public class GuiEditStateService extends StateService<EditGuiState> {
@@ -67,7 +66,7 @@ public class GuiEditStateService extends StateService<EditGuiState> {
     @Override
     protected void onFinished(EditGuiState state) {
         Player owner = (Player) state.getOwner();
-        owner.sendMessage(LibConfigUtils.t("base.on-edit.timeout-cancel"));
+        owner.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-edit.timeout-cancel")));
         owner.clearTitle();
         this.getLog().debug("player {} edit status timeout.", owner.getName());
     }

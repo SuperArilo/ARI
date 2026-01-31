@@ -2,6 +2,11 @@ package com.tty.tool;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.service.impl.PlaceholderRegistryImpl;
+import com.tty.api.service.placeholder.BasePlaceholder;
+import com.tty.api.service.placeholder.PlaceholderDefinition;
+import com.tty.api.service.placeholder.PlaceholderRegistry;
+import com.tty.api.service.placeholder.PlaceholderResolve;
 import com.tty.commands.args.zako.ZakoInfoArgs;
 import com.tty.dto.SleepingWorld;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
@@ -13,8 +18,6 @@ import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.*;
 import com.tty.api.state.State;
 import com.tty.api.enumType.Operator;
-import com.tty.lib.services.impl.PlaceholderRegistryImpl;
-import com.tty.lib.services.placeholder.*;
 import com.tty.api.FormatUtils;
 import com.tty.api.TimeFormatUtils;
 import com.tty.listener.player.PlayerSkipNight;
@@ -36,7 +39,7 @@ import static com.tty.listener.teleport.RecordLastLocationListener.TELEPORT_LAST
 public class Placeholder extends BasePlaceholder<FilePath> {
 
     public Placeholder() {
-        super(Ari.C_INSTANCE, FilePath.LANG);
+        super(Ari.C_INSTANCE, FilePath.LANG, Ari.COMPONENT_SERVICE);
         this.init();
     }
 
