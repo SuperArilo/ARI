@@ -6,7 +6,6 @@ import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
-import com.tty.enumType.GuiType;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseConfigInventory;

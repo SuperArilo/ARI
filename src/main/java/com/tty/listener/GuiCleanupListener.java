@@ -42,7 +42,7 @@ public class GuiCleanupListener implements Listener {
         if (inventory.getHolder() instanceof BaseInventory baseInventory) {
             GuiMeta annotation = baseInventory.getClass().getAnnotation(GuiMeta.class);
             if (annotation == null) return;
-            if (annotation.type().equals(GuiType.OFFLINE_ENDERCHEST) && baseInventory instanceof OfflineNBTEnderCheat cheat) {
+            if (annotation.type().equals(GuiType.OFFLINE_ENDERCHEST.getType()) && baseInventory instanceof OfflineNBTEnderCheat cheat) {
                 NBTFileHandle data = cheat.getData();
                 data.removeKey("EnderItems");
                 ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
