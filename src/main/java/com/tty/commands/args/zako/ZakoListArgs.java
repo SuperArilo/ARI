@@ -38,4 +38,10 @@ public class ZakoListArgs extends RequiredArgumentCommand<Integer> {
     public void execute(CommandSender sender, String[] args) {
         Build_Zako_List(sender, Integer.parseInt(args[2]));
     }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

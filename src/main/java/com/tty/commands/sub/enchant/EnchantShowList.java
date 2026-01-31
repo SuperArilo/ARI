@@ -50,4 +50,9 @@ public class EnchantShowList extends RequiredArgumentCommand<String> {
         return CompletableFuture.completedFuture(Set.of());
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

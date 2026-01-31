@@ -26,4 +26,9 @@ public class Reload extends LiteralArgumentCommand {
         Bukkit.getPluginManager().callEvent(new CustomPluginReloadEvent(sender));
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

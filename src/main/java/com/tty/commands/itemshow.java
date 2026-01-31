@@ -35,4 +35,9 @@ public class itemshow extends LiteralArgumentCommand {
                 Ari.SCHEDULER.run(Ari.instance, i -> Bukkit.broadcast(t)));
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

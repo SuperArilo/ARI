@@ -86,4 +86,10 @@ public class ZakoAddArgs extends RequiredArgumentCommand<String> {
                 }
             });
     }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

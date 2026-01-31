@@ -22,4 +22,9 @@ public class itemname extends LiteralArgumentCommand {
     public void execute(CommandSender sender, String[] args) {
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

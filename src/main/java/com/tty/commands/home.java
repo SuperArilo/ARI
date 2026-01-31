@@ -23,9 +23,12 @@ public class home extends LiteralArgumentCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.HOME_CONFIG.name()))) return;
         Player player = (Player) sender;
         player.openInventory(new HomeList(player).getInventory());
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.HOME_CONFIG.name()));
+    }
 }

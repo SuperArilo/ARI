@@ -29,7 +29,6 @@ public class back extends LiteralArgumentCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.BACK_CONFIG.name()))) return;
 
         Player player = (Player) sender;
         Location beforeLocation = TELEPORT_LAST_LOCATION.get(player.getUniqueId());
@@ -47,4 +46,8 @@ public class back extends LiteralArgumentCommand {
                         TeleportType.BACK));
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.BACK_CONFIG.name()));
+    }
 }

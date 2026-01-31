@@ -55,4 +55,10 @@ public class ItemloreAddArgs extends RequiredArgumentCommand<String> {
         itemMeta.lore(lore);
         mainHand.setItemMeta(itemMeta);
     }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

@@ -24,4 +24,9 @@ public class ItemLoreAdd extends LiteralArgumentCommand {
 
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

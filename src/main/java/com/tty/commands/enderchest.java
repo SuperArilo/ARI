@@ -25,4 +25,9 @@ public class enderchest extends LiteralArgumentCommand {
         player.openInventory(player.getEnderChest());
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

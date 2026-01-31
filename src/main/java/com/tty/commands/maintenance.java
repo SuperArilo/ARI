@@ -54,4 +54,10 @@ public class maintenance extends LiteralArgumentCommand {
     private int getMaintenanceKickDelay() {
         return Ari.instance.getConfig().getInt("server.maintenance.kick_delay", 10);
     }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

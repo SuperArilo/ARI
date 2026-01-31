@@ -51,4 +51,9 @@ public class EnchantLevelArgs extends EnchantBaseArgs<Integer> {
         this.enchant(sender, itemInMainHand, resultArgs);
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

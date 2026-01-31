@@ -40,4 +40,10 @@ public class EnchantForceLevel extends EnchantBaseArgs<Boolean> {
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
         this.enchant(sender, itemInMainHand, resultArgs);
     }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

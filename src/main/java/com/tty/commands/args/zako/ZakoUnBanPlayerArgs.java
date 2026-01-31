@@ -89,4 +89,10 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
                 return null;
             });
     }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

@@ -33,4 +33,9 @@ public class infinitytotem extends LiteralArgumentCommand {
         }
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

@@ -23,4 +23,9 @@ public class ZakoInfo extends LiteralArgumentCommand {
 
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

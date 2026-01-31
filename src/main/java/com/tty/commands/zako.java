@@ -28,4 +28,9 @@ public class zako extends LiteralArgumentCommand {
     public void execute(CommandSender sender, String[] args) {
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

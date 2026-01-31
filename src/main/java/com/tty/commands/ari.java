@@ -43,4 +43,9 @@ public class ari extends LiteralArgumentCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {}
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

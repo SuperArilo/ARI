@@ -72,4 +72,10 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
             return null;
         });
     }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

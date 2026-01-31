@@ -25,7 +25,6 @@ public class setspawn extends LiteralArgumentCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.SPAWN_CONFIG.name()))) return;
 
         Player player = (Player) sender;
         Location location = player.getLocation();
@@ -40,6 +39,11 @@ public class setspawn extends LiteralArgumentCommand {
         Ari.C_INSTANCE.setValue(Ari.instance, "main.location", FilePath.SPAWN_CONFIG, spawnLocation.toMap());
 
         ConfigUtils.t("function.spawn.create-success", player).thenAccept(player::sendMessage);
+    }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.SPAWN_CONFIG.name()));
     }
 
 }

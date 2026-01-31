@@ -64,4 +64,10 @@ public class ItemLoreRemoveArgs extends RequiredArgumentCommand<Integer> {
         itemMeta.lore(lore);
         mainHand.setItemMeta(itemMeta);
     }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

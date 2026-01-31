@@ -90,4 +90,9 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
             });
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

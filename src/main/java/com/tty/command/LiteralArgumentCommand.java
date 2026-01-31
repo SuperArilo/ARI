@@ -6,7 +6,6 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.tty.Ari;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
-import com.tty.api.command.ArgumentCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -14,7 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings("UnstableApiUsage")
-public abstract class LiteralArgumentCommand extends PreCommand implements ArgumentCommand {
+public abstract class LiteralArgumentCommand extends PreCommand {
 
     @Override
     public int preExecute(CommandContext<CommandSourceStack> ctx) {

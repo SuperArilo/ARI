@@ -48,4 +48,10 @@ public class ItemNameArgs extends RequiredArgumentCommand<String> {
         itemMeta.displayName(Ari.COMPONENT_SERVICE.text(args[1]));
         mainHand.setItemMeta(itemMeta);
     }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

@@ -1,10 +1,12 @@
 package com.tty.commands;
 
+import com.tty.Ari;
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.args.SetHomeArgs;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.enumType.FilePath;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -21,6 +23,11 @@ public class sethome extends LiteralArgumentCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
 
+    }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.HOME_CONFIG.name()));
     }
 
 }

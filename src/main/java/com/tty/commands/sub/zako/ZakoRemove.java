@@ -23,4 +23,9 @@ public class ZakoRemove extends LiteralArgumentCommand {
 
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

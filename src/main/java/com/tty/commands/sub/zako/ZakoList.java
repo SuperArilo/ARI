@@ -96,4 +96,9 @@ public class ZakoList extends LiteralArgumentCommand {
         });
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

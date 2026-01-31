@@ -102,4 +102,10 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
         if (onlinePlayers.isEmpty() || args.length != 3) return CompletableFuture.completedFuture(strings);
         return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[2], strings));
     }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

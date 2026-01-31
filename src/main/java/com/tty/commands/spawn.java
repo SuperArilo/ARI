@@ -30,7 +30,6 @@ public class spawn extends LiteralArgumentCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.SPAWN_CONFIG.name()))) return;
 
         Player player = (Player) sender;
 
@@ -49,4 +48,8 @@ public class spawn extends LiteralArgumentCommand {
                     TeleportType.SPAWN));
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.SPAWN_CONFIG.name()));
+    }
 }

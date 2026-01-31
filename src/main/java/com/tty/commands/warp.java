@@ -23,9 +23,12 @@ public class warp extends LiteralArgumentCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.WARP_CONFIG.name()))) return;
         Player player = (Player) sender;
         player.openInventory(new WarpList(player).getInventory());
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.WARP_CONFIG.name()));
+    }
 }

@@ -46,7 +46,6 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.WARP_CONFIG.name()))) return;
 
         String warpId = args[1];
         Player player = (Player) sender;
@@ -120,5 +119,10 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
                     ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
                     return null;
                 });
+    }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.WARP_CONFIG.name()));
     }
 }

@@ -23,4 +23,9 @@ public class time extends LiteralArgumentCommand {
 
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

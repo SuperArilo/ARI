@@ -83,4 +83,9 @@ public class ZakoInfoArgs extends RequiredArgumentCommand<String> {
                 + "ss" + Objects.toString(service.getValue("base.time-format.second"), "");
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

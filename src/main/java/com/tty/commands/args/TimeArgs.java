@@ -70,4 +70,10 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
         }
         player.sendMessage(Ari.COMPONENT_SERVICE.text(value, Map.of(LangTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.tAfter("server.time.name." + period.getDescription()))));
     }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

@@ -80,12 +80,16 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
 
 
     public boolean preCheckIsNotPass(CommandSender sender, String[] args) {
-        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.TPA_CONFIG.name()))) return true;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
         if (player == null || sender.getName().equals(player.getName())) {
             ConfigUtils.t("teleport.unable-player", (Player) sender).thenAccept(sender::sendMessage);
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.TPA_CONFIG.name()));
     }
 }

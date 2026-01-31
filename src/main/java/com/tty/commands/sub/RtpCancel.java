@@ -37,4 +37,9 @@ public class RtpCancel extends LiteralArgumentCommand {
         }
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
 }

@@ -25,7 +25,6 @@ public class rtp extends LiteralArgumentCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!this.isDisabledInGame(sender, Ari.C_INSTANCE.getObject(FilePath.RTP_CONFIG.name()))) return;
         Player player = (Player) sender;
         Ari.STATE_MACHINE_MANAGER
                 .get(RandomTpStateService.class)
@@ -35,4 +34,8 @@ public class rtp extends LiteralArgumentCommand {
                         player.getWorld()));
     }
 
+    @Override
+    protected boolean isDisabledInGame() {
+        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.RTP_CONFIG.name()));
+    }
 }

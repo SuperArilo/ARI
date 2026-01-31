@@ -1,13 +1,11 @@
 package com.tty.command;
 
-
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
 import com.tty.Ari;
 import com.tty.api.annotations.command.CommandMeta;
-import com.tty.api.command.ArgumentCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -20,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 
 @SuppressWarnings("UnstableApiUsage")
-public abstract class RequiredArgumentCommand<T> extends PreCommand implements ArgumentCommand {
+public abstract class RequiredArgumentCommand<T> extends PreCommand {
 
     @Override
     public CommandNode<CommandSourceStack> toBrigadier() {
