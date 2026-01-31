@@ -2,7 +2,7 @@ package com.tty.listener.player;
 
 import com.tty.Ari;
 import com.tty.enumType.lang.LangPlayerDeath;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.tool.PlayerDeathInfoCollector;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;

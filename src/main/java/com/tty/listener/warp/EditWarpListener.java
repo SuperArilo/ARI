@@ -8,7 +8,7 @@ import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
 import com.tty.gui.warp.WarpEditor;
 import com.tty.gui.warp.WarpList;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.repository.EntityRepository;

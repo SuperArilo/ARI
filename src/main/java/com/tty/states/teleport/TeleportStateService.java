@@ -3,7 +3,7 @@ package com.tty.states.teleport;
 import com.tty.Ari;
 import com.tty.dto.state.teleport.PlayerToPlayerState;
 import com.tty.enumType.TeleportType;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.state.State;
 import com.tty.dto.state.CooldownState;
 import com.tty.dto.state.teleport.EntityToLocationCallbackState;

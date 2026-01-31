@@ -5,7 +5,7 @@ import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.gui.BaseInventory;
 import com.tty.lib.Lib;
 import com.tty.api.state.PlayerEditGuiState;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.lib.enum_type.FilePath;
 import com.tty.lib.services.StateService;
 import com.tty.lib.tool.LibConfigUtils;

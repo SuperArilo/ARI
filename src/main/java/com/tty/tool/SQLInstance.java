@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInt
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.tty.Ari;
 import com.tty.enumType.SqlTable;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.enumType.SQLType;
 import com.tty.mapper.*;
 import com.zaxxer.hikari.HikariDataSource;

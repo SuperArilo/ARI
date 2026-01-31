@@ -1,7 +1,7 @@
 package com.tty.states.teleport;
 
 import com.tty.Ari;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
 import com.tty.lib.services.StateService;
 import com.tty.states.CoolDownStateService;

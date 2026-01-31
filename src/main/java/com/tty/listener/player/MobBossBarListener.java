@@ -5,7 +5,7 @@ import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.dto.bar.PlayerAttackBar;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.LangPlayerDamageBar;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.task.CancellableTask;
 import com.tty.api.FormatUtils;
 import com.tty.tool.ConfigUtils;

@@ -1,7 +1,7 @@
 package com.tty.listener;
 
 import com.tty.Ari;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.listener.BaseEditFunctionGuiListener;
 import com.tty.api.state.PlayerEditGuiState;
 import com.tty.enumType.GuiType;

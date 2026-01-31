@@ -3,7 +3,7 @@ package com.tty.tool;
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.enumType.FilePath;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.PublicFunctionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

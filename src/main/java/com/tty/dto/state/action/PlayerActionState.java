@@ -1,7 +1,7 @@
 package com.tty.dto.state.action;
 
 import com.tty.Ari;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.FormatUtils;
 import com.tty.api.state.State;
 import lombok.Getter;

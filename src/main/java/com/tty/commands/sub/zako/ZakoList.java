@@ -6,7 +6,7 @@ import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.args.zako.ZakoListArgs;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.lang.LangZakoList;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;

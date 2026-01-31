@@ -2,7 +2,7 @@ package com.tty.dto;
 
 import com.tty.Ari;
 import com.tty.function.TimeManager;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.enumType.TimePeriod;
 import lombok.Getter;
 import org.bukkit.GameRule;

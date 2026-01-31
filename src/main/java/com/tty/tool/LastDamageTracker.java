@@ -1,6 +1,6 @@
 package com.tty.tool;
 
-import com.tty.api.Log;
+import com.tty.Log;
 import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;

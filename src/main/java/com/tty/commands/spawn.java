@@ -6,7 +6,7 @@ import com.tty.dto.SpawnLocation;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.TeleportType;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;

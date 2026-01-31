@@ -1,7 +1,7 @@
 package com.tty.states.action;
 
 import com.tty.Ari;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.dto.state.action.PlayerRideActionState;
 import com.tty.lib.services.StateService;
 import org.bukkit.Location;

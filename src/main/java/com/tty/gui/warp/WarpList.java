@@ -12,7 +12,7 @@ import com.tty.api.dto.gui.Mask;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseDataItemConfigInventory;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import net.kyori.adventure.text.Component;

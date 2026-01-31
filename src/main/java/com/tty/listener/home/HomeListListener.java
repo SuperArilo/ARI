@@ -8,7 +8,7 @@ import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
 import com.tty.gui.home.HomeEditor;
 import com.tty.gui.home.HomeList;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.enumType.FunctionType;
 import com.tty.enumType.TeleportType;
 import com.tty.api.FormatUtils;

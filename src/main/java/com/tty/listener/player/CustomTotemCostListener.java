@@ -5,7 +5,7 @@ import com.tty.Ari;
 import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.commands.infinitytotem;
 import com.tty.enumType.FilePath;
-import com.tty.api.Log;
+import com.tty.Log;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;

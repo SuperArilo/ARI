@@ -5,7 +5,7 @@ import com.tty.commands.infinitytotem;
 import com.tty.dto.SpawnLocation;
 import com.tty.dto.event.CustomPlayerRespawnEvent;
 import com.tty.enumType.FilePath;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.ServerPlatform;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

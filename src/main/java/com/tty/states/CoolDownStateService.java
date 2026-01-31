@@ -1,7 +1,7 @@
 package com.tty.states;
 
 import com.tty.Ari;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.dto.state.CooldownState;
 import com.tty.lib.services.StateService;
 import org.bukkit.entity.Entity;

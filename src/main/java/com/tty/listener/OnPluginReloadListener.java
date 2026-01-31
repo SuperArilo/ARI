@@ -1,7 +1,7 @@
 package com.tty.listener;
 
 import com.tty.Ari;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.states.PlayerSaveStateService;
 import com.tty.states.teleport.RandomTpStateService;

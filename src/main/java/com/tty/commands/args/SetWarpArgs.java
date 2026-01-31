@@ -7,7 +7,7 @@ import com.tty.Ari;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.ServerWarp;
 import com.tty.entity.cache.ServerWarpRepository;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;

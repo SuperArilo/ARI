@@ -3,7 +3,7 @@ package com.tty.states.teleport;
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.dto.rtp.RtpConfig;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.dto.state.teleport.RandomTpState;
 import com.tty.enumType.FilePath;

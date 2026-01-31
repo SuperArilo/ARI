@@ -9,7 +9,7 @@ import com.tty.enumType.lang.LangVault;
 import com.tty.enumType.GuiType;
 import com.tty.gui.warp.WarpEditor;
 import com.tty.gui.warp.WarpList;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.enumType.FunctionType;
 import com.tty.enumType.TeleportType;
 import com.tty.api.FormatUtils;

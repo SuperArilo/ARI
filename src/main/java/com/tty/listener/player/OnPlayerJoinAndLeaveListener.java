@@ -11,7 +11,7 @@ import com.tty.entity.ServerPlayer;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
 import com.tty.api.repository.EntityRepository;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.api.enumType.Operator;
 import com.tty.states.PlayerSaveStateService;
 import com.tty.tool.ConfigUtils;

@@ -5,7 +5,7 @@ import com.tty.Ari;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.BanPlayer;
 import com.tty.entity.WhitelistInstance;
-import com.tty.api.Log;
+import com.tty.Log;
 import com.tty.lib.enum_type.FilePath;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
