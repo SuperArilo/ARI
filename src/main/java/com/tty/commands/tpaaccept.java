@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-@CommandMeta(displayName = "tpaaccept", permission = "ri.command.tpaaccept", tokenLength = 2)
+@CommandMeta(displayName = "tpaaccept", permission = "ari.command.tpaaccept", tokenLength = 2)
 @LiteralCommand
 public class tpaaccept extends LiteralArgumentCommand {
 
