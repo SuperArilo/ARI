@@ -7,7 +7,7 @@ import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
-import com.tty.api.enumType.GuiType;
+import com.tty.enumType.GuiType;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseDataItemConfigInventory;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-@GuiMeta(type = GuiType.HOME_LIST)
+@GuiMeta(type = "home_list")
 public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     public HomeList(Player player) {

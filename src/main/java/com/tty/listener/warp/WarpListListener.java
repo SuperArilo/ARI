@@ -6,7 +6,7 @@ import com.tty.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.LangVault;
-import com.tty.api.enumType.GuiType;
+import com.tty.enumType.GuiType;
 import com.tty.gui.warp.WarpEditor;
 import com.tty.gui.warp.WarpList;
 import com.tty.api.Log;
@@ -116,8 +116,8 @@ public class WarpListListener extends BaseGuiListener {
                    return null;
                 });
             }
-            case PREV -> warpList.prev();
-            case NEXT -> warpList.next();
+            case PREV_PAGE -> warpList.prev();
+            case NEXT_PAGE -> warpList.next();
         }
     }
 }

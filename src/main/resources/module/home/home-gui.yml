@@ -14,14 +14,14 @@ functionItems:
       - '&6点击返回或者关闭'
   prev:
     name: '上一页'
-    type: PREV
+    type: PREV_PAGE
     material: arrow
     slot: [20]
     lore:
       - '&6点击切换到上一页'
   next:
     name: '下一页'
-    type: NEXT
+    type: NEXT_PAGE
     material: arrow
     slot: [24]
     lore:

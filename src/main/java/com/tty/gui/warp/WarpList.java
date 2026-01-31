@@ -9,7 +9,7 @@ import com.tty.api.dto.gui.BaseDataMenu;
 import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
-import com.tty.api.enumType.GuiType;
+import com.tty.enumType.GuiType;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseDataItemConfigInventory;
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-@GuiMeta(type = GuiType.WARP_LIST)
+@GuiMeta(type = "warp_list")
 public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     private String baseFree = Ari.DATA_SERVICE.getValue("base.free");

@@ -2,7 +2,7 @@ package com.tty.gui;
 
 import com.tty.api.Log;
 import com.tty.api.annotations.gui.GuiMeta;
-import com.tty.api.enumType.GuiType;
+import com.tty.enumType.GuiType;
 import com.tty.api.gui.BaseInventory;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-@GuiMeta(type = GuiType.OFFLINE_ENDERCHEST)
+@GuiMeta(type = "offline_enderchest")
 public class OfflineNBTEnderCheat extends BaseInventory {
 
     @Getter

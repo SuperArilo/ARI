@@ -6,7 +6,7 @@ import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
-import com.tty.api.enumType.GuiType;
+import com.tty.enumType.GuiType;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseConfigInventory;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-@GuiMeta(type = GuiType.HOME_EDIT)
+@GuiMeta(type = "home_edit")
 public class HomeEditor extends BaseConfigInventory {
 
     public ServerHome currentHome;

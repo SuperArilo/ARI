@@ -5,7 +5,7 @@ import com.tty.Ari;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
-import com.tty.api.enumType.GuiType;
+import com.tty.enumType.GuiType;
 import com.tty.gui.home.HomeEditor;
 import com.tty.gui.home.HomeList;
 import com.tty.api.Log;
@@ -78,8 +78,8 @@ public class HomeListListener extends BaseGuiListener {
                         Ari.SCHEDULER.run(Ari.instance, o -> inventory.close());
                     });
             }
-            case PREV -> homeList.prev();
-            case NEXT -> homeList.next();
+            case PREV_PAGE -> homeList.prev();
+            case NEXT_PAGE -> homeList.next();
         }
     }
 }

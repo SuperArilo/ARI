@@ -5,7 +5,7 @@ import com.tty.api.*;
 import com.tty.api.service.ComponentService;
 import com.tty.enumType.FilePath;
 import com.tty.function.*;
-import com.tty.api.enumType.GuiType;
+import com.tty.enumType.GuiType;
 import com.tty.api.command.CommandRegister;
 import com.tty.api.dto.AliasItem;
 import com.tty.lib.services.*;

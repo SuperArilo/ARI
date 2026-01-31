@@ -2,7 +2,6 @@ package com.tty.tool;
 import com.tty.entity.*;
 import com.tty.entity.cache.*;
 import com.tty.function.*;
-import com.tty.api.exception.RepositoryException;
 import com.tty.api.repository.EntityRepository;
 
 import java.util.Map;
@@ -23,7 +22,7 @@ public final class RepositoryManager {
     public <T> void register(Class<T> entityClass, EntityRepository<T> repository) {
         EntityRepository<?> old = this.repositories.putIfAbsent(entityClass, repository);
         if (old != null) {
-            throw new RepositoryException("Repository already registered for entity: " + entityClass.getName());
+            throw new IllegalArgumentException("Repository already registered for entity: " + entityClass.getName());
         }
     }
 
@@ -31,7 +30,7 @@ public final class RepositoryManager {
     public <T> EntityRepository<T> get(Class<T> entityClass) {
         EntityRepository<?> repository = this.repositories.get(entityClass);
         if (repository == null) {
-            throw new RepositoryException("No repository registered for entity: " + entityClass.getName());
+            throw new IllegalArgumentException("No repository registered for entity: " + entityClass.getName());
         }
         return (EntityRepository<T>) repository;
     }

@@ -5,7 +5,7 @@ import com.tty.Ari;
 import com.tty.api.state.PlayerEditGuiState;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
-import com.tty.api.enumType.GuiType;
+import com.tty.enumType.GuiType;
 import com.tty.gui.warp.WarpEditor;
 import com.tty.gui.warp.WarpList;
 import com.tty.api.Log;

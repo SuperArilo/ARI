@@ -4,7 +4,7 @@ import com.tty.Ari;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.gui.OfflineNBTEnderCheat;
 import com.tty.api.Log;
-import com.tty.api.enumType.GuiType;
+import com.tty.enumType.GuiType;
 import com.tty.api.gui.BaseInventory;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
