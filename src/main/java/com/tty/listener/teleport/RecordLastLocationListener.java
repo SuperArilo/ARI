@@ -10,7 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -45,7 +44,7 @@ public class RecordLastLocationListener implements Listener {
         Ari.SCHEDULER.runAtRegion(
             Ari.instance,
             respawnLocation,
-            i -> player.teleportAsync(respawnLocation).thenAccept(t -> this.setPlayerLastLocation(event))
+            i -> player.teleportAsync(respawnLocation).thenAccept(t -> this.setPlayerLastLocation(player))
         );
 
     }
@@ -57,17 +56,16 @@ public class RecordLastLocationListener implements Listener {
         if (!event.isBedSpawn() && !event.isAnchorSpawn()) {
             event.setRespawnLocation(getRespawnLocation(player.getWorld()));
         }
-        this.setPlayerLastLocation(event);
+        this.setPlayerLastLocation(event.getPlayer());
     }
     @EventHandler
     public void cleanPlayerLastLocation(PlayerQuitEvent event) {
         TELEPORT_LAST_LOCATION.remove(event.getPlayer().getUniqueId());
     }
 
-    private void setPlayerLastLocation(PlayerEvent event) {
-        Player player = event.getPlayer();
+    private void setPlayerLastLocation(Player player) {
         Ari.PLACEHOLDER.render("teleport.tips-back", player).thenAccept(i ->
                 Ari.SCHEDULER.runAtEntity(Ari.instance, player, t ->
-                        player.sendMessage(Ari.COMPONENT_SERVICE.setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/back")), null));
+                        player.sendMessage(Ari.COMPONENT_SERVICE.setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/ari back")), null));
     }
 }
