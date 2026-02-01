@@ -7,6 +7,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerEvent;
@@ -31,12 +32,12 @@ public class RecordLastLocationListener implements Listener {
         if (!cause.equals(PlayerTeleportEvent.TeleportCause.PLUGIN)) return;
         TELEPORT_LAST_LOCATION.put(event.getPlayer().getUniqueId(), event.getFrom());
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void lastDeathLocation(PlayerDeathEvent event) {
         TELEPORT_LAST_LOCATION.put(event.getPlayer().getUniqueId(), event.getPlayer().getLocation());
     }
     @EventHandler
-    public void onRespawn(CustomPlayerRespawnEvent event) {
+    public void onRespawnOnFolia(CustomPlayerRespawnEvent event) {
         if (!ServerPlatform.isFolia()) return;
         Player player = event.getPlayer();
         Location respawnLocation = event.getRespawnLocation();
@@ -50,6 +51,7 @@ public class RecordLastLocationListener implements Listener {
     }
     @EventHandler
     public void onRespawnOnPaper(PlayerRespawnEvent event) {
+        if (event.getRespawnReason().equals(PlayerRespawnEvent.RespawnReason.END_PORTAL)) return;
         if (ServerPlatform.isFolia()) return;
         Player player = event.getPlayer();
         if (!event.isBedSpawn() && !event.isAnchorSpawn()) {
