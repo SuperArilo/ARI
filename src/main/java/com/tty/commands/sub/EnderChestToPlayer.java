@@ -4,13 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.ServerPlayer;
 import com.tty.gui.OfflineNBTEnderCheat;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.api.PublicFunctionUtils;
+import com.tty.api.utils.PublicFunctionUtils;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
@@ -43,7 +44,7 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
         Player player = (Player) sender;
         UUID uuid = PublicFunctionUtils.parseUUID(args[1]);
         if (uuid == null) {
-            sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             return;
         }
         Ari.REPOSITORY_MANAGER.get(ServerPlayer.class)
@@ -51,11 +52,11 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
             .thenCompose(serverPlayer -> CompletableFuture.completedFuture(serverPlayer != null))
             .thenAccept(status -> {
                 if (!status) {
-                    sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                    sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                     return;
                 }
                 if (OFFLINE_ON_EDIT_ENDER_CHEST_LIST.contains(uuid)) {
-                    sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.task-occupied")));
+                    sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.task-occupied")));
                     return;
                 }
                 Player b = Bukkit.getServer().getPlayer(uuid);
@@ -65,7 +66,7 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
                     Ari.SCHEDULER.runAsync(Ari.instance, i -> {
                         NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(uuid.toString());
                         if (data == null) {
-                            sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                             Ari.LOG.error("uuid is not exist.", uuid.toString());
                             return;
                         }

@@ -2,6 +2,7 @@ package com.tty.commands.sub.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.args.zako.ZakoListArgs;
 import com.tty.entity.WhitelistInstance;
@@ -54,7 +55,7 @@ public class ZakoList extends LiteralArgumentCommand {
             repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new LambdaQueryWrapper<>(WhitelistInstance.class)).thenAccept(result -> {
                         List<WhitelistInstance> records = result.records();
                         if (records.isEmpty()) {
-                            sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next")));
+                            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next")));
                             return;
                         }
                         ComponentListPage dataPage = Ari.DATA_SERVICE
@@ -73,7 +74,7 @@ public class ZakoList extends LiteralArgumentCommand {
                             if (name == null) {
                                 Ari.LOG.debug("uuid {} player is null. the possible reason is that the player has not logged into the server.", instancePlayerUUID);
                             }
-                            TextComponent set = Ari.COMPONENT_SERVICE.setClickEventText(Ari.C_INSTANCE.getValue("server.player.zako." + (name == null ? "unable-record":"list-show"), FilePath.LANG),
+                            TextComponent set = ComponentUtils.setClickEventText(Ari.C_INSTANCE.getValue("server.player.zako." + (name == null ? "unable-record":"list-show"), FilePath.LANG),
                                     Map.of(LangZakoList.ZAKO_LIST_ITEM_NAME.getType(), Component.text(name == null ? instancePlayerUUID:name)),
                                     ClickEvent.Action.RUN_COMMAND,
                                     suggestCommand + instancePlayerUUID);

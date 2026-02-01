@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -22,7 +23,7 @@ public abstract class LiteralArgumentCommand extends PreCommand {
         CommandSender sender = ctx.getSource().getSender();
 
         if (!meta.allowConsole() && !(sender instanceof Player)) {
-            sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("function.public.not-player")));
+            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.not-player")));
             return 0;
         }
 
@@ -45,7 +46,7 @@ public abstract class LiteralArgumentCommand extends PreCommand {
         }
 
         if (args.length != meta.tokenLength()) {
-            sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("function.public.fail")));
+            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.fail")));
             return 0;
         }
 

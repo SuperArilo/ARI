@@ -2,14 +2,15 @@ package com.tty.commands.args.zako.ban;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.BanPlayer;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
-import com.tty.api.PublicFunctionUtils;
-import com.tty.api.TimeFormatUtils;
+import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.api.utils.TimeFormatUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -77,7 +78,7 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
                 Ari.SCHEDULER.run(Ari.instance, i -> {
                     Player player = Bukkit.getPlayer(uuid);
                     if (player != null) {
-                        player.kick(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
+                        player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
                         ConfigUtils.t("function.zako.baned", player).thenAccept(Bukkit::broadcast);
                         Ari.LOG.debug("baned player uuid {}. total {}", uuid.toString(), string);
                     }

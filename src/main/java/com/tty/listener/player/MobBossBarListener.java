@@ -6,7 +6,7 @@ import com.tty.dto.bar.PlayerAttackBar;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.LangPlayerDamageBar;
 import com.tty.api.task.CancellableTask;
-import com.tty.api.FormatUtils;
+import com.tty.api.utils.FormatUtils;
 import com.tty.tool.ConfigUtils;
 import com.tty.tool.LastDamageTracker;
 import net.kyori.adventure.bossbar.BossBar;

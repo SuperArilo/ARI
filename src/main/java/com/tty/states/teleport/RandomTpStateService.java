@@ -2,14 +2,15 @@ package com.tty.states.teleport;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.dto.rtp.RtpConfig;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.dto.state.teleport.RandomTpState;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.TeleportType;
 import com.tty.api.state.StateService;
-import com.tty.api.PublicFunctionUtils;
-import com.tty.api.SearchSafeLocation;
+import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.api.utils.SearchSafeLocation;
 import com.tty.states.CoolDownStateService;
 import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
@@ -143,7 +144,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     private void sendCountTitle(Player player) {
         if (!player.isOnline()) return;
         Ari.PLACEHOLDER.render("function.rtp.title-search-count", player).thenAccept(result ->
-                Ari.SCHEDULER.runAtEntity(Ari.instance, player, task -> player.showTitle(Ari.COMPONENT_SERVICE.setPlayerTitle(
+                Ari.SCHEDULER.runAtEntity(Ari.instance, player, task -> player.showTitle(ComponentUtils.setPlayerTitle(
                         Ari.C_INSTANCE.getValue("function.rtp.title-searching", FilePath.LANG, String.class, "null"),
                         result,
                         0,

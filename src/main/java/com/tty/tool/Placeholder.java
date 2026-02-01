@@ -2,6 +2,7 @@ package com.tty.tool;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.api.service.impl.PlaceholderRegistryImpl;
 import com.tty.api.service.placeholder.BasePlaceholder;
 import com.tty.api.service.placeholder.PlaceholderDefinition;
@@ -18,8 +19,8 @@ import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.*;
 import com.tty.api.state.State;
 import com.tty.api.enumType.Operator;
-import com.tty.api.FormatUtils;
-import com.tty.api.TimeFormatUtils;
+import com.tty.api.utils.FormatUtils;
+import com.tty.api.utils.TimeFormatUtils;
 import com.tty.listener.player.PlayerSkipNight;
 import com.tty.states.teleport.PreTeleportStateService;
 import com.tty.states.teleport.RandomTpStateService;
@@ -39,7 +40,7 @@ import static com.tty.listener.teleport.RecordLastLocationListener.TELEPORT_LAST
 public class Placeholder extends BasePlaceholder<FilePath> {
 
     public Placeholder() {
-        super(Ari.C_INSTANCE, FilePath.LANG, Ari.COMPONENT_SERVICE);
+        super(Ari.C_INSTANCE, FilePath.LANG);
         this.init();
     }
 
@@ -165,7 +166,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                             } else {
                                 operator = Bukkit.getOfflinePlayer(UUID.fromString(whitelistInstance.getOperator())).getName();
                             }
-                            return Ari.COMPONENT_SERVICE.text(operator == null ? "null":operator);
+                            return ComponentUtils.text(operator == null ? "null":operator);
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
@@ -195,11 +196,11 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 LangBanPlayerType.BAN_REASON,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
                         .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
-                        .thenApply(i -> Ari.COMPONENT_SERVICE.text(i.getReason())))
+                        .thenApply(i -> ComponentUtils.text(i.getReason())))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangShowItem.SHOW_ITEM,
-                PlaceholderResolve.ofPlayer(player -> CompletableFuture.completedFuture(Ari.COMPONENT_SERVICE.setHoverItemText(player.getInventory().getItemInMainHand())))
+                PlaceholderResolve.ofPlayer(player -> CompletableFuture.completedFuture(ComponentUtils.setHoverItemText(player.getInventory().getItemInMainHand())))
         ));
     }
 

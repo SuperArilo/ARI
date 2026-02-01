@@ -3,7 +3,7 @@ package com.tty.entity.cache;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.entity.BanPlayer;
 import com.tty.api.repository.EntityRepository;
-import com.tty.api.BaseDataManager;
+import com.tty.api.utils.BaseDataManager;
 import org.jetbrains.annotations.NotNull;
 
 public class BanPlayerRepository extends EntityRepository<BanPlayer> {

@@ -2,6 +2,7 @@ package com.tty.listener.home;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.api.state.EditGuiState;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
@@ -11,8 +12,8 @@ import com.tty.gui.home.HomeList;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.repository.EntityRepository;
-import com.tty.api.FormatUtils;
-import com.tty.api.PublicFunctionUtils;
+import com.tty.api.utils.FormatUtils;
+import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.listener.OnGuiEditListener;
 import com.tty.states.GuiEditStateService;
 import com.tty.tool.ConfigUtils;
@@ -88,7 +89,7 @@ public class EditHomeListener extends OnGuiEditListener {
                 //reset LOCATION
                 Location newLocation = player.getLocation();
                 homeEditor.currentHome.setLocation(newLocation.toString());
-                clickMeta.displayName(Ari.COMPONENT_SERVICE.text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
+                clickMeta.displayName(ComponentUtils.text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
                 clickItem.setItemMeta(clickMeta);
             }
             case ICON -> {
@@ -111,17 +112,17 @@ public class EditHomeListener extends OnGuiEditListener {
                 homeEditor.getBaseMenu().getFunctionItems().forEach((k, v) -> {
                     if (v.getType().equals(FunctionType.TOP_SLOT)) {
                         List<String> lore = v.getLore();
-                        List<TextComponent> list = lore.stream().map(p -> Ari.COMPONENT_SERVICE.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue(homeEditor.currentHome.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
+                        List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(homeEditor.currentHome.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
                         clickMeta.lore(list);
                         clickItem.setItemMeta(clickMeta);
                     }
                 });
             }
             case SAVE -> {
-                clickMeta.lore(List.of(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
+                clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
                 clickItem.setItemMeta(clickMeta);
                 repository.update(homeEditor.currentHome).thenAccept(status -> {
-                    clickMeta.lore(List.of(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
+                    clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
                     Ari.SCHEDULER.runAsyncDelayed(Ari.instance, e -> {
                         clickMeta.lore(List.of());
@@ -129,7 +130,7 @@ public class EditHomeListener extends OnGuiEditListener {
                     }, 20);
                 }).exceptionally(i -> {
                     Ari.LOG.error(i, "save home error");
-                    clickMeta.lore(List.of(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.save.error"))));
+                    clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
                     player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
                     return null;
@@ -149,11 +150,11 @@ public class EditHomeListener extends OnGuiEditListener {
                         }.getType(),
                         List.of());
         if(!FormatUtils.checkName(message) || checkList.contains(message)) {
-            player.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
+            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
             return false;
         }
         if(message.length() > Ari.C_INSTANCE.getValue("main.name-length", FilePath.HOME_CONFIG, Integer.class, 15)) {
-            player.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
+            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
             return false;
         }
         HomeEditor homeEditor = (HomeEditor) state.getI();
@@ -164,7 +165,7 @@ public class EditHomeListener extends OnGuiEditListener {
 
     @Override
     public void whenTimeout(Player player) {
-        player.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
+        player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
     }
 
 }

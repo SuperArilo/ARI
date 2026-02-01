@@ -2,6 +2,7 @@ package com.tty.function;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.dto.tab.TabGroup;
 import com.tty.dto.tab.TabGroupLine;
@@ -83,7 +84,7 @@ public class PlayerTabManager implements Listener {
                 buildComponent(this.headers, player),
                 buildComponent(this.footers, player)
         );
-        player.playerListName(Ari.COMPONENT_SERVICE.text(group.line().prefix() + player.getName() + group.line().suffix()));
+        player.playerListName(ComponentUtils.text(group.line().prefix() + player.getName() + group.line().suffix()));
         player.setPlayerListOrder(order);
     }
 
@@ -113,7 +114,7 @@ public class PlayerTabManager implements Listener {
 
     private Component buildComponent(List<String> lines, Player player) {
         if (lines.isEmpty()) return Component.empty();
-        return Component.join(NEW_LINE, lines.stream().map(line -> Ari.COMPONENT_SERVICE.text(line, player)).toList());
+        return Component.join(NEW_LINE, lines.stream().map(line -> ComponentUtils.text(line, player)).toList());
     }
 
     private void reloadConfig() {

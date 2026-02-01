@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tty.entity.ServerWarp;
 import com.tty.api.dto.PageResult;
-import com.tty.api.BaseDataManager;
+import com.tty.api.utils.BaseDataManager;
 import com.tty.mapper.WarpMapper;
 import com.tty.tool.SQLInstance;
 import org.apache.ibatis.session.SqlSession;

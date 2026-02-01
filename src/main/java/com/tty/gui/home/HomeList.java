@@ -2,6 +2,7 @@ package com.tty.gui.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
@@ -12,7 +13,7 @@ import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseDataItemConfigInventory;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
-import com.tty.api.FormatUtils;
+import com.tty.api.utils.FormatUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
@@ -32,7 +33,7 @@ import java.util.concurrent.CompletableFuture;
 public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     public HomeList(Player player) {
-        super(Ari.instance, player, Ari.COMPONENT_SERVICE);
+        super(Ari.instance, player);
         this.debug(Ari.DEBUG);
     }
 
@@ -68,11 +69,11 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
 
             for (String line : rawLore) {
-                textComponents.add(Ari.COMPONENT_SERVICE.text(line, types));
+                textComponents.add(ComponentUtils.text(line, types));
             }
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(Ari.COMPONENT_SERVICE.text(ph.getHomeName(), this.player));
+            itemMeta.displayName(ComponentUtils.text(ph.getHomeName(), this.player));
             itemMeta.lore(textComponents);
 
             this.setNBT(itemMeta, "home_id", PersistentDataType.STRING, ph.getHomeId());

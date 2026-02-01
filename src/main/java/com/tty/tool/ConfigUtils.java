@@ -1,6 +1,7 @@
 package com.tty.tool;
 
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.enumType.FilePath;
 import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
@@ -28,11 +29,11 @@ public class ConfigUtils {
     }
 
     public static Component tAfter(String key, Map<String, Component> map) {
-        return Ari.COMPONENT_SERVICE.text(Ari.C_INSTANCE.getValue(key, FilePath.LANG), map);
+        return ComponentUtils.text(Ari.C_INSTANCE.getValue(key, FilePath.LANG), map);
     }
 
     public static Component tAfter(String key) {
-        return Ari.COMPONENT_SERVICE.text(Ari.C_INSTANCE.getValue(key, FilePath.LANG));
+        return ComponentUtils.text(Ari.C_INSTANCE.getValue(key, FilePath.LANG));
     }
 
 }

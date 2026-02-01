@@ -7,7 +7,7 @@ import com.tty.commands.args.enchant.EnchantLevelArgs;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.api.PublicFunctionUtils;
+import com.tty.api.utils.PublicFunctionUtils;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Registry;

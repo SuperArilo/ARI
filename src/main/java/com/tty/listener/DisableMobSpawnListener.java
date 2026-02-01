@@ -2,7 +2,7 @@ package com.tty.listener;
 
 import com.tty.Ari;
 import com.tty.api.event.CustomPluginReloadEvent;
-import com.tty.api.PublicFunctionUtils;
+import com.tty.api.utils.PublicFunctionUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;

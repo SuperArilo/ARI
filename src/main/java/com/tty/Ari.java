@@ -5,6 +5,8 @@ import com.tty.api.*;
 import com.tty.api.Log;
 import com.tty.api.service.*;
 import com.tty.api.state.StateService;
+import com.tty.api.utils.FormatUtils;
+import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.enumType.FilePath;
 import com.tty.function.*;
 import com.tty.enumType.GuiType;
@@ -29,7 +31,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.Map;
 
-import static com.tty.api.PublicFunctionUtils.checkServerVersion;
+import static com.tty.api.utils.PublicFunctionUtils.checkServerVersion;
 
 
 @SuppressWarnings("UnstableApiUsage")
@@ -42,7 +44,6 @@ public class Ari extends JavaPlugin {
     public static final ConfigInstance C_INSTANCE = new ConfigInstance();
     public static SQLInstance SQL_INSTANCE;
     public static final RepositoryManager REPOSITORY_MANAGER = new RepositoryManager();
-    public static ComponentService COMPONENT_SERVICE;
     public static PermissionService PERMISSION_SERVICE;
     public static EconomyService ECONOMY_SERVICE;
     public static ConfigDataService DATA_SERVICE;
@@ -93,7 +94,6 @@ public class Ari extends JavaPlugin {
     }
 
     private void loadOtherPlugins() {
-        PublicFunctionUtils.loadPlugin("arilib", ComponentService.class, i -> COMPONENT_SERVICE = i);
         PublicFunctionUtils.loadPlugin("arilib", PermissionService.class, i -> PERMISSION_SERVICE = i);
         PublicFunctionUtils.loadPlugin("arilib", EconomyService.class, i -> ECONOMY_SERVICE = i);
         PublicFunctionUtils.loadPlugin("arilib", ConfigDataService.class, i -> DATA_SERVICE = i);

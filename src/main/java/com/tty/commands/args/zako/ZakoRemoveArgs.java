@@ -4,13 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.WhitelistInstance;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.EntityRepository;
-import com.tty.api.PublicFunctionUtils;
+import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -57,7 +58,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
             if(player != null) {
                 Ari.SCHEDULER.runAtEntity(Ari.instance,
                         player, i->
-                                player.kick(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
+                                player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
             }
             String key = "function.zako.whitelist-remove-" + (status ? "success":"failure");
             if (sender instanceof Player p) {
@@ -67,7 +68,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
             }
         }).exceptionally(i -> {
             Ari.LOG.error(i);
-            sender.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-error")));
+            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             return null;
         });
     }

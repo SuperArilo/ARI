@@ -2,6 +2,7 @@ package com.tty.listener.player;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.lang.LangPlayerChat;
@@ -28,7 +29,7 @@ public class CustomChatFormantListener implements Listener {
     public void playerSendMessage(AsyncChatEvent event) {
         if (this.isNotEnable()) return;
         event.renderer((source, sourceDisplayName, msg, viewer) ->
-                Ari.COMPONENT_SERVICE.text(
+                ComponentUtils.text(
                         this.getPattern(source),
                         Map.of(LangPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), LangPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
     }

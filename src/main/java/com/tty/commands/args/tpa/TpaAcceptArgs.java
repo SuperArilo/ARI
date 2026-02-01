@@ -7,7 +7,7 @@ import com.tty.enumType.FilePath;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.api.PublicFunctionUtils;
+import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.states.teleport.TeleportStateService;
 import com.tty.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;

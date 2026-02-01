@@ -1,7 +1,7 @@
 package com.tty.listener.player;
 
 import com.tty.Ari;
-import com.tty.api.PublicFunctionUtils;
+import com.tty.api.utils.PublicFunctionUtils;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.GameMode;
 import org.bukkit.Material;

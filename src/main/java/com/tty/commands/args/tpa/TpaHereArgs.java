@@ -8,7 +8,7 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.enumType.TeleportType;
-import com.tty.api.PublicFunctionUtils;
+import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.states.teleport.PreTeleportStateService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

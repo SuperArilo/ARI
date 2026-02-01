@@ -10,7 +10,7 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.EntityRepository;
-import com.tty.api.PublicFunctionUtils;
+import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;

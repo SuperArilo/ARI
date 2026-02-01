@@ -10,8 +10,8 @@ import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.enumType.IconKeyType;
-import com.tty.api.FormatUtils;
-import com.tty.api.PublicFunctionUtils;
+import com.tty.api.utils.FormatUtils;
+import com.tty.api.utils.PublicFunctionUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ public class WarpEditor extends BaseConfigInventory {
     public ServerWarp currentWarp;
 
     public WarpEditor(ServerWarp serverWarp, Player player) {
-        super(Ari.instance, player, Ari.COMPONENT_SERVICE);
+        super(Ari.instance, player);
         this.debug(Ari.DEBUG);
         this.currentWarp = serverWarp;
     }

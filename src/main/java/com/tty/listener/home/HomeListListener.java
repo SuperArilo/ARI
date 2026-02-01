@@ -10,7 +10,7 @@ import com.tty.gui.home.HomeEditor;
 import com.tty.gui.home.HomeList;
 import com.tty.api.enumType.FunctionType;
 import com.tty.enumType.TeleportType;
-import com.tty.api.FormatUtils;
+import com.tty.api.utils.FormatUtils;
 import com.tty.api.listener.BaseGuiListener;
 import com.tty.states.teleport.TeleportStateService;
 import com.tty.tool.ConfigUtils;

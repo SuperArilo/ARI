@@ -2,7 +2,8 @@ package com.tty.gui.warp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
-import com.tty.api.FormatUtils;
+import com.tty.api.utils.ComponentUtils;
+import com.tty.api.utils.FormatUtils;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
@@ -32,7 +33,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
     private String baseFree = Ari.DATA_SERVICE.getValue("base.free");
 
     public WarpList(Player player) {
-        super(Ari.instance, player,  Ari.COMPONENT_SERVICE);
+        super(Ari.instance, player);
         this.debug(Ari.DEBUG);
     }
 
@@ -83,19 +84,19 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             types.put(IconKeyType.Y.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getY())));
             types.put(IconKeyType.Z.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
             types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
-            types.put(IconKeyType.PLAYER_NAME.getKey(), Ari.COMPONENT_SERVICE.text(playName));
+            types.put(IconKeyType.PLAYER_NAME.getKey(), ComponentUtils.text(playName));
             Double cost = serverWarp.getCost();
-            types.put(IconKeyType.COST.getKey(), Ari.COMPONENT_SERVICE.text(cost == null || cost == 0 || Ari.ECONOMY_SERVICE.isNull() ? baseFree : cost + Ari.ECONOMY_SERVICE.getNamePlural()));
-            types.put(IconKeyType.TOP_SLOT.getKey(), Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
-            types.put(IconKeyType.PERMISSION.getKey(), Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue(hasPermission ? "base.yes_re":"base.no_re")));
+            types.put(IconKeyType.COST.getKey(), ComponentUtils.text(cost == null || cost == 0 || Ari.ECONOMY_SERVICE.isNull() ? baseFree : cost + Ari.ECONOMY_SERVICE.getNamePlural()));
+            types.put(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
+            types.put(IconKeyType.PERMISSION.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(hasPermission ? "base.yes_re":"base.no_re")));
 
 
             for (String s : rawLore) {
-                textComponents.add(Ari.COMPONENT_SERVICE.text(s, types));
+                textComponents.add(ComponentUtils.text(s, types));
             }
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(Ari.COMPONENT_SERVICE.text(serverWarp.getWarpName(), this.player));
+            itemMeta.displayName(ComponentUtils.text(serverWarp.getWarpName(), this.player));
             itemMeta.lore(textComponents);
 
             this.setNBT(itemMeta, "warp_id", PersistentDataType.STRING, serverWarp.getWarpId());

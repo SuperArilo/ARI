@@ -2,6 +2,7 @@ package com.tty.listener.player;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.commands.maintenance;
 import com.tty.dto.SpawnLocation;
 import com.tty.dto.event.OnZakoSavedEvent;
@@ -68,7 +69,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         }
 
         if (OFFLINE_ON_EDIT_ENDER_CHEST_LIST.contains(event.getUniqueId())) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
         }
     }
 
@@ -84,7 +85,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             instance = whitelistInstanceEntityRepository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString())).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Ari.LOG.error(e, "check whitelist on uuid {} error.", uuid.toString());
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Ari.COMPONENT_SERVICE.text(e.getMessage()));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(e.getMessage()));
             return;
         }
         if (instance == null) {
@@ -150,7 +151,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             .whenComplete((i, ex) -> {
                 if (ex != null) {
                     Ari.LOG.error("player {} login in server error.", player.getName());
-                    player.kick(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-error")));
+                    player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                     return;
                 }
                 //添加玩家登录的状态

@@ -3,6 +3,7 @@ package com.tty.commands.args.itemlore;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -43,7 +44,7 @@ public class ItemloreAddArgs extends RequiredArgumentCommand<String> {
         Player player = (Player) sender;
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         if (mainHand.isEmpty()) {
-            player.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
+            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
             return;
         }
         ItemMeta itemMeta = mainHand.getItemMeta();
@@ -51,7 +52,7 @@ public class ItemloreAddArgs extends RequiredArgumentCommand<String> {
         if (lore == null) {
             lore = new ArrayList<>();
         }
-        lore.add(Ari.COMPONENT_SERVICE.text(args[2]));
+        lore.add(ComponentUtils.text(args[2]));
         itemMeta.lore(lore);
         mainHand.setItemMeta(itemMeta);
     }

@@ -1,6 +1,7 @@
 package com.tty.states.teleport;
 
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
 import com.tty.api.state.StateService;
 import com.tty.states.CoolDownStateService;
@@ -61,12 +62,12 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                     Ari.SCHEDULER.runAtEntity(Ari.instance, target, task -> target.sendMessage(
                         result
                         .appendNewline()
-                        .append(Ari.COMPONENT_SERVICE.setClickEventText(
+                        .append(ComponentUtils.setClickEventText(
                                 Ari.DATA_SERVICE.getValue("function.public.agree"),
                                 ClickEvent.Action.RUN_COMMAND,
                                 "/ari tpaaccept " + owner.getName()))
-                        .append(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("function.public.center")))
-                        .append(Ari.COMPONENT_SERVICE.setClickEventText(
+                        .append(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.center")))
+                        .append(ComponentUtils.setClickEventText(
                                 Ari.DATA_SERVICE.getValue("function.public.refuse"),
                                 ClickEvent.Action.RUN_COMMAND,
                                 "/ari tparefuse " + owner.getName()))), null));

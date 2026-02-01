@@ -1,6 +1,7 @@
 package com.tty.command;
 
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.api.command.AbstractSubCommand;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -15,12 +16,12 @@ public abstract class PreCommand extends AbstractSubCommand {
 
     @Override
     protected @NotNull Component tokenNotAllow() {
-        return Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("function.public.fail"));
+        return ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.fail"));
     }
 
     @Override
     protected @NotNull Component onlyUseInGame() {
-        return Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("function.public.not-player"));
+        return ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.not-player"));
     }
 
     @Override
@@ -30,6 +31,6 @@ public abstract class PreCommand extends AbstractSubCommand {
 
     @Override
     protected @NotNull Component disableInGame() {
-        return Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.command.disabled"));
+        return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.command.disabled"));
     }
 }

@@ -10,8 +10,8 @@ import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.enumType.IconKeyType;
-import com.tty.api.FormatUtils;
-import com.tty.api.PublicFunctionUtils;
+import com.tty.api.utils.FormatUtils;
+import com.tty.api.utils.PublicFunctionUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ public class HomeEditor extends BaseConfigInventory {
     public ServerHome currentHome;
 
     public HomeEditor(ServerHome serverHome, Player player) {
-        super(Ari.instance, player, Ari.COMPONENT_SERVICE);
+        super(Ari.instance, player);
         this.debug(Ari.DEBUG);
         this.currentHome = serverHome;
     }

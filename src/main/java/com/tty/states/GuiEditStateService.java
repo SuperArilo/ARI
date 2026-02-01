@@ -2,6 +2,7 @@ package com.tty.states;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.gui.BaseInventory;
 import com.tty.api.state.EditGuiState;
@@ -49,7 +50,7 @@ public class GuiEditStateService extends StateService<EditGuiState> {
         Player owner = (Player) state.getOwner();
         int i = Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new TypeToken<Integer>(){}.getType());
         owner.showTitle(
-                Ari.COMPONENT_SERVICE.setPlayerTitle(
+                ComponentUtils.setPlayerTitle(
                         Ari.DATA_SERVICE.getValue("base.on-edit.title"),
                         Ari.DATA_SERVICE.getValue("base.on-edit.sub-title"),
                         1000,
@@ -66,7 +67,7 @@ public class GuiEditStateService extends StateService<EditGuiState> {
     @Override
     protected void onFinished(EditGuiState state) {
         Player owner = (Player) state.getOwner();
-        owner.sendMessage(Ari.COMPONENT_SERVICE.text(Ari.DATA_SERVICE.getValue("base.on-edit.timeout-cancel")));
+        owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.timeout-cancel")));
         owner.clearTitle();
         this.getLog().debug("player {} edit status timeout.", owner.getName());
     }
