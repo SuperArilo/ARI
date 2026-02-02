@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class PreCommand extends AbstractSubCommand {
 
     protected boolean getDisableStatus(YamlConfiguration configuration) {
-        return configuration.getBoolean("main.enable", false);
+        return !configuration.getBoolean("main.enable", false);
     }
 
     @Override
