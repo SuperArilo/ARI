@@ -41,12 +41,15 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
             .thenCompose(banPlayer -> {
                 if (banPlayer != null) {
                     CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.had_baned", player):ConfigUtils.t("function.zako.had_baned");
-                    return future.thenAccept(sender::sendMessage).thenApply(i -> false);
+                    return future.thenAccept(sender::sendMessage).thenApply(i -> true);
                 }
-                return CompletableFuture.completedFuture(true);
+                return CompletableFuture.completedFuture(false);
             })
             .thenAccept(s -> {
-                if (!s) return;
+                if (!s) {
+                    ConfigUtils.t("function.zako.public-zako-not-exist").thenAccept(sender::sendMessage);
+                    return;
+                }
                 long now = System.currentTimeMillis();
 
                 TimeUnit[] units = {TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS};
