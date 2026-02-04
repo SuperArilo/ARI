@@ -1,14 +1,14 @@
 package com.tty.command;
 
 import com.tty.Ari;
-import com.tty.api.command.BaseLiteralCommand;
+import com.tty.api.command.BaseLiteralArgumentCommand;
 import com.tty.api.utils.ComponentUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class LiteralArgumentCommand extends BaseLiteralCommand {
+public abstract class LiteralArgumentCommand extends BaseLiteralArgumentCommand {
 
     protected boolean getDisableStatus(YamlConfiguration configuration) {
         return !configuration.getBoolean("main.enable", false);

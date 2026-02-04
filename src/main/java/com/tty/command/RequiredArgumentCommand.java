@@ -1,7 +1,7 @@
 package com.tty.command;
 
 import com.tty.Ari;
-import com.tty.api.command.BaseRequiredCommand;
+import com.tty.api.command.BaseRequiredArgumentCommand;
 import com.tty.api.utils.ComponentUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -9,7 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 
-public abstract class RequiredArgumentCommand<T> extends BaseRequiredCommand<T> {
+public abstract class RequiredArgumentCommand<T> extends BaseRequiredArgumentCommand<T> {
 
     protected boolean getDisableStatus(YamlConfiguration configuration) {
         return !configuration.getBoolean("main.enable", false);
