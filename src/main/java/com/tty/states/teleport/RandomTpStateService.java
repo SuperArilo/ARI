@@ -86,6 +86,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             if (state.getTrueLocation() != null || state.isRunning() || state.isOver()) return;
             state.setRunning(true);
         }
+        this.searchSafeLocation.debug(Ari.DEBUG);
         this.searchSafeLocation.search(world, x, z)
             .thenAccept((location) ->
                 Ari.SCHEDULER.run(Ari.instance, i -> {
