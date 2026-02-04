@@ -170,9 +170,12 @@ public class Ari extends JavaPlugin {
         String bukkitName = Bukkit.getName();
         String bukkitVersion = Bukkit.getServer().getVersion();
         Ari.LOG.info("");
-        Ari.LOG.info("        _   ");
-        Ari.LOG.info("  |    /_\\  {}", pluginInfo);
-        Ari.LOG.info("  |___/   \\ Running on {} {}", bukkitName, bukkitVersion);
+        Ari.LOG.info("    ___    ____   ___");
+        Ari.LOG.info("   /   |  / __ \\ |   |");
+        Ari.LOG.info("  / /| | / /_/ / |   |  {}", pluginInfo);
+        Ari.LOG.info(" / ___ |/ _, _/  |   |  Running on {} {}", bukkitName, bukkitVersion);
+        Ari.LOG.info("/_/  |_/_/ |_|   |___|");
         Ari.LOG.info("");
+
     }
 }
