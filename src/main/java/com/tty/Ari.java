@@ -41,7 +41,7 @@ public class Ari extends JavaPlugin {
     public static Boolean DEBUG = false;
     public static final ConfigInstance C_INSTANCE = new ConfigInstance();
     public static SQLInstance SQL_INSTANCE;
-    public static final RepositoryManager REPOSITORY_MANAGER = new RepositoryManager();
+    public static RepositoryManager REPOSITORY_MANAGER;
     public static PermissionService PERMISSION_SERVICE;
     public static EconomyService ECONOMY_SERVICE;
     public static ConfigDataService DATA_SERVICE;
@@ -67,8 +67,8 @@ public class Ari extends JavaPlugin {
             return;
         }
         SQL_INSTANCE = new SQLInstance();
+        REPOSITORY_MANAGER = new RepositoryManager(Ari.DEBUG);
         STATE_MACHINE_MANAGER = new StateMachineManager();
-        setDebugStatus();
 
         this.loadOtherPlugins();
 
@@ -124,11 +124,6 @@ public class Ari extends JavaPlugin {
         pluginManager.registerEvents(new MobBossBarListener(), this);
         pluginManager.registerEvents(new DisableMobSpawnListener(), this);
         pluginManager.registerEvents(new CustomTotemCostListener(), this);
-    }
-
-    public static void setDebugStatus() {
-        STATE_MACHINE_MANAGER.debug(DEBUG);
-        REPOSITORY_MANAGER.debug(DEBUG);
     }
 
     public static void reloadAllConfig() {

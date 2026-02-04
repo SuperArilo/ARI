@@ -25,7 +25,7 @@ public class CoolDownStateService extends StateService<CooldownState> {
             return;
         }
         state.setPending(false);
-        this.getLog().debug("entity {} teleport cd time is cooling down. count {}, max_count {}", state.getOwner().getName(), state.getCount(), state.getMax_count());
+        Ari.LOG.debug("entity {} teleport cd time is cooling down. count {}, max_count {}", state.getOwner().getName(), state.getCount(), state.getMax_count());
     }
 
     @Override
@@ -40,12 +40,12 @@ public class CoolDownStateService extends StateService<CooldownState> {
 
     @Override
     protected void onEarlyExit(CooldownState state) {
-        this.getLog().debug("entity {} cd time has ended.", state.getOwner().getName());
+        Ari.LOG.debug("entity {} cd time has ended.", state.getOwner().getName());
     }
 
     @Override
     protected void onFinished(CooldownState state) {
-        this.getLog().debug("entity {} cd time has ended.", state.getOwner().getName());
+        Ari.LOG.debug("entity {} cd time has ended.", state.getOwner().getName());
     }
 
     @Override

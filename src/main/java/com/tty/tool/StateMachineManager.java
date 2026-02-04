@@ -42,8 +42,4 @@ public class StateMachineManager {
         this.stateMachines.values().forEach(action);
     }
 
-    public void debug(boolean status) {
-        this.stateMachines.forEach((k, v) -> v.debug(status));
-    }
-
 }

@@ -11,7 +11,16 @@ public final class RepositoryManager {
 
     private final Map<Class<?>, EntityRepository<?>> repositories =  new ConcurrentHashMap<>();
 
+    public RepositoryManager(boolean debug) {
+        this.init();
+        this.debug(debug);
+    }
+
     public RepositoryManager() {
+        this.init();
+    }
+
+    private void init() {
         this.register(ServerHome.class, new PlayerHomeRepository(new HomeManager(true)));
         this.register(BanPlayer.class, new BanPlayerRepository(new BanPlayerManager(true)));
         this.register(ServerPlayer.class, new ServerPlayerRepository(new PlayerManager(true)));

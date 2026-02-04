@@ -14,7 +14,6 @@ public class OnPluginReloadListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void pluginReload(CustomPluginReloadEvent event) {
         Ari.reloadAllConfig();
-        Ari.LOG.setDebug(Ari.DEBUG);
         if (Ari.DEBUG) {
             Ari.SQL_INSTANCE.reconnect();
         }
@@ -23,8 +22,13 @@ public class OnPluginReloadListener implements Listener {
         Ari.STATE_MACHINE_MANAGER.forEach(StateService::abort);
         //重新添加玩家保存state
         PlayerSaveStateService.addPlayerState();
+    }
 
-        Ari.setDebugStatus();
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void debugStatus(CustomPluginReloadEvent event) {
+        boolean debug = event.isDebug();
+        Ari.LOG.setDebug(debug);
+        Ari.REPOSITORY_MANAGER.debug(debug);
     }
 
 }

@@ -39,14 +39,14 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         String playerName = owner.getName();
         //判断玩家是否已经 sit 了
         if (!this.getStates(owner).isEmpty()) {
-            this.getLog().debug("player {} is sited. skip...", playerName);
+            Ari.LOG.debug("player {} is sited. skip...", playerName);
             return false;
         }
         //获取列表判断是否满足的方块
         Block sitBlock = state.getSitBlock();
         String sitBlockName = sitBlock.getType().name();
         if (this.getDisableList().contains(sitBlockName)) {
-            this.getLog().debug("player {} interact the block {} is disabled", playerName, sitBlockName);
+            Ari.LOG.debug("player {} interact the block {} is disabled", playerName, sitBlockName);
             return false;
         }
 
@@ -82,7 +82,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
 
         Player owner = (Player) state.getOwner();
         if (state.getTool_entity() == null) {
-            this.getLog().error("player {} tool entity is null", owner.getName());
+            Ari.LOG.error("player {} tool entity is null", owner.getName());
             state.setOver(true);
             return;
         }
@@ -122,13 +122,13 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             }
         );
 
-        this.getLog().debug("player {} sit block {}.", state.getOwner().getName(), sitBlock.getType().name());
+        Ari.LOG.debug("player {} sit block {}.", state.getOwner().getName(), sitBlock.getType().name());
     }
 
     @Override
     protected void onEarlyExit(PlayerSitActionState state) {
         String playerName = state.getOwner().getName();
-        this.getLog().debug("player {} sit check status fail, remove tool entity", playerName);
+        Ari.LOG.debug("player {} sit check status fail, remove tool entity", playerName);
         state.removeToolEntity(Ari.instance);
     }
 
@@ -243,7 +243,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
 
     private boolean worldGuardCanInteract(Player player, Block block) {
         if (!this.hasWorldGuard()) {
-            this.getLog().debug("not have WorldGuard. skip...");
+            Ari.LOG.debug("not have WorldGuard. skip...");
             return true;
         }
         RegionQuery query = WorldGuard.getInstance()

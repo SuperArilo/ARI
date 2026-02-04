@@ -39,23 +39,23 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
     @Override
     protected void passAddState(PlayerSaveState state) {
-        this.getLog().debug("added player {} state to save.", state.getOwner().getName());
+        Ari.LOG.debug("added player {} state to save.", state.getOwner().getName());
     }
 
     @Override
     protected void onEarlyExit(PlayerSaveState state) {
-        this.getLog().debug("stop save player {} data", state.getOwner().getName());
+        Ari.LOG.debug("stop save player {} data", state.getOwner().getName());
     }
 
     @Override
     protected void onFinished(PlayerSaveState state) {
-        this.getLog().debug("start save player data {}.", state.getOwner().getName());
+        Ari.LOG.debug("start save player data {}.", state.getOwner().getName());
         this.savePlayerData(state);
     }
 
     @Override
     protected void onServiceAbort(PlayerSaveState state) {
-        this.getLog().debug("player save service abort. saving {}.", state.getOwner().getName());
+        Ari.LOG.debug("player save service abort. saving {}.", state.getOwner().getName());
         this.savePlayerData(state);
     }
 
@@ -74,7 +74,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
         this.repository.get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid))
             .thenCompose(serverPlayer -> {
                 if (serverPlayer == null) {
-                    this.getLog().error("Player data not found: {}", uuid);
+                    Ari.LOG.error("Player data not found: {}", uuid);
                     return CompletableFuture.completedFuture(false);
                 }
                 serverPlayer.setTotalOnlineTime(serverPlayer.getTotalOnlineTime() + onlineDuration);
@@ -82,19 +82,19 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
             })
             .thenAccept(success -> {
                 if (success) {
-                    this.getLog().debug("Saved player data: {}", player.getName());
+                    Ari.LOG.debug("Saved player data: {}", player.getName());
                 } else {
-                    this.getLog().error("Failed to save player data: {}", player.getName());
+                    Ari.LOG.error("Failed to save player data: {}", player.getName());
                 }
             })
             .whenComplete((result, ex) -> {
                 if (ex != null) {
-                    this.getLog().error(ex, "Error saving player data for {}", player.getName());
+                    Ari.LOG.error(ex, "Error saving player data for {}", player.getName());
                 }
                 if (this.repository.isAsync() && player.isOnline()) {
                     Ari.SCHEDULER.run(Ari.instance, i -> Bukkit.getPluginManager().callEvent(new OnZakoSavedEvent(player)));
                 } else {
-                    this.getLog().debug("skip player {} save event.", player.getName());
+                    Ari.LOG.debug("skip player {} save event.", player.getName());
                 }
             });
     }

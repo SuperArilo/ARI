@@ -81,7 +81,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
         int x = (int) Math.min(PublicFunctionUtils.randomGenerator((int) rtpConfig.getMin(), (int) rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
         int z = (int) Math.min(PublicFunctionUtils.randomGenerator((int) rtpConfig.getMin(), (int) rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
-        this.getLog().debug("player {} search count {}. total {}.", state.getOwner().getName(), state.getCount(), state.getMax_count());
+        Ari.LOG.debug("player {} search count {}. total {}.", state.getOwner().getName(), state.getCount(), state.getMax_count());
         synchronized (state) {
             if (state.getTrueLocation() != null || state.isRunning() || state.isOver()) return;
             state.setRunning(true);
@@ -92,12 +92,12 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                     state.setPending(false);
                     state.setRunning(false);
                     if (location == null) return;
-                    this.getLog().debug("random location x: {}, y: {}, z: {}.", x, location.getY(), z);
+                    Ari.LOG.debug("random location x: {}, y: {}, z: {}.", x, location.getY(), z);
                     state.setTrueLocation(location);
                     state.setOver(true);
                 }))
             .exceptionally(e -> {
-                this.getLog().error(e);
+                Ari.LOG.error(e);
                 return null;
             });
     }
