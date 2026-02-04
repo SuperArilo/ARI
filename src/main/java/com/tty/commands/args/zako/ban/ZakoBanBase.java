@@ -6,7 +6,6 @@ import com.tty.api.utils.ComponentUtils;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.BanPlayer;
 import com.tty.entity.WhitelistInstance;
-import com.tty.enumType.FilePath;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.utils.PublicFunctionUtils;
@@ -14,6 +13,7 @@ import com.tty.api.utils.TimeFormatUtils;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -41,15 +41,12 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
             .thenCompose(banPlayer -> {
                 if (banPlayer != null) {
                     CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.had_baned", player):ConfigUtils.t("function.zako.had_baned");
-                    return future.thenAccept(sender::sendMessage).thenApply(i -> true);
+                    return future.thenAccept(sender::sendMessage).thenApply(i -> banPlayer);
                 }
-                return CompletableFuture.completedFuture(false);
+                return CompletableFuture.completedFuture(null);
             })
             .thenAccept(s -> {
-                if (!s) {
-                    ConfigUtils.t("function.zako.public-zako-not-exist").thenAccept(sender::sendMessage);
-                    return;
-                }
+                if (s != null) return;
                 long now = System.currentTimeMillis();
 
                 TimeUnit[] units = {TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS};
@@ -79,16 +76,16 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
 
                 String string = TimeFormatUtils.format(total);
                 Ari.SCHEDULER.run(Ari.instance, i -> {
-                    Player player = Bukkit.getPlayer(uuid);
-                    if (player != null) {
+                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+                    if (offlinePlayer instanceof Player player) {
                         player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
-                        ConfigUtils.t("function.zako.baned", player).thenAccept(Bukkit::broadcast);
                         Ari.LOG.debug("baned player uuid {}. total {}", uuid.toString(), string);
                     }
+                    ConfigUtils.t("function.zako.baned", offlinePlayer).thenAccept(Bukkit::broadcast);
                 });
 
             }).exceptionally(e -> {
-                    Ari.C_INSTANCE.getValue("function.zako.add-failure", FilePath.LANG);
+                ConfigUtils.t("function.zako.add-failure").thenAccept(sender::sendMessage);
                 Ari.LOG.error(e);
                 return null;
             });

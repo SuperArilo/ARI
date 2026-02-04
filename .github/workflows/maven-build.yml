@@ -49,7 +49,7 @@ jobs:
           mvn clean install -DskipTests
           cd ..
 
-      - name: BUILD ARI
+      - name: BUILD ALL
         run: mvn clean package -DskipTests
 
       - name: COLLECT PRODUCTS

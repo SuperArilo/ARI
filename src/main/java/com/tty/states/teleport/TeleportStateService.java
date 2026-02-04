@@ -62,7 +62,7 @@ public class TeleportStateService extends StateService<State> {
                             200
                     ));
                     state.setPending(false);
-                    this.getLog().debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
+                    Ari.LOG.debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
                 }, null));
     }
 
@@ -106,7 +106,7 @@ public class TeleportStateService extends StateService<State> {
     protected void onEarlyExit(State state) {
         Entity owner = state.getOwner();
         owner.clearTitle();
-        this.getLog().debug("entity {} teleport state break.", owner.getName());
+        Ari.LOG.debug("entity {} teleport state break.", owner.getName());
         this.removeEntityInitData(owner);
     }
 
@@ -203,7 +203,7 @@ public class TeleportStateService extends StateService<State> {
     private void handleTeleportAfter(Entity owner, Location location, Runnable removeInit, Runnable addState) {
         removeInit.run();
         addState.run();
-        this.getLog().debug("entity {} teleport to x: {}, y: {}, z: {} success.", owner.getName(), location.getX(), location.getY(), location.getZ());
+        Ari.LOG.debug("entity {} teleport to x: {}, y: {}, z: {} success.", owner.getName(), location.getX(), location.getY(), location.getZ());
     }
 
 }

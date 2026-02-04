@@ -24,7 +24,7 @@ public class Reload extends LiteralArgumentCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.reload.doing")));
-        Bukkit.getPluginManager().callEvent(new CustomPluginReloadEvent(sender));
+        Bukkit.getPluginManager().callEvent(new CustomPluginReloadEvent(Ari.instance, sender));
     }
 
     @Override

@@ -20,7 +20,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
         String playerName = owner.getName();
         //判断玩家是否已经 ride 了
         if (!this.getStates(owner).isEmpty()) {
-            this.getLog().debug("player {} is sited. skip...", playerName);
+            Ari.LOG.debug("player {} is sited. skip...", playerName);
             return false;
         }
         //被点击的玩家如果有乘客（隐藏实体
@@ -67,7 +67,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
                 beRidePlayer.addPassenger(i);
                 i.addPassenger(owner);
                 owner.setRotation(location.getYaw(), 0);
-                this.getLog().debug("player {} riding player {}.", owner.getName(), beRidePlayer.getName());
+                Ari.LOG.debug("player {} riding player {}.", owner.getName(), beRidePlayer.getName());
             }
         );
     }
@@ -85,6 +85,6 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
     @Override
     protected void onServiceAbort(PlayerRideActionState state) {
         state.removeToolEntity(Ari.instance);
-        this.getLog().info("ejected player {}", state.getOwner().getName());
+        Ari.LOG.info("ejected player {}", state.getOwner().getName());
     }
 }

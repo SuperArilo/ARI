@@ -7,6 +7,7 @@ import com.tty.api.service.*;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.api.utils.VersionUtil;
 import com.tty.enumType.FilePath;
 import com.tty.function.*;
 import com.tty.enumType.GuiType;
@@ -31,9 +32,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.Map;
 
-import static com.tty.api.utils.PublicFunctionUtils.checkServerVersion;
-
-
 @SuppressWarnings("UnstableApiUsage")
 public class Ari extends JavaPlugin {
 
@@ -43,7 +41,7 @@ public class Ari extends JavaPlugin {
     public static Boolean DEBUG = false;
     public static final ConfigInstance C_INSTANCE = new ConfigInstance();
     public static SQLInstance SQL_INSTANCE;
-    public static final RepositoryManager REPOSITORY_MANAGER = new RepositoryManager();
+    public static RepositoryManager REPOSITORY_MANAGER;
     public static PermissionService PERMISSION_SERVICE;
     public static EconomyService ECONOMY_SERVICE;
     public static ConfigDataService DATA_SERVICE;
@@ -63,13 +61,14 @@ public class Ari extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if(!checkServerVersion()) {
-            getServer().getPluginManager().disablePlugin(this);
+        if(VersionUtil.isServerVersionLowerThan("1.21.3")) {
+            LOG.error("server version is too low. This plugin requires at least 1.21.3. Disabling plugin...");
+            this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
         SQL_INSTANCE = new SQLInstance();
+        REPOSITORY_MANAGER = new RepositoryManager(Ari.DEBUG);
         STATE_MACHINE_MANAGER = new StateMachineManager();
-        setDebugStatus();
 
         this.loadOtherPlugins();
 
@@ -127,11 +126,6 @@ public class Ari extends JavaPlugin {
         pluginManager.registerEvents(new CustomTotemCostListener(), this);
     }
 
-    public static void setDebugStatus() {
-        STATE_MACHINE_MANAGER.debug(DEBUG);
-        REPOSITORY_MANAGER.debug(DEBUG);
-    }
-
     public static void reloadAllConfig() {
         Ari.instance.saveDefaultConfig();
         Ari.instance.reloadConfig();
@@ -171,9 +165,12 @@ public class Ari extends JavaPlugin {
         String bukkitName = Bukkit.getName();
         String bukkitVersion = Bukkit.getServer().getVersion();
         Ari.LOG.info("");
-        Ari.LOG.info("        _   ");
-        Ari.LOG.info("  |    /_\\  {}", pluginInfo);
-        Ari.LOG.info("  |___/   \\ Running on {} {}", bukkitName, bukkitVersion);
+        Ari.LOG.info("    ___    ____   ___");
+        Ari.LOG.info("   /   |  / __ \\ |   |");
+        Ari.LOG.info("  / /| | / /_/ / |   |  {}", pluginInfo);
+        Ari.LOG.info(" / ___ |/ _, _/  |   |  Running on {} {}", bukkitName, bukkitVersion);
+        Ari.LOG.info("/_/  |_/_/ |_|   |___|");
         Ari.LOG.info("");
+
     }
 }
