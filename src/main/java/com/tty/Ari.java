@@ -7,6 +7,7 @@ import com.tty.api.service.*;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.api.utils.VersionUtil;
 import com.tty.enumType.FilePath;
 import com.tty.function.*;
 import com.tty.enumType.GuiType;
@@ -30,9 +31,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.Map;
-
-import static com.tty.api.utils.PublicFunctionUtils.checkServerVersion;
-
 
 @SuppressWarnings("UnstableApiUsage")
 public class Ari extends JavaPlugin {
@@ -63,8 +61,9 @@ public class Ari extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if(!checkServerVersion()) {
-            getServer().getPluginManager().disablePlugin(this);
+        if(VersionUtil.isServerVersionLowerThan("1.21.3")) {
+            LOG.error("server version is too low. This plugin requires at least 1.21.3. Disabling plugin...");
+            this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
         SQL_INSTANCE = new SQLInstance();
