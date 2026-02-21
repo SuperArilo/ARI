@@ -38,34 +38,33 @@ public class GuiCleanupListener implements Listener {
     }
 
     private void clean(Inventory inventory) {
-        if (inventory.getHolder() instanceof BaseInventory baseInventory) {
-            GuiMeta annotation = baseInventory.getClass().getAnnotation(GuiMeta.class);
-            if (annotation == null) return;
-            if (annotation.type().equals(GuiType.OFFLINE_ENDERCHEST.getType()) && baseInventory instanceof OfflineNBTEnderCheat cheat) {
-                NBTFileHandle data = cheat.getData();
-                data.removeKey("EnderItems");
-                ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
-                Inventory inv = cheat.getInventory();
-                for (int slot = 0; slot < inv.getSize(); slot++) {
-                    ItemStack item = inv.getItem(slot);
-                    if (item == null || item.getType().isAir()) continue;
-                    ReadWriteNBT itemNBT = NBT.itemStackToNBT(item);
-                    itemNBT.setByte("Slot", (byte) slot);
-                    enderItems.addCompound(itemNBT);
-                }
-                Ari.SCHEDULER.runAsync(Ari.instance, i -> {
-                    try {
-                        data.save();
-                        Ari.LOG.debug("ender chest nbt save player {} success.", cheat.getTarget().toString());
-                        OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(cheat.getTarget());
-                        Ari.SCHEDULER.run(Ari.instance, t -> baseInventory.cleanup());
-                    } catch (IOException e) {
-                        Ari.LOG.error(e, "ender chest nbt save error. ");
-                    }
-                });
-            } else {
-                baseInventory.cleanup();
+        if (!(inventory.getHolder() instanceof BaseInventory baseInventory)) return;
+        GuiMeta annotation = baseInventory.getClass().getAnnotation(GuiMeta.class);
+        if (annotation == null) return;
+        if (annotation.type().equals(GuiType.OFFLINE_ENDERCHEST.getType()) && baseInventory instanceof OfflineNBTEnderCheat cheat) {
+            NBTFileHandle data = cheat.getData();
+            data.removeKey("EnderItems");
+            ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
+            Inventory inv = cheat.getInventory();
+            for (int slot = 0; slot < inv.getSize(); slot++) {
+                ItemStack item = inv.getItem(slot);
+                if (item == null || item.getType().isAir()) continue;
+                ReadWriteNBT itemNBT = NBT.itemStackToNBT(item);
+                itemNBT.setByte("Slot", (byte) slot);
+                enderItems.addCompound(itemNBT);
             }
+            Ari.SCHEDULER.runAsync(Ari.instance, i -> {
+                try {
+                    data.save();
+                    Ari.LOG.debug("ender chest nbt save player {} success.", cheat.getTarget().toString());
+                    OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(cheat.getTarget());
+                    Ari.SCHEDULER.run(Ari.instance, t -> baseInventory.cleanup());
+                } catch (IOException e) {
+                    Ari.LOG.error(e, "ender chest nbt save error. ");
+                }
+            });
+        } else {
+            baseInventory.cleanup();
         }
     }
 }
