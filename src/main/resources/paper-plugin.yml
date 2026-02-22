@@ -9,6 +9,7 @@ dependencies:
   server:
     arilib:
       required: true
+      load: BEFORE
     PlaceholderAPI:
       required: false
     WorldGuard:
