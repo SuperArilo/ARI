@@ -181,6 +181,10 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 PlaceholderResolve.ofPlayer(player -> this.set(String.valueOf(Ari.instance.getConfig().getInt("server.maintenance.kick_delay", 10))))
         ));
         registry.register(PlaceholderDefinition.of(
+                LangBanPlayerType.BAN_PLAYER_NAME,
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> this.set(offlinePlayer.getName()))
+        ));
+        registry.register(PlaceholderDefinition.of(
                 LangBanPlayerType.BAN_T0TAL_TIME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
                 .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))

@@ -4,6 +4,7 @@ import com.tty.api.enumType.LangTypeEnum;
 
 public enum LangBanPlayerType implements LangTypeEnum {
 
+    BAN_PLAYER_NAME("ban_player_name"),
     BAN_T0TAL_TIME("ban_total_time"),
     BAN_REASON("ban_reason"),
     BAN_END_TIME("ban_end_time");
