@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.tty.api.annotations.entity.CacheKey;
 import lombok.Data;
 
 @Data
@@ -11,8 +12,10 @@ import lombok.Data;
 public class ServerPlayer {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+    @CacheKey
     private String playerName;
     @TableField("player_uuid")
+    @CacheKey
     private String playerUUID;
     private Long firstLoginTime = 0L;
     private Long lastLoginOffTime = 0L;
