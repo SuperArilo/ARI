@@ -72,7 +72,7 @@ public class SQLInstance {
 
         try (SqlSession session = SESSION_FACTORY.openSession()) {
             for (SqlTable table : SqlTable.values()) {
-                Ari.LOG.debug("creating or updating table: {}", table.name());
+                Ari.LOG.debug("creating table: {}", table.name());
                 try (Statement statement = session.getConnection().createStatement()) {
                     statement.execute(table.getSql(this.getTablePrefix(), this.getSqlType()));
                 }
