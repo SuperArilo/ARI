@@ -39,7 +39,13 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     @Override
     public CompletableFuture<PageResult<ServerWarp>> requestData() {
-        return Ari.REPOSITORY_MANAGER.get(ServerWarp.class).getList(this.pageNum, ((BaseDataMenu) this.getBaseMenu()).getDataItems().getSlot().size(), new LambdaQueryWrapper<>(ServerWarp.class));
+        return Ari.REPOSITORY_MANAGER.get(ServerWarp.class)
+                .getList(
+                        this.pageNum,
+                        ((BaseDataMenu) this.getBaseMenu()).getDataItems().getSlot().size(),
+                        new LambdaQueryWrapper<>(ServerWarp.class)
+                                .orderByDesc(ServerWarp::isTopSlot)
+                );
     }
 
     @Override

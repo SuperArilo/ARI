@@ -61,7 +61,7 @@ public class EditHomeListener extends OnGuiEditListener {
                 player.openInventory(new HomeList(player).getInventory());
             }
             case DELETE ->
-                repository.delete(homeEditor.currentHome)
+                repository.delete(homeEditor.getCurrentEditHome())
                     .thenCompose(success -> {
                         if (success) {
                             return ConfigUtils.t("function.home.delete-success", player)
@@ -80,7 +80,7 @@ public class EditHomeListener extends OnGuiEditListener {
                         .addState(new EditGuiState(
                                 player,
                                 Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new com.google.common.reflect.TypeToken<Integer>(){}.getType()),
-                                new HomeEditor(PublicFunctionUtils.deepCopy(homeEditor.currentHome, ServerHome.class), player),
+                                new HomeEditor(PublicFunctionUtils.deepCopy(homeEditor.getCurrentEditHome(), ServerHome.class), player),
                                 type)
                         );
                 inventory.close();
@@ -88,7 +88,7 @@ public class EditHomeListener extends OnGuiEditListener {
             case LOCATION -> {
                 //reset LOCATION
                 Location newLocation = player.getLocation();
-                homeEditor.currentHome.setLocation(newLocation.toString());
+                homeEditor.getCurrentEditHome().setLocation(newLocation.toString());
                 clickMeta.displayName(ComponentUtils.text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
                 clickItem.setItemMeta(clickMeta);
             }
@@ -105,14 +105,14 @@ public class EditHomeListener extends OnGuiEditListener {
                 newItemMeta.getPersistentDataContainer().set(icon_type, PersistentDataType.STRING, string);
                 newItemStake.setItemMeta(newItemMeta);
                 inventory.setItem(event.getSlot(), newItemStake);
-                homeEditor.currentHome.setShowMaterial(current.name());
+                homeEditor.getCurrentEditHome().setShowMaterial(current.name());
             }
             case TOP_SLOT -> {
-                homeEditor.currentHome.setTopSlot(!homeEditor.currentHome.isTopSlot());
+                homeEditor.getCurrentEditHome().setTopSlot(!homeEditor.getCurrentEditHome().isTopSlot());
                 homeEditor.getBaseMenu().getFunctionItems().forEach((k, v) -> {
                     if (v.getType().equals(FunctionType.TOP_SLOT)) {
                         List<String> lore = v.getLore();
-                        List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(homeEditor.currentHome.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
+                        List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(homeEditor.getCurrentEditHome().isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
                         clickMeta.lore(list);
                         clickItem.setItemMeta(clickMeta);
                     }
@@ -121,7 +121,7 @@ public class EditHomeListener extends OnGuiEditListener {
             case SAVE -> {
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
                 clickItem.setItemMeta(clickMeta);
-                repository.update(homeEditor.currentHome).thenAccept(status -> {
+                repository.update(homeEditor.getCurrentEditHome()).thenAccept(status -> {
                     clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
                     Ari.SCHEDULER.runAsyncDelayed(Ari.instance, e -> {
@@ -158,7 +158,7 @@ public class EditHomeListener extends OnGuiEditListener {
             return false;
         }
         HomeEditor homeEditor = (HomeEditor) state.getI();
-        homeEditor.currentHome.setHomeName(message);
+        homeEditor.getCurrentEditHome().setHomeName(message);
         Ari.SCHEDULER.runAtEntity(Ari.instance, player, p -> player.openInventory(homeEditor.getInventory()), () -> {});
         return true;
     }

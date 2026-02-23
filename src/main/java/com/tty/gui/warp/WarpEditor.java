@@ -12,6 +12,7 @@ import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.PublicFunctionUtils;
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -22,12 +23,13 @@ import java.util.Map;
 @GuiMeta(type = "warp_edit")
 public class WarpEditor extends BaseConfigInventory {
 
-    public ServerWarp currentWarp;
+    @Getter
+    private volatile ServerWarp currentEditWarp;
 
     public WarpEditor(ServerWarp serverWarp, Player player) {
         super(Ari.instance, player);
         this.debug(Ari.DEBUG);
-        this.currentWarp = serverWarp;
+        this.currentEditWarp = serverWarp;
     }
 
     @Override
@@ -46,10 +48,10 @@ public class WarpEditor extends BaseConfigInventory {
         if(functionItems != null) {
             for (FunctionItems item : functionItems.values()) {
                 switch (item.getType()) {
-                    case ICON -> item.setMaterial(this.currentWarp.getShowMaterial());
-                    case RENAME -> item.setName(this.currentWarp.getWarpName());
+                    case ICON -> item.setMaterial(this.currentEditWarp.getShowMaterial());
+                    case RENAME -> item.setName(this.currentEditWarp.getWarpName());
                     case LOCATION -> {
-                        Location location = FormatUtils.parseLocation(this.currentWarp.getLocation());
+                        Location location = FormatUtils.parseLocation(this.currentEditWarp.getLocation());
                         Map<String, String> m = new HashMap<>();
                         m.put(IconKeyType.X.getKey(), FormatUtils.formatTwoDecimalPlaces(location.getX()));
                         m.put(IconKeyType.Y.getKey(), FormatUtils.formatTwoDecimalPlaces(location.getY()));
@@ -57,7 +59,7 @@ public class WarpEditor extends BaseConfigInventory {
                         item.setName(this.replaceKey(item.getName(), m));
                     }
                     case PERMISSION -> {
-                        String permission = this.currentWarp.getPermission();
+                        String permission = this.currentEditWarp.getPermission();
                         item.setName(permission == null ? "":permission);
                     }
                     case COST -> {
@@ -65,11 +67,11 @@ public class WarpEditor extends BaseConfigInventory {
                             item.setName(Ari.C_INSTANCE.getValue("server.message.no-economy", FilePath.LANG));
                             item.setMaterial("barrier");
                         } else {
-                            Double cost = this.currentWarp.getCost();
+                            Double cost = this.currentEditWarp.getCost();
                             item.setName(cost == null ? "":cost.toString());
                         }
                     }
-                    case TOP_SLOT -> item.setLore(item.getLore().stream().map(lore -> this.replaceKey(lore, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.DATA_SERVICE.getValue(this.currentWarp.isTopSlot() ? "base.yes_re":"base.no_re")))).toList());
+                    case TOP_SLOT -> item.setLore(item.getLore().stream().map(lore -> this.replaceKey(lore, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.DATA_SERVICE.getValue(this.currentEditWarp.isTopSlot() ? "base.yes_re":"base.no_re")))).toList());
                 }
             }
         }
@@ -78,7 +80,7 @@ public class WarpEditor extends BaseConfigInventory {
 
     @Override
     public void clean() {
-        this.currentWarp = null;
+        this.currentEditWarp = null;
     }
 
 }

@@ -12,6 +12,7 @@ import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.PublicFunctionUtils;
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -22,12 +23,13 @@ import java.util.Map;
 @GuiMeta(type = "home_edit")
 public class HomeEditor extends BaseConfigInventory {
 
-    public ServerHome currentHome;
+    @Getter
+    private volatile ServerHome currentEditHome;
 
     public HomeEditor(ServerHome serverHome, Player player) {
         super(Ari.instance, player);
         this.debug(Ari.DEBUG);
-        this.currentHome = serverHome;
+        this.currentEditHome = serverHome;
     }
 
     @Override
@@ -46,17 +48,17 @@ public class HomeEditor extends BaseConfigInventory {
         if (functionItems != null) {
             for (FunctionItems item : functionItems.values()) {
                 switch (item.getType()) {
-                    case ICON -> item.setMaterial(this.currentHome.getShowMaterial());
-                    case RENAME -> item.setName(this.currentHome.getHomeName());
+                    case ICON -> item.setMaterial(this.currentEditHome.getShowMaterial());
+                    case RENAME -> item.setName(this.currentEditHome.getHomeName());
                     case LOCATION -> {
-                        Location location = FormatUtils.parseLocation(this.currentHome.getLocation());
+                        Location location = FormatUtils.parseLocation(this.currentEditHome.getLocation());
                         Map<String, String> m = new HashMap<>();
                         m.put(IconKeyType.X.getKey(), FormatUtils.formatTwoDecimalPlaces(location.getX()));
                         m.put(IconKeyType.Y.getKey(), FormatUtils.formatTwoDecimalPlaces(location.getY()));
                         m.put(IconKeyType.Z.getKey(), FormatUtils.formatTwoDecimalPlaces(location.getZ()));
                         item.setName(this.replaceKey(item.getName(), m));
                     }
-                    case TOP_SLOT -> item.setLore(item.getLore().stream().map(lore -> this.replaceKey(lore, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.DATA_SERVICE.getValue(this.currentHome.isTopSlot() ? "base.yes_re":"base.no_re")))).toList());
+                    case TOP_SLOT -> item.setLore(item.getLore().stream().map(lore -> this.replaceKey(lore, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.DATA_SERVICE.getValue(this.currentEditHome.isTopSlot() ? "base.yes_re":"base.no_re")))).toList());
                 }
             }
         }
@@ -65,7 +67,7 @@ public class HomeEditor extends BaseConfigInventory {
 
     @Override
     public void clean() {
-        this.currentHome = null;
+        this.currentEditHome = null;
     }
 
 }

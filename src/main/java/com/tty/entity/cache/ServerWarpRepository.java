@@ -22,7 +22,7 @@ public class ServerWarpRepository extends EntityRepository<ServerWarp> {
 
     @Override
     protected LambdaQueryWrapper<ServerWarp> extractPageQueryKey(ServerWarp entity) {
-        return new LambdaQueryWrapper<>(ServerWarp.class);
+        return new LambdaQueryWrapper<>(ServerWarp.class).orderByDesc(ServerWarp::isTopSlot);
     }
 
     public CompletableFuture<PageResult<ServerWarp>> queryCount(LambdaQueryWrapper<ServerWarp> queryKey) {
