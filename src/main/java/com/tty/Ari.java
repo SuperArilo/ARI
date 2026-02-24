@@ -87,6 +87,7 @@ public class Ari extends JavaPlugin {
         if (STATE_MACHINE_MANAGER != null) {
             STATE_MACHINE_MANAGER.forEach(StateService::abort);
         }
+        REPOSITORY_MANAGER.stopAutoCleanTask();
         REPOSITORY_MANAGER.clearAllCache();
         SQL_INSTANCE.close();
         C_INSTANCE.clearConfigs();
