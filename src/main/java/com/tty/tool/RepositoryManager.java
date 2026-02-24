@@ -54,5 +54,9 @@ public final class RepositoryManager {
         this.repositories.forEach((k, v) -> v.debug(status));
     }
 
+    public void stop() {
+        this.repositories.forEach((k, v) -> v.abort());
+    }
+
 }
 
