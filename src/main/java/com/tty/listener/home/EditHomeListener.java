@@ -3,6 +3,7 @@ package com.tty.listener.home;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.state.EditGuiState;
 import com.tty.entity.ServerHome;
@@ -62,13 +63,15 @@ public class EditHomeListener extends OnGuiEditListener {
                 .eq(ServerHome::getHomeId, currentEditHome.getHomeId())
                 .eq(ServerHome::getPlayerUUID, currentEditHome.getPlayerUUID());
 
+        PartitionKey partitionKey = PartitionKey.of(player.getUniqueId().toString());
+
         switch (type) {
             case REBACK -> {
                 inventory.close();
                 player.openInventory(new HomeList(player).getInventory());
             }
             case DELETE ->
-                repository.delete(wrapper)
+                repository.delete(wrapper, partitionKey)
                     .thenCompose(success -> {
                         if (success) {
                             return ConfigUtils.t("function.home.delete-success", player)
@@ -128,7 +131,7 @@ public class EditHomeListener extends OnGuiEditListener {
             case SAVE -> {
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
                 clickItem.setItemMeta(clickMeta);
-                repository.update(currentEditHome, wrapper).thenAccept(status -> {
+                repository.update(currentEditHome, wrapper, partitionKey).thenAccept(status -> {
                     clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
                     Ari.SCHEDULER.runAsyncDelayed(Ari.instance, e -> {

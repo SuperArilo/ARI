@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.BanPlayer;
 import com.tty.api.annotations.command.ArgumentCommand;
@@ -54,13 +55,13 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
         }
         EntityRepository<BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         LambdaQueryWrapper<BanPlayer> wrapper = new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString());
-        repository.get(wrapper)
+        repository.get(wrapper, PartitionKey.global())
             .thenCompose(banPlayer -> {
                 if (banPlayer == null) {
                     CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.ban-remove-failure", player):ConfigUtils.t("function.zako.ban-remove-failure");
                     return future.thenAccept(sender::sendMessage).thenApply(v -> false);
                 }
-                return repository.delete(wrapper)
+                return repository.delete(wrapper, PartitionKey.global())
                     .thenCompose(deleted -> {
                         if (!deleted) {
                             CompletableFuture<Component> msgFuture =

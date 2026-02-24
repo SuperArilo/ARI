@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.api.service.ConfigDataService;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.ServerPlayer;
@@ -49,7 +50,7 @@ public class ZakoInfoArgs extends RequiredArgumentCommand<String> {
         String value = args[2];
         UUID uuid = PublicFunctionUtils.parseUUID(value);
         if (uuid == null) return;
-        Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString())).thenCompose(i -> {
+        Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global()).thenCompose(i -> {
            if (i == null) {
                CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.zako-check-not-exist", player):ConfigUtils.t("function.zako.zako-check-not-exist");
                return future.thenAccept(sender::sendMessage).thenApply(t -> null);

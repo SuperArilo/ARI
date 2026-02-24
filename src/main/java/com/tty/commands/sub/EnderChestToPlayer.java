@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.ServerPlayer;
@@ -48,7 +49,7 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
             return;
         }
         Ari.REPOSITORY_MANAGER.get(ServerPlayer.class)
-            .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()))
+            .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global())
             .thenCompose(serverPlayer -> CompletableFuture.completedFuture(serverPlayer != null))
             .thenAccept(status -> {
                 if (!status) {

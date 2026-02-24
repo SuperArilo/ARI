@@ -2,6 +2,7 @@ package com.tty.gui.warp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.annotations.gui.GuiMeta;
@@ -44,7 +45,8 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
                         this.pageNum,
                         ((BaseDataMenu) this.getBaseMenu()).getDataItems().getSlot().size(),
                         new LambdaQueryWrapper<>(ServerWarp.class)
-                                .orderByDesc(ServerWarp::isTopSlot)
+                                .orderByDesc(ServerWarp::isTopSlot),
+                        PartitionKey.global()
                 );
     }
 

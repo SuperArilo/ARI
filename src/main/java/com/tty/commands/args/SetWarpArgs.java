@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.ServerWarp;
 import com.tty.entity.cache.ServerWarpRepository;
@@ -72,7 +73,7 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
                         return CompletableFuture.completedFuture(null);
                     }
 
-                    return repository.get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId))
+                    return repository.get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId), PartitionKey.global())
                             .thenCompose(existing -> {
                                 if (existing != null) {
                                     return ConfigUtils.t("function.warp.exist", player)
@@ -104,7 +105,7 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
                                         }
                                 );
 
-                                return futureWarp.thenCompose(repository::create);
+                                return futureWarp.thenCompose(i -> repository.create(i, PartitionKey.global()));
                             });
                 })
                 .thenCompose(created -> {

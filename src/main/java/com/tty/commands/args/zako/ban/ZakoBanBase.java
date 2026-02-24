@@ -2,6 +2,7 @@ package com.tty.commands.args.zako.ban;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.BanPlayer;
@@ -37,7 +38,7 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
         EntityRepository<BanPlayer> banPlayerRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         EntityRepository<WhitelistInstance> whitelistInstanceRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
 
-        banPlayerRepository.get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString()))
+        banPlayerRepository.get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global())
             .thenCompose(banPlayer -> {
                 if (banPlayer != null) {
                     CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.had_baned", player):ConfigUtils.t("function.zako.had_baned");
@@ -70,10 +71,10 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
                 banPlayer.setStartTime(now);
                 banPlayer.setEndTime(now + total);
 
-                banPlayerRepository.create(banPlayer);
+                banPlayerRepository.create(banPlayer, PartitionKey.global());
                 LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
                 //同时移除白名单
-                whitelistInstanceRepository.delete(wrapper);
+                whitelistInstanceRepository.delete(wrapper, PartitionKey.global());
 
                 String string = TimeFormatUtils.format(total);
                 Ari.SCHEDULER.run(Ari.instance, i -> {

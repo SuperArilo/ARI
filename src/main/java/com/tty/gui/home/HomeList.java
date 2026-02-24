@@ -2,6 +2,7 @@ package com.tty.gui.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
@@ -45,6 +46,8 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
                         ((BaseDataMenu)this.getBaseMenu()).getDataItems().getSlot().size(),
                         new LambdaQueryWrapper<ServerHome>()
                                 .eq(ServerHome::getPlayerUUID, this.player.getUniqueId().toString())
+                                .orderByDesc(ServerHome::isTopSlot),
+                        PartitionKey.of(this.player.getUniqueId().toString())
                 );
     }
 

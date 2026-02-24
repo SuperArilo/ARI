@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.WhitelistInstance;
@@ -49,7 +50,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
         if (uuid == null) return;
         EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
-        repository.delete(wrapper).thenAccept(status -> {
+        repository.delete(wrapper, PartitionKey.global()).thenAccept(status -> {
             Player player = Bukkit.getPlayer(uuid);
             if(player != null) {
                 Ari.SCHEDULER.runAtEntity(Ari.instance,

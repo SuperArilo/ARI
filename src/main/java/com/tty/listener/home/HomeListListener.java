@@ -2,6 +2,7 @@ package com.tty.listener.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
@@ -48,7 +49,13 @@ public class HomeListListener extends BaseGuiListener {
             case DATA -> {
                 String homeId = currentItem.getItemMeta().getPersistentDataContainer().get(this.homeIdKey, PersistentDataType.STRING);
                 if (homeId == null) break;
-                Ari.REPOSITORY_MANAGER.get(ServerHome.class).get(new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getHomeId, homeId).eq(ServerHome::getPlayerUUID, player.getUniqueId().toString()))
+                Ari.REPOSITORY_MANAGER
+                        .get(ServerHome.class)
+                        .get(new LambdaQueryWrapper<>(ServerHome.class)
+                                .eq(ServerHome::getHomeId, homeId)
+                                .eq(ServerHome::getPlayerUUID, player.getUniqueId().toString()),
+                                PartitionKey.of(player.getUniqueId().toString())
+                        )
                     .thenCompose(home -> {
                         if (home == null) {
                             return ConfigUtils.t("function.home.not-found", player)

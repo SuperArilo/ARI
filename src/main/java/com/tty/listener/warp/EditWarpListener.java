@@ -3,6 +3,7 @@ package com.tty.listener.warp;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.state.EditGuiState;
 import com.tty.entity.ServerWarp;
@@ -64,7 +65,7 @@ public class EditWarpListener extends OnGuiEditListener {
                 inventory.close();
                 player.openInventory(new WarpList(player).getInventory());
             }
-            case DELETE -> warpEntityRepository.delete(wrapper).thenCompose(i -> {
+            case DELETE -> warpEntityRepository.delete(wrapper, PartitionKey.global()).thenCompose(i -> {
                 if (i) {
                     return ConfigUtils.t("function.warp.delete-success", player).thenAccept(player::sendMessage)
                             .thenRun(() -> Ari.SCHEDULER.run(Ari.instance, ab -> {
@@ -122,7 +123,7 @@ public class EditWarpListener extends OnGuiEditListener {
                 Ari.LOG.debug("start saving warp id: {}", warpEditor.getCurrentEditWarp().getWarpId());
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
                 clickItem.setItemMeta(clickMeta);
-                CompletableFuture<Boolean> future = warpEntityRepository.update(currentEditWarp, wrapper);
+                CompletableFuture<Boolean> future = warpEntityRepository.update(currentEditWarp, wrapper, PartitionKey.global());
                 future.thenAccept(status -> {
                     clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                     clickItem.setItemMeta(clickMeta);

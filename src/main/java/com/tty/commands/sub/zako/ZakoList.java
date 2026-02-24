@@ -2,6 +2,7 @@ package com.tty.commands.sub.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.args.zako.ZakoListArgs;
@@ -52,7 +53,7 @@ public class ZakoList extends LiteralArgumentCommand {
             sender.sendMessage(component);
 
             EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
-            repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new LambdaQueryWrapper<>(WhitelistInstance.class)).thenAccept(result -> {
+            repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new LambdaQueryWrapper<>(WhitelistInstance.class), PartitionKey.global()).thenAccept(result -> {
                         List<WhitelistInstance> records = result.records();
                         if (records.isEmpty()) {
                             sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next")));

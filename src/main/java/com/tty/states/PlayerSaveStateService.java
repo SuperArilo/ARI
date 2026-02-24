@@ -2,6 +2,7 @@ package com.tty.states;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.dto.event.OnZakoSavedEvent;
 import com.tty.dto.state.player.PlayerSaveState;
 import com.tty.entity.ServerPlayer;
@@ -73,14 +74,14 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
         LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
 
-        this.repository.get(wrapper)
+        this.repository.get(wrapper, PartitionKey.global())
             .thenCompose(serverPlayer -> {
                 if (serverPlayer == null) {
                     Ari.LOG.error("Player data not found: {}", uuid);
                     return CompletableFuture.completedFuture(false);
                 }
                 serverPlayer.setTotalOnlineTime(serverPlayer.getTotalOnlineTime() + onlineDuration);
-                return this.repository.update(serverPlayer, wrapper);
+                return this.repository.update(serverPlayer, wrapper, PartitionKey.global());
             })
             .thenAccept(success -> {
                 if (success) {

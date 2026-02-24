@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.entity.ServerHome;
 import com.tty.entity.cache.PlayerHomeRepository;
@@ -93,7 +94,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
                         buildHomeFuture.complete(serverHome);
                     });
 
-                    return buildHomeFuture.thenCompose(repository::create);
+                    return buildHomeFuture.thenCompose(i -> repository.create(i, PartitionKey.of(player.getUniqueId().toString())));
                 })
                 .thenCompose(status -> {
                     if (status == null) {

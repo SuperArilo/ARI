@@ -2,6 +2,7 @@ package com.tty.listener.warp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.repository.PartitionKey;
 import com.tty.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
@@ -54,7 +55,7 @@ public class WarpListListener extends BaseGuiListener {
             case DATA -> {
                 String warpId = currentItem.getItemMeta().getPersistentDataContainer().get(this.WARP_ID_KEY, PersistentDataType.STRING);
                 //从数据库查询最新的
-                Ari.REPOSITORY_MANAGER.get(ServerWarp.class).get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId)).thenAccept((instance) -> {
+                Ari.REPOSITORY_MANAGER.get(ServerWarp.class).get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId), PartitionKey.global()).thenAccept((instance) -> {
                     if (instance == null) {
                         Ari.LOG.error("can't find warpId: {}", warpId);
                         return;
