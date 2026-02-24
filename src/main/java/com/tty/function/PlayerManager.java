@@ -22,37 +22,38 @@ public class PlayerManager extends BaseDataManager<ServerPlayer> {
     }
 
     @Override
-    public CompletableFuture<ServerPlayer> getInstance(LambdaQueryWrapper<ServerPlayer> key) {
+    public CompletableFuture<ServerPlayer> get(LambdaQueryWrapper<ServerPlayer> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
-                PlayersMapper mapper = session.getMapper(PlayersMapper.class);
-                return mapper.selectOne(key);
+                return session.getMapper(PlayersMapper.class).selectOne(key);
             }
         });
     }
 
     @Override
-    public CompletableFuture<ServerPlayer> createInstance(ServerPlayer instance) {
+    public CompletableFuture<ServerPlayer> create(ServerPlayer instance) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                PlayersMapper mapper = session.getMapper(PlayersMapper.class);
-                return mapper.insert(instance) == 1 ? instance:null;
+                return session.getMapper(PlayersMapper.class).insert(instance) == 1 ? instance:null;
             }
         });
     }
 
     @Override
-    public CompletableFuture<Boolean> deleteInstance(ServerPlayer instance) {
+    public CompletableFuture<Boolean> delete(ServerPlayer entity) {
         return null;
     }
 
     @Override
-    public CompletableFuture<Boolean> modify(ServerPlayer instance) {
+    public CompletableFuture<Boolean> delete(LambdaQueryWrapper<ServerPlayer> key) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> update(ServerPlayer instance, LambdaQueryWrapper<ServerPlayer> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                PlayersMapper mapper = session.getMapper(PlayersMapper.class);
-                int update = mapper.update(instance, new LambdaQueryWrapper<ServerPlayer>().eq(ServerPlayer::getPlayerUUID, instance.getPlayerUUID()));
-                return update == 1;
+                return session.getMapper(PlayersMapper.class).update(instance, key) == 1;
             }
         });
     }

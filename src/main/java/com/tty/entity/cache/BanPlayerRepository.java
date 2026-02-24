@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.entity.BanPlayer;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.utils.BaseDataManager;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BanPlayerRepository extends EntityRepository<BanPlayer> {
 
@@ -13,12 +13,13 @@ public class BanPlayerRepository extends EntityRepository<BanPlayer> {
     }
 
     @Override
-    protected @NotNull LambdaQueryWrapper<BanPlayer> extractCacheKey(BanPlayer entity) {
-        return new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, entity.getPlayerUUID());
+    protected @Nullable Object resolvePartitionKey(BanPlayer entity) {
+        return entity.getPlayerUUID();
     }
 
     @Override
-    protected LambdaQueryWrapper<BanPlayer> extractPageQueryKey(BanPlayer entity) {
+    protected @Nullable Object resolvePartitionKey(LambdaQueryWrapper<BanPlayer> wrapper) {
         return null;
     }
+
 }

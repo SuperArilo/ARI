@@ -71,14 +71,16 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
         long onlineDuration = System.currentTimeMillis() -  state.getLoginTime();
 
-        this.repository.get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid))
+        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
+
+        this.repository.get(wrapper)
             .thenCompose(serverPlayer -> {
                 if (serverPlayer == null) {
                     Ari.LOG.error("Player data not found: {}", uuid);
                     return CompletableFuture.completedFuture(false);
                 }
                 serverPlayer.setTotalOnlineTime(serverPlayer.getTotalOnlineTime() + onlineDuration);
-                return this.repository.update(serverPlayer);
+                return this.repository.update(serverPlayer, wrapper);
             })
             .thenAccept(success -> {
                 if (success) {

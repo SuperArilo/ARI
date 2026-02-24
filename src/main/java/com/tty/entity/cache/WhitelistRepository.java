@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.entity.WhitelistInstance;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.utils.BaseDataManager;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class WhitelistRepository extends EntityRepository<WhitelistInstance> {
 
@@ -13,12 +13,13 @@ public class WhitelistRepository extends EntityRepository<WhitelistInstance> {
     }
 
     @Override
-    protected @NotNull LambdaQueryWrapper<WhitelistInstance> extractCacheKey(WhitelistInstance entity) {
-        return new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, entity.getPlayerUUID());
+    protected @Nullable Object resolvePartitionKey(WhitelistInstance entity) {
+        return null;
     }
 
     @Override
-    protected LambdaQueryWrapper<WhitelistInstance> extractPageQueryKey(WhitelistInstance entity) {
-        return new LambdaQueryWrapper<>(WhitelistInstance.class);
+    protected @Nullable Object resolvePartitionKey(LambdaQueryWrapper<WhitelistInstance> wrapper) {
+        return null;
     }
+
 }

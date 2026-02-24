@@ -5,6 +5,7 @@ import com.tty.entity.ServerPlayer;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.utils.BaseDataManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ServerPlayerRepository extends EntityRepository<ServerPlayer> {
 
@@ -13,12 +14,13 @@ public class ServerPlayerRepository extends EntityRepository<ServerPlayer> {
     }
 
     @Override
-    protected @NotNull LambdaQueryWrapper<ServerPlayer> extractCacheKey(ServerPlayer entity) {
-        return new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, entity.getPlayerUUID());
+    protected @Nullable Object resolvePartitionKey(ServerPlayer entity) {
+        return null;
     }
 
     @Override
-    protected LambdaQueryWrapper<ServerPlayer> extractPageQueryKey(ServerPlayer entity) {
+    protected @Nullable Object resolvePartitionKey(LambdaQueryWrapper<ServerPlayer> wrapper) {
         return null;
     }
+
 }

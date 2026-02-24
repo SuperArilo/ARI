@@ -53,14 +53,14 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
             return;
         }
         EntityRepository<BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
-        repository.get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString()))
+        LambdaQueryWrapper<BanPlayer> wrapper = new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString());
+        repository.get(wrapper)
             .thenCompose(banPlayer -> {
                 if (banPlayer == null) {
-                    CompletableFuture<Component> future = (sender instanceof Player player) ?ConfigUtils.t("function.zako.ban-remove-failure", player):ConfigUtils.t("function.zako.ban-remove-failure");
+                    CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.ban-remove-failure", player):ConfigUtils.t("function.zako.ban-remove-failure");
                     return future.thenAccept(sender::sendMessage).thenApply(v -> false);
                 }
-
-                return repository.delete(banPlayer)
+                return repository.delete(wrapper)
                     .thenCompose(deleted -> {
                         if (!deleted) {
                             CompletableFuture<Component> msgFuture =

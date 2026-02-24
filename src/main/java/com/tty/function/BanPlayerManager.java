@@ -22,7 +22,7 @@ public class BanPlayerManager extends BaseDataManager<BanPlayer> {
     }
 
     @Override
-    public CompletableFuture<BanPlayer> getInstance(LambdaQueryWrapper<BanPlayer> key) {
+    public CompletableFuture<BanPlayer> get(LambdaQueryWrapper<BanPlayer> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
                 BanPlayerMapper mapper = session.getMapper(BanPlayerMapper.class);
@@ -32,31 +32,37 @@ public class BanPlayerManager extends BaseDataManager<BanPlayer> {
     }
 
     @Override
-    public CompletableFuture<BanPlayer> createInstance(BanPlayer instance) {
+    public CompletableFuture<BanPlayer> create(BanPlayer instance) {
         return this.executeTask(() -> {
            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-               BanPlayerMapper mapper = session.getMapper(BanPlayerMapper.class);
-               return mapper.insert(instance) == 1 ? instance:null;
+               return session.getMapper(BanPlayerMapper.class).insert(instance) == 1 ? instance:null;
            }
         });
     }
 
     @Override
-    public CompletableFuture<Boolean> deleteInstance(BanPlayer instance) {
-        return this.executeTask(() -> {
-           try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-               BanPlayerMapper mapper = session.getMapper(BanPlayerMapper.class);
-               return mapper.delete(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, instance.getPlayerUUID())) == 1;
-           }
-        });
-    }
-
-    @Override
-    public CompletableFuture<Boolean> modify(BanPlayer instance) {
+    public CompletableFuture<Boolean> delete(BanPlayer entity) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                BanPlayerMapper mapper = session.getMapper(BanPlayerMapper.class);
-                return mapper.update(instance, new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, instance.getPlayerUUID())) == 1;
+                return session.getMapper(BanPlayerMapper.class).deleteById(entity) == 1;
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Boolean> delete(LambdaQueryWrapper<BanPlayer> key) {
+        return this.executeTask(() -> {
+           try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
+               return session.getMapper(BanPlayerMapper.class).delete(key) == 1;
+           }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Boolean> update(BanPlayer instance, LambdaQueryWrapper<BanPlayer> key) {
+        return this.executeTask(() -> {
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
+                return session.getMapper(BanPlayerMapper.class).update(instance, key) == 1;
             }
         });
     }

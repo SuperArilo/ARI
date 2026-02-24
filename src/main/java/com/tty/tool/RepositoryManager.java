@@ -1,5 +1,4 @@
 package com.tty.tool;
-import com.tty.Ari;
 import com.tty.entity.*;
 import com.tty.entity.cache.*;
 import com.tty.function.*;
@@ -15,7 +14,6 @@ public final class RepositoryManager {
     public RepositoryManager(boolean debug) {
         this.init();
         this.debug(debug);
-        this.startAutoCleanTask();
     }
 
     private void init() {
@@ -40,19 +38,6 @@ public final class RepositoryManager {
             throw new IllegalArgumentException("No repository registered for entity: " + entityClass.getName());
         }
         return (EntityRepository<T>) repository;
-    }
-
-    public void startAutoCleanTask() {
-        long time = 20 * 60 * 60 * 24;
-        for (EntityRepository<?> repository : this.repositories.values()) {
-            repository.autoClean(Ari.SCHEDULER, Ari.instance, time, time);
-        }
-    }
-
-    public void stopAutoCleanTask() {
-        for (EntityRepository<?> repository : this.repositories.values()) {
-            repository.stopAutoClean();
-        }
     }
 
     public boolean isRegistered(Class<?> entityClass) {

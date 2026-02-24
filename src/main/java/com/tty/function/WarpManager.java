@@ -22,10 +22,7 @@ public class WarpManager extends BaseDataManager<ServerWarp> {
     public CompletableFuture<PageResult<ServerWarp>> getList(int pageNum, int pageSize, LambdaQueryWrapper<ServerWarp> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
-                WarpMapper mapper = session.getMapper(WarpMapper.class);
-                Page<ServerWarp> page = new Page<>(pageNum, pageSize);
-                key.orderByDesc(ServerWarp::isTopSlot);
-                Page<ServerWarp> resultPage = mapper.selectPage(page, key);
+                Page<ServerWarp> resultPage = session.getMapper(WarpMapper.class).selectPage(new Page<>(pageNum, pageSize), key);
                 return PageResult.build(
                         resultPage.getRecords(),
                         resultPage.getTotal(),
@@ -36,50 +33,42 @@ public class WarpManager extends BaseDataManager<ServerWarp> {
     }
 
     @Override
-    public CompletableFuture<ServerWarp> getInstance(LambdaQueryWrapper<ServerWarp> key) {
+    public CompletableFuture<ServerWarp> get(LambdaQueryWrapper<ServerWarp> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
-                WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.selectOne(key);
-            }
-        });
-    }
-
-    public CompletableFuture<List<ServerWarp>> getCountByPlayer(String uuid) {
-        return this.executeTask(() -> {
-            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
-                WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.selectList(new Page<>(0, Integer.MAX_VALUE), new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getCreateBy, uuid));
+                return session.getMapper(WarpMapper.class).selectOne(key);
             }
         });
     }
 
     @Override
-    public CompletableFuture<ServerWarp> createInstance(ServerWarp instance) {
+    public CompletableFuture<ServerWarp> create(ServerWarp instance) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.insert(instance) == 1 ? instance:null;
+                return session.getMapper(WarpMapper.class).insert(instance) == 1 ? instance:null;
             }
         });
     }
 
     @Override
-    public CompletableFuture<Boolean> deleteInstance(ServerWarp instance) {
+    public CompletableFuture<Boolean> delete(ServerWarp entity) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> delete(LambdaQueryWrapper<ServerWarp> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.delete(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getCreateBy, instance.getCreateBy()).eq(ServerWarp::getId, instance.getId())) == 1;
+                return session.getMapper(WarpMapper.class).delete(key) == 1;
             }
         });
     }
 
     @Override
-    public CompletableFuture<Boolean> modify(ServerWarp instance) {
+    public CompletableFuture<Boolean> update(ServerWarp instance, LambdaQueryWrapper<ServerWarp> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                WarpMapper mapper = session.getMapper(WarpMapper.class);
-                return mapper.update(instance, new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getId, instance.getId()).eq(ServerWarp::getCreateBy, instance.getCreateBy())) == 1;
+                return session.getMapper(WarpMapper.class).update(instance, key) == 1;
             }
         });
     }

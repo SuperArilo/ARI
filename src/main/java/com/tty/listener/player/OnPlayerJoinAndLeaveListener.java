@@ -39,11 +39,12 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void banCheck(AsyncPlayerPreLoginEvent event) {
-        EntityRepository<BanPlayer> banPlayerEntityRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
+        EntityRepository<BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         UUID uuid = event.getUniqueId();
         BanPlayer banPlayer;
+        LambdaQueryWrapper<BanPlayer> wrapper = new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString());
         try {
-            banPlayer = banPlayerEntityRepository.get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString())).get(3, TimeUnit.SECONDS);
+            banPlayer = repository.get(wrapper).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Ari.LOG.error(e, "query ban list error on uuid {}", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
@@ -51,7 +52,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         }
         if (banPlayer == null) return;
         if (banPlayer.getEndTime() <= System.currentTimeMillis()) {
-            banPlayerEntityRepository.delete(banPlayer);
+            repository.delete(wrapper);
             Ari.LOG.debug("free player uuid {}.", banPlayer.getPlayerUUID());
         } else {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
@@ -108,8 +109,9 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
         //判断玩家是否更改过名字
         ServerPlayer serverPlayer;
+        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString());
         try {
-            serverPlayer = playerEntityRepository.get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString())).get(3, TimeUnit.SECONDS);
+            serverPlayer = playerEntityRepository.get(wrapper).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Ari.LOG.error(e, "error on query player {} to check name.", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
@@ -119,7 +121,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         if (serverPlayer.getPlayerName().equals(event.getName())) return;
         Ari.LOG.debug("layer changed name. old: {}, new: {}", serverPlayer.getPlayerName(), event.getName());
         serverPlayer.setPlayerName(event.getName());
-        playerEntityRepository.update(serverPlayer);
+        playerEntityRepository.update(serverPlayer, wrapper);
 
     }
 
@@ -134,7 +136,8 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             event.joinMessage(null);
         }
         long nowLoginTime = System.currentTimeMillis();
-        repository.get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, player.getUniqueId().toString()))
+        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, player.getUniqueId().toString());
+        repository.get(wrapper)
             .thenCompose(i -> {
                 if(i == null) {
                     ServerPlayer serverPlayer = new ServerPlayer();
@@ -144,7 +147,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                     repository.create(serverPlayer);
                 } else {
                     i.setLastLoginOffTime(nowLoginTime);
-                    repository.update(i);
+                    repository.update(i, wrapper);
                 }
                 return CompletableFuture.completedFuture(null);
             })

@@ -71,8 +71,9 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
                 banPlayer.setEndTime(now + total);
 
                 banPlayerRepository.create(banPlayer);
+                LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
                 //同时移除白名单
-                whitelistInstanceRepository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString())).thenCompose(whitelistInstanceRepository::delete);
+                whitelistInstanceRepository.delete(wrapper);
 
                 String string = TimeFormatUtils.format(total);
                 Ari.SCHEDULER.run(Ari.instance, i -> {

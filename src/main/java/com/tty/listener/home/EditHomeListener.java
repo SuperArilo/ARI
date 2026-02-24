@@ -1,5 +1,6 @@
 package com.tty.listener.home;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.api.utils.ComponentUtils;
@@ -55,13 +56,19 @@ public class EditHomeListener extends OnGuiEditListener {
         if (type == null) return;
 
         EntityRepository<ServerHome> repository = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
+        ServerHome currentEditHome = homeEditor.getCurrentEditHome();
+
+        LambdaQueryWrapper<ServerHome> wrapper = new LambdaQueryWrapper<>(ServerHome.class)
+                .eq(ServerHome::getHomeId, currentEditHome.getHomeId())
+                .eq(ServerHome::getPlayerUUID, currentEditHome.getPlayerUUID());
+
         switch (type) {
             case REBACK -> {
                 inventory.close();
                 player.openInventory(new HomeList(player).getInventory());
             }
             case DELETE ->
-                repository.delete(homeEditor.getCurrentEditHome())
+                repository.delete(wrapper)
                     .thenCompose(success -> {
                         if (success) {
                             return ConfigUtils.t("function.home.delete-success", player)
@@ -80,7 +87,7 @@ public class EditHomeListener extends OnGuiEditListener {
                         .addState(new EditGuiState(
                                 player,
                                 Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new com.google.common.reflect.TypeToken<Integer>(){}.getType()),
-                                new HomeEditor(PublicFunctionUtils.deepCopy(homeEditor.getCurrentEditHome(), ServerHome.class), player),
+                                new HomeEditor(PublicFunctionUtils.deepCopy(currentEditHome, ServerHome.class), player),
                                 type)
                         );
                 inventory.close();
@@ -88,7 +95,7 @@ public class EditHomeListener extends OnGuiEditListener {
             case LOCATION -> {
                 //reset LOCATION
                 Location newLocation = player.getLocation();
-                homeEditor.getCurrentEditHome().setLocation(newLocation.toString());
+                currentEditHome.setLocation(newLocation.toString());
                 clickMeta.displayName(ComponentUtils.text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
                 clickItem.setItemMeta(clickMeta);
             }
@@ -105,14 +112,14 @@ public class EditHomeListener extends OnGuiEditListener {
                 newItemMeta.getPersistentDataContainer().set(icon_type, PersistentDataType.STRING, string);
                 newItemStake.setItemMeta(newItemMeta);
                 inventory.setItem(event.getSlot(), newItemStake);
-                homeEditor.getCurrentEditHome().setShowMaterial(current.name());
+                currentEditHome.setShowMaterial(current.name());
             }
             case TOP_SLOT -> {
-                homeEditor.getCurrentEditHome().setTopSlot(!homeEditor.getCurrentEditHome().isTopSlot());
+                currentEditHome.setTopSlot(!currentEditHome.isTopSlot());
                 homeEditor.getBaseMenu().getFunctionItems().forEach((k, v) -> {
                     if (v.getType().equals(FunctionType.TOP_SLOT)) {
                         List<String> lore = v.getLore();
-                        List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(homeEditor.getCurrentEditHome().isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
+                        List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(currentEditHome.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
                         clickMeta.lore(list);
                         clickItem.setItemMeta(clickMeta);
                     }
@@ -121,7 +128,7 @@ public class EditHomeListener extends OnGuiEditListener {
             case SAVE -> {
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
                 clickItem.setItemMeta(clickMeta);
-                repository.update(homeEditor.getCurrentEditHome()).thenAccept(status -> {
+                repository.update(currentEditHome, wrapper).thenAccept(status -> {
                     clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
                     Ari.SCHEDULER.runAsyncDelayed(Ari.instance, e -> {

@@ -1,5 +1,6 @@
 package com.tty.listener.warp;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.api.utils.ComponentUtils;
@@ -53,12 +54,17 @@ public class EditWarpListener extends OnGuiEditListener {
         FunctionType type = this.ItemNBT_TypeCheck(clickMeta.getPersistentDataContainer().get(icon_type, PersistentDataType.STRING));
         if(type == null) return;
         EntityRepository<ServerWarp> warpEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
+
+        ServerWarp currentEditWarp = warpEditor.getCurrentEditWarp();
+
+        LambdaQueryWrapper<ServerWarp> wrapper = new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, currentEditWarp.getWarpId());
+
         switch (type) {
             case REBACK -> {
                 inventory.close();
                 player.openInventory(new WarpList(player).getInventory());
             }
-            case DELETE -> warpEntityRepository.delete(warpEditor.getCurrentEditWarp()).thenCompose(i -> {
+            case DELETE -> warpEntityRepository.delete(wrapper).thenCompose(i -> {
                 if (i) {
                     return ConfigUtils.t("function.warp.delete-success", player).thenAccept(player::sendMessage)
                             .thenRun(() -> Ari.SCHEDULER.run(Ari.instance, ab -> {
@@ -78,14 +84,14 @@ public class EditWarpListener extends OnGuiEditListener {
                 if (type.equals(FunctionType.PERMISSION) && event.getClick().isRightClick()) {
                     clickMeta.displayName(ComponentUtils.text(""));
                     clickItem.setItemMeta(clickMeta);
-                    warpEditor.getCurrentEditWarp().setPermission(null);
+                    currentEditWarp.setPermission(null);
                     return;
                 }
                 Ari.STATE_MACHINE_MANAGER.get(GuiEditStateService.class)
                         .addState(new EditGuiState(
                                         player,
                                 Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new com.google.common.reflect.TypeToken<Integer>(){}.getType()),
-                                        new WarpEditor(PublicFunctionUtils.deepCopy(warpEditor.getCurrentEditWarp(), ServerWarp.class), player),
+                                        new WarpEditor(PublicFunctionUtils.deepCopy(currentEditWarp, ServerWarp.class), player),
                                         type
                                 )
                         );
@@ -93,7 +99,7 @@ public class EditWarpListener extends OnGuiEditListener {
             }
             case LOCATION -> {
                 Location newLocation = player.getLocation();
-                warpEditor.getCurrentEditWarp().setLocation(newLocation.toString());
+                currentEditWarp.setLocation(newLocation.toString());
                 clickMeta.displayName(ComponentUtils.text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
                 clickItem.setItemMeta(clickMeta);
             }
@@ -110,13 +116,13 @@ public class EditWarpListener extends OnGuiEditListener {
                 newItemMeta.getPersistentDataContainer().set(icon_type, PersistentDataType.STRING, string);
                 newItemStake.setItemMeta(newItemMeta);
                 inventory.setItem(event.getSlot(), newItemStake);
-                warpEditor.getCurrentEditWarp().setShowMaterial(current.name());
+                currentEditWarp.setShowMaterial(current.name());
             }
             case SAVE -> {
                 Ari.LOG.debug("start saving warp id: {}", warpEditor.getCurrentEditWarp().getWarpId());
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
                 clickItem.setItemMeta(clickMeta);
-                CompletableFuture<Boolean> future = warpEntityRepository.update(warpEditor.getCurrentEditWarp());
+                CompletableFuture<Boolean> future = warpEntityRepository.update(currentEditWarp, wrapper);
                 future.thenAccept(status -> {
                     clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
@@ -137,11 +143,11 @@ public class EditWarpListener extends OnGuiEditListener {
                 });
             }
             case TOP_SLOT -> {
-                warpEditor.getCurrentEditWarp().setTopSlot(!warpEditor.getCurrentEditWarp().isTopSlot());
+                currentEditWarp.setTopSlot(!currentEditWarp.isTopSlot());
                 warpEditor.getBaseMenu().getFunctionItems().forEach((k, v) -> {
                     if (v.getType().equals(FunctionType.TOP_SLOT)) {
                         List<String> lore = v.getLore();
-                        List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(warpEditor.getCurrentEditWarp().isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
+                        List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(currentEditWarp.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
                         clickMeta.lore(list);
                         clickItem.setItemMeta(clickMeta);
                     }

@@ -9,7 +9,6 @@ import com.tty.mapper.WhitelistMapper;
 import com.tty.tool.SQLInstance;
 import org.apache.ibatis.session.SqlSession;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class WhitelistManager extends BaseDataManager<WhitelistInstance> {
@@ -22,10 +21,7 @@ public class WhitelistManager extends BaseDataManager<WhitelistInstance> {
     public CompletableFuture<PageResult<WhitelistInstance>> getList(int pageNum, int pageSize, LambdaQueryWrapper<WhitelistInstance> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
-                WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
-                Page<WhitelistInstance> page = new Page<>(pageNum, pageSize);
-                Page<WhitelistInstance> resultPage = mapper.selectPage(page, key);
-
+                Page<WhitelistInstance> resultPage = session.getMapper(WhitelistMapper.class).selectPage(new Page<>(pageNum, pageSize), key);
                 return PageResult.build(
                         resultPage.getRecords(),
                         resultPage.getTotal(),
@@ -36,47 +32,44 @@ public class WhitelistManager extends BaseDataManager<WhitelistInstance> {
     }
 
     @Override
-    public CompletableFuture<WhitelistInstance> getInstance(LambdaQueryWrapper<WhitelistInstance> key) {
+    public CompletableFuture<WhitelistInstance> get(LambdaQueryWrapper<WhitelistInstance> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
-                return mapper.selectOne(key);
+                return session.getMapper(WhitelistMapper.class).selectOne(key);
             }
         });
     }
 
     @Override
-    public CompletableFuture<WhitelistInstance> createInstance(WhitelistInstance instance) {
+    public CompletableFuture<WhitelistInstance> create(WhitelistInstance instance) {
         return this.executeTask(() -> {
            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-               WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
-               return mapper.insert(instance) == 1 ? instance:null;
+               return session.getMapper(WhitelistMapper.class).insert(instance) == 1 ? instance:null;
            }
         });
     }
 
     @Override
-    public CompletableFuture<Boolean> deleteInstance(WhitelistInstance instance) {
+    public CompletableFuture<Boolean> delete(WhitelistInstance entity) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
-                return mapper.deleteById(instance) == 1;
+                return session.getMapper(WhitelistMapper.class).deleteById(entity) == 1;
             }
         });
     }
 
     @Override
-    public CompletableFuture<Boolean> modify(WhitelistInstance instance) {
-        return null;
-    }
-
-    public CompletableFuture<Integer> deleteInstances(List<String> uuids) {
+    public CompletableFuture<Boolean> delete(LambdaQueryWrapper<WhitelistInstance> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                WhitelistMapper mapper = session.getMapper(WhitelistMapper.class);
-                return mapper.delete(new LambdaQueryWrapper<>(WhitelistInstance.class).in(WhitelistInstance::getPlayerUUID, uuids));
+                return session.getMapper(WhitelistMapper.class).delete(key) == 1;
             }
         });
+    }
+
+    @Override
+    public CompletableFuture<Boolean> update(WhitelistInstance instance, LambdaQueryWrapper<WhitelistInstance> key) {
+        return null;
     }
 
 }

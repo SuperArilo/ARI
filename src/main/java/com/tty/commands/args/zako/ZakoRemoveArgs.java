@@ -48,12 +48,8 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
         UUID uuid = PublicFunctionUtils.parseUUID(value);
         if (uuid == null) return;
         EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
-        repository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString())).thenCompose(instance -> {
-            if (instance == null) {
-                return CompletableFuture.completedFuture(false);
-            }
-            return repository.delete(instance);
-        }).thenAccept(status -> {
+        LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
+        repository.delete(wrapper).thenAccept(status -> {
             Player player = Bukkit.getPlayer(uuid);
             if(player != null) {
                 Ari.SCHEDULER.runAtEntity(Ari.instance,

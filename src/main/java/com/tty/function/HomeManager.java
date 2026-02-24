@@ -21,11 +21,7 @@ public class HomeManager extends BaseDataManager<ServerHome> {
     public CompletableFuture<PageResult<ServerHome>> getList(int pageNum, int pageSize , LambdaQueryWrapper<ServerHome> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
-                HomeMapper mapper = session.getMapper(HomeMapper.class);
-                Page<ServerHome> page = new Page<>(pageNum, pageSize);
-                Page<ServerHome> resultPage = mapper.selectPage(
-                        page, key.orderByDesc(ServerHome::isTopSlot)
-                );
+                Page<ServerHome> resultPage = session.getMapper(HomeMapper.class).selectPage(new Page<>(pageNum, pageSize), key);
                 return PageResult.build(
                         resultPage.getRecords(),
                         resultPage.getTotal(),
@@ -36,45 +32,46 @@ public class HomeManager extends BaseDataManager<ServerHome> {
     }
 
     @Override
-    public CompletableFuture<ServerHome> getInstance(LambdaQueryWrapper<ServerHome> key) {
+    public CompletableFuture<ServerHome> get(LambdaQueryWrapper<ServerHome> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
-                HomeMapper mapper = session.getMapper(HomeMapper.class);
-                return mapper.selectOne(key);
+                return session.getMapper(HomeMapper.class).selectOne(key);
             }
         });
     }
 
     @Override
-    public CompletableFuture<ServerHome> createInstance(ServerHome instance) {
+    public CompletableFuture<ServerHome> create(ServerHome instance) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                HomeMapper mapper = session.getMapper(HomeMapper.class);
-                return mapper.insert(instance) == 1 ? instance:null;
+                return session.getMapper(HomeMapper.class).insert(instance) == 1 ? instance:null;
             }
         });
     }
 
     @Override
-    public CompletableFuture<Boolean> deleteInstance(ServerHome instance) {
+    public CompletableFuture<Boolean> delete(ServerHome entity) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                HomeMapper mapper = session.getMapper(HomeMapper.class);
-                return mapper.delete(
-                        new LambdaQueryWrapper<>(ServerHome.class)
-                                .eq(ServerHome::getPlayerUUID, instance.getPlayerUUID())
-                                .eq(ServerHome::getHomeId, instance.getHomeId())
-                ) == 1;
+                return session.getMapper(HomeMapper.class).deleteById(entity) == 1;
             }
         });
     }
 
     @Override
-    public CompletableFuture<Boolean> modify(ServerHome instance) {
+    public CompletableFuture<Boolean> delete(LambdaQueryWrapper<ServerHome> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                HomeMapper mapper = session.getMapper(HomeMapper.class);
-                return mapper.updateById(instance) == 1;
+                return session.getMapper(HomeMapper.class).delete(key) == 1;
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Boolean> update(ServerHome instance, LambdaQueryWrapper<ServerHome> key) {
+        return this.executeTask(() -> {
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
+                return session.getMapper(HomeMapper.class).update(instance, key) == 1;
             }
         });
     }
