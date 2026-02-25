@@ -81,3 +81,7 @@
 ### 安装步骤
 1. 将插件和前置Lib放入 `plugins/` 目录
 2. 重启服务器
+
+## 🌲 bStats 统计
+
+![Plugin Metrics](https://bstats.org/signatures/bukkit/Ari.svg)
