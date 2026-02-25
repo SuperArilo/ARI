@@ -1,4 +1,4 @@
-# Ari - 基于现代化 Minecraft 服务器插件
+# Ari - 基于现代化 Minecraft 服务器插件 (正在持续更新中)
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Java 21+](https://img.shields.io/badge/Java-21%2B-orange)](https://adoptium.net/)
@@ -74,7 +74,7 @@
 
 ### 环境要求
 - Folia 1.21.3+ 服务器核心
-- Java 17 或更高版本
+- Java 21 或更高版本
 - [Vault](https://github.com/MilkBowl/Vault) 前置插件
 - [ARILIB](https://github.com/SuperArilo/ARILIB) 前置插件
 
