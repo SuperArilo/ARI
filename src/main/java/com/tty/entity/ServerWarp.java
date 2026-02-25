@@ -3,6 +3,7 @@ package com.tty.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.tty.api.annotations.cache.CacheKey;
 import lombok.Data;
 
 @Data
@@ -10,8 +11,10 @@ import lombok.Data;
 public class ServerWarp {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+    @CacheKey
     private String warpId;
     private String warpName;
+    @CacheKey
     private String createBy;
     private String location;
     private String showMaterial;
