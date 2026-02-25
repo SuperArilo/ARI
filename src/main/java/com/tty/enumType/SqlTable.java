@@ -3,7 +3,13 @@ package com.tty.enumType;
 import com.tty.api.enumType.SQLType;
 
 public enum SqlTable {
-
+    SCHEMA_VERSION("""
+            CREATE TABLE IF NOT EXISTS %sschema_version (
+                version INTEGER PRIMARY KEY,
+                applied_at INTEGER NOT NULL,
+                description VARCHAR(255)
+            )
+        """),
     PLAYER("""
                 CREATE TABLE IF NOT EXISTS %splayers (
                 id INTEGER PRIMARY KEY %s,

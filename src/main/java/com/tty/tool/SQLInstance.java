@@ -12,12 +12,13 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.ibatis.mapping.Environment;
-import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 @SuppressWarnings("SqlSourceToSinkFlow")
@@ -70,17 +71,13 @@ public class SQLInstance {
         }
         Ari.LOG.debug("initializing database schema");
 
-        try (SqlSession session = SESSION_FACTORY.openSession()) {
-            for (SqlTable table : SqlTable.values()) {
-                Ari.LOG.debug("creating table: {}", table.name());
-                try (Statement statement = session.getConnection().createStatement()) {
-                    statement.execute(table.getSql(this.getTablePrefix(), this.getSqlType()));
-                }
-            }
-            session.commit();
-            Ari.LOG.info("database schema initialized successfully");
-        } catch (Exception e) {
-            Ari.LOG.error(e, "failed to initialize database schema");
+        this.ensureSchemaVersionTable();
+
+        try {
+            MigrationManager manager = new MigrationManager(this.sqlType, this.getTablePrefix(), SESSION_FACTORY.getConfiguration().getEnvironment().getDataSource());
+            manager.migrate();
+        } catch (SQLException e) {
+            Ari.LOG.error(e, "Failed to apply database migrations");
         }
     }
 
@@ -135,6 +132,15 @@ public class SQLInstance {
 
     public String getTablePrefix() {
         return Ari.instance.getConfig().getString("data.table-prefix", "ari");
+    }
+
+    private void ensureSchemaVersionTable() {
+        String sql = SqlTable.SCHEMA_VERSION.getSql(this.getTablePrefix(), sqlType);
+        try (Connection conn = SESSION_FACTORY.getConfiguration().getEnvironment().getDataSource().getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            Ari.LOG.error(e, "Failed to create schema_version table");
+        }
     }
 
     public void close() {
