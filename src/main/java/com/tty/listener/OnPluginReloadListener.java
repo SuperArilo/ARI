@@ -27,6 +27,7 @@ public class OnPluginReloadListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void debugStatus(CustomPluginReloadEvent event) {
         Ari.REPOSITORY_MANAGER.debug(Ari.DEBUG);
+        Ari.LOG.setDebug(Ari.DEBUG);
     }
 
 }
