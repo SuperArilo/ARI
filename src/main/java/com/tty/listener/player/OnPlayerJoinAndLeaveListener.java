@@ -188,10 +188,9 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                     ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.SCHEDULER.run(Ari.instance, task -> Bukkit.broadcast(t)));
                 }
 
-                Location spawnLocation = player.getLocation();
-                if (spawnLocation.getBlock().isSolid()) {
+                if(this.isPlayerInsideBlock(player)) {
                     Ari.LOG.debug("player {} inside block, teleport safe location.", player.getName());
-                    Location safeLocation = this.findSafeLocationAbove(spawnLocation);
+                    Location safeLocation = this.findSafeLocationAbove(player.getLocation());
                     Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> ConfigUtils.t("teleport.not-safe-location", player).thenAccept(player::sendMessage));
                 }
             });
@@ -223,24 +222,45 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 .addState(new PlayerSaveState(player, System.currentTimeMillis()));
     }
 
+    private boolean isPlayerInsideBlock(Player player) {
+        Location loc = player.getLocation();
+        World world = player.getWorld();
+        double feetY = loc.getY();
+        double headY = feetY + player.getHeight();
+
+        Block feetBlock = loc.getBlock();
+        if (!feetBlock.isPassable()) {
+            double blockTop = feetBlock.getBoundingBox().getMaxY();
+            if (feetY < blockTop - 0.1) {
+                return true;
+            }
+        }
+        Block headBlock = world.getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ());
+        if (!headBlock.isPassable()) {
+            double headBlockBottom = headBlock.getBoundingBox().getMinY();
+            return headY > headBlockBottom + 0.1;
+        }
+        return false;
+    }
+
+
     //当玩家的进入服务器后的位置嵌在方块里，则往上查到非固定方块为止
     private Location findSafeLocationAbove(Location start) {
-
         World world = start.getWorld();
         int x = start.getBlockX();
         int z = start.getBlockZ();
-        int y = start.getBlockY();
+        int startY = Math.max(start.getBlockY(), 0);
+        int maxY = world.getMaxHeight() - 2;
 
-        int worldMaxY = world.getMaxHeight();
-
-        for (int currentY = y; currentY <= worldMaxY; currentY++) {
-            Block block = world.getBlockAt(x, currentY, z);
-            Block above = world.getBlockAt(x, currentY + 1, z);
-            if (!block.getType().isSolid() && !above.getType().isSolid()) {
-                return new Location(world, x + 0.5, currentY, z + 0.5);
+        for (int y = startY; y <= maxY; y++) {
+            Block feetBlock = world.getBlockAt(x, y, z);
+            Block headBlock = world.getBlockAt(x, y + 1, z);
+            Block groundBlock = world.getBlockAt(x, y - 1, z);
+            if (feetBlock.isPassable() && headBlock.isPassable() && !groundBlock.isPassable()) {
+                double groundTop = groundBlock.getBoundingBox().getMaxY();
+                return new Location(world, x + 0.5, groundTop, z + 0.5);
             }
         }
-
         return world.getSpawnLocation();
     }
 
