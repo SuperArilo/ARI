@@ -119,12 +119,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.sql2o</groupId>
-            <artifactId>sql2o</artifactId>
-            <version>1.9.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-core</artifactId>
             <version>3.5.15</version>
