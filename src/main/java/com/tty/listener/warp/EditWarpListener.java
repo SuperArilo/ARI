@@ -6,6 +6,7 @@ import com.tty.Ari;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.state.EditGuiState;
+import com.tty.api.utils.GuiNBTKeys;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
@@ -51,7 +52,7 @@ public class EditWarpListener extends OnGuiEditListener {
         Player player = (Player) event.getWhoClicked();
 
         ItemMeta clickMeta = clickItem.getItemMeta();
-        NamespacedKey icon_type = new NamespacedKey(Ari.instance, "type");
+        NamespacedKey icon_type = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_RENDER_FUNCTION_ICON);
         FunctionType type = this.ItemNBT_TypeCheck(clickMeta.getPersistentDataContainer().get(icon_type, PersistentDataType.STRING));
         if(type == null) return;
         EntityRepository<ServerWarp> warpEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);

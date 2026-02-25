@@ -9,6 +9,7 @@ import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
+import com.tty.api.utils.GuiNBTKeys;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseDataItemConfigInventory;
@@ -85,8 +86,8 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             itemMeta.displayName(ComponentUtils.text(ph.getHomeName(), this.player));
             itemMeta.lore(textComponents);
 
-            this.setNBT(itemMeta, "home_id", PersistentDataType.STRING, ph.getHomeId());
-            this.setNBT(itemMeta, "type", PersistentDataType.STRING, FunctionType.DATA.name());
+            this.setNBT(itemMeta, GuiNBTKeys.GUI_RENDER_DATA_ID, PersistentDataType.STRING, ph.getHomeId());
+            this.setNBT(itemMeta, GuiNBTKeys.GUI_RENDER_FUNCTION_ICON, PersistentDataType.STRING, FunctionType.DATA.name());
 
             if (ph.isTopSlot()) {
                 this.setHighlight(itemMeta);

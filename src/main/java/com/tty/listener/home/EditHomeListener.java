@@ -6,6 +6,7 @@ import com.tty.Ari;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.state.EditGuiState;
+import com.tty.api.utils.GuiNBTKeys;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
@@ -35,6 +36,8 @@ import java.util.Map;
 
 public class EditHomeListener extends OnGuiEditListener {
 
+    private final NamespacedKey functionIcon = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_RENDER_FUNCTION_ICON);
+
     public EditHomeListener(GuiType guiType) {
         super(guiType);
     }
@@ -51,8 +54,7 @@ public class EditHomeListener extends OnGuiEditListener {
         assert clickItem != null;
 
         ItemMeta clickMeta = clickItem.getItemMeta();
-        NamespacedKey icon_type = new NamespacedKey(Ari.instance, "type");
-        FunctionType type = this.ItemNBT_TypeCheck(clickMeta.getPersistentDataContainer().get(icon_type, PersistentDataType.STRING));
+        FunctionType type = this.ItemNBT_TypeCheck(clickMeta.getPersistentDataContainer().get(this.functionIcon, PersistentDataType.STRING));
         event.setCancelled(true);
         if (type == null) return;
 
@@ -110,9 +112,9 @@ public class EditHomeListener extends OnGuiEditListener {
                 ItemMeta newItemMeta = newItemStake.getItemMeta();
                 newItemMeta.displayName(clickMeta.displayName());
                 newItemMeta.lore(clickItem.lore());
-                String string = clickMeta.getPersistentDataContainer().get(icon_type, PersistentDataType.STRING);
+                String string = clickMeta.getPersistentDataContainer().get(this.functionIcon, PersistentDataType.STRING);
                 if (string == null) return;
-                newItemMeta.getPersistentDataContainer().set(icon_type, PersistentDataType.STRING, string);
+                newItemMeta.getPersistentDataContainer().set(this.functionIcon, PersistentDataType.STRING, string);
                 newItemStake.setItemMeta(newItemMeta);
                 inventory.setItem(event.getSlot(), newItemStake);
                 currentEditHome.setShowMaterial(current.name());

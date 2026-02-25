@@ -3,6 +3,7 @@ package com.tty.listener.warp;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
 import com.tty.api.repository.PartitionKey;
+import com.tty.api.utils.GuiNBTKeys;
 import com.tty.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
@@ -31,8 +32,8 @@ import java.util.UUID;
 
 public class WarpListListener extends BaseGuiListener {
 
-    private final NamespacedKey TYPE_KEY = new NamespacedKey(Ari.instance, "type");
-    private final NamespacedKey WARP_ID_KEY = new NamespacedKey(Ari.instance, "warp_id");
+    private final NamespacedKey TYPE_KEY = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_RENDER_FUNCTION_ICON);
+    private final NamespacedKey WARP_ID_KEY = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_RENDER_DATA_ID);
 
     public WarpListListener(GuiType guiType) {
         super(guiType);
@@ -62,62 +63,60 @@ public class WarpListListener extends BaseGuiListener {
                     }
                     boolean isOwner = UUID.fromString(instance.getCreateBy()).equals(player.getUniqueId());
                     ClickType eventClick = event.getClick();
-                    switch (eventClick) {
-                        case LEFT -> {
-                            Location targetLocation = FormatUtils.parseLocation(instance.getLocation());
-                            Ari.STATE_MACHINE_MANAGER
+                    if (event.isLeftClick()) {
+                        Location targetLocation = FormatUtils.parseLocation(instance.getLocation());
+                        Ari.STATE_MACHINE_MANAGER
                                 .get(TeleportStateService.class)
                                 .addState(new EntityToLocationCallbackState(
-                                    player,
-                                    Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.WARP_CONFIG, Integer.class, 3),
-                                    targetLocation,
-                                    () -> {
-                                        String permission = instance.getPermission();
-                                        if(permission != null && !permission.isEmpty()) {
-                                            boolean hasPermission = Ari.PERMISSION_SERVICE.hasPermission(player, permission);
-                                            if (!hasPermission && !isOwner) {
-                                                ConfigUtils.t("function.warp.no-permission-teleport", player).thenAccept(player::sendMessage);
+                                        player,
+                                        Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.WARP_CONFIG, Integer.class, 3),
+                                        targetLocation,
+                                        () -> {
+                                            String permission = instance.getPermission();
+                                            if(permission != null && !permission.isEmpty()) {
+                                                boolean hasPermission = Ari.PERMISSION_SERVICE.hasPermission(player, permission);
+                                                if (!hasPermission && !isOwner) {
+                                                    ConfigUtils.t("function.warp.no-permission-teleport", player).thenAccept(player::sendMessage);
+                                                    return false;
+                                                }
+                                            }
+                                            if(!Ari.ECONOMY_SERVICE.hasEnoughBalance(player, instance.getCost()) && !isOwner &&
+                                                    Ari.C_INSTANCE.getValue("main.permission", FilePath.WARP_CONFIG, Boolean.class, true)) {
+                                                ConfigUtils.t("function.warp.not-enough-money", player).thenAccept(player::sendMessage);
                                                 return false;
                                             }
-                                        }
-                                        if(!Ari.ECONOMY_SERVICE.hasEnoughBalance(player, instance.getCost()) && !isOwner &&
-                                                Ari.C_INSTANCE.getValue("main.permission", FilePath.WARP_CONFIG, Boolean.class, true)) {
-                                            ConfigUtils.t("function.warp.not-enough-money", player).thenAccept(player::sendMessage);
-                                            return false;
-                                        }
-                                        return true;
-                                    },
-                                    () -> {
-                                        //判断是否是地标拥有者或者是不是op，如果是则不扣
-                                        if(!isOwner &&
-                                                !player.isOp() &&
-                                                Ari.C_INSTANCE.getValue("main.cost", FilePath.WARP_CONFIG, Boolean.class, false) &&
-                                                !Ari.ECONOMY_SERVICE.isNull()) {
-                                            Ari.ECONOMY_SERVICE.withdrawPlayer(player, instance.getCost());
-                                            player.sendMessage(ConfigUtils.tAfter("teleport.costed", Map.of(LangVault.COSTED_UNRESOLVED.getType(), Component.text(instance.getCost().toString() + Ari.ECONOMY_SERVICE.getNamePlural()))));
-                                        }
-                                    },
-                                    TeleportType.WARP));
-                            Ari.SCHEDULER.runAtEntity(Ari.instance, player, i -> inventory.close(), null);
-                        }
-                        case RIGHT -> {
-                            if(isOwner || player.isOp()) {
-                                Ari.SCHEDULER.run(Ari.instance, i -> {
-                                    inventory.close();
-                                    player.openInventory(new WarpEditor(instance, player).getInventory());
-                                });
-                            } else {
-                                ConfigUtils.t("function.warp.no-permission-edit", player).thenAccept(player::sendMessage);
-                            }
+                                            return true;
+                                        },
+                                        () -> {
+                                            //判断是否是地标拥有者或者是不是op，如果是则不扣
+                                            if(!isOwner &&
+                                                    !player.isOp() &&
+                                                    Ari.C_INSTANCE.getValue("main.cost", FilePath.WARP_CONFIG, Boolean.class, false) &&
+                                                    !Ari.ECONOMY_SERVICE.isNull()) {
+                                                Ari.ECONOMY_SERVICE.withdrawPlayer(player, instance.getCost());
+                                                player.sendMessage(ConfigUtils.tAfter("teleport.costed", Map.of(LangVault.COSTED_UNRESOLVED.getType(), Component.text(instance.getCost().toString() + Ari.ECONOMY_SERVICE.getNamePlural()))));
+                                            }
+                                        },
+                                        TeleportType.WARP));
+                        Ari.SCHEDULER.runAtEntity(Ari.instance, player, i -> inventory.close(), null);
+                    } else if (event.isRightClick()) {
+                        if(isOwner || player.isOp()) {
+                            Ari.SCHEDULER.run(Ari.instance, i -> {
+                                inventory.close();
+                                player.openInventory(new WarpEditor(instance, player).getInventory());
+                            });
+                        } else {
+                            ConfigUtils.t("function.warp.no-permission-edit", player).thenAccept(player::sendMessage);
                         }
                     }
                 }).exceptionally(i -> {
                     Ari.LOG.error(i, "get warp id {} error", warpId);
-                   return null;
+                    return null;
                 });
             }
             case PREV_PAGE -> warpList.prev();
             case NEXT_PAGE -> warpList.next();
         }
     }
+
 }

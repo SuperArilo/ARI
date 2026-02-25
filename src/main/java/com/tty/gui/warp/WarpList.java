@@ -11,6 +11,7 @@ import com.tty.api.dto.gui.BaseDataMenu;
 import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
+import com.tty.api.utils.GuiNBTKeys;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseDataItemConfigInventory;
@@ -107,8 +108,8 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             itemMeta.displayName(ComponentUtils.text(serverWarp.getWarpName(), this.player));
             itemMeta.lore(textComponents);
 
-            this.setNBT(itemMeta, "warp_id", PersistentDataType.STRING, serverWarp.getWarpId());
-            this.setNBT(itemMeta, "type", PersistentDataType.STRING, FunctionType.DATA.name());
+            this.setNBT(itemMeta, GuiNBTKeys.GUI_RENDER_DATA_ID, PersistentDataType.STRING, serverWarp.getWarpId());
+            this.setNBT(itemMeta, GuiNBTKeys.GUI_RENDER_FUNCTION_ICON, PersistentDataType.STRING, FunctionType.DATA.name());
 
             if (serverWarp.isTopSlot()) {
                 this.setHighlight(itemMeta);

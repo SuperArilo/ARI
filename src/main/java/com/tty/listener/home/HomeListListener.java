@@ -3,6 +3,7 @@ package com.tty.listener.home;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
 import com.tty.api.repository.PartitionKey;
+import com.tty.api.utils.GuiNBTKeys;
 import com.tty.dto.state.teleport.EntityToLocationState;
 import com.tty.entity.ServerHome;
 import com.tty.enumType.FilePath;
@@ -27,7 +28,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class HomeListListener extends BaseGuiListener {
 
-    private final NamespacedKey homeIdKey = new NamespacedKey(Ari.instance, "home_id");
+    private final NamespacedKey homeIdKey = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_RENDER_DATA_ID);
+    private final NamespacedKey functionIcon = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_RENDER_FUNCTION_ICON);
 
     public HomeListListener(GuiType guiType) {
         super(guiType);
@@ -41,7 +43,7 @@ public class HomeListListener extends BaseGuiListener {
         assert currentItem != null;
 
         assert homeList != null;
-        FunctionType type = this.ItemNBT_TypeCheck(currentItem.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Ari.instance, "type"), PersistentDataType.STRING));
+        FunctionType type = this.ItemNBT_TypeCheck(currentItem.getItemMeta().getPersistentDataContainer().get(this.functionIcon, PersistentDataType.STRING));
         if(type == null) return;
         if (!(event.getWhoClicked() instanceof Player player)) return;
         switch (type) {
