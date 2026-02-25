@@ -22,6 +22,7 @@ import com.tty.listener.warp.WarpListListener;
 import com.tty.states.teleport.RandomTpStateService;
 import com.tty.tool.*;
 import io.papermc.paper.plugin.configuration.PluginMeta;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,6 +35,8 @@ import java.util.Map;
 
 @SuppressWarnings("UnstableApiUsage")
 public class Ari extends JavaPlugin {
+
+    private static final int PLUGIN_ID = 29755;
 
     public static Ari instance;
     public static final Log LOG = Log.create();
@@ -79,7 +82,7 @@ public class Ari extends JavaPlugin {
         CommandRegister.register(this, "com.tty.commands", FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
 
         PLACEHOLDER = new Placeholder();
-
+        this.initMetrics();
     }
 
     @Override
@@ -174,4 +177,14 @@ public class Ari extends JavaPlugin {
         Ari.LOG.info("");
 
     }
+
+    private void initMetrics() {
+        try {
+            new Metrics(this, PLUGIN_ID);
+            LOG.debug("loaded metrics.");
+        } catch (Exception e) {
+            LOG.warn(e, "cannot to load metrics");
+        }
+    }
+
 }
