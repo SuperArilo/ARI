@@ -161,7 +161,7 @@ public class Ari extends JavaPlugin {
             new Metrics(this, PLUGIN_ID);
             LOG.debug("loaded metrics.");
         } catch (Exception e) {
-            LOG.warn(e, "cannot to load metrics");
+            LOG.warn(e, "unable to load metrics");
         }
     }
 
