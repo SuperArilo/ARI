@@ -42,11 +42,14 @@ public class PlayerTabManager implements Listener {
 
     private void start() {
         this.stop();
-        if (!this.enable) return;
+        if (!this.enable) {
+            this.reorderTabList();
+            return;
+        }
 
         this.task = Ari.SCHEDULER.runAtFixedRate(
                 Ari.instance,
-                i -> this.updateTab(Bukkit.getOnlinePlayers()),
+                i -> this.updateTab(new ArrayList<>(Bukkit.getServer().getOnlinePlayers())),
                 1L,
                 this.updateInterval
         );
@@ -62,7 +65,7 @@ public class PlayerTabManager implements Listener {
     private void updateTab(Collection<? extends Player> players) {
         if (players.isEmpty()) return;
 
-        Map<String, List<Player>> grouped = groupPlayers(players);
+        Map<String, List<Player>> grouped = this.groupPlayers(players);
         AtomicInteger order = new AtomicInteger(Bukkit.getMaxPlayers());
 
         for (String group : this.groupOrder) {
@@ -74,7 +77,7 @@ public class PlayerTabManager implements Listener {
             TabGroup tabGroup = new TabGroup(line, list);
 
             for (Player player : tabGroup.players()) {
-                applyTab(player, tabGroup, order.getAndDecrement());
+                this.applyTab(player, tabGroup, order.getAndDecrement());
             }
         }
     }
@@ -96,7 +99,7 @@ public class PlayerTabManager implements Listener {
         }
 
         for (Player player : players) {
-            String group = resolveGroup(player);
+            String group = this.resolveGroup(player);
             result.get(group).add(player);
         }
 
@@ -115,6 +118,18 @@ public class PlayerTabManager implements Listener {
     private Component buildComponent(List<String> lines, Player player) {
         if (lines.isEmpty()) return Component.empty();
         return Component.join(NEW_LINE, lines.stream().map(line -> ComponentUtils.text(line, player)).toList());
+    }
+
+    private void reorderTabList() {
+        List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
+        onlinePlayers.forEach(player -> {
+            player.playerListName(player.name());
+            player.sendPlayerListHeaderAndFooter(Component.empty(), Component.empty());
+        });
+        onlinePlayers.sort(Comparator.comparing(Player::getName, String.CASE_INSENSITIVE_ORDER));
+        for (int i = 0; i < onlinePlayers.size(); i++) {
+            onlinePlayers.get(i).setPlayerListOrder(i);
+        }
     }
 
     private void reloadConfig() {
@@ -144,4 +159,5 @@ public class PlayerTabManager implements Listener {
         this.reloadConfig();
         this.start();
     }
+
 }
