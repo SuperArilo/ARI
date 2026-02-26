@@ -1,7 +1,6 @@
 package com.tty.enumType;
 
 import com.tty.api.enumType.FilePathEnum;
-import lombok.Getter;
 
 public enum FilePath implements FilePathEnum {
     LANG("lang", "lang/[lang].yml"),
@@ -19,7 +18,6 @@ public enum FilePath implements FilePathEnum {
     SPAWN_CONFIG("spawn", "module/spawn/setting.yml"),
     DEATH_MESSAGE("death-message", "lang/death-message/[lang].yml");
 
-    @Getter
     private final String nickName;
     private final String path;
 
@@ -31,6 +29,11 @@ public enum FilePath implements FilePathEnum {
     @Override
     public String getPath() {
         return this.path;
+    }
+
+    @Override
+    public String getNickName() {
+        return this.nickName;
     }
 
 }

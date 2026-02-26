@@ -24,13 +24,10 @@ import com.tty.tool.*;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.Map;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -42,7 +39,7 @@ public class Ari extends JavaPlugin {
     public static final Log LOG = Log.create();
     public static final Scheduler SCHEDULER = Scheduler.create();
     public static Boolean DEBUG = false;
-    public static final ConfigInstance C_INSTANCE = new ConfigInstance();
+    public static ConfigInstance C_INSTANCE;
     public static SQLInstance SQL_INSTANCE;
     public static RepositoryManager REPOSITORY_MANAGER;
     public static PermissionService PERMISSION_SERVICE;
@@ -134,26 +131,7 @@ public class Ari extends JavaPlugin {
         Ari.instance.saveDefaultConfig();
         Ari.instance.reloadConfig();
         DEBUG = Ari.instance.getConfig().getBoolean("debug.enable", false);
-        loadConfigInMemory();
-    }
-
-    private static void loadConfigInMemory() {
-        C_INSTANCE.clearConfigs();
-        FileConfiguration pluginConfig = Ari.instance.getConfig();
-        for (FilePath filePath : FilePath.values()) {
-            String path = filePath.getPath().replace("[lang]", Ari.instance.getConfig().getString("lang", "cn"));
-            File file = new File(Ari.instance.getDataFolder(), path);
-            if (!file.exists()) {
-                Ari.instance.saveResource(path, true);
-            } else if (pluginConfig.getBoolean("debug.overwrite-file", false)) {
-                try {
-                    Ari.instance.saveResource(path, true);
-                } catch (Exception e) {
-                    Ari.LOG.error("can not find file {}, path {} .", filePath.getNickName(), path);
-                }
-            }
-            C_INSTANCE.setConfig(filePath.name(), YamlConfiguration.loadConfiguration(file));
-        }
+        C_INSTANCE = new ConfigInstance(Ari.instance, FilePath.values());
     }
 
     @SuppressWarnings("deprecation")
