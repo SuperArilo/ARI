@@ -57,7 +57,10 @@ public class RecordLastLocationListener implements Listener {
         if (!event.isBedSpawn() && !event.isAnchorSpawn()) {
             event.setRespawnLocation(getRespawnLocation(player.getWorld()));
         }
-        this.setPlayerLastLocation(event.getPlayer());
+
+        if (TELEPORT_LAST_LOCATION.containsKey(player.getUniqueId())) {
+            this.setPlayerLastLocation(player);
+        }
     }
     @EventHandler
     public void cleanPlayerLastLocation(PlayerQuitEvent event) {
