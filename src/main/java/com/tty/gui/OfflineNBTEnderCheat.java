@@ -49,7 +49,7 @@ public class OfflineNBTEnderCheat extends BaseInventory {
 
     public void setItem(int index, ItemStack itemStack) {
         if (this.inventory == null) {
-            Ari.LOG.error("you must first open to create inventory");
+            this.getLog().error("you must first open to create inventory");
             return;
         }
         this.inventory.setItem(index, itemStack);
