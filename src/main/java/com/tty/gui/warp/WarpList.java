@@ -88,7 +88,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
                     UUID.fromString(serverWarp.getCreateBy()).equals(this.player.getUniqueId());
 
             Map<String, Component> types = new HashMap<>();
-            types.put(IconKeyType.ID.getKey(), Component.text(serverWarp.getId()));
+            types.put(IconKeyType.ID.getKey(), Component.text(serverWarp.getWarpId()));
             types.put(IconKeyType.X.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getX())));
             types.put(IconKeyType.Y.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getY())));
             types.put(IconKeyType.Z.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
