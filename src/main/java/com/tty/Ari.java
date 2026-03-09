@@ -66,6 +66,7 @@ public class Ari extends JavaPlugin {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
         SQL_INSTANCE = new SQLInstance();
         REPOSITORY_MANAGER = new RepositoryManager(Ari.DEBUG);
         STATE_MACHINE_MANAGER = new StateMachineManager();
@@ -87,10 +88,20 @@ public class Ari extends JavaPlugin {
         if (STATE_MACHINE_MANAGER != null) {
             STATE_MACHINE_MANAGER.forEach(StateService::abort);
         }
-        REPOSITORY_MANAGER.clearAllCache();
-        REPOSITORY_MANAGER.stop();
-        SQL_INSTANCE.close();
-        C_INSTANCE.clearConfigs();
+
+        if (REPOSITORY_MANAGER != null) {
+            REPOSITORY_MANAGER.clearAllCache();
+            REPOSITORY_MANAGER.stop();
+        }
+
+        if (SQL_INSTANCE != null) {
+            SQL_INSTANCE.close();
+        }
+
+        if (C_INSTANCE != null) {
+            C_INSTANCE.clearConfigs();
+        }
+
     }
 
     private void loadOtherPlugins() {
