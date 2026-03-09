@@ -9,7 +9,6 @@ import org.bukkit.Location;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -63,7 +62,7 @@ public class PlayerDeathInfoCollector {
             List<String> pool = new ArrayList<>();
             List<String> resolvedKeys = new ArrayList<>();
             String basePath = isDestine ? keyPath + ".destine" : keyPath;
-            findMessages(basePath, killerName, type, pool, resolvedKeys);
+            this.findMessages(basePath, killerName, type, pool, resolvedKeys);
             Ari.LOG.debug("DeathMessage resolved keys: {}", String.join(", ", resolvedKeys));
             return pool.isEmpty() ? "" : pool.get(PublicFunctionUtils.randomGenerator(0, pool.size() - 1));
         }
@@ -87,8 +86,9 @@ public class PlayerDeathInfoCollector {
         }
 
         public String getRandomOfList(String keyPath) {
-            return getRandomOfList(keyPath, this.isDestine);
+            return this.getRandomOfList(keyPath, this.isDestine);
         }
+
     }
 
     public DeathInfo collect(PlayerDeathEvent event) {
@@ -120,7 +120,7 @@ public class PlayerDeathInfoCollector {
                 Entity damager = r.damager();
                 if (damager == null) continue;
 
-                Entity actual = resolveAttacker(damager);
+                Entity actual = this.resolveAttacker(damager);
                 if (actual == null) continue;
 
                 // 记录第一个攻击者
@@ -162,9 +162,7 @@ public class PlayerDeathInfoCollector {
             }
         }
 
-        //从 DamageSource 获取信息
-        DamageSource source = event.getDamageSource();
-        info.killer = source.getCausingEntity();
+        info.killer = event.getDamageSource().getCausingEntity();
 
         if (info.killer instanceof LivingEntity e) {
             EntityEquipment eq = e.getEquipment();
@@ -172,18 +170,17 @@ public class PlayerDeathInfoCollector {
         }
 
         //无法判断是否为"注定"，默认为false
-        Ari.LOG.debug("fallback analysis used, killer: {}",
-                info.killer != null ? info.killer.getType().name() : "null");
+        Ari.LOG.debug("fallback analysis used, killer: {}", info.killer != null ? info.killer.getType().name() : "null");
 
         return info;
     }
 
     /**
-     * 判断是否为"注定"死亡
-     * 1. 玩家试图逃跑但被杀死（isEscapeAttempt为true）
-     * 2. 玩家被多个不同攻击者围攻致死
-     * 3. 玩家死于间接伤害，但之前曾被其他攻击者攻击
-     * 4. 如果玩家被直接秒杀，不算注定
+     * 判断是否为注定死亡
+     * 玩家试图逃跑但被杀死
+     * 玩家被多个不同攻击者围攻致死
+     * 玩家死于间接伤害，但之前曾被其他攻击者攻击
+     * 如果玩家被直接秒杀，不算注定
      */
     private boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records,
                                        Entity victim, Entity firstAttacker, Entity lastAttacker,
