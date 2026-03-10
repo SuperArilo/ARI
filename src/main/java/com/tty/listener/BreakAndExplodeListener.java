@@ -133,8 +133,10 @@ public class BreakAndExplodeListener implements Listener {
         List<String> list = Ari.instance.getConfig().getStringList("server.anti-explosion.pass-list");
         for (String s : list) {
             result.add(s.toUpperCase());
-
         }
+        //硬编码添加旋风人相关
+        result.add("WIND_CHARGE");
+        result.add("BREEZE_WIND_CHARGE");
         return result;
     }
 

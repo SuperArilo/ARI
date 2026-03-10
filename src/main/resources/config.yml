@@ -39,8 +39,6 @@ server:
     enable: false
     pass-list:
       - "tnt"
-      - "wind_charge"
-      - "breeze_wind_charge"
   #阻止耕地踩踏
   anti-trample-farmland: false
   # 阻止火焰蔓延
