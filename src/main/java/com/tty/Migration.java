@@ -39,7 +39,13 @@ public interface Migration {
     }
 
     /**
-     * 增加列，如果列已存在则跳过
+     * 增加列，如果存在
+     * @param conn 连接对象
+     * @param tableName 表名
+     * @param columnName 列名
+     * @param columnDefinition 列属性
+     * @param sqlType 数据库类型
+     * @throws SQLException 抛出 sql 错误
      */
     default void addColumnIfNotExists(Connection conn, String tableName, String columnName, String columnDefinition, SQLType sqlType) throws SQLException {
         if (sqlType == SQLType.SQLITE && this.columnExistsSQLite(conn, tableName, columnName)) {
