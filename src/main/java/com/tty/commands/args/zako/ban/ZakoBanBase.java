@@ -21,8 +21,11 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
+
+    private static final TimeUnit[] TIME_UNITS = {TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS};
 
     public void ban(CommandSender sender, String[] args) {
         UUID uuid = PublicFunctionUtils.parseUUID(args[2]);
@@ -50,17 +53,15 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
                 if (s != null) return;
                 long now = System.currentTimeMillis();
 
-                TimeUnit[] units = {TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS};
-
-                long total = 0;
-                for (int i = 0; i < units.length; i++) {
+                AtomicLong total = new AtomicLong(0);
+                for (int i = 0; i < TIME_UNITS.length; i++) {
                     int index = 4 + i;
                     if (args.length > index) {
                         int value = Integer.parseInt(args[index]);
                         if (value < 0) {
                             return;
                         }
-                        total += TimeFormatUtils.toTimestamp(value, units[i]);
+                        total.addAndGet(TimeFormatUtils.toTimestamp(value, TIME_UNITS[i]));
                     }
                 }
 
@@ -69,19 +70,18 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
                 banPlayer.setOperator(Operator.getOperator(sender).toString());
                 banPlayer.setReason(args[3]);
                 banPlayer.setStartTime(now);
-                banPlayer.setEndTime(now + total);
+                banPlayer.setEndTime(now + total.get());
 
                 banPlayerRepository.create(banPlayer, PartitionKey.global());
                 LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
                 //同时移除白名单
                 whitelistInstanceRepository.delete(wrapper, PartitionKey.global());
 
-                String string = TimeFormatUtils.format(total);
                 Ari.SCHEDULER.run(Ari.instance, i -> {
                     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
                     if (offlinePlayer instanceof Player player) {
                         player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
-                        Ari.LOG.debug("baned player uuid {}. total {}", uuid.toString(), string);
+                        Ari.LOG.debug("baned player uuid {}. total {}", uuid.toString(), TimeFormatUtils.format(total.get()));
                     }
                     ConfigUtils.t("function.zako.baned", offlinePlayer).thenAccept(Bukkit::broadcast);
                 });
