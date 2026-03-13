@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -31,7 +32,7 @@ public class ZakoBanPlayer extends ZakoBanBase<String> {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        Set<String> players = Bukkit.getOnlinePlayers().stream()
+        Set<String> players = new ArrayList<>(Bukkit.getOnlinePlayers()).stream()
                 .map(Player::getName)
                 .filter(name -> !name.equals(sender.getName()))
                 .collect(Collectors.toSet());

@@ -12,6 +12,7 @@ import com.tty.api.state.StateService;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 public class PlayerSaveStateService extends StateService<PlayerSaveState> {
@@ -104,7 +105,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
 
     public static void addPlayerState() {
         PlayerSaveStateService service = Ari.STATE_MACHINE_MANAGER.get(PlayerSaveStateService.class);
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : new ArrayList<>(Bukkit.getOnlinePlayers())) {
             service.addState(new PlayerSaveState(player, System.currentTimeMillis()));
         }
     }

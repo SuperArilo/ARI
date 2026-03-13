@@ -98,7 +98,7 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+        Collection<? extends Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
         Set<String> strings = onlinePlayers.stream().map(Player::getName).collect(Collectors.toSet());
         if (onlinePlayers.isEmpty() || args.length != 3) return CompletableFuture.completedFuture(strings);
         return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[2], strings));

@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
      * @return 返回玩家名称列表
      */
     public Set<String> getOnlinePlayers(CommandSender sender) {
-        return Bukkit.getOnlinePlayers().stream()
+        return new ArrayList<>(Bukkit.getOnlinePlayers()).stream()
                 .map(Player::getName)
                 .filter(name -> !name.equals(sender.getName()))
                 .collect(Collectors.toSet());
