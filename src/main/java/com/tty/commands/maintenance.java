@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @CommandMeta(displayName = "maintenance", permission = "ari.command.maintenance", tokenLength = 1, allowConsole = true)
@@ -29,7 +30,7 @@ public class maintenance extends LiteralArgumentCommand {
     public void execute(CommandSender sender, String[] args) {
         MAINTENANCE_MODE = !MAINTENANCE_MODE;
         Component component = ConfigUtils.tAfter("server.maintenance." + (MAINTENANCE_MODE ? "on-enable" : "on-disable"));
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : new ArrayList<>(Bukkit.getOnlinePlayers())) {
             if (player.isOp()) {
                 player.sendMessage(component);
                 continue;
