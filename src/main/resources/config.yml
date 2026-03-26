@@ -61,7 +61,7 @@ server:
     excluded-entities:
       - ARMOR_STAND
   sand-dupe:
-    enable: true
+    enable: false
     overworld: 'world'
     end: 'world_the_end'
 debug:
