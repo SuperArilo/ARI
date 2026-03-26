@@ -136,6 +136,7 @@ public class Ari extends JavaPlugin {
         pluginManager.registerEvents(new MobBossBarListener(), this);
         pluginManager.registerEvents(new DisableMobSpawnListener(), this);
         pluginManager.registerEvents(new CustomTotemCostListener(), this);
+        pluginManager.registerEvents(new GravityListener(), this);
     }
 
     public static void reloadAllConfig() {
