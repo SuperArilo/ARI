@@ -188,11 +188,14 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                     ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.SCHEDULER.run(Ari.instance, task -> Bukkit.broadcast(t)));
                 }
 
-                if(this.isPlayerInsideBlock(player)) {
-                    Ari.LOG.debug("player {} inside block, teleport safe location.", player.getName());
-                    Location safeLocation = this.findSafeLocationAbove(player.getLocation());
-                    Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> ConfigUtils.t("teleport.not-safe-location", player).thenAccept(player::sendMessage));
-                }
+                Ari.SCHEDULER.runAtEntity(Ari.instance, player, o -> {
+                    if(this.isPlayerInsideBlock(player)) {
+                        Ari.LOG.debug("player {} inside block, teleport safe location.", player.getName());
+                        Location safeLocation = this.findSafeLocationAbove(player.getLocation());
+                        Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> ConfigUtils.t("teleport.not-safe-location", player).thenAccept(player::sendMessage));
+                    }
+                }, () -> Ari.LOG.error("error on player join server."));
+
             });
     }
 
