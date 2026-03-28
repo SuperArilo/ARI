@@ -19,19 +19,20 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerListener implements Listener {
+
     @EventHandler
-    public void onRespawn(InventoryCloseEvent event) {
+    public void onRespawnOnFolia(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
         if (event.getInventory().getType() != InventoryType.CRAFTING || !player.isDead() || !player.isConnected() || player.getHealth() > 0) return;
         // do stuff
         if (!ServerPlatform.isFolia()) return;
-        Ari.SCHEDULER.runAtEntity(Ari.instance, player,i -> {
-            Location respawnLocation = ((Player) event.getPlayer()).getRespawnLocation();
-            if (respawnLocation == null) {
-                respawnLocation = getRespawnLocation(player.getWorld());
-            }
-            Bukkit.getPluginManager().callEvent(new CustomPlayerRespawnEvent(player, respawnLocation, player.getLocation()));
-        }, null);
+        Location respawnLocation = player.getRespawnLocation();
+        if (respawnLocation == null) {
+            Location location = getRespawnLocation(player.getWorld());
+            player.setRespawnLocation(location);
+            respawnLocation = location;
+        }
+        Bukkit.getPluginManager().callEvent(new CustomPlayerRespawnEvent(player, respawnLocation, player.getLocation()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -32,23 +32,24 @@ public class RecordLastLocationListener implements Listener {
         if (!cause.equals(PlayerTeleportEvent.TeleportCause.PLUGIN)) return;
         TELEPORT_LAST_LOCATION.put(event.getPlayer().getUniqueId(), event.getFrom());
     }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void lastDeathLocation(PlayerDeathEvent event) {
         TELEPORT_LAST_LOCATION.put(event.getPlayer().getUniqueId(), event.getPlayer().getLocation());
     }
+
     @EventHandler
     public void onRespawnOnFolia(CustomPlayerRespawnEvent event) {
         if (!ServerPlatform.isFolia()) return;
         Player player = event.getPlayer();
         Location respawnLocation = event.getRespawnLocation();
-        player.setRespawnLocation(respawnLocation);
         Ari.SCHEDULER.runAtRegion(
             Ari.instance,
             respawnLocation,
             i -> player.teleportAsync(respawnLocation).thenAccept(t -> this.setPlayerLastLocation(player))
         );
-
     }
+
     @EventHandler
     public void onRespawnOnPaper(PlayerRespawnEvent event) {
         if (event.getRespawnReason().equals(PlayerRespawnEvent.RespawnReason.END_PORTAL)) return;
@@ -62,6 +63,7 @@ public class RecordLastLocationListener implements Listener {
             this.setPlayerLastLocation(player);
         }
     }
+
     @EventHandler
     public void cleanPlayerLastLocation(PlayerQuitEvent event) {
         TELEPORT_LAST_LOCATION.remove(event.getPlayer().getUniqueId());
