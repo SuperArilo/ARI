@@ -46,7 +46,14 @@ public class RecordLastLocationListener implements Listener {
         Ari.SCHEDULER.runAtRegion(
             Ari.instance,
             respawnLocation,
-            i -> player.teleportAsync(respawnLocation).thenAccept(t -> this.setPlayerLastLocation(player))
+            i -> player.teleportAsync(respawnLocation)
+                    .thenAccept(t -> {
+                        if(t && TELEPORT_LAST_LOCATION.containsKey(player.getUniqueId())) {
+                            this.setPlayerLastLocation(player);
+                        } else {
+                            Ari.LOG.warn("player {} teleport status error.", player.getName());
+                        }
+                    })
         );
     }
 
