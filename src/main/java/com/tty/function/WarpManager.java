@@ -9,7 +9,6 @@ import com.tty.mapper.WarpMapper;
 import com.tty.tool.SQLInstance;
 import org.apache.ibatis.session.SqlSession;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class WarpManager extends BaseDataManager<ServerWarp> {

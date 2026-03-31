@@ -8,7 +8,6 @@ import com.tty.sql_version.V2UpdatePreSlot;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
-import java.util.List;
 
 public record MigrationManager(SQLType sqlType, String tablePrefix, DataSource dataSource) {
 
