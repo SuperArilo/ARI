@@ -102,7 +102,6 @@ server:
       wake_up: '&f起床时间'
   message:
     on-whitelist-login: '&c您尚未在此服务器的白名单，请联系管理员添加！'
-    tips-whitelist: '&a请联系管理员来添加白名单'
     on-first-login: '&a欢迎玩家 &6<player_name> &a加入我们的服务器！'
     on-login: '&f玩家 &6<player_name> &f加入了服务器！'
     on-leave: '&f玩家 &6<player_name> &f离开了服务器！'
