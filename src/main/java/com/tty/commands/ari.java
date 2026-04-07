@@ -36,6 +36,7 @@ public class ari extends LiteralArgumentCommand {
             new infinitytotem(),
             new enderchest(),
             new enchant(),
+            new server(),
             new Reload()
         );
     }

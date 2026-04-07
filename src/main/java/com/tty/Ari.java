@@ -12,6 +12,7 @@ import com.tty.function.*;
 import com.tty.enumType.GuiType;
 import com.tty.api.dto.AliasItem;
 import com.tty.listener.*;
+import com.tty.listener.bungee.GetServerListListener;
 import com.tty.listener.home.EditHomeListener;
 import com.tty.listener.home.HomeListListener;
 import com.tty.listener.player.*;
@@ -26,6 +27,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.Messenger;
 
 import java.util.Map;
 
@@ -76,6 +78,7 @@ public class Ari extends JavaPlugin {
         RandomTpStateService.setRtpWorldConfig();
 
         this.registerListener();
+        this.registerBungeeListener();
         CommandRegister.register(this, "com.tty.commands", FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
 
         PLACEHOLDER = new Placeholder();
@@ -136,6 +139,12 @@ public class Ari extends JavaPlugin {
         pluginManager.registerEvents(new DisableMobSpawnListener(), this);
         pluginManager.registerEvents(new CustomTotemCostListener(), this);
         pluginManager.registerEvents(new GravityListener(), this);
+    }
+
+    private void registerBungeeListener() {
+        Messenger messenger = Bukkit.getMessenger();
+        messenger.registerOutgoingPluginChannel(this, "BungeeCord");
+        messenger.registerIncomingPluginChannel(this, "BungeeCord", new GetServerListListener());
     }
 
     public static void reloadAllConfig() {
