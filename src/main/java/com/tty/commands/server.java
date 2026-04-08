@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-@CommandMeta(displayName = "server", permission = "ari.command.serverr", tokenLength = 2)
+@CommandMeta(displayName = "server", permission = "ari.command.server", tokenLength = 2)
 @LiteralCommand
 public class server extends LiteralArgumentCommand {
 
