@@ -26,13 +26,15 @@ public class PlayerListener implements Listener {
         if (event.getInventory().getType() != InventoryType.CRAFTING || !player.isDead() || !player.isConnected() || player.getHealth() > 0) return;
         // do stuff
         if (!ServerPlatform.isFolia()) return;
-        Location respawnLocation = player.getRespawnLocation();
-        if (respawnLocation == null) {
-            Location location = getRespawnLocation(player.getWorld());
-            player.setRespawnLocation(location);
-            respawnLocation = location;
-        }
-        Bukkit.getPluginManager().callEvent(new CustomPlayerRespawnEvent(player, respawnLocation, player.getLocation()));
+        Ari.SCHEDULER.runAtEntity(Ari.instance, player, i -> {
+            Location respawnLocation = player.getRespawnLocation();
+            if (respawnLocation == null) {
+                Location location = getRespawnLocation(player.getWorld());
+                player.setRespawnLocation(location);
+                respawnLocation = location;
+            }
+            Bukkit.getPluginManager().callEvent(new CustomPlayerRespawnEvent(player, respawnLocation, player.getLocation()));
+        }, null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
