@@ -178,6 +178,25 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .thenApply(i -> Component.text(TimeFormatUtils.format(i.getAddTime(), ZakoInfoArgs.getPatternDatetime()))))
         ));
         registry.register(PlaceholderDefinition.of(
+                LangZakoList.ZAKO_LIST_ITEM_NAME,
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> {
+                    String name = offlinePlayer.getName();
+                    return this.set(name == null ? offlinePlayer.getUniqueId().toString():name);
+                })));
+        registry.register(PlaceholderDefinition.of(
+                LangZakoList.ZAKO_LIST_ITEM_REMARK,
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
+                        .get(WhitelistInstance.class)
+                        .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
+                        .thenApply(i -> {
+                            String remark = i.getRemark();
+                            if (remark == null || remark.isEmpty()) {
+                                return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                            }
+                            return ComponentUtils.text(remark);
+                        }))
+        ));
+        registry.register(PlaceholderDefinition.of(
                 LangMaintenance.MAINTENANCE_KICK_DEALY,
                 PlaceholderResolve.ofPlayer(player -> this.set(String.valueOf(Ari.instance.getConfig().getInt("server.maintenance.kick_delay", 10))))
         ));

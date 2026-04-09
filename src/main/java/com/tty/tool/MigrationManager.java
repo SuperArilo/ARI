@@ -4,6 +4,7 @@ import com.tty.Migration;
 import com.tty.api.enumType.SQLType;
 import com.tty.sql_version.V1Tables;
 import com.tty.sql_version.V2UpdatePreSlot;
+import com.tty.sql_version.V3UpdateZakoAddRemark;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -75,7 +76,7 @@ public record MigrationManager(SQLType sqlType, String tablePrefix, DataSource d
     }
 
     private List<Migration> getMigrations() {
-        return Arrays.asList(new V1Tables(), new V2UpdatePreSlot());
+        return Arrays.asList(new V1Tables(), new V2UpdatePreSlot(), new V3UpdateZakoAddRemark());
     }
 
 }

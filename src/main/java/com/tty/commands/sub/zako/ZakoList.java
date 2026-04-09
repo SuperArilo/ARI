@@ -7,24 +7,21 @@ import com.tty.api.utils.ComponentUtils;
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.args.zako.ZakoListArgs;
 import com.tty.entity.WhitelistInstance;
-import com.tty.enumType.lang.LangZakoList;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.dto.ComponentListPage;
-import com.tty.enumType.FilePath;
 import com.tty.api.repository.EntityRepository;
 import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -45,55 +42,67 @@ public class ZakoList extends LiteralArgumentCommand {
     }
 
     public static void Build_Zako_List(CommandSender sender, Integer pageNum) {
+
         String baseCommand = "/ari zako list ";
         String suggestCommand = "/ari zako info ";
 
-        CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.list-requesting", player):ConfigUtils.t("function.zako.list-requesting");
-        future.thenAccept(component -> {
-            sender.sendMessage(component);
+        CompletableFuture<Component> requesting = (sender instanceof Player player)
+                ? ConfigUtils.t("function.zako.list-requesting", player)
+                : ConfigUtils.t("function.zako.list-requesting");
+
+        requesting.thenAcceptAsync(component -> Ari.SCHEDULER.run(Ari.instance, i -> sender.sendMessage(component))).thenCompose(v -> {
 
             EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
-            repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new LambdaQueryWrapper<>(WhitelistInstance.class), PartitionKey.global()).thenAccept(result -> {
-                        List<WhitelistInstance> records = result.records();
-                        if (records.isEmpty()) {
-                            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next")));
-                            return;
-                        }
-                        ComponentListPage dataPage = Ari.DATA_SERVICE
-                                .createComponentDataPage(
-                                        ConfigUtils.tAfter("function.zako.list-title"),
-                                        baseCommand + (pageNum == 1 ? pageNum:pageNum - 1),
-                                        baseCommand + (pageNum + 1),
-                                        (int) result.currentPage(),
-                                        (int) result.totalPages(),
-                                        (int) result.total());
+            return repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new LambdaQueryWrapper<>(WhitelistInstance.class), PartitionKey.global());
 
-                        for (WhitelistInstance instance : records) {
-                            String instancePlayerUUID = instance.getPlayerUUID();
-                            OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(instancePlayerUUID));
-                            String name = offlinePlayer.getName();
-                            if (name == null) {
-                                Ari.LOG.debug("uuid {} player is null. the possible reason is that the player has not logged into the server.", instancePlayerUUID);
-                            }
-                            TextComponent set = ComponentUtils.setClickEventText(Ari.C_INSTANCE.getValue("server.player.zako." + (name == null ? "unable-record":"list-show"), FilePath.LANG),
-                                    Map.of(LangZakoList.ZAKO_LIST_ITEM_NAME.getType(), Component.text(name == null ? instancePlayerUUID:name)),
-                                    ClickEvent.Action.RUN_COMMAND,
-                                    suggestCommand + instancePlayerUUID);
-                            dataPage.addLine(set);
-                        }
+        }).thenCompose(result -> {
 
-                        sender.sendMessage(dataPage.build());
-                    })
-                    .exceptionally(i -> {
-                        Ari.LOG.error(i);
-                        if (sender instanceof Player player) {
-                            ConfigUtils.t("function.zako.list-request-error", player).thenAccept(sender::sendMessage);
-                        } else {
-                            ConfigUtils.t("function.zako.list-request-error").thenAccept(sender::sendMessage);
-                        }
-                        return null;
-                    });
+            List<WhitelistInstance> records = result.records();
+            if (records.isEmpty()) {
+                Ari.SCHEDULER.run(Ari.instance, i -> sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next"))));
+                return CompletableFuture.completedFuture(null);
+            }
 
+            ComponentListPage dataPage = Ari.DATA_SERVICE.createComponentDataPage(
+                    ConfigUtils.tAfter("function.zako.list-title"),
+                    baseCommand + (pageNum == 1 ? pageNum : pageNum - 1),
+                    baseCommand + (pageNum + 1),
+                    (int) result.currentPage(),
+                    (int) result.totalPages(),
+                    (int) result.total());
+
+            List<CompletableFuture<Void>> renderFutures = new ArrayList<>();
+            for (WhitelistInstance instance : records) {
+
+                String uuid = instance.getPlayerUUID();
+                OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(uuid));
+
+                CompletableFuture<Component> renderList = Ari.PLACEHOLDER.renderList("server.player.zako.list-show", offlinePlayer);
+                CompletableFuture<Component> unableFuture = Ari.PLACEHOLDER.render("server.player.zako.unable-record", offlinePlayer);
+
+                CompletableFuture<Void> lineFuture = renderList.thenCombine(unableFuture, (e, i) -> {
+                    Component t = e;
+                    if (offlinePlayer.getName() == null) {
+                        t = t.appendNewline().append(i);
+                    }
+                    return t.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, suggestCommand + uuid));
+                }).thenAccept(dataPage::addLine);
+
+                renderFutures.add(lineFuture);
+            }
+
+            return CompletableFuture.allOf(renderFutures.toArray(new CompletableFuture[0])).thenApply(v -> dataPage);
+        }).thenAccept(dataPage -> {
+            if (dataPage != null) {
+                Ari.SCHEDULER.run(Ari.instance, i -> sender.sendMessage(dataPage.build()));
+            }
+        }).exceptionally(ex -> {
+            Ari.LOG.error("Zako list error", ex);
+            CompletableFuture<Component> errorMsg = (sender instanceof Player player)
+                    ? ConfigUtils.t("function.zako.list-request-error", player)
+                    : ConfigUtils.t("function.zako.list-request-error");
+            errorMsg.thenAccept(msg -> Ari.SCHEDULER.run(Ari.instance, i -> sender.sendMessage(msg)));
+            return null;
         });
     }
 

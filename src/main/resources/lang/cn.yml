@@ -114,6 +114,7 @@ server:
       - "&f累计在线时间: &6<total_online_time_on_server>"
       - "&f操作员: &6<zako_whitelist_operator>"
       - "&f白名单添加时间: &6<zako_whitelist_add_time>"
+      - "&f备注: &6<zako_list_item_remark>"
       - "&f所在世界: &8<player_world>"
       - "&f当前位置: <player_location>"
     baned:
@@ -121,8 +122,10 @@ server:
       - "&3原因&f: <ban_reason>"
       - "&3剩余时间&f: &6<ban_end_time>"
     zako:
-      list-show: "&e- &6<zako_list_item_name>"
-      unable-record: "&e- &6<zako_list_item_name> &7(可能原因：玩家尚未登录服务器)"
+      list-show:
+        - "&e- &6<zako_list_item_name>"
+        - "&f备注: <zako_list_item_remark>"
+      unable-record: "&7可能原因：玩家尚未登录服务器"
   boss-bar:
     player-attack: "<mob> &6<mob_current_health>&f / &3<mob_max_health>"
   maintenance:

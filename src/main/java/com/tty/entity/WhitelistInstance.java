@@ -20,4 +20,6 @@ public class WhitelistInstance {
     @TableField("operator")
     @CacheKey
     private String operator;
+    @TableField("remark")
+    private String remark = "";
 }

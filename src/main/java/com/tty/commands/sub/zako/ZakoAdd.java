@@ -1,7 +1,7 @@
 package com.tty.commands.sub.zako;
 
 import com.tty.command.LiteralArgumentCommand;
-import com.tty.commands.args.zako.ZakoAddArgs;
+import com.tty.commands.args.zako.add.ZakoAddArgs;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
