@@ -60,10 +60,11 @@ server:
     #排除可被追踪的实体
     excluded-entities:
       - ARMOR_STAND
-  sand-dupe:
-    enable: false
-    overworld: 'world'
-    end: 'world_the_end'
+  unsupported-settings:
+    sand-dupe:
+      enable: false
+      overworld: 'world'
+      end: 'world_the_end'
 debug:
   enable: false
   overwrite-file: false

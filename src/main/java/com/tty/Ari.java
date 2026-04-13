@@ -17,6 +17,7 @@ import com.tty.listener.home.EditHomeListener;
 import com.tty.listener.home.HomeListListener;
 import com.tty.listener.player.*;
 import com.tty.listener.teleport.RecordLastLocationListener;
+import com.tty.listener.unsupported.SandDupeListener;
 import com.tty.listener.warp.EditWarpListener;
 import com.tty.listener.warp.WarpListListener;
 import com.tty.states.teleport.RandomTpStateService;
@@ -138,7 +139,7 @@ public class Ari extends JavaPlugin {
         pluginManager.registerEvents(new MobBossBarListener(), this);
         pluginManager.registerEvents(new DisableMobSpawnListener(), this);
         pluginManager.registerEvents(new CustomTotemCostListener(), this);
-        pluginManager.registerEvents(new GravityListener(), this);
+        pluginManager.registerEvents(new SandDupeListener(), this);
     }
 
     private void registerBungeeListener() {

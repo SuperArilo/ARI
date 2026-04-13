@@ -1,4 +1,4 @@
-package com.tty.listener;
+package com.tty.listener.unsupported;
 
 import com.tty.Ari;
 import org.bukkit.Bukkit;
@@ -17,13 +17,13 @@ import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.util.Vector;
 
 
-public class GravityListener implements Listener {
+public class SandDupeListener implements Listener {
 
     private final boolean enable;
     private final String overworld;
     private final String endWorld;
 
-    public GravityListener() {
+    public SandDupeListener() {
         this.enable = this.getEnable();
         this.overworld = this.getOverworld();
         this.endWorld = this.getEndWorld();
@@ -92,15 +92,15 @@ public class GravityListener implements Listener {
     }
 
     private boolean getEnable() {
-        return Ari.instance.getConfig().getBoolean("server.sand-dupe.enable", false);
+        return Ari.instance.getConfig().getBoolean("server.unsupported-settings.sand-dupe.enable", false);
     }
 
     private String getOverworld() {
-        return Ari.instance.getConfig().getString("server.sand-dupe.overworld", "world");
+        return Ari.instance.getConfig().getString("server.unsupported-settings.sand-dupe.overworld", "world");
     }
 
     private String getEndWorld() {
-        return Ari.instance.getConfig().getString("server.sand-dupe.end", "world_the_end");
+        return Ari.instance.getConfig().getString("server.unsupported-settings.sand-dupe.end", "world_the_end");
     }
 
 }
