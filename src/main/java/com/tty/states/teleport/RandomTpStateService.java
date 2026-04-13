@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class RandomTpStateService extends StateService<RandomTpState> {
 
-    private final SearchSafeLocation searchSafeLocation = new SearchSafeLocation(Ari.instance, Ari.SCHEDULER);
+    private final SearchSafeLocation searchSafeLocation = new SearchSafeLocation(Ari.instance, Ari.SCHEDULER, 3);
 
     public RandomTpStateService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
@@ -79,8 +79,8 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         World world = state.getWorld();
         RtpConfig rtpConfig = this.rtpConfig(world.getName());
 
-        int x = (int) Math.min(PublicFunctionUtils.randomGenerator((int) rtpConfig.getMin(), (int) rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
-        int z = (int) Math.min(PublicFunctionUtils.randomGenerator((int) rtpConfig.getMin(), (int) rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
+        int x = (int) Math.min(PublicFunctionUtils.randomGenerator(rtpConfig.getMin(), rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
+        int z = (int) Math.min(PublicFunctionUtils.randomGenerator(rtpConfig.getMin(), rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
         Ari.LOG.debug("player {} search count {}. total {}.", state.getOwner().getName(), state.getCount(), state.getMax_count());
         synchronized (state) {
             if (state.getTrueLocation() != null || state.isRunning() || state.isOver()) return;
@@ -93,7 +93,6 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                     state.setPending(false);
                     state.setRunning(false);
                     if (location == null) return;
-                    Ari.LOG.debug("random location x: {}, y: {}, z: {}.", x, location.getY(), z);
                     state.setTrueLocation(location);
                     state.setOver(true);
                 }))

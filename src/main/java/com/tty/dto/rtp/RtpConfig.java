@@ -8,7 +8,7 @@ public class RtpConfig {
     @Expose
     private boolean enable = true;
     @Expose
-    private double min = 300.0;
+    private Integer min = 300;
     @Expose
-    private double max = 1500.0;
+    private Integer max = 1500;
 }
