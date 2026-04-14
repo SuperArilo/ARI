@@ -45,10 +45,10 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         BanPlayer banPlayer;
         LambdaQueryWrapper<BanPlayer> wrapper = new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString());
         try {
-            banPlayer = repository.get(wrapper, PartitionKey.global()).get(3, TimeUnit.SECONDS);
+            banPlayer = repository.get(wrapper, PartitionKey.global()).get(2, TimeUnit.SECONDS);
         } catch (Exception e) {
             Ari.LOG.error(e, "query ban list error on uuid {}", uuid.toString());
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             return;
         }
         if (banPlayer == null) return;
