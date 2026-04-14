@@ -42,9 +42,6 @@ function:
   spawn:
     no-spawn: '&c服务器目前没有创建出生点'
     create-success: '&a✔ 出生点创建成功！'
-  deletewarp:
-    success: '&a✔ 删除成功'
-    none: '&c删除失败，尝试联系管理员'
   rtp:
     title-searching: '&e正在搜索中...'
     title-search-count: '&e剩余尝试次数 &6<rtp_search_count>'
