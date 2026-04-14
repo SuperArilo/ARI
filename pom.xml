@@ -155,24 +155,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.sk89q.worldguard</groupId>
-            <artifactId>worldguard-bukkit</artifactId>
-            <version>7.0.14</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.Zrips</groupId>
-            <artifactId>Residence</artifactId>
-            <version>6.0.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>cn.lunadeer</groupId>
-            <artifactId>DominionAPI</artifactId>
-            <version>4.7.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.tty</groupId>
             <artifactId>api</artifactId>
             <version>1.0</version>
