@@ -16,11 +16,13 @@ import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 public class RandomTpStateService extends StateService<RandomTpState> {
 
@@ -78,10 +80,10 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     private void search(RandomTpState state) {
         World world = state.getWorld();
         RtpConfig rtpConfig = this.rtpConfig(world.getName());
-
+        Entity owner = state.getOwner();
         int x = (int) Math.min(PublicFunctionUtils.randomGenerator(rtpConfig.getMin(), rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
         int z = (int) Math.min(PublicFunctionUtils.randomGenerator(rtpConfig.getMin(), rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
-        Ari.LOG.debug("player {} search count {}. total {}.", state.getOwner().getName(), state.getCount(), state.getMax_count());
+        Ari.LOG.debug("player {} search count {}. total {}.", owner.getName(), state.getCount(), state.getMax_count());
         synchronized (state) {
             if (state.getTrueLocation() != null || state.isRunning() || state.isOver()) return;
             state.setRunning(true);
@@ -97,7 +99,14 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                     state.setOver(true);
                 }))
             .exceptionally(e -> {
-                Ari.LOG.error(e);
+                if (e.getCause() instanceof TimeoutException && owner instanceof Player player) {
+                    Ari.PLACEHOLDER.render("function.rtp.abort-search", player)
+                            .thenAccept(i ->
+                                    Ari.SCHEDULER.runAtEntity(Ari.instance, player, t ->
+                                            player.sendMessage(i), null));
+                } else {
+                    Ari.LOG.error(e, "running rtp error on entity {}.", owner.getName());
+                }
                 return null;
             });
     }
