@@ -79,7 +79,7 @@ public class SearchSafeLocation {
                     Ari.LOG.debug("random location x: {}, y: {}, z: {} safe. return result.", newWorldX, chunkLocalY, newWorldZ);
                     result.complete(location);
                 } else {
-                    this.attemptSearch(world, chunk, finalTryCount, result);
+                    this.attemptSearch(world, chunk, 0, result);
                 }
             } else {
                 this.attemptSearch(world, chunk, finalTryCount, result);
