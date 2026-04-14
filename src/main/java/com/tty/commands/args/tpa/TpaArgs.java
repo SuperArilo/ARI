@@ -31,14 +31,16 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
         if (this.preCheckIsNotPass(sender, args)) return;
         Player owner = (Player) sender;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
-        Ari.STATE_MACHINE_MANAGER
-                .get(PreTeleportStateService.class)
-                .addState(new PreEntityToEntityState(
-                        owner,
-                        player,
-                        TeleportType.TPA,
-                        Ari.C_INSTANCE.getValue("main.teleport.request-expired-time", FilePath.TPA_CONFIG, Integer.class, 10)
-                ));
+        if (player != null) {
+            Ari.STATE_MACHINE_MANAGER
+                    .get(PreTeleportStateService.class)
+                    .addState(new PreEntityToEntityState(
+                            owner,
+                            player,
+                            TeleportType.TPA,
+                            Ari.C_INSTANCE.getValue("main.teleport.request-expired-time", FilePath.TPA_CONFIG, Integer.class, 10)
+                    ));
+        }
     }
 
     @Override

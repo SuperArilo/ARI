@@ -40,14 +40,14 @@ public class TeleportStateService extends StateService<State> {
         if (state instanceof PlayerToPlayerState playerToPlayerState) {
             Entity target = playerToPlayerState.getTarget();
             if (target instanceof Player targetPlayer && !targetPlayer.isOnline()) {
-                ConfigUtils.t("teleport.break", player).thenAccept(owner::sendMessage);
+                owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.break"), player));
                 state.setOver(true);
                 return;
             }
         }
 
         if (this.hasMoved(owner) || this.hasLostHealth(player)) {
-            ConfigUtils.t("teleport.break", player).thenAccept(owner::sendMessage);
+            owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.break"), player));
             state.setOver(true);
             return;
         }
@@ -85,7 +85,7 @@ public class TeleportStateService extends StateService<State> {
         }
 
         if(!Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).getStates(owner).isEmpty()) {
-            ConfigUtils.t("teleport.has-teleport", player).thenAccept(owner::sendMessage);
+            Ari.SCHEDULER.runAtEntity(Ari.instance, owner, i -> player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), player)), null);
             return false;
         }
 

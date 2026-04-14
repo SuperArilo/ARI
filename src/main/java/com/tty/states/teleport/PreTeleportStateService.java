@@ -32,7 +32,11 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
         }
 
         if (target == null) {
-            ConfigUtils.t("teleport.unable-player", owner).thenAccept(owner::sendMessage);
+            Ari.SCHEDULER.runAtEntity(
+                    Ari.instance,
+                    owner,
+                    i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner)),
+                    null);
             state.setOver(true);
             return;
         }
@@ -110,7 +114,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                 !manager.get(RandomTpStateService.class).getStates(owner).isEmpty() ||
                 !manager.get(TeleportStateService.class).getStates(target).isEmpty() ||
                 !manager.get(RandomTpStateService.class).getStates(target).isEmpty()) {
-            ConfigUtils.t("teleport.has-teleport", owner).thenAccept(owner::sendMessage);
+            Ari.SCHEDULER.runAtEntity(Ari.instance, owner, i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), owner)), null);
             return false;
         }
 

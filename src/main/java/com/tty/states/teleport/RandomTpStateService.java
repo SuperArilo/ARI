@@ -53,7 +53,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         if (!manager.get(TeleportStateService.class).getStates(owner).isEmpty() ||
                 !this.getStates(owner).isEmpty() ||
                 !manager.get(PreTeleportStateService.class).getStates(owner).isEmpty()) {
-            ConfigUtils.t("teleport.has-teleport", owner).thenAccept(owner::sendMessage);
+            Ari.SCHEDULER.runAtEntity(Ari.instance, owner, i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), owner)), null);
             return false;
         }
 
@@ -69,7 +69,11 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 || owner.isFlying()
                 || owner.isGliding()
                 || owner.isInsideVehicle()) {
-            ConfigUtils.t("teleport.break", owner).thenAccept(owner::sendMessage);
+            Ari.SCHEDULER.runAtEntity(
+                    Ari.instance,
+                    owner,
+                    i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.break"),owner)),
+                    null);
             state.setOver(true);
             return;
         }

@@ -192,7 +192,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                     if(this.isPlayerInsideBlock(player)) {
                         Ari.LOG.debug("player {} inside block, teleport safe location.", player.getName());
                         Location safeLocation = this.findSafeLocationAbove(player.getLocation());
-                        Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> ConfigUtils.t("teleport.not-safe-location", player).thenAccept(player::sendMessage));
+                        Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.not-safe-location"), player)));
                     }
                 }, () -> Ari.LOG.error("error on player join server."));
 

@@ -2,15 +2,11 @@ teleport:
   title:
     main: '&e请不要移动...'
     sub-title: '&6<teleport_delay>'
-  break: '&c✖ 传送过程中被阻断或者取消'
-  unable-player: '&c该玩家离线或者不存在！'
   cooling: '&e传送冷却中...'
   none-location: '&e没有上一个保存的位置'
   costed: '&a本次传送花费了 <costed>'
-  has-teleport: '&e你有一个传送正在进行中'
   again: '&e你已经发起过传送请求了，请等待一段时间再重试。'
   tips-back: '&b上次死亡的地点: <death_location> &7/back返回或者点击此消息'
-  not-safe-location: '&e检测到当前位置不安全，已经对位置进行了修改'
 function:
   tpa:
     again: '&e您已经发送过请求给 &a<tpa_be_sender> &e了'
