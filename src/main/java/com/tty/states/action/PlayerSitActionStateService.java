@@ -251,12 +251,9 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                 .getRegionContainer()
                 .createQuery();
 
-        com.sk89q.worldguard.LocalPlayer localPlayer =
-                WorldGuardPlugin.inst().wrapPlayer(player);
-
         return query.testState(
                 BukkitAdapter.adapt(block.getLocation()),
-                localPlayer,
+                WorldGuardPlugin.inst().wrapPlayer(player),
                 Flags.BUILD
         );
     }
