@@ -1,11 +1,6 @@
 package com.tty.states.action;
 
 import com.google.gson.reflect.TypeToken;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.flags.Flags;
-import com.sk89q.worldguard.protection.regions.RegionQuery;
 import com.tty.Ari;
 import com.tty.dto.state.action.PlayerSitActionState;
 import com.tty.enumType.FilePath;
@@ -50,7 +45,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             return false;
         }
 
-        if (!this.worldGuardCanInteract(owner, sitBlock)) {
+        if (!Ari.INTERACT_SERVICE.canInteract(sitBlock.getLocation(), owner)) {
             ConfigUtils.t("function.sit.error-location", owner).thenAccept(owner::sendActionBar);
             return false;
         }
@@ -235,27 +230,6 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             case WEST -> -90.0F;
             default -> 0.0F;
         };
-    }
-
-    private boolean hasWorldGuard() {
-        return Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
-    }
-
-    private boolean worldGuardCanInteract(Player player, Block block) {
-        if (!this.hasWorldGuard()) {
-            Ari.LOG.debug("not have WorldGuard. skip...");
-            return true;
-        }
-        RegionQuery query = WorldGuard.getInstance()
-                .getPlatform()
-                .getRegionContainer()
-                .createQuery();
-
-        return query.testState(
-                BukkitAdapter.adapt(block.getLocation()),
-                WorldGuardPlugin.inst().wrapPlayer(player),
-                Flags.BUILD
-        );
     }
 
     public boolean isBlockFullyInWater(Block block) {

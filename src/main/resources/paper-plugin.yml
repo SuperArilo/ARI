@@ -12,5 +12,3 @@ dependencies:
       load: BEFORE
     PlaceholderAPI:
       required: false
-    WorldGuard:
-      required: false

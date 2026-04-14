@@ -21,9 +21,9 @@ public class StateMachineManager {
         this.registerStateMachine(new PreTeleportStateService(20L, 1L, false));
         this.registerStateMachine(new TeleportStateService(20L, 1L, false));
         this.registerStateMachine(new CoolDownStateService(20L, 1L, true));
-        this.registerStateMachine(new RandomTpStateService(20L, 1L, true));
         this.registerStateMachine(new PlayerSitActionStateService(20L, 1L, false));
         this.registerStateMachine(new PlayerRideActionStateService(20L, 1L, false));
+        this.registerStateMachine(new RandomTpStateService(20L, 1L, true));
         this.registerStateMachine(new GuiEditStateService(20L,1L, false));
         this.registerStateMachine(new PlayerSaveStateService(20L, 20L, true));
     }

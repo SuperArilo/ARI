@@ -10,7 +10,7 @@ import com.tty.enumType.FilePath;
 import com.tty.enumType.TeleportType;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.PublicFunctionUtils;
-import com.tty.api.utils.SearchSafeLocation;
+import com.tty.tool.SearchSafeLocation;
 import com.tty.states.CoolDownStateService;
 import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
@@ -26,10 +26,11 @@ import java.util.concurrent.TimeoutException;
 
 public class RandomTpStateService extends StateService<RandomTpState> {
 
-    private final SearchSafeLocation searchSafeLocation = new SearchSafeLocation(Ari.instance, Ari.SCHEDULER, 3);
+    private final SearchSafeLocation searchSafeLocation;
 
     public RandomTpStateService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
+        this.searchSafeLocation = new SearchSafeLocation(3);
     }
 
     @Override

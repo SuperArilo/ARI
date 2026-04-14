@@ -50,6 +50,7 @@ public class Ari extends JavaPlugin {
     public static NBTDataService NBT_DATA_SERVICE;
     public static FireworkService FIREWORK_SERVICE;
     public static TeleportingService TELEPORTING_SERVICE;
+    public static InteractService INTERACT_SERVICE;
     public static StateMachineManager STATE_MACHINE_MANAGER;
     public static Placeholder PLACEHOLDER;
 
@@ -114,6 +115,7 @@ public class Ari extends JavaPlugin {
         PublicFunctionUtils.loadPlugin("arilib", NBTDataService.class, i -> NBT_DATA_SERVICE = i);
         PublicFunctionUtils.loadPlugin("arilib", FireworkService.class, i -> FIREWORK_SERVICE = i);
         PublicFunctionUtils.loadPlugin("arilib", TeleportingService.class, i -> TELEPORTING_SERVICE = i);
+        PublicFunctionUtils.loadPlugin("arilib", InteractService.class, i -> INTERACT_SERVICE = i);
     }
 
     private void registerListener() {
