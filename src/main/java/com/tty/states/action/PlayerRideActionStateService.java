@@ -18,6 +18,9 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
 
         Player owner = (Player) state.getOwner();
         String playerName = owner.getName();
+
+        if (!Ari.INTERACT_SERVICE.canInteract(owner.getLocation(), state.getBeRidePlayer())) return false;
+
         //判断玩家是否已经 ride 了
         if (!this.getStates(owner).isEmpty()) {
             Ari.LOG.debug("player {} is sited. skip...", playerName);

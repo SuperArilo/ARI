@@ -11,7 +11,7 @@ public class EntityToEntityState extends TeleportState {
     private final Entity target;
 
     public EntityToEntityState(Entity owner, TeleportType type, Entity target, int max_count) {
-        super(owner, type, max_count);
+        super(owner, type, target.getLocation(), max_count);
         this.target = target;
     }
 }

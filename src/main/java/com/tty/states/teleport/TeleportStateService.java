@@ -2,6 +2,7 @@ package com.tty.states.teleport;
 
 import com.tty.Ari;
 import com.tty.api.utils.ComponentUtils;
+import com.tty.dto.TeleportState;
 import com.tty.dto.state.teleport.PlayerToPlayerState;
 import com.tty.enumType.TeleportType;
 import com.tty.api.state.State;
@@ -70,9 +71,13 @@ public class TeleportStateService extends StateService<State> {
     @Override
     protected boolean canAddState(State state) {
         Entity owner = state.getOwner();
-        if (!(owner instanceof Player player && player.isOnline())) {
+        if (!(owner instanceof Player player && player.isOnline())) return false;
+
+        if (!(state instanceof TeleportState ts) || !Ari.INTERACT_SERVICE.canTeleport(ts.getLocation(), player)) {
+            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.no-permission")));
             return false;
         }
+
         //判断当前实体是否在传送冷却中
         if (!Ari.STATE_MACHINE_MANAGER.get(CoolDownStateService.class).getStates(owner).isEmpty()) {
             ConfigUtils.t("teleport.cooling", player).thenAccept(owner::sendMessage);

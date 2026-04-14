@@ -13,7 +13,7 @@ public class EntityToLocationState extends TeleportState {
     private final Location location;
 
     public EntityToLocationState(Entity owner, int max_count, Location location, TeleportType type) {
-        super(owner, type, (owner instanceof Player p && p.isOp()) ? 0:max_count);
+        super(owner, type, location, (owner instanceof Player p && p.isOp()) ? 0:max_count);
         this.location = location;
     }
 
