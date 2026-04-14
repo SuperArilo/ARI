@@ -134,7 +134,7 @@ public class SearchSafeLocation {
         Material front = block.getRelative(0, 0, -1).getType();
         Material behind = block.getRelative(0, 0,  1).getType();
 
-        if (isNotSafeStandingBlock(feet)) {
+        if (this.isNotSafeStandingBlock(feet)) {
             Ari.LOG.debug("standing block illegal.");
             return false;
         }
@@ -193,79 +193,6 @@ public class SearchSafeLocation {
             case LAVA, FIRE, SOUL_FIRE, MAGMA_BLOCK, CACTUS, SWEET_BERRY_BUSH -> true;
             default -> false;
         };
-    }
-
-//    private boolean canUse(Location location) {
-//        return this.worldGuardCheck(location) && this.dominionCheck(location) && this.cmiResidenceCheck(location);
-//    }
-//
-//    /**
-//     * 使用 WorldGuard 对随机到的区域进行检查是否可传送
-//     * @param location 检查的位置
-//     * @return true 可，false 不可
-//     */
-//    private boolean worldGuardCheck(Location location) {
-//        if (!this.hasWorldGuard()) return true;
-//        ApplicableRegionSet regions = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().getApplicableRegions(BukkitAdapter.adapt(location));
-//        for (ProtectedRegion region : regions) {
-//            if (region.getFlag(Flags.ENTRY) == StateFlag.State.DENY) {
-//                Ari.LOG.debug("location: x: {}, y: {}, z: {} in WorldGuard not allow.", location.getX(), location.getY(), location.getZ());
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
-//
-//    /**
-//     * 使用 cmi 的 residence 对随机到的区域进行检查是否可传送
-//     * @param location 检查的位置
-//     * @return true 可，false 不可
-//     */
-//    private boolean cmiResidenceCheck(Location location) {
-//        if (!this.hasCmiResidence()) return true;
-//        try {
-//            ClaimedResidence byLoc = Residence.getInstance().getResidenceManager().getByLoc(location);
-//            boolean status = byLoc == null;
-//            if (!status) {
-//                Ari.LOG.debug("location: x: {}, y: {}, z: {} in Residence not allow.", location.getX(), location.getY(), location.getZ());
-//            }
-//            return status;
-//        } catch (Exception e) {
-//            Ari.LOG.warn(e, "check cmi residence plugin error.");
-//            return true;
-//        }
-//    }
-//
-//    /**
-//     * 使用 Dominion 对随机到的区域进行检查是否可传送
-//     * @param location 检查的位置
-//     * @return true 可，false 不可
-//     */
-//    private boolean dominionCheck(Location location) {
-//        if (!this.hasDominion()) return true;
-//        try {
-//            DominionDTO dominion = DominionAPI.getInstance().getDominion(location);
-//            boolean status = dominion == null;
-//            if (!status) {
-//                Ari.LOG.debug("location: x: {}, y: {}, z: {} in Dominion not allow.", location.getX(), location.getY(), location.getZ());
-//            }
-//            return status;
-//        } catch (Exception e) {
-//            Ari.LOG.warn(e, "check dominion plugin error.");
-//            return true;
-//        }
-//    }
-
-    private boolean hasCmiResidence() {
-        return Bukkit.getPluginManager().getPlugin("Residence") != null;
-    }
-
-    private boolean hasWorldGuard() {
-        return Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
-    }
-
-    private boolean hasDominion() {
-        return Bukkit.getPluginManager().getPlugin("Dominion") != null;
     }
 
     public void debug(boolean status) {
