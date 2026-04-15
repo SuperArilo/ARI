@@ -1,14 +1,15 @@
 package com.tty.commands.args.tpa;
 
 import com.tty.Ari;
-import com.tty.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
-import com.tty.dto.state.teleport.PreEntityToEntityState;
-import com.tty.enumType.FilePath;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.enumType.TeleportType;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
+import com.tty.dto.state.teleport.PreEntityToEntityState;
+import com.tty.enumType.FilePath;
+import com.tty.enumType.TeleportType;
 import com.tty.states.teleport.PreTeleportStateService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -39,6 +40,11 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
 
         Player owner = (Player) sender;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
+
+        if (player == null) {
+            owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner));
+            return;
+        }
 
         Ari.STATE_MACHINE_MANAGER
                 .get(PreTeleportStateService.class)

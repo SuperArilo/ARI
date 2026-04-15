@@ -131,21 +131,30 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
                         .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                        .thenApply(i -> Component.text(TimeFormatUtils.format(i.getFirstLoginTime(), ZakoInfoArgs.getPatternDatetime()))))
+                        .thenApply(i -> {
+                            if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                            return Component.text(TimeFormatUtils.format(i.getFirstLoginTime(), ZakoInfoArgs.getPatternDatetime()));
+                        }))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangZakoInfo.LAST_LOGIN_SERVER_TIME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
                         .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                        .thenApply(i -> Component.text(TimeFormatUtils.format(i.getLastLoginOffTime(), ZakoInfoArgs.getPatternDatetime()))))
+                        .thenApply(i -> {
+                            if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                            return Component.text(TimeFormatUtils.format(i.getLastLoginOffTime(), ZakoInfoArgs.getPatternDatetime()));
+                        }))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangZakoInfo.TOTAL_TIME_ON_SERVER,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(ServerPlayer.class)
                         .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                        .thenApply(i -> Component.text(TimeFormatUtils.format(i.getTotalOnlineTime()))))
+                        .thenApply(i -> {
+                            if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                            return Component.text(TimeFormatUtils.format(i.getTotalOnlineTime()));
+                        }))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangPlayer.PLAYER_WORLD,
@@ -213,19 +222,28 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 LangBanPlayerType.BAN_T0TAL_TIME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
                 .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                .thenApply(i -> Component.text(TimeFormatUtils.format(i.getEndTime() - i.getStartTime()))))
+                .thenApply(i -> {
+                    if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                    return Component.text(TimeFormatUtils.format(i.getEndTime() - i.getStartTime()));
+                }))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangBanPlayerType.BAN_END_TIME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
                 .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                .thenApply(i -> Component.text(TimeFormatUtils.format(i.getEndTime() - System.currentTimeMillis()))))
+                .thenApply(i -> {
+                    if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                    return Component.text(TimeFormatUtils.format(i.getEndTime() - System.currentTimeMillis()));
+                }))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangBanPlayerType.BAN_REASON,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
                         .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                        .thenApply(i -> ComponentUtils.text(i.getReason())))
+                        .thenApply(i -> {
+                            if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                            return ComponentUtils.text(i.getReason());
+                        }))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangShowItem.SHOW_ITEM,
