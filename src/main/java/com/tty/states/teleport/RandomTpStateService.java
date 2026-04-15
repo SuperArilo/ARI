@@ -170,14 +170,18 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 state.setOver(true);
             })
             .exceptionally(e -> {
-                state.setRunning(false);
-                state.setPending(false);
                 if (e.getCause() instanceof TimeoutException && owner instanceof Player player) {
+                    state.setRunning(false);
+                    state.setPending(false);
                     Ari.PLACEHOLDER.render("function.rtp.abort-search", player)
                             .thenAccept(i ->
                                     Ari.SCHEDULER.runAtEntity(Ari.instance, player, t ->
                                             player.sendMessage(i), null));
                 } else {
+                    state.setOver(true);
+                    if (owner instanceof Player player) {
+                        player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
+                    }
                     Ari.LOG.error(e, "running rtp error on entity {}.", owner.getName());
                 }
                 return null;

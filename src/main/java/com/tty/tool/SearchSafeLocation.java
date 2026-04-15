@@ -73,19 +73,22 @@ public class SearchSafeLocation {
         }
 
         Ari.SCHEDULER.runAtRegion(Ari.instance, world, chunk.getX(), chunk.getZ(), i -> {
-            if (this.isLocationSafe(chunk, chunkLocalX, chunkLocalY, chunkLocalZ)) {
-                Location location = new Location(world, newWorldX, chunkLocalY, newWorldZ);
-                if (Ari.INTERACT_SERVICE.canTeleport(location)) {
-                    Ari.LOG.debug("random location x: {}, y: {}, z: {} safe. return result.", newWorldX, chunkLocalY, newWorldZ);
-                    result.complete(location.add(0.5, 0, 0.5));
+            try {
+                if (this.isLocationSafe(chunk, chunkLocalX, chunkLocalY, chunkLocalZ)) {
+                    Location location = new Location(world, newWorldX, chunkLocalY, newWorldZ);
+                    if (Ari.INTERACT_SERVICE.canTeleport(location)) {
+                        Ari.LOG.debug("random location x: {}, y: {}, z: {} safe. return result.", newWorldX, chunkLocalY, newWorldZ);
+                        result.complete(location.add(0.5, 0, 0.5));
+                    } else {
+                        this.attemptSearch(world, chunk, 0, result);
+                    }
                 } else {
-                    this.attemptSearch(world, chunk, 0, result);
+                    this.attemptSearch(world, chunk, finalTryCount, result);
                 }
-            } else {
-                this.attemptSearch(world, chunk, finalTryCount, result);
+            } catch (Exception e) {
+                result.completeExceptionally(e);
             }
         });
-
     }
 
     //下界特殊处理
