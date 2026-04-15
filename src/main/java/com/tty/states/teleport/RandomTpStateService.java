@@ -30,7 +30,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     public RandomTpStateService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
-        this.searchSafeLocation = new SearchSafeLocation(3);
+        this.searchSafeLocation = new SearchSafeLocation(10);
     }
 
     @Override

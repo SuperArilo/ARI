@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class SearchSafeLocation {
     
-    private int searchCountInChunk = 3;
+    private int searchCountInChunk = 5;
 
     public SearchSafeLocation() {
 
@@ -61,8 +61,8 @@ public class SearchSafeLocation {
 
         int chunkLocalY = isNether ? this.getSafeNetherY(world, chunk, chunkLocalX, chunkLocalZ):chunk.getChunkSnapshot().getHighestBlockYAt(chunkLocalX, chunkLocalZ);
 
-        double newWorldX = (chunk.getX() << 4) + chunkLocalX + 0.5;
-        double newWorldZ = (chunk.getZ() << 4) + chunkLocalZ + 0.5;
+        double newWorldX = (chunk.getX() << 4) + chunkLocalX;
+        double newWorldZ = (chunk.getZ() << 4) + chunkLocalZ;
 
         Ari.LOG.debug("checking random location: x: {}, y: {}, z: {} is safe.", newWorldX, chunkLocalY, newWorldZ);
 
@@ -77,7 +77,7 @@ public class SearchSafeLocation {
                 Location location = new Location(world, newWorldX, chunkLocalY, newWorldZ);
                 if (Ari.INTERACT_SERVICE.canTeleport(location)) {
                     Ari.LOG.debug("random location x: {}, y: {}, z: {} safe. return result.", newWorldX, chunkLocalY, newWorldZ);
-                    result.complete(location);
+                    result.complete(location.add(0.5, 0, 0.5));
                 } else {
                     this.attemptSearch(world, chunk, 0, result);
                 }
