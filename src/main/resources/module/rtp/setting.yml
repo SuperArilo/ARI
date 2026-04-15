@@ -1,5 +1,5 @@
 main:
-  enable: true
+  enable: false
   search-count: 10
   teleport:
     delay: 3
