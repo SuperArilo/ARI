@@ -97,7 +97,7 @@ public class ZakoList extends LiteralArgumentCommand {
                 Ari.SCHEDULER.run(Ari.instance, i -> sender.sendMessage(dataPage.build()));
             }
         }).exceptionally(ex -> {
-            Ari.LOG.error("Zako list error", ex);
+            Ari.LOG.error(ex, "query zako list error.");
             CompletableFuture<Component> errorMsg = (sender instanceof Player player)
                     ? ConfigUtils.t("function.zako.list-request-error", player)
                     : ConfigUtils.t("function.zako.list-request-error");
