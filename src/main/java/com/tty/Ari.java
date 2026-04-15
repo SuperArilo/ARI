@@ -59,7 +59,6 @@ public class Ari extends JavaPlugin {
         instance = this;
         reloadAllConfig();
         LOG.setDebug(DEBUG);
-        this.printLogo();
     }
 
     @Override
@@ -69,6 +68,7 @@ public class Ari extends JavaPlugin {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        this.printLogo();
 
         SQL_INSTANCE = new SQLInstance();
         REPOSITORY_MANAGER = new RepositoryManager(Ari.DEBUG);
