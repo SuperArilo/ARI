@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.tty.listener.DamageTrackerListener.DAMAGE_TRACKER;
 
+@SuppressWarnings("UnstableApiUsage")
 public class MobBossBarListener implements Listener {
 
     private long clear_last_attack_record;
@@ -141,7 +142,7 @@ public class MobBossBarListener implements Listener {
 
         AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
         double maxHealth = attribute == null ? 1 : attribute.getValue();
-        double currentHealth = Math.max(0, Math.min(maxHealth, damageable.getHealth() - finalDamage));
+        double currentHealth = Math.clamp(damageable.getHealth() - finalDamage, 0, maxHealth);
         double healthRatio = (currentHealth / Math.max(1, maxHealth));
 
         Component t = ConfigUtils.tAfter(
