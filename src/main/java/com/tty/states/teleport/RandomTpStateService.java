@@ -16,6 +16,7 @@ import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -27,16 +28,18 @@ import java.util.concurrent.TimeoutException;
 public class RandomTpStateService extends StateService<RandomTpState> {
 
     private final SearchSafeLocation searchSafeLocation;
+    private Map<String, RtpConfig> rtpConfigMap;
 
     public RandomTpStateService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
-        this.searchSafeLocation = new SearchSafeLocation(10);
+        this.searchSafeLocation = new SearchSafeLocation(3);
+        this.rtpConfigMap = this.getRtpConfigWorlds();
     }
 
     @Override
     protected boolean canAddState(RandomTpState state) {
         Player owner = (Player) state.getOwner();
-        RtpConfig rtpConfig = this.rtpConfig(state.getWorld().getName());
+        RtpConfig rtpConfig = this.rtpConfigMap.get(state.getWorld().getName());
         if (rtpConfig == null || !rtpConfig.isEnable()) {
             ConfigUtils.t("function.rtp.world-disable", owner).thenAccept(owner::sendMessage);
             return false;
@@ -77,43 +80,8 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             state.setOver(true);
             return;
         }
-
         this.sendCountTitle(owner);
         this.search(state);
-    }
-
-    private void search(RandomTpState state) {
-        World world = state.getWorld();
-        RtpConfig rtpConfig = this.rtpConfig(world.getName());
-        Entity owner = state.getOwner();
-        int x = (int) Math.min(PublicFunctionUtils.randomGenerator(rtpConfig.getMin(), rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
-        int z = (int) Math.min(PublicFunctionUtils.randomGenerator(rtpConfig.getMin(), rtpConfig.getMax()), world.getWorldBorder().getMaxSize());
-        Ari.LOG.debug("player {} search count {}. total {}.", owner.getName(), state.getCount(), state.getMax_count());
-        synchronized (state) {
-            if (state.getTrueLocation() != null || state.isRunning() || state.isOver()) return;
-            state.setRunning(true);
-        }
-        this.searchSafeLocation.debug(Ari.DEBUG);
-        this.searchSafeLocation.search(world, x, z)
-            .thenAccept((location) ->
-                Ari.SCHEDULER.run(Ari.instance, i -> {
-                    state.setPending(false);
-                    state.setRunning(false);
-                    if (location == null) return;
-                    state.setTrueLocation(location);
-                    state.setOver(true);
-                }))
-            .exceptionally(e -> {
-                if (e.getCause() instanceof TimeoutException && owner instanceof Player player) {
-                    Ari.PLACEHOLDER.render("function.rtp.abort-search", player)
-                            .thenAccept(i ->
-                                    Ari.SCHEDULER.runAtEntity(Ari.instance, player, t ->
-                                            player.sendMessage(i), null));
-                } else {
-                    Ari.LOG.error(e, "running rtp error on entity {}.", owner.getName());
-                }
-                return null;
-            });
     }
 
     @Override
@@ -145,8 +113,8 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     @Override
     protected void onFinished(RandomTpState state) {
+        Ari.LOG.debug("onFinished");
         Player owner = (Player) state.getOwner();
-        owner.clearTitle();
         ConfigUtils.t("function.rtp.search-failure", owner).thenAccept(owner::sendMessage);
     }
 
@@ -158,6 +126,76 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     @Override
     protected void onReload(RandomTpState state) {
         state.setOver(true);
+        this.rtpConfigMap = null;
+        this.rtpConfigMap = this.getRtpConfigWorlds();
+    }
+
+    private void search(RandomTpState state) {
+        Entity owner = state.getOwner();
+
+        Ari.LOG.debug("player {} search count {}. total {}.", owner.getName(), state.getCount(), state.getMax_count());
+
+        synchronized (state) {
+            if (state.getTrueLocation() != null || state.isRunning() || state.isOver()) return;
+            state.setRunning(true);
+        }
+
+        World world = state.getWorld();
+        RtpConfig rtpConfig = this.rtpConfigMap.get(world.getName());
+        int[] randomXZ = this.calculateRandomXZ(world, rtpConfig.getMin(), rtpConfig.getMax());
+        if (randomXZ == null) {
+            state.setOver(true);
+            Ari.LOG.warn("world {} not have border.", world.getName());
+            return;
+        }
+
+        this.searchSafeLocation.debug(Ari.DEBUG);
+        this.searchSafeLocation.search(world, randomXZ[0], randomXZ[1])
+            .thenAccept(location -> {
+                state.setPending(false);
+                state.setRunning(false);
+                if (location == null) return;
+                state.setTrueLocation(location);
+                state.setOver(true);
+            })
+            .exceptionally(e -> {
+                state.setRunning(false);
+                state.setPending(false);
+                if (e.getCause() instanceof TimeoutException && owner instanceof Player player) {
+                    Ari.PLACEHOLDER.render("function.rtp.abort-search", player)
+                            .thenAccept(i ->
+                                    Ari.SCHEDULER.runAtEntity(Ari.instance, player, t ->
+                                            player.sendMessage(i), null));
+                } else {
+                    Ari.LOG.error(e, "running rtp error on entity {}.", owner.getName());
+                }
+                return null;
+            });
+    }
+
+    private int[] calculateRandomXZ(World world, int minRadius, int maxRadius) {
+
+        WorldBorder border = world.getWorldBorder();
+        double centerX = border.getCenter().getX();
+        double centerZ = border.getCenter().getZ();
+        double size = border.getSize();
+
+        double borderMinX = centerX - size / 2;
+        double borderMaxX = centerX + size / 2;
+        double borderMinZ = centerZ - size / 2;
+        double borderMaxZ = centerZ + size / 2;
+
+        int absX = PublicFunctionUtils.randomGenerator(minRadius, maxRadius);
+        int absZ = PublicFunctionUtils.randomGenerator(minRadius, maxRadius);
+        int x = PublicFunctionUtils.randomGenerator(0, 1) == 0 ? absX : -absX;
+        int z = PublicFunctionUtils.randomGenerator(0, 1) == 0 ? absZ : -absZ;
+
+        if (x >= borderMinX && x <= borderMaxX && z >= borderMinZ && z <= borderMaxZ) {
+            return new int[]{x, z};
+        }
+
+        return null;
+
     }
 
     private void sendCountTitle(Player player) {
@@ -172,9 +210,8 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 )), null));
     }
 
-    private RtpConfig rtpConfig(String worldName) {
-        Map<String, RtpConfig> value = Ari.C_INSTANCE.getValue("main.worlds", FilePath.RTP_CONFIG, new TypeToken<Map<String, RtpConfig>>() {}.getType(), null);
-        return value.get(worldName);
+    private Map<String, RtpConfig> getRtpConfigWorlds() {
+        return Ari.C_INSTANCE.getValue("main.worlds", FilePath.RTP_CONFIG, new TypeToken<Map<String, RtpConfig>>() {}.getType(), null);
     }
 
     private static Map<String, Object> createWorldRtp() {

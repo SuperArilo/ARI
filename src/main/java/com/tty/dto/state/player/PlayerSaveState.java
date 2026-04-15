@@ -1,7 +1,7 @@
 package com.tty.dto.state.player;
 
 import com.tty.Ari;
-import com.tty.dto.state.AsyncState;
+import com.tty.api.state.AsyncState;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Entity;
