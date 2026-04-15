@@ -1,9 +1,11 @@
 package com.tty.listener;
 
+import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.api.task.CancellableTask;
 import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.enumType.FilePath;
 import com.tty.tool.LastDamageTracker;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
@@ -21,9 +23,9 @@ public class DamageTrackerListener implements Listener {
     public static final LastDamageTracker DAMAGE_TRACKER = new LastDamageTracker();
 
     //用于清理超过20秒后的被攻击的实体记录
-    private long clear_last_attack_record;
+    private int clear_last_attack_record;
     //用于定时清理受害者的记录周期
-    private long tick_clear_dealy;
+    private int tick_clear_dealy;
 
     private List<EntityType> excludedEntities = new ArrayList<>();
 
@@ -106,16 +108,20 @@ public class DamageTrackerListener implements Listener {
     }
 
     private List<EntityType> loadExcludedEntities() {
-        List<String> configList = Ari.instance.getConfig().getStringList("server.damage-tracker.excluded-entities");
-        return PublicFunctionUtils.convertStringListToEnumList(configList, EntityType.class, false);
+        List<String> value = Ari.C_INSTANCE.getValue(
+                "attack-bar.damage-tracker.excluded-entities",
+                FilePath.ATTACK_BAR_CONFIG,
+                new TypeToken<List<String>>() {}.getType(),
+                List.of());
+        return PublicFunctionUtils.convertStringListToEnumList(value, EntityType.class, false);
     }
 
-    private long loadTickClearDealy() {
-        return Ari.instance.getConfig().getLong("server.damage-tracker.tick_clear_dealy", 30L);
+    private int loadTickClearDealy() {
+        return Ari.C_INSTANCE.getValue("attack-bar.damage-tracker.tick_clear_dealy", FilePath.ATTACK_BAR_CONFIG, Integer.class, 30);
     }
 
-    private long loadClearLastAttackRecord() {
-        return Ari.instance.getConfig().getLong("server.damage-tracker.clear_last_attack_record", 20L);
+    private int loadClearLastAttackRecord() {
+        return Ari.C_INSTANCE.getValue("attack-bar.damage-tracker.clear_last_attack_record", FilePath.ATTACK_BAR_CONFIG, Integer.class, 30);
     }
 
 }

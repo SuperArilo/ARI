@@ -220,7 +220,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
     }
 
     private List<String> getDisableList() {
-        return Ari.C_INSTANCE.getValue("action.sit.disable-block", FilePath.FUNCTION_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
+        return Ari.C_INSTANCE.getValue("action.sit.disable-block", FilePath.GAME_ACTION_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
     }
 
     private float getYawFromBlockFace(BlockFace face) {

@@ -237,11 +237,11 @@ public class MobBossBarListener implements Listener {
     }
 
     private boolean isDisabled() {
-        return !Ari.C_INSTANCE.getValue("attack-boss-bar.enable", FilePath.FUNCTION_CONFIG, Boolean.class, false);
+        return !Ari.C_INSTANCE.getValue("attack-bar.enable", FilePath.ATTACK_BAR_CONFIG, Boolean.class, false);
     }
 
     private int getMaxBar() {
-        return Ari.C_INSTANCE.getValue("attack-boss-bar.max-bar", FilePath.FUNCTION_CONFIG, Integer.class, 1);
+        return Ari.C_INSTANCE.getValue("attack-bar.max-bar", FilePath.ATTACK_BAR_CONFIG, Integer.class, 1);
     }
 
     private CancellableTask createCleanTask() {
@@ -279,11 +279,11 @@ public class MobBossBarListener implements Listener {
     }
 
     private long loadTick_clear_dealy() {
-        return Ari.C_INSTANCE.getValue("attack-boss-bar.tick_clear_dealy", FilePath.FUNCTION_CONFIG, Long.class, 30L);
+        return Ari.C_INSTANCE.getValue("attack-bar.tick_clear_dealy", FilePath.ATTACK_BAR_CONFIG, Long.class, 30L);
     }
 
     private long loadClear_last_attack_record() {
-        return Ari.C_INSTANCE.getValue("attack-boss-bar.clear_last_attack_record", FilePath.FUNCTION_CONFIG, Long.class, 20L);
+        return Ari.C_INSTANCE.getValue("attack-bar.clear_last_attack_record", FilePath.ATTACK_BAR_CONFIG, Long.class, 20L);
     }
 
 }

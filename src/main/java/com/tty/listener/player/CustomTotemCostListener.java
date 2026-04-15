@@ -1,10 +1,8 @@
 package com.tty.listener.player;
 
-import com.google.common.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.commands.infinitytotem;
-import com.tty.enumType.FilePath;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -151,11 +149,11 @@ public class CustomTotemCostListener implements Listener {
     }
 
     private boolean isEnable() {
-        return Ari.C_INSTANCE.getValue("totem.allow-inventory-trigger", FilePath.FUNCTION_CONFIG, Boolean.class, false);
+        return Ari.instance.getConfig().getBoolean("server.totem.allow-inventory-trigger", false);
     }
 
     private List<String> getDisableWorlds() {
-        return Ari.C_INSTANCE.getValue("totem.disable-world", FilePath.FUNCTION_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
+        return Ari.instance.getConfig().getStringList("server.totem.disable-world");
     }
 
     private EntityEffect resolveEffect() {

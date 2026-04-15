@@ -40,7 +40,7 @@ public class CustomChatFormantListener implements Listener {
     }
 
     private Map<String, String> set() {
-        return Ari.C_INSTANCE.getValue("chat.groups-pattern", FilePath.FUNCTION_CONFIG, new TypeToken<Map<String, String>>(){}.getType(), Map.of());
+        return Ari.C_INSTANCE.getValue("chat.groups-pattern", FilePath.CHAT_CONFIG, new TypeToken<Map<String, String>>(){}.getType(), Map.of());
     }
 
     private String getPattern(Player player)                      {
@@ -58,6 +58,6 @@ public class CustomChatFormantListener implements Listener {
     }
 
     private boolean isNotEnable() {
-        return !Ari.C_INSTANCE.getValue("chat.enable", FilePath.FUNCTION_CONFIG, Boolean.class, false);
+        return !Ari.C_INSTANCE.getValue("chat.enable", FilePath.CHAT_CONFIG, Boolean.class, false);
     }
 }

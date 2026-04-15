@@ -133,8 +133,8 @@ public class PlayerTabManager implements Listener {
     }
 
     private void reloadConfig() {
-        this.enable = Ari.C_INSTANCE.getValue("tab.enable", FilePath.FUNCTION_CONFIG, Boolean.class, false);
-        this.updateInterval = Ari.C_INSTANCE.getValue("tab.update-interval", FilePath.FUNCTION_CONFIG, Integer.class, 20);
+        this.enable = Ari.C_INSTANCE.getValue("tab.enable", FilePath.TAB_LIST_CONFIG, Boolean.class, false);
+        this.updateInterval = Ari.C_INSTANCE.getValue("tab.update-interval", FilePath.TAB_LIST_CONFIG, Integer.class, 20);
 
         this.headers.clear();
         this.footers.clear();
@@ -143,11 +143,11 @@ public class PlayerTabManager implements Listener {
 
         TypeToken<List<String>> listType = new TypeToken<>() {};
 
-        this.headers.addAll(Ari.C_INSTANCE.getValue("tab.layout.header", FilePath.FUNCTION_CONFIG, listType.getType(), List.of()));
-        this.footers.addAll(Ari.C_INSTANCE.getValue("tab.layout.footer", FilePath.FUNCTION_CONFIG, listType.getType(), List.of()));
+        this.headers.addAll(Ari.C_INSTANCE.getValue("tab.layout.header", FilePath.TAB_LIST_CONFIG, listType.getType(), List.of()));
+        this.footers.addAll(Ari.C_INSTANCE.getValue("tab.layout.footer", FilePath.TAB_LIST_CONFIG, listType.getType(), List.of()));
 
-        this.groupLines.putAll(Ari.C_INSTANCE.getValue("tab.groups", FilePath.FUNCTION_CONFIG, new TypeToken<Map<String, TabGroupLine>>() {}.getType(), Map.of()));
-        this.groupOrder.addAll(Ari.C_INSTANCE.getValue("tab.slot", FilePath.FUNCTION_CONFIG, listType.getType(), List.of()));
+        this.groupLines.putAll(Ari.C_INSTANCE.getValue("tab.groups", FilePath.TAB_LIST_CONFIG, new TypeToken<Map<String, TabGroupLine>>() {}.getType(), Map.of()));
+        this.groupOrder.addAll(Ari.C_INSTANCE.getValue("tab.slot", FilePath.TAB_LIST_CONFIG, listType.getType(), List.of()));
 
         if (!this.groupOrder.contains(DEFAULT_GROUP)) {
             this.groupOrder.add(DEFAULT_GROUP);
