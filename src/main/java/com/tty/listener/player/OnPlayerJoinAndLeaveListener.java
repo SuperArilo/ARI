@@ -33,6 +33,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.tty.commands.sub.EnderChestToPlayer.OFFLINE_ON_EDIT_ENDER_CHEST_LIST;
 
@@ -210,7 +211,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 .get(PlayerSaveStateService.class)
                 .getStates(player);
         if (!states.isEmpty()) {
-            states.getFirst().setCount(Integer.MAX_VALUE);
+            states.getFirst().setCount(new AtomicInteger(Integer.MAX_VALUE));
         }
     }
 

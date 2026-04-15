@@ -90,4 +90,9 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
         state.removeToolEntity(Ari.instance);
         Ari.LOG.info("ejected player {}", state.getOwner().getName());
     }
+
+    @Override
+    protected void onReload(PlayerRideActionState state) {
+        state.setOver(true);
+    }
 }

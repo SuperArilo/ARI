@@ -137,6 +137,11 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         state.removeToolEntity(Ari.instance);
     }
 
+    @Override
+    protected void onReload(PlayerSitActionState state) {
+        state.setOver(true);
+    }
+
     private Location locationRecalculate(Player player, Block sitBlock) {
         Location location = sitBlock.getLocation();
         BlockData blockData = sitBlock.getBlockData();

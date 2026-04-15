@@ -92,6 +92,11 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
     }
 
     @Override
+    protected void onReload(PreEntityToEntityState state) {
+        state.setOver(true);
+    }
+
+    @Override
     protected boolean canAddState(PreEntityToEntityState state) {
         Player owner = (Player) state.getOwner();
         Player target = (Player) state.getTarget();

@@ -76,4 +76,9 @@ public class GuiEditStateService extends StateService<EditGuiState> {
     protected void onServiceAbort(EditGuiState state) {
 
     }
+
+    @Override
+    protected void onReload(EditGuiState state) {
+        state.setOver(true);
+    }
 }

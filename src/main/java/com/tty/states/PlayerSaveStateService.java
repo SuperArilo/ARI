@@ -12,7 +12,6 @@ import com.tty.api.state.StateService;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 public class PlayerSaveStateService extends StateService<PlayerSaveState> {
@@ -61,6 +60,10 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
         this.savePlayerData(state);
     }
 
+    @Override
+    protected void onReload(PlayerSaveState state) {
+    }
+
     /**
      * 保存玩家在线时长数据数据
      * @param state 玩家的状态服务
@@ -101,13 +104,6 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
                     Ari.LOG.debug("skip player {} save event.", player.getName());
                 }
             });
-    }
-
-    public static void addPlayerState() {
-        PlayerSaveStateService service = Ari.STATE_MACHINE_MANAGER.get(PlayerSaveStateService.class);
-        for (Player player : new ArrayList<>(Bukkit.getOnlinePlayers())) {
-            service.addState(new PlayerSaveState(player, System.currentTimeMillis()));
-        }
     }
 
 }

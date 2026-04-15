@@ -155,6 +155,11 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     }
 
+    @Override
+    protected void onReload(RandomTpState state) {
+        state.setOver(true);
+    }
+
     private void sendCountTitle(Player player) {
         if (!player.isOnline()) return;
         Ari.PLACEHOLDER.render("function.rtp.title-search-count", player).thenAccept(result ->

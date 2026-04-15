@@ -162,6 +162,11 @@ public class TeleportStateService extends StateService<State> {
 
     }
 
+    @Override
+    protected void onReload(State state) {
+        state.setOver(true);
+    }
+
     /**
      * 检查是否受伤
      */

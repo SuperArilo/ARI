@@ -105,7 +105,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                     List<RandomTpState> states = Ari.STATE_MACHINE_MANAGER.get(RandomTpStateService.class).getStates(player);
                     if (states.isEmpty()) return this.empty();
                     RandomTpState first = states.getFirst();
-                    return this.set(String.valueOf(first.getMax_count() - first.getCount()));
+                    return this.set(String.valueOf(first.getMax_count() - first.getCount().get()));
                 })
         ));
         registry.register(PlaceholderDefinition.of(
@@ -114,7 +114,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                     List<State> states = Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).getStates(player);
                     if (states.isEmpty()) return this.empty();
                     State first = states.getFirst();
-                    return this.set(String.valueOf(first.getMax_count() - first.getCount()));
+                    return this.set(String.valueOf(first.getMax_count() - first.getCount().get()));
                 })
         ));
         registry.register(PlaceholderDefinition.of(
