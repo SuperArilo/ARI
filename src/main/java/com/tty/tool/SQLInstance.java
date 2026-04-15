@@ -54,7 +54,7 @@ public class SQLInstance {
             }
         }
 
-        Ari.LOG.info("using database type: {}", sqlType.getType());
+        Ari.LOG.debug("using database type: {}", sqlType.getType());
 
         try {
             switch (sqlType) {
