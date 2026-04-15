@@ -15,43 +15,47 @@ data:
   connection-timeout: 5000
   keepalive-time: 0
 server:
+  # 开启替换原版的玩家死亡后的信息展示
   custom-death: false
+  # 开启夜晚加速（当玩家睡觉到达一定的比例
   skip-night:
     enable: false
     tick-increment: 5
     max-tick-increment: 50
+  # 开启替换原版的玩家加入、退出和新玩家加入的提示信息
   message:
     on-first-login: false
     on-login: false
     on-leave: false
+  # 开启替换原版服务器白名单的功能
   whitelist:
     enable: false
   # 开启死亡保留物品栏的功能（需要对应玩家添加权限
   enable-keep-inventory: false
   # 开启死亡保留经验的功能（需要对应玩家添加权限
   enable-keep-experience: false
-  #秒
+  # 自动保存玩家的数据到该插件
   save-interval: 300 # 5分钟
-  #收获自动播种
+  # 开启自动播种功能（左手持有种子，右手持有锄头
   auto-seed: false
-  #阻止爆炸破坏
+  # 开启阻止特定爆炸的破坏（伤害不会阻拦
   anti-explosion:
     enable: false
     pass-list:
       - "tnt"
-  #阻止耕地踩踏
+  # 开启阻止耕地踩踏
   anti-trample-farmland: false
-  # 阻止火焰蔓延
+  # 开启阻止火焰蔓延
   anti-fire-spread: false
-  #阻止特定生物生成
+  # 开启阻止特定生物生成
   anti-entity-spawn:
     enable: false
     list:
       - 'bat'
+  # 开启服务器的维护模式（默认10秒后踢出玩家
   maintenance:
-    # 10 秒
     kick_delay: 10
-  #伤害追踪
+  # 伤害追踪配置
   damage-tracker:
     #用于定时清理伤害追踪列表记录周期 单位秒
     tick_clear_dealy: 30
@@ -60,11 +64,14 @@ server:
     #排除可被追踪的实体
     excluded-entities:
       - ARMOR_STAND
+  # 开启用于被官方修复后的特性（嗯？
   unsupported-settings:
     sand-dupe:
       enable: false
       overworld: 'world'
       end: 'world_the_end'
+# 调试模式（非专业人员勿开
 debug:
   enable: false
+  # 慎用！！开启后会覆盖原有的配置文件
   overwrite-file: false
