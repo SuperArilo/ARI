@@ -24,8 +24,13 @@ import java.util.List;
 
 public class PlayerSitActionStateService extends StateService<PlayerSitActionState> {
 
+    private List<String> disableBlockList;
+
+    private final Object disableBlockListLock = new Object();
+
     public PlayerSitActionStateService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
+        this.disableBlockList = this.getDisableList();
     }
 
     @Override
@@ -40,9 +45,12 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         //获取列表判断是否满足的方块
         Block sitBlock = state.getSitBlock();
         String sitBlockName = sitBlock.getType().name();
-        if (this.getDisableList().contains(sitBlockName)) {
-            Ari.LOG.debug("player {} interact the block {} is disabled", playerName, sitBlockName);
-            return false;
+
+        synchronized (this.disableBlockListLock) {
+            if (this.disableBlockList.contains(sitBlockName)) {
+                Ari.LOG.debug("player {} interact the block {} is disabled", playerName, sitBlockName);
+                return false;
+            }
         }
 
         if (!Ari.INTERACT_SERVICE.canInteract(sitBlock.getLocation(), owner)) {
@@ -138,8 +146,10 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
     }
 
     @Override
-    protected void onReload(PlayerSitActionState state) {
-        state.setOver(true);
+    public void onReload() {
+        synchronized (this.disableBlockListLock) {
+            this.disableBlockList = this.getDisableList();
+        }
     }
 
     private Location locationRecalculate(Player player, Block sitBlock) {
@@ -225,7 +235,8 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
     }
 
     private List<String> getDisableList() {
-        return Ari.C_INSTANCE.getValue("action.sit.disable-block", FilePath.GAME_ACTION_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
+        List<String> value = Ari.C_INSTANCE.getValue("action.sit.disable-block", FilePath.GAME_ACTION_CONFIG, new TypeToken<List<String>>() {}.getType(), List.of());
+        return value.stream().map(String::toUpperCase).toList();
     }
 
     private float getYawFromBlockFace(BlockFace face) {
@@ -238,8 +249,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
     }
 
     public boolean isBlockFullyInWater(Block block) {
-        return block.getType() == Material.WATER
-                || (block.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged());
+        return block.getType() == Material.WATER || (block.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged());
     }
 
 }

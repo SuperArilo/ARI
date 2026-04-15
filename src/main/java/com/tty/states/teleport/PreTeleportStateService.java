@@ -92,8 +92,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
     }
 
     @Override
-    protected void onReload(PreEntityToEntityState state) {
-        state.setOver(true);
+    public void onReload() {
     }
 
     @Override

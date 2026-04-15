@@ -78,7 +78,6 @@ public class GuiEditStateService extends StateService<EditGuiState> {
     }
 
     @Override
-    protected void onReload(EditGuiState state) {
-        state.setOver(true);
+    public void onReload() {
     }
 }

@@ -1,16 +1,19 @@
 package com.tty;
 
 import com.google.gson.reflect.TypeToken;
-import com.tty.api.*;
+import com.tty.api.ConfigInstance;
+import com.tty.api.Log;
+import com.tty.api.Scheduler;
+import com.tty.api.ServerPlatform;
+import com.tty.api.dto.AliasItem;
 import com.tty.api.service.*;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.api.utils.VersionUtil;
 import com.tty.enumType.FilePath;
-import com.tty.function.*;
 import com.tty.enumType.GuiType;
-import com.tty.api.dto.AliasItem;
+import com.tty.function.PlayerTabManager;
 import com.tty.listener.*;
 import com.tty.listener.bungee.GetServerListListener;
 import com.tty.listener.home.EditHomeListener;
@@ -20,7 +23,6 @@ import com.tty.listener.teleport.RecordLastLocationListener;
 import com.tty.listener.unsupported.SandDupeListener;
 import com.tty.listener.warp.EditWarpListener;
 import com.tty.listener.warp.WarpListListener;
-import com.tty.states.teleport.RandomTpStateService;
 import com.tty.tool.*;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import org.bstats.bukkit.Metrics;
@@ -75,9 +77,6 @@ public class Ari extends JavaPlugin {
         STATE_MACHINE_MANAGER = new StateMachineManager();
 
         this.loadOtherPlugins();
-
-        //初始化rtp
-        RandomTpStateService.setRtpWorldConfig();
 
         this.registerListener();
         this.registerBungeeListener();

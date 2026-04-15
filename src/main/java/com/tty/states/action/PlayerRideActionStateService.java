@@ -92,7 +92,6 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
     }
 
     @Override
-    protected void onReload(PlayerRideActionState state) {
-        state.setOver(true);
+    public void onReload() {
     }
 }

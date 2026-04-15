@@ -30,20 +30,26 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     private final SearchSafeLocation searchSafeLocation;
     private Map<String, RtpConfig> rtpConfigMap;
 
+    private final Object rtpConfigMapLock = new Object();
+
     public RandomTpStateService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
-        this.searchSafeLocation = new SearchSafeLocation(3);
+        this.searchSafeLocation = new SearchSafeLocation(5);
         this.rtpConfigMap = this.getRtpConfigWorlds();
     }
 
     @Override
     protected boolean canAddState(RandomTpState state) {
         Player owner = (Player) state.getOwner();
-        RtpConfig rtpConfig = this.rtpConfigMap.get(state.getWorld().getName());
-        if (rtpConfig == null || !rtpConfig.isEnable()) {
-            ConfigUtils.t("function.rtp.world-disable", owner).thenAccept(owner::sendMessage);
-            return false;
+
+        synchronized (this.rtpConfigMapLock) {
+            RtpConfig rtpConfig = this.rtpConfigMap.get(state.getWorld().getName());
+            if (rtpConfig == null || !rtpConfig.isEnable()) {
+                ConfigUtils.t("function.rtp.world-disable", owner).thenAccept(owner::sendMessage);
+                return false;
+            }
         }
+
         StateMachineManager manager = Ari.STATE_MACHINE_MANAGER;
 
         //判断当前实体是否在传送冷却中
@@ -124,10 +130,10 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     }
 
     @Override
-    protected void onReload(RandomTpState state) {
-        state.setOver(true);
-        this.rtpConfigMap = null;
-        this.rtpConfigMap = this.getRtpConfigWorlds();
+    public void onReload() {
+        synchronized (this.rtpConfigMapLock) {
+            this.rtpConfigMap = this.getRtpConfigWorlds();
+        }
     }
 
     private void search(RandomTpState state) {
@@ -141,7 +147,12 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         }
 
         World world = state.getWorld();
-        RtpConfig rtpConfig = this.rtpConfigMap.get(world.getName());
+
+        RtpConfig rtpConfig;
+        synchronized (this.rtpConfigMapLock) {
+            rtpConfig = this.rtpConfigMap.get(world.getName());
+        }
+
         int[] randomXZ = this.calculateRandomXZ(world, rtpConfig.getMin(), rtpConfig.getMax());
         if (randomXZ == null) {
             state.setOver(true);
@@ -211,34 +222,22 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     }
 
     private Map<String, RtpConfig> getRtpConfigWorlds() {
-        return Ari.C_INSTANCE.getValue("main.worlds", FilePath.RTP_CONFIG, new TypeToken<Map<String, RtpConfig>>() {}.getType(), null);
-    }
 
-    private static Map<String, Object> createWorldRtp() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("enable", true);
-        map.put("min", 300);
-        map.put("max", 1500);
-        return map;
-    }
-
-    public static void setRtpWorldConfig() {
-
-        Map<String, Object> value = Ari.C_INSTANCE.getValue(
+        Map<String, RtpConfig> value = Ari.C_INSTANCE.getValue(
                 "main.worlds",
                 FilePath.RTP_CONFIG,
-                new TypeToken<Map<String, Object>>(){}.getType(),
+                new TypeToken<Map<String, RtpConfig>>(){}.getType(),
                 null);
 
         if (value == null) {
             value = new HashMap<>();
             for (World world : Bukkit.getWorlds()) {
-                value.put(world.getName(), createWorldRtp());
+                value.put(world.getName(), new RtpConfig());
             }
         } else {
             for (World world : Bukkit.getWorlds()) {
                 if (value.containsKey(world.getName())) continue;
-                value.put(world.getName(), createWorldRtp());
+                value.put(world.getName(), new RtpConfig());
             }
         }
         try {
@@ -246,5 +245,8 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        return value;
     }
+
 }

@@ -54,7 +54,7 @@ public class CoolDownStateService extends StateService<CooldownState> {
     }
 
     @Override
-    protected void onReload(CooldownState state) {
-        state.setOver(true);
+    public void onReload() {
+
     }
 }

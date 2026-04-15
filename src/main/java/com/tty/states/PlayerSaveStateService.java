@@ -61,7 +61,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
     }
 
     @Override
-    protected void onReload(PlayerSaveState state) {
+    public void onReload() {
     }
 
     /**
