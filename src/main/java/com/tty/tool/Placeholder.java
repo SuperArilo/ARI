@@ -161,13 +161,14 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .get(WhitelistInstance.class)
                         .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(whitelistInstance -> {
+                            if (whitelistInstance == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
                             String operator;
                             if(whitelistInstance.getOperator().equals(Operator.CONSOLE.getUuid())) {
                                 operator = "CONSOLE";
                             } else {
                                 operator = Bukkit.getOfflinePlayer(UUID.fromString(whitelistInstance.getOperator())).getName();
                             }
-                            return ComponentUtils.text(operator == null ? "null":operator);
+                            return ComponentUtils.text(operator == null ? Ari.DATA_SERVICE.getValue("base.none"):operator);
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
@@ -175,8 +176,11 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
                         .get(WhitelistInstance.class)
                         .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                        .thenApply(i -> Component.text(TimeFormatUtils.format(i.getAddTime(), ZakoInfoArgs.getPatternDatetime()))))
-        ));
+                        .thenApply(i -> {
+                            if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                            return Component.text(TimeFormatUtils.format(i.getAddTime(), ZakoInfoArgs.getPatternDatetime()));
+                        })
+        )));
         registry.register(PlaceholderDefinition.of(
                 LangZakoList.ZAKO_LIST_ITEM_NAME,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> {
@@ -189,6 +193,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .get(WhitelistInstance.class)
                         .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(i -> {
+                            if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
                             String remark = i.getRemark();
                             if (remark == null || remark.isEmpty()) {
                                 return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
