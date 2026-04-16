@@ -1,18 +1,21 @@
 package com.tty.listener;
 
 import com.tty.Ari;
+import com.tty.api.annotations.function_type.FunctionHandlerRegistry;
 import com.tty.api.listener.BaseEditFunctionGuiListener;
 import com.tty.api.state.EditGuiState;
 import com.tty.enumType.GuiType;
 import com.tty.states.GuiEditStateService;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
-public abstract class OnGuiEditListener extends BaseEditFunctionGuiListener {
+public abstract class OnGuiEditListener<T extends InventoryHolder> extends BaseEditFunctionGuiListener<T> {
 
-    protected OnGuiEditListener(GuiType guiType) {
-        super(guiType);
+    protected OnGuiEditListener(JavaPlugin plugin, FunctionHandlerRegistry registry, GuiType guiType) {
+        super(plugin, registry, guiType);
     }
 
     @Override
@@ -27,5 +30,4 @@ public abstract class OnGuiEditListener extends BaseEditFunctionGuiListener {
         }
         return states.getFirst();
     }
-
 }
