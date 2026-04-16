@@ -10,7 +10,6 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -88,7 +87,7 @@ public class BreakAndExplodeListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
         if (!this.antiTrampleFarmland) return;
         if (event.getBlock().getType() == Material.FARMLAND && event.getTo() == Material.DIRT) {
@@ -120,7 +119,7 @@ public class BreakAndExplodeListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler
     public void onReload(CustomPluginReloadEvent event) {
         this.passExplosionList = this.loadPassExplosionList();
         this.antiExplosion = this.loadAntiExplosion();
@@ -151,4 +150,5 @@ public class BreakAndExplodeListener implements Listener {
     private boolean loadAntiFireSpread() {
         return Ari.instance.getConfig().getBoolean("server.anti-fire-spread");
     }
+
 }
