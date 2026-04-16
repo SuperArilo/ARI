@@ -43,7 +43,7 @@ public class RecordLastLocationListener implements Listener {
         if (!ServerPlatform.isFolia()) return;
         Player player = event.getPlayer();
         Location respawnLocation = event.getRespawnLocation();
-        Ari.SCHEDULER.runAtRegion(
+        Ari.instance.getScheduler().runAtRegion(
             Ari.instance,
             respawnLocation,
             i -> player.teleportAsync(respawnLocation)
@@ -51,7 +51,7 @@ public class RecordLastLocationListener implements Listener {
                         if(t && TELEPORT_LAST_LOCATION.containsKey(player.getUniqueId())) {
                             this.setPlayerLastLocation(player);
                         } else {
-                            Ari.LOG.warn("player {} teleport status error.", player.getName());
+                            Ari.instance.getLog().warn("player {} teleport status error.", player.getName());
                         }
                     })
         );
@@ -78,7 +78,7 @@ public class RecordLastLocationListener implements Listener {
 
     private void setPlayerLastLocation(Player player) {
         Ari.PLACEHOLDER.render("teleport.tips-back", player).thenAccept(i ->
-                Ari.SCHEDULER.runAtEntity(Ari.instance, player, t ->
+                Ari.instance.getScheduler().runAtEntity(Ari.instance, player, t ->
                         player.sendMessage(ComponentUtils.setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/ari back")), null));
     }
 }

@@ -1,4 +1,5 @@
 package com.tty.tool;
+import com.tty.api.BaseJavaPlugin;
 import com.tty.entity.*;
 import com.tty.entity.cache.*;
 import com.tty.function.*;
@@ -10,18 +11,19 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class RepositoryManager {
 
     private final Map<Class<?>, EntityRepository<?>> repositories =  new ConcurrentHashMap<>();
+    private final BaseJavaPlugin plugin;
 
-    public RepositoryManager(boolean debug) {
+    public RepositoryManager(BaseJavaPlugin plugin) {
+        this.plugin = plugin;
         this.init();
-        this.debug(debug);
     }
 
     private void init() {
-        this.register(ServerHome.class, new PlayerHomeRepository(new HomeManager(true)));
-        this.register(BanPlayer.class, new BanPlayerRepository(new BanPlayerManager(true)));
-        this.register(ServerPlayer.class, new ServerPlayerRepository(new PlayerManager(true)));
-        this.register(ServerWarp.class, new ServerWarpRepository(new WarpManager(true)));
-        this.register(WhitelistInstance.class, new WhitelistRepository(new WhitelistManager(true)));
+        this.register(ServerHome.class, new PlayerHomeRepository(this.plugin, new HomeManager(true)));
+        this.register(BanPlayer.class, new BanPlayerRepository(this.plugin, new BanPlayerManager(true)));
+        this.register(ServerPlayer.class, new ServerPlayerRepository(this.plugin, new PlayerManager(true)));
+        this.register(ServerWarp.class, new ServerWarpRepository(this.plugin, new WarpManager(true)));
+        this.register(WhitelistInstance.class, new WhitelistRepository(this.plugin, new WhitelistManager(true)));
     }
 
     public <T> void register(Class<T> entityClass, EntityRepository<T> repository) {
@@ -48,10 +50,6 @@ public final class RepositoryManager {
         for (EntityRepository<?> repository : this.repositories.values()) {
             repository.clearAllCache();
         }
-    }
-
-    public void debug(boolean status) {
-        this.repositories.forEach((k, v) -> v.debug(status));
     }
 
     public void stop() {

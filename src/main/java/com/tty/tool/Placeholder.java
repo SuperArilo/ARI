@@ -41,7 +41,7 @@ import static com.tty.listener.teleport.RecordLastLocationListener.TELEPORT_LAST
 public class Placeholder extends BasePlaceholder<FilePath> {
 
     public Placeholder() {
-        super(Ari.C_INSTANCE, FilePath.LANG);
+        super(Ari.instance.getConfigInstance(), FilePath.LANG);
         this.init();
     }
 

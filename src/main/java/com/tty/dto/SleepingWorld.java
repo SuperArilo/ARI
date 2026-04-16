@@ -38,7 +38,7 @@ public class SleepingWorld {
                 for (Player player : this.world.getPlayers()) {
                     if (this.playerCondition(player.getWorld()) || !player.isSleeping() || !player.isDeeplySleeping()) continue;
                     Ari.PLACEHOLDER.render("server.time.skip-to-night", player).thenAccept(result ->
-                            Ari.SCHEDULER.runAtEntity(Ari.instance, player, b ->
+                            Ari.instance.getScheduler().runAtEntity(Ari.instance, player, b ->
                                     player.showTitle(ComponentUtils.setPlayerTitle(
                                         timeManager.tickToTime(i),
                                         result,
@@ -55,7 +55,7 @@ public class SleepingWorld {
         for (Player player : this.world.getPlayers()) {
             if (!player.isSleeping()) {
                 Ari.PLACEHOLDER.render("server.time.report-status", player).thenAccept(result ->
-                        Ari.SCHEDULER.runAtEntity(Ari.instance, player, t ->
+                        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, t ->
                                 player.sendActionBar(result), null));
             }
         }
@@ -76,12 +76,12 @@ public class SleepingWorld {
             //已经睡下的人
             long sleepers = this.getSleepPlayers();
             long worldTime = world.getTime();
-            Ari.LOG.debug("world time: {}, abs: {}, need_to_sleep: {}, sleep_now: {}", world.getTime(), TimePeriod.WAKE_UP.getEnd(), numSleepersNeeded, sleepers);
+            Ari.instance.getLog().debug("world time: {}, abs: {}, need_to_sleep: {}, sleep_now: {}", world.getTime(), TimePeriod.WAKE_UP.getEnd(), numSleepersNeeded, sleepers);
             if ((worldTime >= TimePeriod.WAKE_UP.getEnd() ||
                     (worldTime > 0 && worldTime < TimePeriod.SUNRISE.getEnd())) ||
                     (world.isThundering() || world.hasStorm()) &&
                             !this.skipNightOver) {
-                Ari.SCHEDULER.run(Ari.instance, i-> {
+                Ari.instance.getScheduler().run(Ari.instance, i-> {
                     world.setStorm(false);
                     world.setThundering(false);
                 });

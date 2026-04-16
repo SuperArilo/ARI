@@ -53,14 +53,14 @@ public class GuiCleanupListener implements Listener {
                 itemNBT.setByte("Slot", (byte) slot);
                 enderItems.addCompound(itemNBT);
             }
-            Ari.SCHEDULER.runAsync(Ari.instance, i -> {
+            Ari.instance.getScheduler().runAsync(Ari.instance, i -> {
                 try {
                     data.save();
-                    Ari.LOG.debug("ender chest nbt save player {} success.", cheat.getTarget().toString());
+                    Ari.instance.getLog().debug("ender chest nbt save player {} success.", cheat.getTarget().toString());
                     OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(cheat.getTarget());
-                    Ari.SCHEDULER.run(Ari.instance, t -> baseInventory.cleanup());
+                    Ari.instance.getScheduler().run(Ari.instance, t -> baseInventory.cleanup());
                 } catch (IOException e) {
-                    Ari.LOG.error(e, "ender chest nbt save error. ");
+                    Ari.instance.getLog().error(e, "ender chest nbt save error. ");
                 }
             });
         } else {

@@ -53,7 +53,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
         repository.delete(wrapper, PartitionKey.global()).thenAccept(status -> {
             Player player = Bukkit.getPlayer(uuid);
             if(player != null) {
-                Ari.SCHEDULER.runAtEntity(Ari.instance,
+                Ari.instance.getScheduler().runAtEntity(Ari.instance,
                         player, i->
                                 player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
             }
@@ -64,7 +64,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
                 ConfigUtils.t(key).thenAccept(sender::sendMessage);
             }
         }).exceptionally(i -> {
-            Ari.LOG.error(i);
+            Ari.instance.getLog().error(i);
             sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             return null;
         });

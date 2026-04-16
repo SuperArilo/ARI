@@ -59,7 +59,7 @@ public class MobBossBarListener implements Listener {
         if (attacker == null) {
             attacker = event.getDamageSource().getDirectEntity();
         }
-        Ari.LOG.debug("attacker: {}, event: {}, entity: {}, damage: {}, health: {}, damageType: {}, status: {}.",
+        Ari.instance.getLog().debug("attacker: {}, event: {}, entity: {}, damage: {}, health: {}, damageType: {}, status: {}.",
                 attacker == null ? "null":attacker.getName(),
                 event.getEventName(),
                 victim.getName(),
@@ -193,7 +193,7 @@ public class MobBossBarListener implements Listener {
             });
             if (affectedPlayers.isEmpty()) return;
 
-            Ari.SCHEDULER.runAtEntity(Ari.instance, deadEntity, i ->
+            Ari.instance.getScheduler().runAtEntity(Ari.instance, deadEntity, i ->
                     affectedPlayers.forEach((player, bar) -> {
                         LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.get(player);
                         if (bars != null) bars.remove(deadEntity);
@@ -238,11 +238,11 @@ public class MobBossBarListener implements Listener {
     }
 
     private boolean isDisabled() {
-        return !Ari.C_INSTANCE.getValue("attack-bar.enable", FilePath.ATTACK_BAR_CONFIG, Boolean.class, false);
+        return !Ari.instance.getConfigInstance().getValue("attack-bar.enable", FilePath.ATTACK_BAR_CONFIG, Boolean.class, false);
     }
 
     private int getMaxBar() {
-        return Ari.C_INSTANCE.getValue("attack-bar.max-bar", FilePath.ATTACK_BAR_CONFIG, Integer.class, 1);
+        return Ari.instance.getConfigInstance().getValue("attack-bar.max-bar", FilePath.ATTACK_BAR_CONFIG, Integer.class, 1);
     }
 
     private CancellableTask createCleanTask() {
@@ -250,7 +250,7 @@ public class MobBossBarListener implements Listener {
             this.cleanTask.cancel();
             this.cleanTask = null;
         }
-        return Ari.SCHEDULER.runAtFixedRate(Ari.instance, i -> {
+        return Ari.instance.getScheduler().runAtFixedRate(Ari.instance, i -> {
             long now = System.currentTimeMillis();
             Map<Player, Integer> removedCountByPlayer = new LinkedHashMap<>();
             for (Map.Entry<Player, LinkedHashMap<Damageable, PlayerAttackBar>> entry : this.playerBars.entrySet()) {
@@ -273,18 +273,18 @@ public class MobBossBarListener implements Listener {
                 }
             }
             removedCountByPlayer.forEach((player, count) ->
-                    Ari.LOG.debug("mob bar expired: player={}, removedEntities={}, current_bar_count={}, max_bar_count={}",
+                    Ari.instance.getLog().debug("mob bar expired: player={}, removedEntities={}, current_bar_count={}, max_bar_count={}",
                             player.getName(), count, this.playerBars.getOrDefault(player, new LinkedHashMap<>()).size(), this.maxBar)
             );
         }, 1L, this.tick_clear_dealy * 20L);
     }
 
     private long loadTick_clear_dealy() {
-        return Ari.C_INSTANCE.getValue("attack-bar.tick_clear_dealy", FilePath.ATTACK_BAR_CONFIG, Long.class, 30L);
+        return Ari.instance.getConfigInstance().getValue("attack-bar.tick_clear_dealy", FilePath.ATTACK_BAR_CONFIG, Long.class, 30L);
     }
 
     private long loadClear_last_attack_record() {
-        return Ari.C_INSTANCE.getValue("attack-bar.clear_last_attack_record", FilePath.ATTACK_BAR_CONFIG, Long.class, 20L);
+        return Ari.instance.getConfigInstance().getValue("attack-bar.clear_last_attack_record", FilePath.ATTACK_BAR_CONFIG, Long.class, 20L);
     }
 
 }

@@ -52,7 +52,7 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
                         owner,
                         player,
                         TeleportType.TPAHERE,
-                        Ari.C_INSTANCE.getValue("main.teleport.request-expired-time", FilePath.TPA_CONFIG, Integer.class, 10)
+                        Ari.instance.getConfigInstance().getValue("main.teleport.request-expired-time", FilePath.TPA_CONFIG, Integer.class, 10)
                 ));
     }
 }

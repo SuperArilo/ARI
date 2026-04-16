@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class GuiEditStateService extends StateService<EditGuiState> {
 
     public GuiEditStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
+        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
     }
 
     @Override
@@ -31,7 +31,7 @@ public class GuiEditStateService extends StateService<EditGuiState> {
         state.setPending(false);
         BaseInventory i = state.getI();
         GuiMeta annotation = i.getClass().getAnnotation(GuiMeta.class);
-        Ari.LOG.debug("checking player {} edit gui {}, type {}. count = {} max_count = {}",
+        Ari.instance.getLog().debug("checking player {} edit gui {}, type {}. count = {} max_count = {}",
                 owner.getName(),
                 annotation.type(),
                 state.getFunctionType(),
@@ -61,7 +61,7 @@ public class GuiEditStateService extends StateService<EditGuiState> {
     @Override
     protected void onEarlyExit(EditGuiState state) {
         Player owner = (Player) state.getOwner();
-        Ari.LOG.debug("player {} edit status finish.", owner.getName());
+        Ari.instance.getLog().debug("player {} edit status finish.", owner.getName());
     }
 
     @Override
@@ -69,7 +69,7 @@ public class GuiEditStateService extends StateService<EditGuiState> {
         Player owner = (Player) state.getOwner();
         owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.timeout-cancel")));
         owner.clearTitle();
-        Ari.LOG.debug("player {} edit status timeout.", owner.getName());
+        Ari.instance.getLog().debug("player {} edit status timeout.", owner.getName());
     }
 
     @Override

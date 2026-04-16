@@ -48,14 +48,14 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         try {
             banPlayer = repository.get(wrapper, PartitionKey.global()).get(2, TimeUnit.SECONDS);
         } catch (Exception e) {
-            Ari.LOG.error(e, "query ban list error on uuid {}", uuid.toString());
+            Ari.instance.getLog().error(e, "query ban list error on uuid {}", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             return;
         }
         if (banPlayer == null) return;
         if (banPlayer.getEndTime() <= System.currentTimeMillis()) {
             repository.delete(wrapper, PartitionKey.global());
-            Ari.LOG.debug("free player uuid {}.", banPlayer.getPlayerUUID());
+            Ari.instance.getLog().debug("free player uuid {}.", banPlayer.getPlayerUUID());
         } else {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ConfigUtils.tList("server.player.baned", Bukkit.getOfflinePlayer(uuid)).join());
@@ -87,7 +87,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         try {
             instance = whitelistInstanceEntityRepository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()), PartitionKey.global()).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
-            Ari.LOG.error(e, "check whitelist on uuid {} error.", uuid.toString());
+            Ari.instance.getLog().error(e, "check whitelist on uuid {} error.", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(e.getMessage()));
             return;
         }
@@ -99,7 +99,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 n.setOperator(Operator.CONSOLE.getUuid());
                 whitelistInstanceEntityRepository.create(n, PartitionKey.global())
                     .exceptionally(i -> {
-                        Ari.LOG.error(i, "player uuid {} login error.", uuid.toString());
+                        Ari.instance.getLog().error(i, "player uuid {} login error.", uuid.toString());
                         event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(i.getMessage()));
                         return null;
                     });
@@ -115,13 +115,13 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         try {
             serverPlayer = playerEntityRepository.get(wrapper, PartitionKey.global()).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
-            Ari.LOG.error(e, "error on query player {} to check name.", uuid.toString());
+            Ari.instance.getLog().error(e, "error on query player {} to check name.", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
             return;
         }
         if (serverPlayer == null) return;
         if (serverPlayer.getPlayerName().equals(event.getName())) return;
-        Ari.LOG.debug("layer changed name. old: {}, new: {}", serverPlayer.getPlayerName(), event.getName());
+        Ari.instance.getLog().debug("layer changed name. old: {}, new: {}", serverPlayer.getPlayerName(), event.getName());
         serverPlayer.setPlayerName(event.getName());
         playerEntityRepository.update(serverPlayer, wrapper, PartitionKey.global());
 
@@ -155,7 +155,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             })
             .whenComplete((i, ex) -> {
                 if (ex != null) {
-                    Ari.LOG.error("player {} login in server error.", player.getName());
+                    Ari.instance.getLog().error("player {} login in server error.", player.getName());
                     player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                     return;
                 }
@@ -164,9 +164,9 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                         .get(PlayerSaveStateService.class)
                         .addState(new PlayerSaveState(player, nowLoginTime));
                 if(!player.hasPlayedBefore()) {
-                    if (Ari.C_INSTANCE.getValue("main.first-join", FilePath.SPAWN_CONFIG, Boolean.class, false) &&
-                            Ari.C_INSTANCE.getValue("main.enable", FilePath.SPAWN_CONFIG, Boolean.class, false)) {
-                        SpawnLocation value = Ari.C_INSTANCE.getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
+                    if (Ari.instance.getConfigInstance().getValue("main.first-join", FilePath.SPAWN_CONFIG, Boolean.class, false) &&
+                            Ari.instance.getConfigInstance().getValue("main.enable", FilePath.SPAWN_CONFIG, Boolean.class, false)) {
+                        SpawnLocation value = Ari.instance.getConfigInstance().getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
                         if (value != null) {
                             Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), new Location(
                                     Bukkit.getWorld(value.getWorldName()),
@@ -177,25 +177,25 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                                     value.getPitch()
                             ));
                         } else {
-                            Ari.LOG.info("server not set spawn location.");
+                            Ari.instance.getLog().info("server not set spawn location.");
                         }
                     }
                     if(first) {
-                        ConfigUtils.t("server.message.on-first-login", player).thenAccept(t -> Ari.SCHEDULER.run(Ari.instance, task -> Bukkit.broadcast(t)));
+                        ConfigUtils.t("server.message.on-first-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
                         return;
                     }
                 }
                 if(login) {
-                    ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.SCHEDULER.run(Ari.instance, task -> Bukkit.broadcast(t)));
+                    ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
                 }
 
-                Ari.SCHEDULER.runAtEntity(Ari.instance, player, o -> {
+                Ari.instance.getScheduler().runAtEntity(Ari.instance, player, o -> {
                     if(this.isPlayerInsideBlock(player)) {
-                        Ari.LOG.debug("player {} inside block, teleport safe location.", player.getName());
+                        Ari.instance.getLog().debug("player {} inside block, teleport safe location.", player.getName());
                         Location safeLocation = this.findSafeLocationAbove(player.getLocation());
                         Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.not-safe-location"), player)));
                     }
-                }, () -> Ari.LOG.error("error on player join server."));
+                }, () -> Ari.instance.getLog().error("error on player join server."));
 
             });
     }
@@ -205,7 +205,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         Player player = event.getPlayer();
         if(Ari.instance.getConfig().getBoolean("server.message.on-leave")) {
             event.quitMessage(null);
-            Ari.PLACEHOLDER.render("server.message.on-leave", player).thenAccept(i -> Ari.SCHEDULER.run(Ari.instance, t -> Bukkit.broadcast(i)));
+            Ari.PLACEHOLDER.render("server.message.on-leave", player).thenAccept(i -> Ari.instance.getScheduler().run(Ari.instance, t -> Bukkit.broadcast(i)));
         }
         List<PlayerSaveState> states = Ari.STATE_MACHINE_MANAGER
                 .get(PlayerSaveStateService.class)

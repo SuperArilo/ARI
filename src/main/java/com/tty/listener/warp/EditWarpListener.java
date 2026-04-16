@@ -46,9 +46,9 @@ public class EditWarpListener extends OnGuiEditListener {
     public boolean onTitleEditStatus(String message, EditGuiState state) {
         FunctionType type = state.getFunctionType();
         Player player = (Player) state.getOwner();
-        List<String> value = Ari.C_INSTANCE.getValue("main.name-check", FilePath.WARP_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
+        List<String> value = Ari.instance.getConfigInstance().getValue("main.name-check", FilePath.WARP_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
         if(value == null) {
-            Ari.LOG.error("name-check list is null, check config");
+            Ari.instance.getLog().error("name-check list is null, check config");
             player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
             return false;
         }
@@ -59,7 +59,7 @@ public class EditWarpListener extends OnGuiEditListener {
                     player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
                     return false;
                 }
-                if(message.length() > Ari.C_INSTANCE.getValue("main.name-length", FilePath.WARP_CONFIG, new TypeToken<Integer>(){}.getType(), 15)) {
+                if(message.length() > Ari.instance.getConfigInstance().getValue("main.name-length", FilePath.WARP_CONFIG, new TypeToken<Integer>(){}.getType(), 15)) {
                     player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
                     return false;
                 }
@@ -82,7 +82,7 @@ public class EditWarpListener extends OnGuiEditListener {
                 }
             }
         }
-        Ari.SCHEDULER.runAtEntity(Ari.instance, player, i -> player.openInventory(warpEditor.getInventory()), () -> {});
+        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> player.openInventory(warpEditor.getInventory()), () -> {});
         return true;
     }
 
@@ -108,7 +108,7 @@ public class EditWarpListener extends OnGuiEditListener {
             repository.delete(wrapper, PartitionKey.global()).thenCompose(i -> {
                 if (i) {
                     return ConfigUtils.t("function.warp.delete-success", player).thenAccept(player::sendMessage)
-                            .thenRun(() -> Ari.SCHEDULER.run(Ari.instance, ab -> {
+                            .thenRun(() -> Ari.instance.getScheduler().run(Ari.instance, ab -> {
                                 event.getInventory().close();
                                 player.openInventory(new WarpList(player).getInventory());
                             }));
@@ -116,7 +116,7 @@ public class EditWarpListener extends OnGuiEditListener {
                     return ConfigUtils.t("function.warp.not-found").thenAccept(player::sendMessage);
                 }
             }).exceptionally(i -> {
-                Ari.LOG.error(i, "deleting warp error");
+                Ari.instance.getLog().error(i, "deleting warp error");
                 return null;
             });
         }
@@ -184,7 +184,7 @@ public class EditWarpListener extends OnGuiEditListener {
 
             LambdaQueryWrapper<ServerWarp> wrapper = new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, holder.getCurrentEditWarp().getWarpId());
 
-            Ari.LOG.debug("start saving warp id: {}", holder.getCurrentEditWarp().getWarpId());
+            Ari.instance.getLog().debug("start saving warp id: {}", holder.getCurrentEditWarp().getWarpId());
             clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
             clickItem.setItemMeta(clickMeta);
             CompletableFuture<Boolean> future = repository.update(holder.getCurrentEditWarp(), wrapper, PartitionKey.global());
@@ -192,7 +192,7 @@ public class EditWarpListener extends OnGuiEditListener {
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                 clickItem.setItemMeta(clickMeta);
                 if(status) {
-                    Ari.SCHEDULER.runAsyncDelayed(Ari.instance, e ->{
+                    Ari.instance.getScheduler().runAsyncDelayed(Ari.instance, e ->{
                         clickMeta.lore(List.of());
                         clickItem.setItemMeta(clickMeta);
                     }, 20L);
@@ -201,7 +201,7 @@ public class EditWarpListener extends OnGuiEditListener {
                     clickItem.setItemMeta(clickMeta);
                 }
             }).exceptionally(i -> {
-                Ari.LOG.error(i, "saving warp error");
+                Ari.instance.getLog().error(i, "saving warp error");
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.error"))));
                 clickItem.setItemMeta(clickMeta);
                 return null;

@@ -41,7 +41,7 @@ public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
             ConfigUtils.t("function.tpa.refuse-success", player).thenAccept(sender::sendMessage);
             assert target != null;
             Ari.PLACEHOLDER.render("function.tpa.refused", target).thenAccept(i ->
-                    Ari.SCHEDULER.runAtEntity(Ari.instance, target, task -> target.sendMessage(i), null));
+                    Ari.instance.getScheduler().runAtEntity(Ari.instance, target, task -> target.sendMessage(i), null));
         });
     }
 }

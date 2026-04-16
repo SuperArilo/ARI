@@ -21,7 +21,7 @@ public class OfflineNBTEnderCheat extends BaseInventory {
     private UUID target;
 
     public OfflineNBTEnderCheat(NBTFileHandle data, UUID target) {
-        this.debug(Ari.DEBUG);
+        super(Ari.instance);
         this.data = data;
         this.target = target;
     }

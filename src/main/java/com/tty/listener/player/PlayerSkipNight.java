@@ -22,10 +22,10 @@ public class PlayerSkipNight implements Listener {
     private void update(World world) {
         SleepingWorld sleepingWorld = SLEEPING_WORLD.get(world);
         if (sleepingWorld == null) {
-            Ari.LOG.error("cannot found world {} to sleep skipping.", world.getName());
+            Ari.instance.getLog().error("cannot found world {} to sleep skipping.", world.getName());
             return;
         }
-        Ari.SCHEDULER.run(Ari.instance, i -> sleepingWorld.update());
+        Ari.instance.getScheduler().run(Ari.instance, i -> sleepingWorld.update());
     }
 
     @EventHandler
@@ -55,8 +55,8 @@ public class PlayerSkipNight implements Listener {
         World.Environment environment = world.getEnvironment();
         boolean a = !(environment.equals(World.Environment.NETHER) || environment.equals(World.Environment.THE_END));
         if (!a) {
-            Ari.LOG.info("world {} does not support bed usage; using fallback method.", world.getName());
-            Ari.LOG.info("this may be caused by the server running version 1.21.11.");
+            Ari.instance.getLog().info("world {} does not support bed usage; using fallback method.", world.getName());
+            Ari.instance.getLog().info("this may be caused by the server running version 1.21.11.");
         }
         return a;
     }

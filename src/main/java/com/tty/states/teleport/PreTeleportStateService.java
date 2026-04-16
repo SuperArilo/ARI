@@ -16,7 +16,7 @@ import java.util.List;
 public class PreTeleportStateService extends StateService<PreEntityToEntityState> {
 
     public PreTeleportStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
+        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
     }
 
     @Override
@@ -32,7 +32,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
         }
 
         if (target == null) {
-            Ari.SCHEDULER.runAtEntity(
+            Ari.instance.getScheduler().runAtEntity(
                     Ari.instance,
                     owner,
                     i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner)),
@@ -47,7 +47,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
             return;
         }
         state.setPending(false);
-        Ari.LOG.debug("checking player {} -> {} request. count {}, max_count {}", owner.getName(), target.getName(), state.getCount(), state.getMax_count());
+        Ari.instance.getLog().debug("checking player {} -> {} request. count {}, max_count {}", owner.getName(), target.getName(), state.getCount(), state.getMax_count());
     }
 
     @Override
@@ -63,7 +63,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
         Ari.PLACEHOLDER.render("function.tpa." + (state.getType().getKey().equals("tpa") ? "to-message" : "here-message"), (OfflinePlayer) owner)
             .thenAccept(result ->
-                    Ari.SCHEDULER.runAtEntity(Ari.instance, target, task -> target.sendMessage(
+                    Ari.instance.getScheduler().runAtEntity(Ari.instance, target, task -> target.sendMessage(
                         result
                         .appendNewline()
                         .append(ComponentUtils.setClickEventText(
@@ -83,7 +83,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
     @Override
     protected void onFinished(PreEntityToEntityState state) {
-        Ari.LOG.debug("player {} send to {} teleport request expired",  state.getOwner().getName(), state.getTarget().getName());
+        Ari.instance.getLog().debug("player {} send to {} teleport request expired",  state.getOwner().getName(), state.getTarget().getName());
     }
 
     @Override
@@ -109,7 +109,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
         //检查是否已经发过请求了
         if (!this.getStates(owner).isEmpty()) {
             Ari.PLACEHOLDER.render("function.tpa.again", (OfflinePlayer) owner).thenAccept(i ->
-                    Ari.SCHEDULER.runAtEntity(Ari.instance, owner, t -> owner.sendMessage(i), null));
+                    Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, t -> owner.sendMessage(i), null));
             return false;
         }
 
@@ -118,7 +118,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                 !manager.get(RandomTpStateService.class).getStates(owner).isEmpty() ||
                 !manager.get(TeleportStateService.class).getStates(target).isEmpty() ||
                 !manager.get(RandomTpStateService.class).getStates(target).isEmpty()) {
-            Ari.SCHEDULER.runAtEntity(Ari.instance, owner, i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), owner)), null);
+            Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), owner)), null);
             return false;
         }
 

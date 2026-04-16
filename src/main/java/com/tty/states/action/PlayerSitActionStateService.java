@@ -29,7 +29,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
     private final Object disableBlockListLock = new Object();
 
     public PlayerSitActionStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
+        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
         this.disableBlockList = this.getDisableList();
     }
 
@@ -39,7 +39,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         String playerName = owner.getName();
         //判断玩家是否已经 sit 了
         if (!this.getStates(owner).isEmpty()) {
-            Ari.LOG.debug("player {} is sited. skip...", playerName);
+            Ari.instance.getLog().debug("player {} is sited. skip...", playerName);
             return false;
         }
         //获取列表判断是否满足的方块
@@ -48,7 +48,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
 
         synchronized (this.disableBlockListLock) {
             if (this.disableBlockList.contains(sitBlockName)) {
-                Ari.LOG.debug("player {} interact the block {} is disabled", playerName, sitBlockName);
+                Ari.instance.getLog().debug("player {} interact the block {} is disabled", playerName, sitBlockName);
                 return false;
             }
         }
@@ -85,7 +85,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
 
         Player owner = (Player) state.getOwner();
         if (state.getTool_entity() == null) {
-            Ari.LOG.error("player {} tool entity is null", owner.getName());
+            Ari.instance.getLog().error("player {} tool entity is null", owner.getName());
             state.setOver(true);
             return;
         }
@@ -121,17 +121,17 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                 i.addPassenger(player);
                 player.setRotation(location.getYaw(), 0);
                 ConfigUtils.t("function.sit.tips", player).thenAccept(t ->
-                    Ari.SCHEDULER.runAtEntity(Ari.instance, player, p -> player.sendActionBar(t), null));
+                    Ari.instance.getScheduler().runAtEntity(Ari.instance, player, p -> player.sendActionBar(t), null));
             }
         );
 
-        Ari.LOG.debug("player {} sit block {}.", state.getOwner().getName(), sitBlock.getType().name());
+        Ari.instance.getLog().debug("player {} sit block {}.", state.getOwner().getName(), sitBlock.getType().name());
     }
 
     @Override
     protected void onEarlyExit(PlayerSitActionState state) {
         String playerName = state.getOwner().getName();
-        Ari.LOG.debug("player {} sit check status fail, remove tool entity", playerName);
+        Ari.instance.getLog().debug("player {} sit check status fail, remove tool entity", playerName);
         state.removeToolEntity(Ari.instance);
     }
 
@@ -235,7 +235,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
     }
 
     private List<String> getDisableList() {
-        List<String> value = Ari.C_INSTANCE.getValue("action.sit.disable-block", FilePath.GAME_ACTION_CONFIG, new TypeToken<List<String>>() {}.getType(), List.of());
+        List<String> value = Ari.instance.getConfigInstance().getValue("action.sit.disable-block", FilePath.GAME_ACTION_CONFIG, new TypeToken<List<String>>() {}.getType(), List.of());
         return value.stream().map(String::toUpperCase).toList();
     }
 

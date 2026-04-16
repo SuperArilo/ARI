@@ -77,18 +77,18 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
                 //同时移除白名单
                 whitelistInstanceRepository.delete(wrapper, PartitionKey.global());
 
-                Ari.SCHEDULER.run(Ari.instance, i -> {
+                Ari.instance.getScheduler().run(Ari.instance, i -> {
                     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
                     if (offlinePlayer instanceof Player player) {
                         player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
-                        Ari.LOG.debug("baned player uuid {}. total {}", uuid.toString(), TimeFormatUtils.format(total.get()));
+                        Ari.instance.getLog().debug("baned player uuid {}. total {}", uuid.toString(), TimeFormatUtils.format(total.get()));
                     }
                     ConfigUtils.t("function.zako.baned", offlinePlayer).thenAccept(Bukkit::broadcast);
                 });
 
             }).exceptionally(e -> {
                 ConfigUtils.t("function.zako.add-failure").thenAccept(sender::sendMessage);
-                Ari.LOG.error(e);
+                Ari.instance.getLog().error(e);
                 return null;
             });
     }

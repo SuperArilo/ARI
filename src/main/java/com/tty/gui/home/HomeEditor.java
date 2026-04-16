@@ -28,13 +28,12 @@ public class HomeEditor extends BaseConfigInventory {
 
     public HomeEditor(ServerHome serverHome, Player player) {
         super(Ari.instance, player);
-        this.debug(Ari.DEBUG);
         this.currentEditHome = serverHome;
     }
 
     @Override
     protected @NotNull BaseMenu config() {
-        return FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_EDIT_GUI.name()).saveToString(), BaseMenu.class);
+        return FormatUtils.yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.HOME_EDIT_GUI.name()).saveToString(), BaseMenu.class);
     }
 
     @Override

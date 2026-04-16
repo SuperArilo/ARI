@@ -30,7 +30,7 @@ public class PlayerAttackBar extends BaseBossBar {
     }
 
     private void autoRemove() {
-        this.task = Ari.SCHEDULER.runAtEntityLater(
+        this.task = Ari.instance.getScheduler().runAtEntityLater(
                 Ari.instance,
                 this.player,
                 i -> this.remove(this.player),

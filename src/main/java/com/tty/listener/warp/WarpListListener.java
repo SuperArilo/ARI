@@ -58,7 +58,7 @@ public class WarpListListener extends BaseGuiListener {
             //从数据库查询最新的
             Ari.REPOSITORY_MANAGER.get(ServerWarp.class).get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId), PartitionKey.global()).thenAccept((instance) -> {
                 if (instance == null) {
-                    Ari.LOG.error("can't find warpId: {}", warpId);
+                    Ari.instance.getLog().error("can't find warpId: {}", warpId);
                     return;
                 }
                 boolean isOwner = UUID.fromString(instance.getCreateBy()).equals(player.getUniqueId());
@@ -68,7 +68,7 @@ public class WarpListListener extends BaseGuiListener {
                             .get(TeleportStateService.class)
                             .addState(new EntityToLocationCallbackState(
                                     player,
-                                    Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.WARP_CONFIG, Integer.class, 3),
+                                    Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.WARP_CONFIG, Integer.class, 3),
                                     targetLocation,
                                     () -> {
                                         String permission = instance.getPermission();
@@ -80,7 +80,7 @@ public class WarpListListener extends BaseGuiListener {
                                             }
                                         }
                                         if(!Ari.ECONOMY_SERVICE.hasEnoughBalance(player, instance.getCost()) && !isOwner &&
-                                                Ari.C_INSTANCE.getValue("main.permission", FilePath.WARP_CONFIG, Boolean.class, true)) {
+                                                Ari.instance.getConfigInstance().getValue("main.permission", FilePath.WARP_CONFIG, Boolean.class, true)) {
                                             ConfigUtils.t("function.warp.not-enough-money", player).thenAccept(player::sendMessage);
                                             return false;
                                         }
@@ -90,17 +90,17 @@ public class WarpListListener extends BaseGuiListener {
                                         //判断是否是地标拥有者或者是不是op，如果是则不扣
                                         if(!isOwner &&
                                                 !player.isOp() &&
-                                                Ari.C_INSTANCE.getValue("main.cost", FilePath.WARP_CONFIG, Boolean.class, false) &&
+                                                Ari.instance.getConfigInstance().getValue("main.cost", FilePath.WARP_CONFIG, Boolean.class, false) &&
                                                 !Ari.ECONOMY_SERVICE.isNull()) {
                                             Ari.ECONOMY_SERVICE.withdrawPlayer(player, instance.getCost());
                                             player.sendMessage(ConfigUtils.tAfter("teleport.costed", Map.of(LangVault.COSTED_UNRESOLVED.getType(), Component.text(instance.getCost().toString() + Ari.ECONOMY_SERVICE.getNamePlural()))));
                                         }
                                     },
                                     TeleportType.WARP));
-                    Ari.SCHEDULER.runAtEntity(Ari.instance, player, i -> event.getInventory().close(), null);
+                    Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> event.getInventory().close(), null);
                 } else if (event.isRightClick()) {
                     if(isOwner || player.isOp()) {
-                        Ari.SCHEDULER.run(Ari.instance, i -> {
+                        Ari.instance.getScheduler().run(Ari.instance, i -> {
                             event.getInventory().close();
                             player.openInventory(new WarpEditor(instance, player).getInventory());
                         });
@@ -109,7 +109,7 @@ public class WarpListListener extends BaseGuiListener {
                     }
                 }
             }).exceptionally(i -> {
-                Ari.LOG.error(i, "get warp id {} error", warpId);
+                Ari.instance.getLog().error(i, "get warp id {} error", warpId);
                 return null;
             });
         }

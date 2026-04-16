@@ -73,11 +73,11 @@ public class HomeListListener extends BaseGuiListener {
                                     .get(TeleportStateService.class)
                                     .addState(new EntityToLocationState(
                                             player,
-                                            Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.HOME_CONFIG, Integer.class, 3),
+                                            Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.HOME_CONFIG, Integer.class, 3),
                                             FormatUtils.parseLocation(home.getLocation()),
                                             TeleportType.HOME));
                         } else if (event.isRightClick()) {
-                            Ari.SCHEDULER.run(Ari.instance, p -> {
+                            Ari.instance.getScheduler().run(Ari.instance, p -> {
                                 event.getInventory().close();
                                 player.openInventory(new HomeEditor(home, player).getInventory());
                             });
@@ -85,9 +85,9 @@ public class HomeListListener extends BaseGuiListener {
                         return CompletableFuture.completedFuture(true);
                     }).whenComplete((i, ex) -> {
                         if (ex != null) {
-                            Ari.LOG.error(ex, "error on get player homes");
+                            Ari.instance.getLog().error(ex, "error on get player homes");
                         }
-                        Ari.SCHEDULER.run(Ari.instance, o -> event.getInventory().close());
+                        Ari.instance.getScheduler().run(Ari.instance, o -> event.getInventory().close());
                     });
         }
 

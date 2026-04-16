@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 public class PlayerRideActionStateService extends StateService<PlayerRideActionState> {
 
     public PlayerRideActionStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
+        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
     }
 
     @Override
@@ -23,7 +23,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
 
         //判断玩家是否已经 ride 了
         if (!this.getStates(owner).isEmpty()) {
-            Ari.LOG.debug("player {} is sited. skip...", playerName);
+            Ari.instance.getLog().debug("player {} is sited. skip...", playerName);
             return false;
         }
         //被点击的玩家如果有乘客（隐藏实体
@@ -36,7 +36,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
         Player beRidePlayer = state.getBeRidePlayer();
         Player owner = (Player) state.getOwner();
         Entity toolEntity = state.getTool_entity();
-        Ari.SCHEDULER.runAtEntity(Ari.instance, toolEntity, i -> {
+        Ari.instance.getScheduler().runAtEntity(Ari.instance, toolEntity, i -> {
             boolean b = toolEntity.getPassengers().isEmpty() ||
                     !toolEntity.isInsideVehicle() ||
                     beRidePlayer.isDead() ||
@@ -70,7 +70,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
                 beRidePlayer.addPassenger(i);
                 i.addPassenger(owner);
                 owner.setRotation(location.getYaw(), 0);
-                Ari.LOG.debug("player {} riding player {}.", owner.getName(), beRidePlayer.getName());
+                Ari.instance.getLog().debug("player {} riding player {}.", owner.getName(), beRidePlayer.getName());
             }
         );
     }
@@ -88,7 +88,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
     @Override
     protected void onServiceAbort(PlayerRideActionState state) {
         state.removeToolEntity(Ari.instance);
-        Ari.LOG.info("ejected player {}", state.getOwner().getName());
+        Ari.instance.getLog().info("ejected player {}", state.getOwner().getName());
     }
 
     @Override

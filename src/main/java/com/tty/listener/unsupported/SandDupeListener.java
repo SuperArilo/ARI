@@ -51,10 +51,10 @@ public class SandDupeListener implements Listener {
 
             int chunkX = 0;
             int chunkZ = 0;
-            Ari.SCHEDULER.runAtRegion(Ari.instance, overworld, chunkX, chunkZ, task -> {
+            Ari.instance.getScheduler().runAtRegion(Ari.instance, overworld, chunkX, chunkZ, task -> {
                 Location safeLocation = this.findSafeLocation(overworld);
                 if (safeLocation == null) {
-                    Ari.LOG.warn("No safe block found in overworld");
+                    Ari.instance.getLog().warn("No safe block found in overworld");
                     return;
                 }
                 overworld.spawn(safeLocation, FallingBlock.class, CreatureSpawnEvent.SpawnReason.CUSTOM, i  -> i.setBlockData(blockData))
@@ -70,7 +70,7 @@ public class SandDupeListener implements Listener {
             int chunkX = location.getBlockX() >> 4;
             int chunkZ = location.getBlockZ() >> 4;
 
-            Ari.SCHEDULER.runAtRegion(Ari.instance,
+            Ari.instance.getScheduler().runAtRegion(Ari.instance,
                     endWorld,
                     chunkX,
                     chunkZ,

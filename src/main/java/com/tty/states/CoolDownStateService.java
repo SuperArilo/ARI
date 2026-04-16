@@ -8,7 +8,7 @@ import org.bukkit.entity.Entity;
 public class CoolDownStateService extends StateService<CooldownState> {
 
     public CoolDownStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
+        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
     }
 
     @Override
@@ -25,7 +25,7 @@ public class CoolDownStateService extends StateService<CooldownState> {
             return;
         }
         state.setPending(false);
-        Ari.LOG.debug("entity {} teleport cd time is cooling down. count {}, max_count {}", state.getOwner().getName(), state.getCount(), state.getMax_count());
+        Ari.instance.getLog().debug("entity {} teleport cd time is cooling down. count {}, max_count {}", state.getOwner().getName(), state.getCount(), state.getMax_count());
     }
 
     @Override
@@ -40,12 +40,12 @@ public class CoolDownStateService extends StateService<CooldownState> {
 
     @Override
     protected void onEarlyExit(CooldownState state) {
-        Ari.LOG.debug("entity {} cd time has ended.", state.getOwner().getName());
+        Ari.instance.getLog().debug("entity {} cd time has ended.", state.getOwner().getName());
     }
 
     @Override
     protected void onFinished(CooldownState state) {
-        Ari.LOG.debug("entity {} cd time has ended.", state.getOwner().getName());
+        Ari.instance.getLog().debug("entity {} cd time has ended.", state.getOwner().getName());
     }
 
     @Override

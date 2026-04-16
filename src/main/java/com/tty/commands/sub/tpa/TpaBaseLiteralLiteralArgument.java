@@ -62,7 +62,7 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
      */
     public void checkAfterResponse(Player sender, Player target, Consumer<PreEntityToEntityState> consumer) {
         if (target == null) {
-            Ari.SCHEDULER.runAtEntity(Ari.instance, sender, i -> sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), sender)), null);
+            Ari.instance.getScheduler().runAtEntity(Ari.instance, sender, i -> sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), sender)), null);
             return;
         }
         PreTeleportStateService machine = Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class);
@@ -84,7 +84,7 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
     public boolean preCheckIsNotPass(CommandSender sender, String[] args) {
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
         if (player == null || sender.getName().equals(player.getName())) {
-            Ari.SCHEDULER.runAtEntity(Ari.instance, (Player) sender, i -> sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), (Player) sender)), null);
+            Ari.instance.getScheduler().runAtEntity(Ari.instance, (Player) sender, i -> sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), (Player) sender)), null);
             return true;
         }
         return false;
@@ -92,6 +92,6 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
 
     @Override
     protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.TPA_CONFIG.name()));
+        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.TPA_CONFIG.name()));
     }
 }

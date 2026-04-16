@@ -64,7 +64,7 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
             return;
         }
         TimeManager.build(world).timeSet(period.getStart());
-        String value = Ari.C_INSTANCE.getValue("server.time.tips", FilePath.LANG);
+        String value = Ari.instance.getConfigInstance().getValue("server.time.tips", FilePath.LANG);
         if (value == null) {
             player.sendMessage("no content " + timePeriod + "in lang");
             return;

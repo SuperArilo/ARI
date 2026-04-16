@@ -62,18 +62,18 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
                 }
                 Player b = Bukkit.getServer().getPlayer(uuid);
                 if (b == null) {
-                    Ari.LOG.debug("player {} is offline to open ender chest.", uuid.toString());
+                    Ari.instance.getLog().debug("player {} is offline to open ender chest.", uuid.toString());
                     OFFLINE_ON_EDIT_ENDER_CHEST_LIST.add(uuid);
-                    Ari.SCHEDULER.runAsync(Ari.instance, i -> {
+                    Ari.instance.getScheduler().runAsync(Ari.instance, i -> {
                         NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(uuid.toString());
                         if (data == null) {
                             sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-                            Ari.LOG.error("uuid is not exist.", uuid.toString());
+                            Ari.instance.getLog().error("uuid is not exist.", uuid.toString());
                             return;
                         }
                         ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
                         OfflineNBTEnderCheat cheat = new OfflineNBTEnderCheat(data, uuid);
-                        Ari.SCHEDULER.runAtEntity(Ari.instance, player, t -> {
+                        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, t -> {
                             player.openInventory(cheat.getInventory());
                             for (ReadWriteNBT enderItem : enderItems) {
                                 int slot = enderItem.getByte("Slot") & 0xFF;
@@ -81,7 +81,7 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
                                 cheat.setItem(slot, itemStack);
                             }
                         }, () -> {
-                            Ari.LOG.error("read player {} nbt error.");
+                            Ari.instance.getLog().error("read player {} nbt error.");
                             OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(uuid);
                         });
                     });

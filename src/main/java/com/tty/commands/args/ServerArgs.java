@@ -33,7 +33,7 @@ public class ServerArgs extends RequiredArgumentCommand<String> {
         if (!(sender instanceof Player player)) return CompletableFuture.completedFuture(Set.of());
         if (args.length == 1) {
             if (BungeeCache.getState() == BungeeCache.State.UNKNOWN) {
-                return BungeeCache.waitForLoad(2, () -> Ari.SCHEDULER.runAsync(Ari.instance, i -> this.request(player)));
+                return BungeeCache.waitForLoad(2, () -> Ari.instance.getScheduler().runAsync(Ari.instance, i -> this.request(player)));
             } else if (BungeeCache.getState() == BungeeCache.State.READY) {
                 return CompletableFuture.completedFuture(BungeeCache.getServers());
             }

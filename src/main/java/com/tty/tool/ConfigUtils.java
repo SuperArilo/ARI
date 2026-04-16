@@ -29,11 +29,11 @@ public class ConfigUtils {
     }
 
     public static Component tAfter(String key, Map<String, Component> map) {
-        return ComponentUtils.text(Ari.C_INSTANCE.getValue(key, FilePath.LANG), map);
+        return ComponentUtils.text(Ari.instance.getConfigInstance().getValue(key, FilePath.LANG), map);
     }
 
     public static Component tAfter(String key) {
-        return ComponentUtils.text(Ari.C_INSTANCE.getValue(key, FilePath.LANG));
+        return ComponentUtils.text(Ari.instance.getConfigInstance().getValue(key, FilePath.LANG));
     }
 
 }

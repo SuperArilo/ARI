@@ -22,7 +22,7 @@ public class GetServerListListener implements PluginMessageListener {
         if (subchannel.equals("GetServers")) {
             String serverList = in.readUTF();
             Set<String> servers = Set.of(serverList.split(",\\s*"));
-            Ari.LOG.debug("Received server list from BungeeCord: " + servers);
+            Ari.instance.getLog().debug("Received server list from BungeeCord: " + servers);
             BungeeCache.onServersLoaded(servers);
         }
 

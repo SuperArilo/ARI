@@ -28,11 +28,11 @@ public class itemshow extends LiteralArgumentCommand {
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.isEmpty()) {
             ConfigUtils.t("function.itemshow.no-item-in-hand", player).thenAccept(t ->
-                    Ari.SCHEDULER.run(Ari.instance, i -> sender.sendMessage(t)));
+                    Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(t)));
             return;
         }
         ConfigUtils.t("function.itemshow.show-to-players", player).thenAccept(t ->
-                Ari.SCHEDULER.run(Ari.instance, i -> Bukkit.broadcast(t)));
+                Ari.instance.getScheduler().run(Ari.instance, i -> Bukkit.broadcast(t)));
     }
 
     @Override

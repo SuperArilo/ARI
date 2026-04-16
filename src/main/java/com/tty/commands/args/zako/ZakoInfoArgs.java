@@ -61,7 +61,7 @@ public class ZakoInfoArgs extends RequiredArgumentCommand<String> {
                 sender.sendMessage(message);
             }
         }).exceptionally(e -> {
-            Ari.LOG.error(e);
+            Ari.instance.getLog().error(e);
             if (sender instanceof Player player) {
                 ConfigUtils.t("function.zako.list-request-error", player).thenAccept(sender::sendMessage);
             } else {

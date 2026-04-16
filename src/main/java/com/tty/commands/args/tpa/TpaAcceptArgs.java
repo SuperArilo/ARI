@@ -42,7 +42,7 @@ public class TpaAcceptArgs extends TpaBaseLiteralLiteralArgument {
 
         this.checkAfterResponse(player, target, s -> {
             assert target != null;
-            int value = Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.TPA_CONFIG, Integer.class, 3);
+            int value = Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.TPA_CONFIG, Integer.class, 3);
             PlayerToPlayerState state;
             if (s.getType().getKey().equals("tpa")) {
                 state = new PlayerToPlayerState(target, player, value, "tpa");

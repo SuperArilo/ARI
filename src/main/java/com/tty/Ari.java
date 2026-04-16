@@ -1,16 +1,14 @@
 package com.tty;
 
 import com.google.gson.reflect.TypeToken;
-import com.tty.api.ConfigInstance;
-import com.tty.api.Log;
-import com.tty.api.Scheduler;
-import com.tty.api.ServerPlatform;
+import com.tty.api.*;
 import com.tty.api.dto.AliasItem;
+import com.tty.api.enumType.FilePathEnum;
 import com.tty.api.service.*;
 import com.tty.api.state.StateService;
+import com.tty.api.utils.CommandRegister;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.PublicFunctionUtils;
-import com.tty.api.utils.VersionUtil;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
 import com.tty.function.PlayerTabManager;
@@ -29,21 +27,16 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
 
 import java.util.Map;
 
 @SuppressWarnings("UnstableApiUsage")
-public class Ari extends JavaPlugin {
+public class Ari extends BaseJavaPlugin {
 
     private static final int PLUGIN_ID = 29755;
 
     public static Ari instance;
-    public static final Log LOG = Log.create();
-    public static final Scheduler SCHEDULER = Scheduler.create();
-    public static Boolean DEBUG = false;
-    public static ConfigInstance C_INSTANCE;
     public static SQLInstance SQL_INSTANCE;
     public static RepositoryManager REPOSITORY_MANAGER;
     public static PermissionService PERMISSION_SERVICE;
@@ -58,29 +51,23 @@ public class Ari extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        super.onLoad();
         instance = this;
-        reloadAllConfig();
-        LOG.setDebug(DEBUG);
     }
 
     @Override
     public void onEnable() {
-        if(VersionUtil.isServerVersionLowerThan("1.21.3")) {
-            LOG.error("server version is too low. This plugin requires at least 1.21.3. Disabling plugin...");
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+        super.onEnable();
         this.printLogo();
+        this.loadOtherPlugins();
 
         SQL_INSTANCE = new SQLInstance();
-        REPOSITORY_MANAGER = new RepositoryManager(Ari.DEBUG);
+        REPOSITORY_MANAGER = new RepositoryManager(this);
         STATE_MACHINE_MANAGER = new StateMachineManager();
-
-        this.loadOtherPlugins();
 
         this.registerListener();
         this.registerBungeeListener();
-        CommandRegister.register(this, "com.tty.commands", FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
+        CommandRegister.register(this, "com.tty.commands", FormatUtils.yamlConvertToObj(this.getConfigInstance().getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
 
         PLACEHOLDER = new Placeholder();
         this.initMetrics();
@@ -88,6 +75,7 @@ public class Ari extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        super.onDisable();
         if (STATE_MACHINE_MANAGER != null) {
             STATE_MACHINE_MANAGER.forEach(StateService::abort);
         }
@@ -101,10 +89,11 @@ public class Ari extends JavaPlugin {
             SQL_INSTANCE.close();
         }
 
-        if (C_INSTANCE != null) {
-            C_INSTANCE.clearConfigs();
-        }
+    }
 
+    @Override
+    protected FilePathEnum[] fileList() {
+        return FilePath.values();
     }
 
     private void loadOtherPlugins() {
@@ -149,13 +138,6 @@ public class Ari extends JavaPlugin {
         messenger.registerIncomingPluginChannel(this, "BungeeCord", new GetServerListListener());
     }
 
-    public static void reloadAllConfig() {
-        Ari.instance.saveDefaultConfig();
-        Ari.instance.reloadConfig();
-        DEBUG = Ari.instance.getConfig().getBoolean("debug.enable", false);
-        C_INSTANCE = new ConfigInstance(Ari.instance, FilePath.values());
-    }
-
     @SuppressWarnings("deprecation")
     private void printLogo() {
         String pluginInfo;
@@ -168,22 +150,22 @@ public class Ari extends JavaPlugin {
         }
         String bukkitName = Bukkit.getName();
         String bukkitVersion = Bukkit.getServer().getVersion();
-        Ari.LOG.info("");
-        Ari.LOG.info("    ___    ____   ___");
-        Ari.LOG.info("   /   |  / __ \\ |   |");
-        Ari.LOG.info("  / /| | / /_/ / |   |  {}", pluginInfo);
-        Ari.LOG.info(" / ___ |/ _, _/  |   |  Running on {} {}", bukkitName, bukkitVersion);
-        Ari.LOG.info("/_/  |_/_/ |_|   |___|");
-        Ari.LOG.info("");
+        Ari.instance.getLog().info("");
+        Ari.instance.getLog().info("    ___    ____   ___");
+        Ari.instance.getLog().info("   /   |  / __ \\ |   |");
+        Ari.instance.getLog().info("  / /| | / /_/ / |   |  {}", pluginInfo);
+        Ari.instance.getLog().info(" / ___ |/ _, _/  |   |  Running on {} {}", bukkitName, bukkitVersion);
+        Ari.instance.getLog().info("/_/  |_/_/ |_|   |___|");
+        Ari.instance.getLog().info("");
 
     }
 
     private void initMetrics() {
         try {
             new Metrics(this, PLUGIN_ID);
-            LOG.debug("loaded metrics.");
+            this.getLog().debug("loaded metrics.");
         } catch (Exception e) {
-            LOG.warn(e, "unable to load metrics");
+            this.getLog().warn(e, "unable to load metrics");
         }
     }
 

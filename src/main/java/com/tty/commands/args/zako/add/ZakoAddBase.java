@@ -59,7 +59,7 @@ public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
                 })
                 .whenComplete((v, ex) -> {
                     if (ex != null) {
-                        Ari.LOG.error(ex, "add zako error.");
+                        Ari.instance.getLog().error(ex, "add zako error.");
                         sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                     }
                 });

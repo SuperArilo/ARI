@@ -62,11 +62,11 @@ public class PlayerActionListener implements Listener {
     }
 
     private boolean isNotEnableSit() {
-        return Ari.C_INSTANCE.getValue("action.sit.enable", FilePath.GAME_ACTION_CONFIG, Boolean.class, false);
+        return Ari.instance.getConfigInstance().getValue("action.sit.enable", FilePath.GAME_ACTION_CONFIG, Boolean.class, false);
     }
 
     private boolean isNotEnablePlayerSitPlayer() {
-        return Ari.C_INSTANCE.getValue("action.player-sit-player.enable", FilePath.GAME_ACTION_CONFIG, Boolean.class, false);
+        return Ari.instance.getConfigInstance().getValue("action.player-sit-player.enable", FilePath.GAME_ACTION_CONFIG, Boolean.class, false);
     }
 
 }

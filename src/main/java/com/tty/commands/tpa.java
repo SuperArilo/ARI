@@ -27,7 +27,7 @@ public class tpa extends LiteralArgumentCommand {
 
     @Override
     protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.TPA_CONFIG.name()));
+        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.TPA_CONFIG.name()));
     }
 
 }

@@ -27,7 +27,7 @@ public class setwarp extends LiteralArgumentCommand {
 
     @Override
     protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.WARP_CONFIG.name()));
+        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.WARP_CONFIG.name()));
     }
 
 }

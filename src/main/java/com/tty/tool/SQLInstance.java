@@ -33,43 +33,43 @@ public class SQLInstance {
     }
 
     public void start() {
-        Ari.LOG.debug("initializing database connection");
+        Ari.instance.getLog().debug("initializing database connection");
 
         if (Ari.instance == null) {
-            Ari.LOG.error("plugin instance not initialized; database startup aborted");
+            Ari.instance.getLog().error("plugin instance not initialized; database startup aborted");
             return;
         }
 
         String storageType = Ari.instance.getConfig().getString("data.storage-type");
 
         if (storageType == null) {
-            Ari.LOG.warn("data.storage-type not configured; defaulting to SQLITE");
+            Ari.instance.getLog().warn("data.storage-type not configured; defaulting to SQLITE");
             sqlType = SQLType.SQLITE;
         } else {
             try {
                 sqlType = SQLType.valueOf(storageType.toUpperCase());
             } catch (IllegalArgumentException e) {
-                Ari.LOG.error(e, "invalid data.storage-type '{}'; supported values: MYSQL, SQLITE", storageType);
+                Ari.instance.getLog().error(e, "invalid data.storage-type '{}'; supported values: MYSQL, SQLITE", storageType);
                 return;
             }
         }
 
-        Ari.LOG.debug("using database type: {}", sqlType.getType());
+        Ari.instance.getLog().debug("using database type: {}", sqlType.getType());
 
         try {
             switch (sqlType) {
                 case MYSQL -> createMysql();
                 case SQLITE -> createSQLite();
                 default -> {
-                    Ari.LOG.error("unsupported SQL type: {}", sqlType);
+                    Ari.instance.getLog().error("unsupported SQL type: {}", sqlType);
                     return;
                 }
             }
         } catch (Exception e) {
-            Ari.LOG.error(e, "failed to initialize database connection factory");
+            Ari.instance.getLog().error(e, "failed to initialize database connection factory");
             return;
         }
-        Ari.LOG.debug("initializing database schema");
+        Ari.instance.getLog().debug("initializing database schema");
 
         this.ensureSchemaVersionTable();
 
@@ -77,12 +77,12 @@ public class SQLInstance {
             MigrationManager manager = new MigrationManager(this.sqlType, this.getTablePrefix(), SESSION_FACTORY.getConfiguration().getEnvironment().getDataSource());
             manager.migrate();
         } catch (SQLException e) {
-            Ari.LOG.error(e, "Failed to apply database migrations");
+            Ari.instance.getLog().error(e, "Failed to apply database migrations");
         }
     }
 
     public void reconnect() {
-        Ari.LOG.debug("connection is closing...");
+        Ari.instance.getLog().debug("connection is closing...");
         this.close();
         this.start();
     }
@@ -112,7 +112,7 @@ public class SQLInstance {
     protected void setLiteFactory(HikariDataSource dataSource) {
 
         MybatisConfiguration configuration = new MybatisConfiguration();
-        configuration.setEnvironment(new Environment(Ari.DEBUG ? "dev":"prod", new JdbcTransactionFactory(), dataSource));
+        configuration.setEnvironment(new Environment(Ari.instance.isDebug() ? "dev":"prod", new JdbcTransactionFactory(), dataSource));
 
         configuration.addMapper(PlayersMapper.class);
         configuration.addMapper(WarpMapper.class);
@@ -139,14 +139,14 @@ public class SQLInstance {
         try (Connection conn = SESSION_FACTORY.getConfiguration().getEnvironment().getDataSource().getConnection(); Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
-            Ari.LOG.error(e, "Failed to create schema_version table");
+            Ari.instance.getLog().error(e, "Failed to create schema_version table");
         }
     }
 
     public void close() {
         if (SQLInstance.SESSION_FACTORY != null) {
             SQLInstance.SESSION_FACTORY = null;
-            Ari.LOG.debug("Connection closed successfully");
+            Ari.instance.getLog().debug("Connection closed successfully");
         }
         SQLInstance.SESSION_FACTORY = null;
     }

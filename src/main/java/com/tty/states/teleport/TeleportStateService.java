@@ -26,7 +26,7 @@ public class TeleportStateService extends StateService<State> {
     private final Map<UUID, Location> initLocationMap = new HashMap<>();
 
     public TeleportStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
+        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
     }
 
     @Override
@@ -54,16 +54,16 @@ public class TeleportStateService extends StateService<State> {
 
         if (state.isOver() || state.isDone()) return;
         Ari.PLACEHOLDER.render("teleport.title.sub-title", player).thenAccept(result ->
-                Ari.SCHEDULER.runAtEntity(Ari.instance, player, task -> {
+                Ari.instance.getScheduler().runAtEntity(Ari.instance, player, task -> {
                     player.showTitle(ComponentUtils.setPlayerTitle(
-                            Ari.C_INSTANCE.getValue("teleport.title.main", FilePath.LANG),
+                            Ari.instance.getConfigInstance().getValue("teleport.title.main", FilePath.LANG),
                             result,
                             200,
                             1000,
                             200
                     ));
                     state.setPending(false);
-                    Ari.LOG.debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
+                    Ari.instance.getLog().debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
                 }, null));
     }
 
@@ -85,7 +85,7 @@ public class TeleportStateService extends StateService<State> {
         }
 
         if(!Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).getStates(owner).isEmpty()) {
-            Ari.SCHEDULER.runAtEntity(Ari.instance, owner, i -> player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), player)), null);
+            Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), player)), null);
             return false;
         }
 
@@ -111,7 +111,7 @@ public class TeleportStateService extends StateService<State> {
     protected void onEarlyExit(State state) {
         Entity owner = state.getOwner();
         owner.clearTitle();
-        Ari.LOG.debug("entity {} teleport state break.", owner.getName());
+        Ari.instance.getLog().debug("entity {} teleport state break.", owner.getName());
         this.removeEntityInitData(owner);
     }
 
@@ -186,12 +186,12 @@ public class TeleportStateService extends StateService<State> {
 
     private int getCooldownTime(TeleportType type) {
         return switch (type) {
-            case RTP -> Ari.C_INSTANCE.getValue("main.teleport.cooldown", FilePath.RTP_CONFIG, Integer.class, 10);
-            case TPA, TPAHERE -> Ari.C_INSTANCE.getValue("main.teleport.cooldown", FilePath.TPA_CONFIG, Integer.class, 10);
-            case BACK -> Ari.C_INSTANCE.getValue("main.teleport.cooldown", FilePath.BACK_CONFIG, Integer.class, 10);
-            case WARP -> Ari.C_INSTANCE.getValue("main.teleport.cooldown", FilePath.WARP_CONFIG, Integer.class, 10);
-            case HOME -> Ari.C_INSTANCE.getValue("main.teleport.cooldown", FilePath.HOME_CONFIG, Integer.class, 10);
-            case SPAWN -> Ari.C_INSTANCE.getValue("main.teleport.cooldown", FilePath.SPAWN_CONFIG, Integer.class, 10);
+            case RTP -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.RTP_CONFIG, Integer.class, 10);
+            case TPA, TPAHERE -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.TPA_CONFIG, Integer.class, 10);
+            case BACK -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.BACK_CONFIG, Integer.class, 10);
+            case WARP -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.WARP_CONFIG, Integer.class, 10);
+            case HOME -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.HOME_CONFIG, Integer.class, 10);
+            case SPAWN -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.SPAWN_CONFIG, Integer.class, 10);
         };
     }
 
@@ -212,7 +212,7 @@ public class TeleportStateService extends StateService<State> {
     private void handleTeleportAfter(Entity owner, Location location, Runnable removeInit, Runnable addState) {
         removeInit.run();
         addState.run();
-        Ari.LOG.debug("entity {} teleport to x: {}, y: {}, z: {} success.", owner.getName(), location.getX(), location.getY(), location.getZ());
+        Ari.instance.getLog().debug("entity {} teleport to x: {}, y: {}, z: {} success.", owner.getName(), location.getX(), location.getY(), location.getZ());
     }
 
 }

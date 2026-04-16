@@ -36,7 +36,6 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     public WarpList(Player player) {
         super(Ari.instance, player);
-        this.debug(Ari.DEBUG);
     }
 
     @Override
@@ -63,8 +62,8 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
             ItemStack itemStack = this.createItemStack(serverWarp.getShowMaterial());
             if (itemStack == null) {
-                Ari.LOG.warn("There is a problem with the warpID: [{}] of the player: [{}]", serverWarp.getWarpId(), this.player.getName());
-                Ari.LOG.error("Skip the rendering warpId [{}] process...", serverWarp.getWarpId());
+                Ari.instance.getLog().warn("There is a problem with the warpID: [{}] of the player: [{}]", serverWarp.getWarpId(), this.player.getName());
+                Ari.instance.getLog().error("Skip the rendering warpId [{}] process...", serverWarp.getWarpId());
                 this.player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
                 continue;
             }
@@ -123,7 +122,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     @Override
     protected @NotNull BaseMenu config() {
-        return FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.WARP_LIST_GUI.name()).saveToString(), BaseDataMenu.class);
+        return FormatUtils.yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.WARP_LIST_GUI.name()).saveToString(), BaseDataMenu.class);
     }
 
     @Override

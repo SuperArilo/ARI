@@ -27,7 +27,7 @@ public class sethome extends LiteralArgumentCommand {
 
     @Override
     protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.HOME_CONFIG.name()));
+        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.HOME_CONFIG.name()));
     }
 
 }

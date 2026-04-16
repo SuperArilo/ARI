@@ -14,20 +14,14 @@ public class OnPluginReloadListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void pluginReload(CustomPluginReloadEvent event) {
-        Ari.reloadAllConfig();
-        if (Ari.DEBUG) {
+        Ari.instance.doReloadAllFiles();
+        if (Ari.instance.isDebug()) {
             Ari.SQL_INSTANCE.reconnect();
         }
         Ari.REPOSITORY_MANAGER.clearAllCache();
         Ari.STATE_MACHINE_MANAGER.forEach(StateService::onReload);
         BungeeCache.setServers(Set.of());
         BungeeCache.setState(BungeeCache.State.UNKNOWN);
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void debugStatus(CustomPluginReloadEvent event) {
-        Ari.REPOSITORY_MANAGER.debug(Ari.DEBUG);
-        Ari.LOG.setDebug(Ari.DEBUG);
     }
 
 }

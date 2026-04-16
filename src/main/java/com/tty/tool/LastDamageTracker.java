@@ -157,7 +157,7 @@ public class LastDamageTracker {
 
         //检查是否涉及玩家
         boolean involvesPlayer = this.checkInvolvesPlayer(victim, resolvedAttacker, directEntity);
-        Ari.LOG.debug("[CHECK_RESULT] victim={}, involvesPlayer={}, resolvedAttacker={}",
+        Ari.instance.getLog().debug("[CHECK_RESULT] victim={}, involvesPlayer={}, resolvedAttacker={}",
                 victim != null ? victim.getType().name() : "null",
                 involvesPlayer,
                 resolvedAttacker != null ? resolvedAttacker.getType().name() : "null");
@@ -263,7 +263,7 @@ public class LastDamageTracker {
     }
 
     private void log(Entity victim, EntityDamageEvent.DamageCause cause, Long timeDiff, Long threshold, Entity attacker) {
-        Ari.LOG.debug("[RECORD_BEFORE_CHECK] victim: {}, damage_type: {}, time_difference: {} ms (threshold: {} ms), attacker: {}, location: {}",
+        Ari.instance.getLog().debug("[RECORD_BEFORE_CHECK] victim: {}, damage_type: {}, time_difference: {} ms (threshold: {} ms), attacker: {}, location: {}",
                 victim.getName(),
                 cause.name(),
                 timeDiff,

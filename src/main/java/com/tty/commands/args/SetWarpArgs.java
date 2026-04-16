@@ -83,7 +83,7 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
 
                                 CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
 
-                                Ari.SCHEDULER.runAtRegion(
+                                Ari.instance.getScheduler().runAtRegion(
                                         Ari.instance,
                                         player.getLocation(),
                                         task -> {
@@ -115,7 +115,7 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
                     return ConfigUtils.t("function.warp.create-success", player).thenAccept(player::sendMessage);
                 })
                 .exceptionally(e -> {
-                    Ari.LOG.error(e);
+                    Ari.instance.getLog().error(e);
                     ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
                     return null;
                 });
@@ -123,6 +123,6 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
 
     @Override
     protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.WARP_CONFIG.name()));
+        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.WARP_CONFIG.name()));
     }
 }

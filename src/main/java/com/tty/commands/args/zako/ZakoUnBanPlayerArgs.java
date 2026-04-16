@@ -85,7 +85,7 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
                     });
             })
             .exceptionally(e -> {
-                Ari.LOG.error("delete ban player uuid {} error.", uuid.toString(), e);
+                Ari.instance.getLog().error("delete ban player uuid {} error.", uuid.toString(), e);
                 return null;
             });
     }

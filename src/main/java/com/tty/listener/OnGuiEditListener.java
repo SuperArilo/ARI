@@ -24,7 +24,7 @@ public abstract class OnGuiEditListener extends BaseEditFunctionGuiListener {
         if (stateService.isNotHaveState(player)) return null;
         List<EditGuiState> states = stateService.getStates(player);
         if (states.isEmpty()) {
-            Ari.LOG.error("player {} on edit status error, states is empty", player.getName());
+            Ari.instance.getLog().error("player {} on edit status error, states is empty", player.getName());
             return null;
         }
         return states.getFirst();

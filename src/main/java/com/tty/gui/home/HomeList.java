@@ -36,7 +36,6 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     public HomeList(Player player) {
         super(Ari.instance, player);
-        this.debug(Ari.DEBUG);
     }
 
     @Override
@@ -62,8 +61,8 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             ServerHome ph = this.data.get(i);
             ItemStack itemStack = this.createItemStack(ph.getShowMaterial());
             if (itemStack == null) {
-                Ari.LOG.error("There is a problem with the homeID: [{}] of the player: [{}]", ph.getHomeId(), this.player.getName());
-                Ari.LOG.warn("Skip the rendering homeId [{}] process...", ph.getHomeId());
+                Ari.instance.getLog().error("There is a problem with the homeID: [{}] of the player: [{}]", ph.getHomeId(), this.player.getName());
+                Ari.instance.getLog().warn("Skip the rendering homeId [{}] process...", ph.getHomeId());
                 this.player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
                 continue;
             }
@@ -100,7 +99,7 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     @Override
     protected @NotNull BaseDataMenu config() {
-        return FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.HOME_LIST_GUI.name()).saveToString(), BaseDataMenu.class);
+        return FormatUtils.yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.HOME_LIST_GUI.name()).saveToString(), BaseDataMenu.class);
     }
 
     @Override

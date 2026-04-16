@@ -77,7 +77,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
 
                     CompletableFuture<ServerHome> buildHomeFuture = new CompletableFuture<>();
 
-                    Ari.SCHEDULER.runAtRegion(Ari.instance, player.getLocation(), task -> {
+                    Ari.instance.getScheduler().runAtRegion(Ari.instance, player.getLocation(), task -> {
                         ServerHome serverHome = new ServerHome();
                         serverHome.setHomeId(homeId);
                         serverHome.setHomeName(homeId);
@@ -103,7 +103,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
                     return ConfigUtils.t("function.home.create-success", player).thenAccept(sender::sendMessage);
                 })
                 .exceptionally(ex -> {
-                    Ari.LOG.error(ex, "create home error");
+                    Ari.instance.getLog().error(ex, "create home error");
                     ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
                     return null;
                 });
@@ -111,6 +111,6 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
 
     @Override
     protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.C_INSTANCE.getObject(FilePath.HOME_CONFIG.name()));
+        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.HOME_CONFIG.name()));
     }
 }

@@ -35,7 +35,7 @@ public class TimeManager {
     }
 
     public void timeSet(long tick, Consumer<Long> consumer) {
-        this.task = Ari.SCHEDULER.runAtFixedRate(
+        this.task = Ari.instance.getScheduler().runAtFixedRate(
             Ari.instance,
             i -> {
                 long currentTime = this.world.getTime();
@@ -67,7 +67,7 @@ public class TimeManager {
     }
 
     public void timeAutomaticallyPasses(long delayRate, Consumer<Long> consumer) {
-        this.task = Ari.SCHEDULER.runAtFixedRate(
+        this.task = Ari.instance.getScheduler().runAtFixedRate(
             Ari.instance,
             t -> {
                 long newTime = this.world.getTime() + this.addTick;

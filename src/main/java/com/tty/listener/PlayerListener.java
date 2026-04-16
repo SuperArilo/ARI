@@ -26,7 +26,7 @@ public class PlayerListener implements Listener {
         if (event.getInventory().getType() != InventoryType.CRAFTING || !player.isDead() || !player.isConnected() || player.getHealth() > 0) return;
         // do stuff
         if (!ServerPlatform.isFolia()) return;
-        Ari.SCHEDULER.runAtEntity(Ari.instance, player, i -> {
+        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> {
             Location respawnLocation = player.getRespawnLocation();
             if (respawnLocation == null) {
                 Location location = getRespawnLocation(player.getWorld());
@@ -44,11 +44,11 @@ public class PlayerListener implements Listener {
 
     public static Location getRespawnLocation(@NotNull World world) {
         Location location;
-        SpawnLocation value = Ari.C_INSTANCE.getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
+        SpawnLocation value = Ari.instance.getConfigInstance().getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
         if (value != null) {
             location = new Location(Bukkit.getWorld(value.getWorldName()), value.getX(), value.getY(), value.getZ(), value.getYaw(), value.getPitch());
         } else {
-            Ari.LOG.debug("not setting spawn location.fallback server spawn location.");
+            Ari.instance.getLog().debug("not setting spawn location.fallback server spawn location.");
             location = world.getSpawnLocation();
         }
         return location;

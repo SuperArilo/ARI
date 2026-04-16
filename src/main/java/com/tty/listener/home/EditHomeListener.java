@@ -44,7 +44,7 @@ public class EditHomeListener extends OnGuiEditListener {
     @Override
     public boolean onTitleEditStatus(String message, EditGuiState state) {
         Player player = (Player) state.getOwner();
-        List<Object> checkList = Ari.C_INSTANCE
+        List<Object> checkList = Ari.instance.getConfigInstance()
                 .getValue(
                         "main.name-check",
                         FilePath.HOME_CONFIG,
@@ -55,13 +55,13 @@ public class EditHomeListener extends OnGuiEditListener {
             player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
             return false;
         }
-        if(message.length() > Ari.C_INSTANCE.getValue("main.name-length", FilePath.HOME_CONFIG, Integer.class, 15)) {
+        if(message.length() > Ari.instance.getConfigInstance().getValue("main.name-length", FilePath.HOME_CONFIG, Integer.class, 15)) {
             player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
             return false;
         }
         HomeEditor homeEditor = (HomeEditor) state.getI();
         homeEditor.getCurrentEditHome().setHomeName(message);
-        Ari.SCHEDULER.runAtEntity(Ari.instance, player, p -> player.openInventory(homeEditor.getInventory()), () -> {});
+        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, p -> player.openInventory(homeEditor.getInventory()), () -> {});
         return true;
     }
 
@@ -90,7 +90,7 @@ public class EditHomeListener extends OnGuiEditListener {
                         if (success) {
                             return ConfigUtils.t("function.home.delete-success", player)
                                     .thenAccept(player::sendMessage)
-                                    .thenRun(() -> Ari.SCHEDULER.run(Ari.instance, j -> {
+                                    .thenRun(() -> Ari.instance.getScheduler().run(Ari.instance, j -> {
                                         event.getInventory().close();
                                         player.openInventory(new HomeList(player).getInventory());
                                     }));
@@ -187,12 +187,12 @@ public class EditHomeListener extends OnGuiEditListener {
             repository.update(holder.getCurrentEditHome(), wrapper, PartitionKey.of(player.getUniqueId().toString())).thenAccept(status -> {
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                 clickItem.setItemMeta(clickMeta);
-                Ari.SCHEDULER.runAsyncDelayed(Ari.instance, e -> {
+                Ari.instance.getScheduler().runAsyncDelayed(Ari.instance, e -> {
                     clickMeta.lore(List.of());
                     clickItem.setItemMeta(clickMeta);
                 }, 20);
             }).exceptionally(i -> {
-                Ari.LOG.error(i, "save home error");
+                Ari.instance.getLog().error(i, "save home error");
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.error"))));
                 clickItem.setItemMeta(clickMeta);
                 player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));

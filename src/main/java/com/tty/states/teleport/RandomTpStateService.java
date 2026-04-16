@@ -10,7 +10,7 @@ import com.tty.enumType.FilePath;
 import com.tty.enumType.TeleportType;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.PublicFunctionUtils;
-import com.tty.tool.SearchSafeLocation;
+import com.tty.api.utils.SearchSafeLocation;
 import com.tty.states.CoolDownStateService;
 import com.tty.tool.ConfigUtils;
 import com.tty.tool.StateMachineManager;
@@ -33,8 +33,8 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     private final Object rtpConfigMapLock = new Object();
 
     public RandomTpStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.SCHEDULER);
-        this.searchSafeLocation = new SearchSafeLocation(5);
+        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
+        this.searchSafeLocation = new SearchSafeLocation(Ari.instance, Ari.INTERACT_SERVICE, 5);
         this.rtpConfigMap = this.getRtpConfigWorlds();
     }
 
@@ -62,7 +62,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         if (!manager.get(TeleportStateService.class).getStates(owner).isEmpty() ||
                 !this.getStates(owner).isEmpty() ||
                 !manager.get(PreTeleportStateService.class).getStates(owner).isEmpty()) {
-            Ari.SCHEDULER.runAtEntity(Ari.instance, owner, i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), owner)), null);
+            Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), owner)), null);
             return false;
         }
 
@@ -78,7 +78,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 || owner.isFlying()
                 || owner.isGliding()
                 || owner.isInsideVehicle()) {
-            Ari.SCHEDULER.runAtEntity(
+            Ari.instance.getScheduler().runAtEntity(
                     Ari.instance,
                     owner,
                     i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.break"),owner)),
@@ -111,7 +111,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             .get(TeleportStateService.class)
                 .addState(new EntityToLocationState(
                     owner,
-                    Ari.C_INSTANCE.getValue("main.teleport.delay", FilePath.RTP_CONFIG, Integer.class, 3),
+                    Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.RTP_CONFIG, Integer.class, 3),
                     state.getTrueLocation(),
                     TeleportType.RTP));
 
@@ -119,7 +119,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     @Override
     protected void onFinished(RandomTpState state) {
-        Ari.LOG.debug("onFinished");
+        Ari.instance.getLog().debug("onFinished");
         Player owner = (Player) state.getOwner();
         ConfigUtils.t("function.rtp.search-failure", owner).thenAccept(owner::sendMessage);
     }
@@ -139,7 +139,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     private void search(RandomTpState state) {
         Entity owner = state.getOwner();
 
-        Ari.LOG.debug("player {} search count {}. total {}.", owner.getName(), state.getCount(), state.getMax_count());
+        Ari.instance.getLog().debug("player {} search count {}. total {}.", owner.getName(), state.getCount(), state.getMax_count());
 
         synchronized (state) {
             if (state.getTrueLocation() != null || state.isRunning() || state.isOver()) return;
@@ -156,11 +156,10 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         int[] randomXZ = this.calculateRandomXZ(world, rtpConfig.getMin(), rtpConfig.getMax());
         if (randomXZ == null) {
             state.setOver(true);
-            Ari.LOG.warn("world {} not have border.", world.getName());
+            Ari.instance.getLog().warn("world {} not have border.", world.getName());
             return;
         }
 
-        this.searchSafeLocation.debug(Ari.DEBUG);
         this.searchSafeLocation.search(world, randomXZ[0], randomXZ[1])
             .thenAccept(location -> {
                 state.setPending(false);
@@ -175,14 +174,14 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                     state.setPending(false);
                     Ari.PLACEHOLDER.render("function.rtp.abort-search", player)
                             .thenAccept(i ->
-                                    Ari.SCHEDULER.runAtEntity(Ari.instance, player, t ->
+                                    Ari.instance.getScheduler().runAtEntity(Ari.instance, player, t ->
                                             player.sendMessage(i), null));
                 } else {
                     state.setOver(true);
                     if (owner instanceof Player player) {
                         player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
                     }
-                    Ari.LOG.error(e, "running rtp error on entity {}.", owner.getName());
+                    Ari.instance.getLog().error(e, "running rtp error on entity {}.", owner.getName());
                 }
                 return null;
             });
@@ -216,8 +215,8 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     private void sendCountTitle(Player player) {
         if (!player.isOnline()) return;
         Ari.PLACEHOLDER.render("function.rtp.title-search-count", player).thenAccept(result ->
-                Ari.SCHEDULER.runAtEntity(Ari.instance, player, task -> player.showTitle(ComponentUtils.setPlayerTitle(
-                        Ari.C_INSTANCE.getValue("function.rtp.title-searching", FilePath.LANG, String.class, "null"),
+                Ari.instance.getScheduler().runAtEntity(Ari.instance, player, task -> player.showTitle(ComponentUtils.setPlayerTitle(
+                        Ari.instance.getConfigInstance().getValue("function.rtp.title-searching", FilePath.LANG, String.class, "null"),
                         result,
                         0,
                         1000L,
@@ -227,7 +226,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     private Map<String, RtpConfig> getRtpConfigWorlds() {
 
-        Map<String, RtpConfig> value = Ari.C_INSTANCE.getValue(
+        Map<String, RtpConfig> value = Ari.instance.getConfigInstance().getValue(
                 "main.worlds",
                 FilePath.RTP_CONFIG,
                 new TypeToken<Map<String, RtpConfig>>(){}.getType(),
@@ -245,7 +244,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             }
         }
         try {
-            Ari.C_INSTANCE.setValue(Ari.instance,"main.worlds", FilePath.RTP_CONFIG, value);
+            Ari.instance.getConfigInstance().setValue(Ari.instance,"main.worlds", FilePath.RTP_CONFIG, value);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

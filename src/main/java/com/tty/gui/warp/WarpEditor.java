@@ -28,13 +28,12 @@ public class WarpEditor extends BaseConfigInventory {
 
     public WarpEditor(ServerWarp serverWarp, Player player) {
         super(Ari.instance, player);
-        this.debug(Ari.DEBUG);
         this.currentEditWarp = serverWarp;
     }
 
     @Override
     protected @NotNull BaseMenu config() {
-        return FormatUtils.yamlConvertToObj(Ari.C_INSTANCE.getObject(FilePath.WARP_EDIT_GUI.name()).saveToString(), BaseMenu.class);
+        return FormatUtils.yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.WARP_EDIT_GUI.name()).saveToString(), BaseMenu.class);
     }
 
     @Override
@@ -64,7 +63,7 @@ public class WarpEditor extends BaseConfigInventory {
                     }
                     case COST -> {
                         if (Ari.ECONOMY_SERVICE.isNull()) {
-                            item.setName(Ari.C_INSTANCE.getValue("server.message.no-economy", FilePath.LANG));
+                            item.setName(Ari.instance.getConfigInstance().getValue("server.message.no-economy", FilePath.LANG));
                             item.setMaterial("barrier");
                         } else {
                             Double cost = this.currentEditWarp.getCost();

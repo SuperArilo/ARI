@@ -25,7 +25,7 @@ public class CustomPlayerDeathListener implements Listener {
         if (!Ari.instance.getConfig().getBoolean("server.custom-death", false)) return;
 
         PlayerDeathInfoCollector.DeathInfo info = collector.collect(event);
-        Ari.LOG.debug(info.toString());
+        Ari.instance.getLog().debug(info.toString());
 
         String message = getDeathMessage(info, event);
         Component killerInfo = info.killer != null ?
@@ -65,7 +65,7 @@ public class CustomPlayerDeathListener implements Listener {
                 if (event.getEntity().getLastDamageCause() instanceof EntityDamageByBlockEvent blockEvent) {
                     Block block = blockEvent.getDamager();
                     if (block == null) {
-                        Ari.LOG.error("can not find contact block");
+                        Ari.instance.getLog().error("can not find contact block");
                         return null;
                     }
                     return info.getRandomOfList(baseKey + "block." + block.getType().name().toLowerCase(), info.isDestine);
@@ -83,13 +83,13 @@ public class CustomPlayerDeathListener implements Listener {
                             default -> material.name().toLowerCase();
                         };
                     } else {
-                        Ari.LOG.error("can not find falling block");
+                        Ari.instance.getLog().error("can not find falling block");
                         return null;
                     }
                 }
 
                 if (material == null) {
-                    Ari.LOG.error("custom-death: can not find material data");
+                    Ari.instance.getLog().error("custom-death: can not find material data");
                     return null;
                 }
                 return info.getRandomOfList(baseKey + "falling-blocks." + key, info.isDestine);
