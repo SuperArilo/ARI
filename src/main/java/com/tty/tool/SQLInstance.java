@@ -35,11 +35,6 @@ public class SQLInstance {
     public void start() {
         Ari.instance.getLog().debug("initializing database connection");
 
-        if (Ari.instance == null) {
-            Ari.instance.getLog().error("plugin instance not initialized; database startup aborted");
-            return;
-        }
-
         String storageType = Ari.instance.getConfig().getString("data.storage-type");
 
         if (storageType == null) {
