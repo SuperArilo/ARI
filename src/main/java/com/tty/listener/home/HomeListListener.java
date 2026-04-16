@@ -27,7 +27,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.concurrent.CompletableFuture;
 
 
-public class HomeListListener extends BaseGuiListener<HomeList> {
+public class HomeListListener extends BaseGuiListener {
 
     public HomeListListener(GuiType guiType) {
         super(Ari.instance, new FunctionHandlerRegistry(new FunctionRegistry()), guiType);

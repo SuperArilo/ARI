@@ -7,12 +7,11 @@ import com.tty.api.state.EditGuiState;
 import com.tty.enumType.GuiType;
 import com.tty.states.GuiEditStateService;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
-public abstract class OnGuiEditListener<T extends InventoryHolder> extends BaseEditFunctionGuiListener<T> {
+public abstract class OnGuiEditListener extends BaseEditFunctionGuiListener {
 
     protected OnGuiEditListener(JavaPlugin plugin, FunctionHandlerRegistry registry, GuiType guiType) {
         super(plugin, registry, guiType);

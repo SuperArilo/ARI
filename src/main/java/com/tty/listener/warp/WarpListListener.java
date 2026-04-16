@@ -30,7 +30,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.Map;
 import java.util.UUID;
 
-public class WarpListListener extends BaseGuiListener<WarpList> {
+public class WarpListListener extends BaseGuiListener {
 
     public WarpListListener(GuiType guiType) {
         super(Ari.instance, new FunctionHandlerRegistry(new RegistryFunction()), guiType);

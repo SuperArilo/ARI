@@ -35,7 +35,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.List;
 import java.util.Map;
 
-public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
+public class EditHomeListener extends OnGuiEditListener {
 
     public EditHomeListener(GuiType guiType) {
         super(Ari.instance, new FunctionHandlerRegistry(new FunctionRegistry()), guiType);

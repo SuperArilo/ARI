@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class EditWarpListener extends OnGuiEditListener<WarpEditor> {
+public class EditWarpListener extends OnGuiEditListener {
 
     public EditWarpListener(GuiType guiType) {
         super(Ari.instance, new FunctionHandlerRegistry(new FunctionRegistry()), guiType);
