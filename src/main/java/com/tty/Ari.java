@@ -1,14 +1,15 @@
 package com.tty;
 
 import com.google.gson.reflect.TypeToken;
-import com.tty.api.*;
+import com.tty.api.BaseJavaPlugin;
+import com.tty.api.ServerPlatform;
 import com.tty.api.dto.AliasItem;
+import com.tty.api.dto.TempRegisterService;
 import com.tty.api.enumType.FilePathEnum;
 import com.tty.api.service.*;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.CommandRegister;
 import com.tty.api.utils.FormatUtils;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
 import com.tty.function.PlayerTabManager;
@@ -21,14 +22,19 @@ import com.tty.listener.teleport.RecordLastLocationListener;
 import com.tty.listener.unsupported.SandDupeListener;
 import com.tty.listener.warp.EditWarpListener;
 import com.tty.listener.warp.WarpListListener;
-import com.tty.tool.*;
+import com.tty.tool.Placeholder;
+import com.tty.tool.RepositoryManager;
+import com.tty.tool.SQLInstance;
+import com.tty.tool.StateMachineManager;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -59,13 +65,11 @@ public class Ari extends BaseJavaPlugin {
     public void onEnable() {
         super.onEnable();
         this.printLogo();
-        this.loadOtherPlugins();
 
         SQL_INSTANCE = new SQLInstance();
         REPOSITORY_MANAGER = new RepositoryManager(this);
         STATE_MACHINE_MANAGER = new StateMachineManager();
 
-        this.registerListener();
         this.registerBungeeListener();
         CommandRegister.register(this, "com.tty.commands", FormatUtils.yamlConvertToObj(this.getConfigInstance().getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
 
@@ -92,44 +96,50 @@ public class Ari extends BaseJavaPlugin {
     }
 
     @Override
-    protected FilePathEnum[] fileList() {
+    protected List<TempRegisterService<?>> loadOtherPlugin() {
+        return List.of(
+                TempRegisterService.of("arilib", PermissionService.class, i -> PERMISSION_SERVICE = i),
+                TempRegisterService.of("arilib", EconomyService.class, i -> ECONOMY_SERVICE = i),
+                TempRegisterService.of("arilib", ConfigDataService.class, i -> DATA_SERVICE = i),
+                TempRegisterService.of("arilib", NBTDataService.class, i -> NBT_DATA_SERVICE = i),
+                TempRegisterService.of("arilib", FireworkService.class, i -> FIREWORK_SERVICE = i),
+                TempRegisterService.of("arilib", TeleportingService.class, i -> TELEPORTING_SERVICE = i),
+                TempRegisterService.of("arilib", InteractService.class, i -> INTERACT_SERVICE = i)
+        );
+    }
+
+    @Override
+    protected @NotNull List<Listener> registerEvents() {
+        return List.of(
+                new DamageTrackerListener(),
+                new GuiCleanupListener(),
+                new GuiCleanupListener(),
+                new HomeListListener(GuiType.HOME_LIST),
+                new EditHomeListener(GuiType.HOME_EDIT),
+                new RecordLastLocationListener(),
+                new PlayerListener(),
+                new WarpListListener(GuiType.WARP_LIST),
+                new EditWarpListener(GuiType.WARP_EDIT),
+                new OnPlayerJoinAndLeaveListener(),
+                new PlayerSkipNight(),
+                new OnPluginReloadListener(),
+                new PlayerTabManager(),
+                new CustomChatFormantListener(),
+                new PlayerActionListener(),
+                new KeepInventoryAndExperience(),
+                new CustomPlayerDeathListener(),
+                new BreakAndExplodeListener(),
+                new AutoSeedListener(),
+                new MobBossBarListener(),
+                new DisableMobSpawnListener(),
+                new CustomTotemCostListener(),
+                new SandDupeListener()
+        );
+    }
+
+    @Override
+    protected @NotNull FilePathEnum @NotNull [] fileList() {
         return FilePath.values();
-    }
-
-    private void loadOtherPlugins() {
-        PublicFunctionUtils.loadPlugin("arilib", PermissionService.class, i -> PERMISSION_SERVICE = i);
-        PublicFunctionUtils.loadPlugin("arilib", EconomyService.class, i -> ECONOMY_SERVICE = i);
-        PublicFunctionUtils.loadPlugin("arilib", ConfigDataService.class, i -> DATA_SERVICE = i);
-        PublicFunctionUtils.loadPlugin("arilib", NBTDataService.class, i -> NBT_DATA_SERVICE = i);
-        PublicFunctionUtils.loadPlugin("arilib", FireworkService.class, i -> FIREWORK_SERVICE = i);
-        PublicFunctionUtils.loadPlugin("arilib", TeleportingService.class, i -> TELEPORTING_SERVICE = i);
-        PublicFunctionUtils.loadPlugin("arilib", InteractService.class, i -> INTERACT_SERVICE = i);
-    }
-
-    private void registerListener() {
-        PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new DamageTrackerListener(), this);
-        pluginManager.registerEvents(new GuiCleanupListener(), this);
-        pluginManager.registerEvents(new HomeListListener(GuiType.HOME_LIST), this);
-        pluginManager.registerEvents(new EditHomeListener(GuiType.HOME_EDIT), this);
-        pluginManager.registerEvents(new RecordLastLocationListener(), this);
-        pluginManager.registerEvents(new PlayerListener(), this);
-        pluginManager.registerEvents(new WarpListListener(GuiType.WARP_LIST), this);
-        pluginManager.registerEvents(new EditWarpListener(GuiType.WARP_EDIT), this);
-        pluginManager.registerEvents(new OnPlayerJoinAndLeaveListener(), this);
-        pluginManager.registerEvents(new PlayerSkipNight(), this);
-        pluginManager.registerEvents(new OnPluginReloadListener(), this);
-        pluginManager.registerEvents(new PlayerTabManager(), this);
-        pluginManager.registerEvents(new CustomChatFormantListener(), this);
-        pluginManager.registerEvents(new PlayerActionListener(), this);
-        pluginManager.registerEvents(new KeepInventoryAndExperience(), this);
-        pluginManager.registerEvents(new CustomPlayerDeathListener(), this);
-        pluginManager.registerEvents(new BreakAndExplodeListener(), this);
-        pluginManager.registerEvents(new AutoSeedListener(), this);
-        pluginManager.registerEvents(new MobBossBarListener(), this);
-        pluginManager.registerEvents(new DisableMobSpawnListener(), this);
-        pluginManager.registerEvents(new CustomTotemCostListener(), this);
-        pluginManager.registerEvents(new SandDupeListener(), this);
     }
 
     private void registerBungeeListener() {
