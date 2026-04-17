@@ -56,14 +56,12 @@ public class Ari extends BaseJavaPlugin {
     public static Placeholder PLACEHOLDER;
 
     @Override
-    public void onLoad() {
-        super.onLoad();
+    protected void loading() {
         instance = this;
     }
 
     @Override
-    public void onEnable() {
-        super.onEnable();
+    protected void enabling() {
         this.printLogo();
 
         SQL_INSTANCE = new SQLInstance();
@@ -78,8 +76,7 @@ public class Ari extends BaseJavaPlugin {
     }
 
     @Override
-    public void onDisable() {
-        super.onDisable();
+    protected void disabling() {
         if (STATE_MACHINE_MANAGER != null) {
             STATE_MACHINE_MANAGER.forEach(StateService::abort);
         }
@@ -92,7 +89,6 @@ public class Ari extends BaseJavaPlugin {
         if (SQL_INSTANCE != null) {
             SQL_INSTANCE.close();
         }
-
     }
 
     @Override
