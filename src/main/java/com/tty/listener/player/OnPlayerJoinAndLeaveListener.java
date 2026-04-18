@@ -2,6 +2,8 @@ package com.tty.listener.player;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
+import com.tty.api.enumType.Operator;
+import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.commands.maintenance;
@@ -12,10 +14,9 @@ import com.tty.entity.BanPlayer;
 import com.tty.entity.ServerPlayer;
 import com.tty.entity.WhitelistInstance;
 import com.tty.enumType.FilePath;
-import com.tty.api.repository.EntityRepository;
-import com.tty.api.enumType.Operator;
 import com.tty.states.PlayerSaveStateService;
 import com.tty.tool.ConfigUtils;
+import com.tty.tool.PlayerNameCache;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,7 +33,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.tty.commands.sub.EnderChestToPlayer.OFFLINE_ON_EDIT_ENDER_CHEST_LIST;
@@ -76,16 +78,16 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void whitelist(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.KICK_BANNED)) return;
         UUID uuid = event.getUniqueId();
         if(!Ari.instance.getConfig().getBoolean("server.whitelist.enable", false)) return;
-        EntityRepository<ServerPlayer> playerEntityRepository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
-        EntityRepository<WhitelistInstance> whitelistInstanceEntityRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
+
+        EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         WhitelistInstance instance;
         try {
-            instance = whitelistInstanceEntityRepository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()), PartitionKey.global()).get(3, TimeUnit.SECONDS);
+            instance = repository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()), PartitionKey.global()).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Ari.instance.getLog().error(e, "check whitelist on uuid {} error.", uuid.toString());
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(e.getMessage()));
@@ -97,7 +99,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 n.setAddTime(System.currentTimeMillis());
                 n.setPlayerUUID(uuid.toString());
                 n.setOperator(Operator.CONSOLE.getUuid());
-                whitelistInstanceEntityRepository.create(n, PartitionKey.global())
+                repository.create(n, PartitionKey.global())
                     .exceptionally(i -> {
                         Ari.instance.getLog().error(i, "player uuid {} login error.", uuid.toString());
                         event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(i.getMessage()));
@@ -105,26 +107,41 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                     });
             } else {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, ConfigUtils.t("server.message.on-whitelist-login").join());
-                return;
             }
         }
 
-        //判断玩家是否更改过名字
+    }
+
+    //判断玩家是否更改过名字
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void checkPlayerNameIsChanged(AsyncPlayerPreLoginEvent event) {
+
+        String uuid = event.getUniqueId().toString();
+        String name = event.getName();
+
+        EntityRepository<ServerPlayer> repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
         ServerPlayer serverPlayer;
-        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString());
+        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
         try {
-            serverPlayer = playerEntityRepository.get(wrapper, PartitionKey.global()).get(3, TimeUnit.SECONDS);
+            serverPlayer = repository.get(wrapper, PartitionKey.global()).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
-            Ari.instance.getLog().error(e, "error on query player {} to check name.", uuid.toString());
+            Ari.instance.getLog().error(e, "error on query player {} to check name.", uuid);
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
             return;
         }
         if (serverPlayer == null) return;
-        if (serverPlayer.getPlayerName().equals(event.getName())) return;
-        Ari.instance.getLog().debug("layer changed name. old: {}, new: {}", serverPlayer.getPlayerName(), event.getName());
-        serverPlayer.setPlayerName(event.getName());
-        playerEntityRepository.update(serverPlayer, wrapper, PartitionKey.global());
-
+        PlayerNameCache.update(event.getUniqueId(), name);
+        if (serverPlayer.getPlayerName().equals(name)) return;
+        serverPlayer.setPlayerName(name);
+        repository.update(serverPlayer, wrapper, PartitionKey.global())
+            .thenAccept(i -> {
+                if (i) {
+                    Ari.instance.getLog().debug("layer changed name. old: {}, new: {}", serverPlayer.getPlayerName(), name);
+                }
+            }).exceptionally(e -> {
+                Ari.instance.getLog().warn("player {} name changed, but update player {} name error.", name, name);
+                return null;
+            });
     }
 
     @EventHandler
@@ -246,7 +263,6 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         }
         return false;
     }
-
 
     //当玩家的进入服务器后的位置嵌在方块里，则往上查到非固定方块为止
     private Location findSafeLocationAbove(Location start) {

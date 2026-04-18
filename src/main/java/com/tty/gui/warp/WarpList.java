@@ -17,6 +17,7 @@ import com.tty.enumType.FilePath;
 import com.tty.api.gui.BaseDataItemConfigInventory;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
+import com.tty.tool.PlayerNameCache;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.*;
@@ -71,16 +72,6 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             List<TextComponent> textComponents = new ArrayList<>();
             Location location = FormatUtils.parseLocation(serverWarp.getLocation());
 
-            UUID uuid = UUID.fromString(serverWarp.getCreateBy());
-            String playName;
-            Player onlinePlayer = Bukkit.getPlayer(uuid);
-            if (onlinePlayer != null) {
-                playName = onlinePlayer.getName();
-            } else {
-                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-                playName = offlinePlayer.getName() != null ? offlinePlayer.getName() : "";
-            }
-
             boolean hasPermission = serverWarp.getPermission() == null ||
                     serverWarp.getPermission().isEmpty() ||
                     Ari.PERMISSION_SERVICE.hasPermission(this.player, serverWarp.getPermission()) ||
@@ -92,7 +83,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             types.put(IconKeyType.Y.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getY())));
             types.put(IconKeyType.Z.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
             types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
-            types.put(IconKeyType.PLAYER_NAME.getKey(), ComponentUtils.text(playName));
+            types.put(IconKeyType.PLAYER_NAME.getKey(), ComponentUtils.text(PlayerNameCache.getName(UUID.fromString(serverWarp.getCreateBy()))));
             Double cost = serverWarp.getCost();
             types.put(IconKeyType.COST.getKey(), ComponentUtils.text(cost == null || cost == 0 || Ari.ECONOMY_SERVICE.isNull() ? baseFree : cost + Ari.ECONOMY_SERVICE.getNamePlural()));
             types.put(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
