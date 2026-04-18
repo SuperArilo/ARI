@@ -3,54 +3,49 @@ package com.tty.listener.warp;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.Ari;
 import com.tty.api.annotations.function_type.FunctionHandler;
-import com.tty.api.annotations.function_type.FunctionHandlerRegistry;
+import com.tty.api.enumType.FunctionType;
+import com.tty.api.listener.BaseGuiListener;
 import com.tty.api.repository.PartitionKey;
+import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.GuiNBTKeys;
 import com.tty.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
-import com.tty.enumType.lang.LangVault;
 import com.tty.enumType.GuiType;
+import com.tty.enumType.TeleportType;
+import com.tty.enumType.lang.LangVault;
 import com.tty.gui.warp.WarpEditor;
 import com.tty.gui.warp.WarpList;
-import com.tty.api.enumType.FunctionType;
-import com.tty.enumType.TeleportType;
-import com.tty.api.utils.FormatUtils;
-import com.tty.api.listener.BaseGuiListener;
 import com.tty.states.teleport.TeleportStateService;
-import com.tty.tool.*;
+import com.tty.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.UUID;
 
-public class WarpListListener extends BaseGuiListener {
+public class WarpListListener extends BaseGuiListener<WarpList> {
+
+    private final NamespacedKey WARP_ID_KEY = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_RENDER_DATA_ID);
 
     public WarpListListener(GuiType guiType) {
-        super(Ari.instance, new FunctionHandlerRegistry(new RegistryFunction()), guiType);
+        super(Ari.instance, guiType);
     }
 
     @Override
     public void passClick(InventoryClickEvent event) {}
 
-    private static final class RegistryFunction {
+    @Override
+    protected @NotNull FunctionHandler<WarpList> registry() {
+        FunctionHandler<WarpList> registry = new FunctionHandler<>();
 
-        private final NamespacedKey WARP_ID_KEY = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_RENDER_DATA_ID);
-
-        @FunctionHandler(FunctionType.BACK)
-        public void onBack(FunctionType type, InventoryClickEvent event, WarpList holder, Player player) {
-            event.getInventory().close();
-        }
-
-        @FunctionHandler(FunctionType.DATA)
-        public void onData(FunctionType type, InventoryClickEvent event, WarpList holder, Player player) {
-
+        registry.add(FunctionType.BACK, (event, warpList, player) -> event.getInventory().close());
+        registry.add(FunctionType.DATA, (event, warpList, player) -> {
             ItemStack currentItem = event.getCurrentItem();
             if (currentItem == null) return;
 
@@ -112,18 +107,11 @@ public class WarpListListener extends BaseGuiListener {
                 Ari.instance.getLog().error(i, "get warp id {} error", warpId);
                 return null;
             });
-        }
+        });
+        registry.add(FunctionType.PREV_PAGE, (event, warpList, player) -> warpList.prev());
+        registry.add(FunctionType.NEXT_PAGE, (event, warpList, player) -> warpList.next());
 
-        @FunctionHandler(FunctionType.PREV_PAGE)
-        public void onPrevPage(FunctionType type, InventoryClickEvent event, WarpList holder, Player player) {
-            holder.prev();
-        }
-
-        @FunctionHandler(FunctionType.NEXT_PAGE)
-        public void onNextPage(FunctionType type, InventoryClickEvent event, WarpList holder, Player player) {
-            holder.next();
-        }
-
+        return registry;
     }
 
 }

@@ -4,21 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
 import com.tty.Ari;
 import com.tty.api.annotations.function_type.FunctionHandler;
-import com.tty.api.annotations.function_type.FunctionHandlerRegistry;
+import com.tty.api.enumType.FunctionType;
+import com.tty.api.enumType.IconKeyType;
+import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.state.EditGuiState;
+import com.tty.api.utils.ComponentUtils;
+import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.GuiNBTKeys;
+import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.entity.ServerWarp;
 import com.tty.enumType.FilePath;
 import com.tty.enumType.GuiType;
 import com.tty.gui.warp.WarpEditor;
 import com.tty.gui.warp.WarpList;
-import com.tty.api.enumType.FunctionType;
-import com.tty.api.enumType.IconKeyType;
-import com.tty.api.repository.EntityRepository;
-import com.tty.api.utils.FormatUtils;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.listener.OnGuiEditListener;
 import com.tty.states.GuiEditStateService;
 import com.tty.tool.ConfigUtils;
@@ -31,15 +30,16 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class EditWarpListener extends OnGuiEditListener {
+public class EditWarpListener extends OnGuiEditListener<WarpEditor> {
 
     public EditWarpListener(GuiType guiType) {
-        super(Ari.instance, new FunctionHandlerRegistry(new FunctionRegistry()), guiType);
+        super(Ari.instance, guiType);
     }
 
     @Override
@@ -91,20 +91,17 @@ public class EditWarpListener extends OnGuiEditListener {
         player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
     }
 
-    private static final class FunctionRegistry {
+    @Override
+    protected @NotNull FunctionHandler<WarpEditor> registry() {
+        FunctionHandler<WarpEditor> registry = new FunctionHandler<>();
 
-        @FunctionHandler(FunctionType.REBACK)
-        public void onReback(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
+        registry.add(FunctionType.REBACK, (event, warpEditor, player) -> {
             event.getInventory().close();
             player.openInventory(new WarpList(player).getInventory());
-        }
-
-        @FunctionHandler(FunctionType.DELETE)
-        public void onDelete(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
+        });
+        registry.add(FunctionType.DELETE, (event, warpEditor, player) -> {
             EntityRepository<ServerWarp> repository = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
-
-            LambdaQueryWrapper<ServerWarp> wrapper = new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, holder.getCurrentEditWarp().getWarpId());
-
+            LambdaQueryWrapper<ServerWarp> wrapper = new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpEditor.getCurrentEditWarp().getWarpId());
             repository.delete(wrapper, PartitionKey.global()).thenCompose(i -> {
                 if (i) {
                     return ConfigUtils.t("function.warp.delete-success", player).thenAccept(player::sendMessage)
@@ -119,39 +116,21 @@ public class EditWarpListener extends OnGuiEditListener {
                 Ari.instance.getLog().error(i, "deleting warp error");
                 return null;
             });
-        }
-
-        @FunctionHandler(FunctionType.RENAME)
-        public void onRename(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
-            this.onPublic(type, event, holder, player);
-        }
-
-        @FunctionHandler(FunctionType.COST)
-        public void onCost(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
-            this.onPublic(type, event, holder, player);
-        }
-
-        @FunctionHandler(FunctionType.PERMISSION)
-        public void onPermission(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
-            this.onPublic(type, event, holder, player);
-        }
-
-        @FunctionHandler(FunctionType.LOCATION)
-        public void onLocation(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
-
+        });
+        registry.add(FunctionType.RENAME, (event, warpEditor, player) -> this.onPublic(FunctionType.RENAME, event, warpEditor, player));
+        registry.add(FunctionType.COST, (event, warpEditor, player) -> this.onPublic(FunctionType.COST, event, warpEditor, player));
+        registry.add(FunctionType.PERMISSION, (event, warpEditor, player) -> this.onPublic(FunctionType.PERMISSION, event, warpEditor, player));
+        registry.add(FunctionType.LOCATION, (event, warpEditor, player) -> {
             ItemStack clickItem = event.getCurrentItem();
             if (clickItem == null) return;
             ItemMeta clickMeta = clickItem.getItemMeta();
 
             Location newLocation = player.getLocation();
-            holder.getCurrentEditWarp().setLocation(newLocation.toString());
+            warpEditor.getCurrentEditWarp().setLocation(newLocation.toString());
             clickMeta.displayName(ComponentUtils.text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
             clickItem.setItemMeta(clickMeta);
-        }
-
-        @FunctionHandler(FunctionType.ICON)
-        public void onIcon(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
-
+        });
+        registry.add(FunctionType.ICON, (event, warpEditor, player) -> {
             ItemStack clickItem = event.getCurrentItem();
             if (clickItem == null) return;
             ItemMeta clickMeta = clickItem.getItemMeta();
@@ -170,24 +149,21 @@ public class EditWarpListener extends OnGuiEditListener {
             newItemMeta.getPersistentDataContainer().set(icon_type, PersistentDataType.STRING, string);
             newItemStake.setItemMeta(newItemMeta);
             event.getInventory().setItem(event.getSlot(), newItemStake);
-            holder.getCurrentEditWarp().setShowMaterial(current.name());
-        }
-
-        @FunctionHandler(FunctionType.SAVE)
-        public void onSave(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
-
+            warpEditor.getCurrentEditWarp().setShowMaterial(current.name());
+        });
+        registry.add(FunctionType.SAVE, (event, warpEditor, player) -> {
             ItemStack clickItem = event.getCurrentItem();
             if (clickItem == null) return;
             ItemMeta clickMeta = clickItem.getItemMeta();
 
             EntityRepository<ServerWarp> repository = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
 
-            LambdaQueryWrapper<ServerWarp> wrapper = new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, holder.getCurrentEditWarp().getWarpId());
+            LambdaQueryWrapper<ServerWarp> wrapper = new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpEditor.getCurrentEditWarp().getWarpId());
 
-            Ari.instance.getLog().debug("start saving warp id: {}", holder.getCurrentEditWarp().getWarpId());
+            Ari.instance.getLog().debug("start saving warp id: {}", warpEditor.getCurrentEditWarp().getWarpId());
             clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
             clickItem.setItemMeta(clickMeta);
-            CompletableFuture<Boolean> future = repository.update(holder.getCurrentEditWarp(), wrapper, PartitionKey.global());
+            CompletableFuture<Boolean> future = repository.update(warpEditor.getCurrentEditWarp(), wrapper, PartitionKey.global());
             future.thenAccept(status -> {
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                 clickItem.setItemMeta(clickMeta);
@@ -206,19 +182,14 @@ public class EditWarpListener extends OnGuiEditListener {
                 clickItem.setItemMeta(clickMeta);
                 return null;
             });
-        }
-
-        @FunctionHandler(FunctionType.TOP_SLOT)
-        public void onTopSlot(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
-
+        });
+        registry.add(FunctionType.TOP_SLOT, (event, warpEditor, player) -> {
             ItemStack clickItem = event.getCurrentItem();
             if (clickItem == null) return;
             ItemMeta clickMeta = clickItem.getItemMeta();
-
-            ServerWarp currentEditWarp = holder.getCurrentEditWarp();
-
+            ServerWarp currentEditWarp = warpEditor.getCurrentEditWarp();
             currentEditWarp.setTopSlot(!currentEditWarp.isTopSlot());
-            holder.getBaseMenu().getFunctionItems().forEach((k, v) -> {
+            warpEditor.getBaseMenu().getFunctionItems().forEach((k, v) -> {
                 if (v.getType().equals(FunctionType.TOP_SLOT)) {
                     List<String> lore = v.getLore();
                     List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(currentEditWarp.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
@@ -226,35 +197,35 @@ public class EditWarpListener extends OnGuiEditListener {
                     clickItem.setItemMeta(clickMeta);
                 }
             });
+        });
+        return registry;
+    }
+
+    private void onPublic(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
+
+        ItemStack clickItem = event.getCurrentItem();
+        if (clickItem == null) return;
+        ItemMeta clickMeta = clickItem.getItemMeta();
+
+        ServerWarp currentEditWarp = holder.getCurrentEditWarp();
+
+        //检查是否有经济插件，如果没有就return
+        if (type.equals(FunctionType.COST) && Ari.ECONOMY_SERVICE.isNull()) return;
+        if (type.equals(FunctionType.PERMISSION) && event.getClick().isRightClick()) {
+            clickMeta.displayName(ComponentUtils.text(""));
+            clickItem.setItemMeta(clickMeta);
+            currentEditWarp.setPermission(null);
+            return;
         }
-
-        private void onPublic(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
-
-            ItemStack clickItem = event.getCurrentItem();
-            if (clickItem == null) return;
-            ItemMeta clickMeta = clickItem.getItemMeta();
-
-            ServerWarp currentEditWarp = holder.getCurrentEditWarp();
-
-            //检查是否有经济插件，如果没有就return
-            if (type.equals(FunctionType.COST) && Ari.ECONOMY_SERVICE.isNull()) return;
-            if (type.equals(FunctionType.PERMISSION) && event.getClick().isRightClick()) {
-                clickMeta.displayName(ComponentUtils.text(""));
-                clickItem.setItemMeta(clickMeta);
-                currentEditWarp.setPermission(null);
-                return;
-            }
-            Ari.STATE_MACHINE_MANAGER.get(GuiEditStateService.class)
-                    .addState(new EditGuiState(
-                                    player,
-                                    Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new com.google.common.reflect.TypeToken<Integer>(){}.getType()),
-                                    new WarpEditor(PublicFunctionUtils.deepCopy(currentEditWarp, ServerWarp.class), player),
-                                    type
-                            )
-                    );
-            event.getInventory().close();
-        }
-
+        Ari.STATE_MACHINE_MANAGER.get(GuiEditStateService.class)
+                .addState(new EditGuiState(
+                                player,
+                                Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new com.google.common.reflect.TypeToken<Integer>(){}.getType()),
+                                new WarpEditor(PublicFunctionUtils.deepCopy(currentEditWarp, ServerWarp.class), player),
+                                type
+                        )
+                );
+        event.getInventory().close();
     }
 
 }

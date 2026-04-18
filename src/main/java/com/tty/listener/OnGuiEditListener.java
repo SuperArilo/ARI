@@ -2,7 +2,7 @@ package com.tty.listener;
 
 import com.tty.Ari;
 import com.tty.api.BaseJavaPlugin;
-import com.tty.api.annotations.function_type.FunctionHandlerRegistry;
+import com.tty.api.gui.BaseInventory;
 import com.tty.api.listener.BaseEditFunctionGuiListener;
 import com.tty.api.state.EditGuiState;
 import com.tty.enumType.GuiType;
@@ -11,10 +11,10 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public abstract class OnGuiEditListener extends BaseEditFunctionGuiListener {
+public abstract class OnGuiEditListener<T extends BaseInventory> extends BaseEditFunctionGuiListener<T> {
 
-    protected OnGuiEditListener(BaseJavaPlugin plugin, FunctionHandlerRegistry registry, GuiType guiType) {
-        super(plugin, registry, guiType);
+    protected OnGuiEditListener(BaseJavaPlugin plugin, GuiType guiType) {
+        super(plugin, guiType);
     }
 
     @Override
