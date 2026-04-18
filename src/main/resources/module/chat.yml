@@ -1,7 +1,7 @@
 chat:
-  enable: false
+  enable: true
   groups-pattern:
-    owner: '<<color:#CD5555>腐竹</color>> <color:#FFAA00><source_display_name></color><color:#AAAAAA>:</color> <color:#ffffff><message></color>'
-    admin: '<<color:#EEEE00>管理员</color>> <color:#FFAA00><source_display_name></color><color:#AAAAAA>:</color> <color:#ffffff><message></color>'
-    default: '<<color:#00AA00>玩家</color>> <color:#FFAA00><source_display_name></color><color:#AAAAAA>:</color> <color:#ffffff><message></color>'
-    _default_: '<color:#FFAA00><source_display_name></color><color:#AAAAAA>:</color> <color:#ffffff><message></color>'
+    owner: '<&4腐竹&f> &6<source_display_name>&7: &f<message>'
+    admin: '<&3管理员&f> &6<source_display_name>&7: &f<message>'
+    default: '<&2玩家&f> &6<source_display_name>&7: &f<message>'
+    _default_: '&6<source_display_name>&7: &f<message>'
