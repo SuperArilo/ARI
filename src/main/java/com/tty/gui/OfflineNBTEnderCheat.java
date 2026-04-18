@@ -7,6 +7,7 @@ import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,22 +38,16 @@ public class OfflineNBTEnderCheat extends BaseInventory {
     }
 
     @Override
-    protected void beforeCreate() {
-
-    }
+    protected void afterCreatedInventory(@NotNull Inventory inventory) {}
 
     @Override
-    public void clean() {
+    protected void clean() {
         this.data = null;
         this.target = null;
     }
 
     public void setItem(int index, ItemStack itemStack) {
-        if (this.inventory == null) {
-            this.getLog().error("you must first open to create inventory");
-            return;
-        }
-        this.inventory.setItem(index, itemStack);
+        this.getInventory().setItem(index, itemStack);
     }
 
 }

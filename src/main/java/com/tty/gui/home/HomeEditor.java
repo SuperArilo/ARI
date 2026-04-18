@@ -65,7 +65,7 @@ public class HomeEditor extends BaseConfigInventory {
     }
 
     @Override
-    public void clean() {
+    protected void clean() {
         this.currentEditHome = null;
     }
 
