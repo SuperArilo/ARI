@@ -1,5 +1,6 @@
 package com.tty.commands;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
@@ -23,16 +24,17 @@ public class itemshow extends LiteralArgumentCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.isEmpty()) {
             ConfigUtils.t("function.itemshow.no-item-in-hand", player).thenAccept(t ->
                     Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(t)));
-            return;
+            return 0;
         }
         ConfigUtils.t("function.itemshow.show-to-players", player).thenAccept(t ->
                 Ari.instance.getScheduler().run(Ari.instance, i -> Bukkit.broadcast(t)));
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

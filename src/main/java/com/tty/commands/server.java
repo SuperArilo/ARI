@@ -1,5 +1,6 @@
 package com.tty.commands;
 
+import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -14,8 +15,8 @@ import java.util.List;
 public class server extends LiteralArgumentCommand {
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-
+    public int execute(CommandSender sender, String[] args) {
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

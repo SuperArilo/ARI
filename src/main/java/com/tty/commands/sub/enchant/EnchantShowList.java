@@ -1,5 +1,6 @@
 package com.tty.commands.sub.enchant;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.command.RequiredArgumentCommand;
@@ -30,7 +31,9 @@ public class EnchantShowList extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) { }
+    public int execute(CommandSender sender, String[] args) {
+        return Command.SINGLE_SUCCESS;
+    }
 
     @Override
     protected @NotNull ArgumentType<String> argumentType() {

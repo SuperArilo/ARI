@@ -1,6 +1,7 @@
 package com.tty.commands.args;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
@@ -45,13 +46,13 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
 
         String homeId = args[1];
         Player player = (Player) sender;
         if (!FormatUtils.checkIdName(homeId)) {
             ConfigUtils.t("function.home.id-error", player).thenAccept(sender::sendMessage);
-            return;
+            return 0;
         }
 
         EntityRepository<ServerHome> repo = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
@@ -107,6 +108,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
                     ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
                     return null;
                 });
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

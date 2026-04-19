@@ -1,5 +1,6 @@
 package com.tty.commands;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.dto.SpawnLocation;
@@ -28,7 +29,7 @@ public class spawn extends LiteralArgumentCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
 
         Player player = (Player) sender;
 
@@ -36,7 +37,7 @@ public class spawn extends LiteralArgumentCommand {
         if(value == null) {
             Ari.instance.getLog().debug("location null");
             ConfigUtils.t("function.spawn.no-spawn", player).thenAccept(player::sendMessage);
-            return;
+            return 0;
         }
         Ari.STATE_MACHINE_MANAGER
             .get(TeleportStateService.class)
@@ -45,6 +46,8 @@ public class spawn extends LiteralArgumentCommand {
                     Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.SPAWN_CONFIG, Integer.class, 3),
                     new Location(Bukkit.getWorld(value.getWorldName()), value.getX(), value.getY(), value.getZ(), value.getYaw(), value.getPitch()),
                     TeleportType.SPAWN));
+
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

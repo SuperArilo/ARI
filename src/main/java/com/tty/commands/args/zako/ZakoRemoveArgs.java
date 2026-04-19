@@ -1,6 +1,7 @@
 package com.tty.commands.args.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
@@ -44,10 +45,10 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
         String value = args[2];
         UUID uuid = PublicFunctionUtils.parseUUID(value);
-        if (uuid == null) return;
+        if (uuid == null) return 0;
         EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
         repository.delete(wrapper, PartitionKey.global()).thenAccept(status -> {
@@ -68,6 +69,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
             sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             return null;
         });
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

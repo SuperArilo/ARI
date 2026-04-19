@@ -1,5 +1,6 @@
 package com.tty.commands;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.dto.state.teleport.EntityToLocationState;
@@ -28,13 +29,13 @@ public class back extends LiteralArgumentCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
 
         Player player = (Player) sender;
         Location beforeLocation = TELEPORT_LAST_LOCATION.get(player.getUniqueId());
         if(beforeLocation == null) {
             ConfigUtils.t("teleport.none-location", player).thenAccept(player::sendMessage);
-            return;
+            return 0;
         }
 
         Ari.STATE_MACHINE_MANAGER
@@ -44,6 +45,8 @@ public class back extends LiteralArgumentCommand {
                         Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.BACK_CONFIG, Integer.class, 3),
                         beforeLocation,
                         TeleportType.BACK));
+
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.tty.commands;
 
+import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -23,7 +24,7 @@ public class infinitytotem extends LiteralArgumentCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         if (INFINITY_TOTEM_PLAYER_LIST.remove(player)) {
             ConfigUtils.t("function.infinitytotem.disable", player).thenAccept(player::sendMessage);
@@ -31,6 +32,7 @@ public class infinitytotem extends LiteralArgumentCommand {
             INFINITY_TOTEM_PLAYER_LIST.add(player);
             ConfigUtils.t("function.infinitytotem.enable", player).thenAccept(player::sendMessage);
         }
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.tty.commands.sub.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
@@ -37,11 +38,11 @@ public class ZakoList extends LiteralArgumentCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-        Build_Zako_List(sender, 1);
+    public int execute(CommandSender sender, String[] args) {
+        return Build_Zako_List(sender, 1);
     }
 
-    public static void Build_Zako_List(CommandSender sender, Integer pageNum) {
+    public static int Build_Zako_List(CommandSender sender, Integer pageNum) {
 
         String baseCommand = "/ari zako list ";
         String suggestCommand = "/ari zako info ";
@@ -104,6 +105,7 @@ public class ZakoList extends LiteralArgumentCommand {
             errorMsg.thenAccept(msg -> Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(msg)));
             return null;
         });
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

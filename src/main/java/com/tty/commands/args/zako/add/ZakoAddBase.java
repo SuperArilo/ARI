@@ -1,6 +1,7 @@
 package com.tty.commands.args.zako.add;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
@@ -19,10 +20,10 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
 
-    protected void addPlayer(CommandSender sender, String[] args) {
+    protected int addPlayer(CommandSender sender, String[] args) {
         String value = args[2];
         UUID uuid = PublicFunctionUtils.parseUUID(value);
-        if (uuid == null) return;
+        if (uuid == null) return 0;
 
         EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         repository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()), PartitionKey.global())
@@ -63,6 +64,7 @@ public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
                         sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                     }
                 });
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

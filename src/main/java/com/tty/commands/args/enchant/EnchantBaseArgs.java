@@ -1,5 +1,6 @@
 package com.tty.commands.args.enchant;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.command.RequiredArgumentCommand;
 import com.tty.enumType.lang.LangEnchant;
@@ -69,7 +70,7 @@ public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
         return RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(key);
     }
 
-    protected void enchant(CommandSender sender, @NotNull ItemStack itemStack, @NotNull ResultArgs args) {
+    protected int enchant(CommandSender sender, @NotNull ItemStack itemStack, @NotNull ResultArgs args) {
         Enchantment enchantment = args.getEnchantment();
         int level = args.getLevel();
         boolean forceEnchant = args.isForceEnchant();
@@ -78,12 +79,12 @@ public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
 
         if (!enchantment.canEnchantItem(itemStack) && !forceEnchant) {
             ConfigUtils.t("function.enchant.can-not-apply-item", player).thenAccept(sender::sendMessage);
-            return;
+            return 0;
         }
 
         if (!forceLevel && level > enchantment.getMaxLevel()) {
             ConfigUtils.t("function.enchant.level-too-high", player).thenAccept(sender::sendMessage);
-            return;
+            return 0;
         }
 
         ItemMeta itemMeta = itemStack.getItemMeta();
@@ -93,5 +94,6 @@ public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
         String value = Ari.DATA_SERVICE.getValue("enchantment." + enchantment.key().value());
         sender.sendMessage(ConfigUtils.tAfter("function.enchant.enchant-success",
                 Map.of(LangEnchant.ENCHANT_NAME_UNRESOLVED.getType(), Component.text(value), LangEnchant.ENCHANT_LEVEL_UNRESOLVED.getType(), Component.text(level))));
+        return Command.SINGLE_SUCCESS;
     }
 }

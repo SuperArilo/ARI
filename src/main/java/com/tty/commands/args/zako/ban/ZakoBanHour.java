@@ -32,7 +32,7 @@ public class ZakoBanHour extends ZakoBanBase<Integer> {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-        this.ban(sender, args);
+    public int execute(CommandSender sender, String[] args) {
+        return this.ban(sender, args);
     }
 }

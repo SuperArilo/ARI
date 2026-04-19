@@ -27,8 +27,8 @@ public class ZakoAddAndRemarkArgs extends ZakoAddBase<String>{
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-        this.addPlayer(sender, args);
+    public int execute(CommandSender sender, String[] args) {
+        return this.addPlayer(sender, args);
     }
 
     @Override

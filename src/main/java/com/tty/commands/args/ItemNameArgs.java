@@ -1,5 +1,6 @@
 package com.tty.commands.args;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
@@ -38,16 +39,17 @@ public class ItemNameArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         if (mainHand.isEmpty()) {
             player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
-            return;
+            return 0;
         }
         ItemMeta itemMeta = mainHand.getItemMeta();
         itemMeta.displayName(ComponentUtils.text(args[1]));
         mainHand.setItemMeta(itemMeta);
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

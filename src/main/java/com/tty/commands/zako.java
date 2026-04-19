@@ -1,5 +1,6 @@
 package com.tty.commands;
 
+import com.mojang.brigadier.Command;
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.sub.zako.*;
 import com.tty.api.annotations.command.CommandMeta;
@@ -25,7 +26,8 @@ public class zako extends LiteralArgumentCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

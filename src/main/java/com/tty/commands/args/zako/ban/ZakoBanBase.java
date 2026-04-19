@@ -1,6 +1,7 @@
 package com.tty.commands.args.zako.ban;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
@@ -27,7 +28,7 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
 
     private static final TimeUnit[] TIME_UNITS = {TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS};
 
-    public void ban(CommandSender sender, String[] args) {
+    public int ban(CommandSender sender, String[] args) {
         UUID uuid = PublicFunctionUtils.parseUUID(args[2]);
 
         if (uuid == null) {
@@ -36,7 +37,7 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
             } else {
                 ConfigUtils.t("function.zako.zako-not-exist").thenAccept(sender::sendMessage);
             }
-            return;
+            return 0;
         }
         EntityRepository<BanPlayer> banPlayerRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         EntityRepository<WhitelistInstance> whitelistInstanceRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
@@ -91,6 +92,7 @@ public abstract class ZakoBanBase<T> extends RequiredArgumentCommand<T> {
                 Ari.instance.getLog().error(e);
                 return null;
             });
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

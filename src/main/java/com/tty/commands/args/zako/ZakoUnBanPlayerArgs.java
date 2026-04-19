@@ -1,6 +1,7 @@
 package com.tty.commands.args.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
@@ -43,7 +44,7 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
         UUID uuid = PublicFunctionUtils.parseUUID(args[2]);
         if (uuid == null) {
             if (sender instanceof Player player) {
@@ -51,7 +52,7 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
             } else {
                 ConfigUtils.t("function.zako.zako-not-exist").thenAccept(sender::sendMessage);
             }
-            return;
+            return 0;
         }
         EntityRepository<BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         LambdaQueryWrapper<BanPlayer> wrapper = new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString());
@@ -88,6 +89,7 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
                 Ari.instance.getLog().error("delete ban player uuid {} error.", uuid.toString(), e);
                 return null;
             });
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

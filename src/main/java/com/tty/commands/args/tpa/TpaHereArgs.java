@@ -1,5 +1,6 @@
 package com.tty.commands.args.tpa;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
@@ -35,15 +36,15 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-        if (this.preCheckIsNotPass(sender, args)) return;
+    public int execute(CommandSender sender, String[] args) {
+        if (this.preCheckIsNotPass(sender, args)) return 0;
 
         Player owner = (Player) sender;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
 
         if (player == null) {
             owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner));
-            return;
+            return 0;
         }
 
         Ari.STATE_MACHINE_MANAGER
@@ -54,5 +55,6 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
                         TeleportType.TPAHERE,
                         Ari.instance.getConfigInstance().getValue("main.teleport.request-expired-time", FilePath.TPA_CONFIG, Integer.class, 10)
                 ));
+        return Command.SINGLE_SUCCESS;
     }
 }

@@ -1,5 +1,6 @@
 package com.tty.commands;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.command.LiteralArgumentCommand;
@@ -26,7 +27,7 @@ public class setspawn extends LiteralArgumentCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
 
         Player player = (Player) sender;
         Location location = player.getLocation();
@@ -42,10 +43,12 @@ public class setspawn extends LiteralArgumentCommand {
             Ari.instance.getConfigInstance().setValue(Ari.instance, "main.location", FilePath.SPAWN_CONFIG, spawnLocation.toMap());
         } catch (IOException e) {
             sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
-            throw new RuntimeException(e);
+            Ari.instance.getLog().error(e);
         }
 
         ConfigUtils.t("function.spawn.create-success", player).thenAccept(player::sendMessage);
+
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

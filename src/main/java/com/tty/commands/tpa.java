@@ -1,5 +1,6 @@
 package com.tty.commands;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.args.tpa.TpaArgs;
@@ -21,8 +22,8 @@ public class tpa extends LiteralArgumentCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-
+    public int execute(CommandSender sender, String[] args) {
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

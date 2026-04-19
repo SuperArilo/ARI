@@ -1,6 +1,7 @@
 package com.tty.commands.sub.tpa;
 
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.Ari;
 import com.tty.api.utils.ComponentUtils;
@@ -60,10 +61,10 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
      * @param sender 接收者
      * @param target 发起者
      */
-    public void checkAfterResponse(Player sender, Player target, Consumer<PreEntityToEntityState> consumer) {
+    public int checkAfterResponse(Player sender, Player target, Consumer<PreEntityToEntityState> consumer) {
         if (target == null) {
             Ari.instance.getScheduler().runAtEntity(Ari.instance, sender, i -> sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), sender)), null);
-            return;
+            return 0;
         }
         PreTeleportStateService machine = Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class);
         //检查这个请求是否存在
@@ -73,13 +74,13 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
                 .filter(i -> i instanceof PreEntityToEntityState state && state.getTarget().equals(sender)).findFirst().orElse(null);
         if (anElse == null) {
             ConfigUtils.t("function.tpa.been-done", sender).thenAccept(sender::sendMessage);
-            return;
+            return 0;
         }
         consumer.accept(anElse);
         //移除发起者的请求
         machine.removeState(anElse);
+        return Command.SINGLE_SUCCESS;
     }
-
 
     public boolean preCheckIsNotPass(CommandSender sender, String[] args) {
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
@@ -94,4 +95,5 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
     protected boolean isDisabledInGame() {
         return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.TPA_CONFIG.name()));
     }
+
 }

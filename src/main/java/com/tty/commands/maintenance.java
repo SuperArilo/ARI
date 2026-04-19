@@ -1,5 +1,6 @@
 package com.tty.commands;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.annotations.command.CommandMeta;
@@ -27,7 +28,7 @@ public class maintenance extends LiteralArgumentCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
         MAINTENANCE_MODE = !MAINTENANCE_MODE;
         Component component = ConfigUtils.tAfter("server.maintenance." + (MAINTENANCE_MODE ? "on-enable" : "on-disable"));
         for (Player player : new ArrayList<>(Bukkit.getOnlinePlayers())) {
@@ -51,6 +52,7 @@ public class maintenance extends LiteralArgumentCommand {
         if(!(sender instanceof Player)) {
             sender.sendMessage(component);
         }
+        return Command.SINGLE_SUCCESS;
     }
 
     private int getMaintenanceKickDelay() {

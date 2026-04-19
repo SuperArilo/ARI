@@ -34,14 +34,14 @@ public class TpaAcceptArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-        if(this.preCheckIsNotPass(sender, args)) return;
+    public int execute(CommandSender sender, String[] args) {
+        if(this.preCheckIsNotPass(sender, args)) return 0;
 
         Player player = (Player) sender;
         Player target = Ari.instance.getServer().getPlayerExact(args[1]);
 
-        this.checkAfterResponse(player, target, s -> {
-            assert target != null;
+        return this.checkAfterResponse(player, target, s -> {
+
             int value = Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.TPA_CONFIG, Integer.class, 3);
             PlayerToPlayerState state;
             if (s.getType().getKey().equals("tpa")) {

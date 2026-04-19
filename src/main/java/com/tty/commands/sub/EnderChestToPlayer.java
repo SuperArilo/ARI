@@ -1,6 +1,7 @@
 package com.tty.commands.sub;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
@@ -40,13 +41,13 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-        if (args.length < 2) return;
+    public int execute(CommandSender sender, String[] args) {
+        if (args.length < 2) return 0;
         Player player = (Player) sender;
         UUID uuid = PublicFunctionUtils.parseUUID(args[1]);
         if (uuid == null) {
             sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-            return;
+            return 0;
         }
         Ari.REPOSITORY_MANAGER.get(ServerPlayer.class)
             .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global())
@@ -89,6 +90,7 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
                     player.openInventory(b.getEnderChest());
                 }
             });
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

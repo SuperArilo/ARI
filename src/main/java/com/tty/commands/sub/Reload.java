@@ -1,5 +1,6 @@
 package com.tty.commands.sub;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.annotations.command.CommandMeta;
@@ -22,9 +23,10 @@ public class Reload extends LiteralArgumentCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
         sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.reload.doing")));
         Bukkit.getPluginManager().callEvent(new CustomPluginReloadEvent(Ari.instance, sender));
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

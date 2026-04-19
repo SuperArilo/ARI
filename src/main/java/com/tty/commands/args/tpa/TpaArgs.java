@@ -1,5 +1,6 @@
 package com.tty.commands.args.tpa;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
 import com.tty.dto.state.teleport.PreEntityToEntityState;
@@ -27,8 +28,8 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-        if (this.preCheckIsNotPass(sender, args)) return;
+    public int execute(CommandSender sender, String[] args) {
+        if (this.preCheckIsNotPass(sender, args)) return 0;
         Player owner = (Player) sender;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
         if (player != null) {
@@ -41,6 +42,7 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
                             Ari.instance.getConfigInstance().getValue("main.teleport.request-expired-time", FilePath.TPA_CONFIG, Integer.class, 10)
                     ));
         }
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

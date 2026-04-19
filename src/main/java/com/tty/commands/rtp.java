@@ -1,5 +1,6 @@
 package com.tty.commands;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.commands.sub.RtpCancel;
@@ -24,7 +25,7 @@ public class rtp extends LiteralArgumentCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         Ari.STATE_MACHINE_MANAGER
                 .get(RandomTpStateService.class)
@@ -32,6 +33,7 @@ public class rtp extends LiteralArgumentCommand {
                         player,
                         Ari.instance.getConfigInstance().getValue("main.search-count", FilePath.RTP_CONFIG, Integer.class, 10),
                         player.getWorld()));
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

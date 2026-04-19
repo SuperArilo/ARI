@@ -1,5 +1,6 @@
 package com.tty.commands.args.tpa;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
 import com.tty.api.annotations.command.ArgumentCommand;
@@ -32,16 +33,17 @@ public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-        if (this.preCheckIsNotPass(sender, args)) return;
+    public int execute(CommandSender sender, String[] args) {
+        if (this.preCheckIsNotPass(sender, args)) return 0;
 
         Player player = (Player) sender;
         Player target = Bukkit.getPlayerExact(args[1]);
-        if (target == null) return;
+        if (target == null) return 0;
         this.checkAfterResponse(player, target, state -> {
             ConfigUtils.t("function.tpa.refuse-success", player).thenAccept(sender::sendMessage);
             Ari.PLACEHOLDER.render("function.tpa.refused", target).thenAccept(i ->
                     Ari.instance.getScheduler().runAtEntity(Ari.instance, target, task -> target.sendMessage(i), null));
         });
+        return Command.SINGLE_SUCCESS;
     }
 }

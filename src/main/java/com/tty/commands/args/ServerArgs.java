@@ -2,6 +2,7 @@ package com.tty.commands.args;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
@@ -45,15 +46,15 @@ public class ServerArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-        if(!(sender instanceof Player player)) return;
+    public int execute(CommandSender sender, String[] args) {
+        if(!(sender instanceof Player player)) return 0;
 
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Connect");
         out.writeUTF(args[1]);
 
         player.sendPluginMessage(Ari.instance, "BungeeCord", out.toByteArray());
-
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

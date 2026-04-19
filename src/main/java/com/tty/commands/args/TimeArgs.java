@@ -1,5 +1,6 @@
 package com.tty.commands.args;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.Ari;
@@ -48,7 +49,7 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         String timePeriod = args[1];
         TimePeriod period;
@@ -56,20 +57,21 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
             period = TimePeriod.valueOf(timePeriod.toUpperCase());
         } catch (Exception e) {
             player.sendMessage(ConfigUtils.tAfter("server.time.not-exist-period", Map.of(LangTime.TIME_PERIOD_UNRESOLVED.getType(), Component.text(timePeriod))));
-            return;
+            return 0;
         }
         World world = player.getWorld();
         if (!isBedWorksRe(world)) {
             ConfigUtils.t("server.time.not-allowed-world", player).thenAccept(player::sendMessage);
-            return;
+            return 0;
         }
         TimeManager.build(world).timeSet(period.getStart());
         String value = Ari.instance.getConfigInstance().getValue("server.time.tips", FilePath.LANG);
         if (value == null) {
             player.sendMessage("no content " + timePeriod + "in lang");
-            return;
+            return 0;
         }
         player.sendMessage(ComponentUtils.text(value, Map.of(LangTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.tAfter("server.time.name." + period.getDescription()))));
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override

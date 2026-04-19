@@ -1,5 +1,6 @@
 package com.tty.commands;
 
+import com.mojang.brigadier.Command;
 import com.tty.Ari;
 import com.tty.command.LiteralArgumentCommand;
 import com.tty.enumType.FilePath;
@@ -22,9 +23,10 @@ public class warp extends LiteralArgumentCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public int execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         player.openInventory(new WarpList(player).getInventory());
+        return Command.SINGLE_SUCCESS;
     }
 
     @Override
