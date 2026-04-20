@@ -36,6 +36,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SuppressWarnings("UnstableApiUsage")
 public class Ari extends BaseJavaPlugin {
@@ -154,15 +156,14 @@ public class Ari extends BaseJavaPlugin {
             PluginDescriptionFile description = Ari.instance.getDescription();
             pluginInfo = description.getName() + " " + description.getVersion();
         }
-        String bukkitName = Bukkit.getName();
-        String bukkitVersion = Bukkit.getServer().getVersion();
-        Ari.instance.getLog().info("");
-        Ari.instance.getLog().info("    ___    ____   ___");
-        Ari.instance.getLog().info("   /   |  / __ \\ |   |");
-        Ari.instance.getLog().info("  / /| | / /_/ / |   |  {}", pluginInfo);
-        Ari.instance.getLog().info(" / ___ |/ _, _/  |   |  Running on {} {}", bukkitName, bukkitVersion);
-        Ari.instance.getLog().info("/_/  |_/_/ |_|   |___|");
-        Ari.instance.getLog().info("");
+        Logger logger = Bukkit.getLogger();
+        logger.log(Level.INFO, "");
+        logger.log(Level.INFO,"    ___    ____   ___");
+        logger.log(Level.INFO,"   /   |  / __ \\ |   |");
+        logger.log(Level.INFO,"  / /| | / /_/ / |   |  {0}", pluginInfo);
+        logger.log(Level.INFO," / ___ |/ _, _/  |   |  Running on {0} {1}.", new Object[]{Bukkit.getName(), Bukkit.getServer().getVersion()});
+        logger.log(Level.INFO,"/_/  |_/_/ |_|   |___|");
+        logger.log(Level.INFO,"");
 
     }
 
