@@ -17,7 +17,6 @@ import com.tty.enumType.FilePath;
 import com.tty.states.PlayerSaveStateService;
 import com.tty.tool.ConfigUtils;
 import com.tty.tool.PlayerNameCache;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -90,7 +89,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             instance = repository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()), PartitionKey.global()).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Ari.instance.getLog().error(e, "check whitelist on uuid {} error.", uuid.toString());
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(e.getMessage()));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             return;
         }
         if (instance == null) {
@@ -99,12 +98,12 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 n.setAddTime(System.currentTimeMillis());
                 n.setPlayerUUID(uuid.toString());
                 n.setOperator(Operator.CONSOLE.getUuid());
-                repository.create(n, PartitionKey.global())
-                    .exceptionally(i -> {
-                        Ari.instance.getLog().error(i, "player uuid {} login error.", uuid.toString());
-                        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(i.getMessage()));
-                        return null;
-                    });
+                try {
+                    repository.create(n, PartitionKey.global()).join();
+                } catch (Exception e) {
+                    Ari.instance.getLog().error(e, "player uuid {} login error.", uuid.toString());
+                    event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
+                }
             } else {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, ConfigUtils.t("server.message.on-whitelist-login").join());
             }
@@ -112,41 +111,12 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
     }
 
-    //判断玩家是否更改过名字
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void checkPlayerNameIsChanged(AsyncPlayerPreLoginEvent event) {
-
-        String uuid = event.getUniqueId().toString();
-        String name = event.getName();
-
-        EntityRepository<ServerPlayer> repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
-        ServerPlayer serverPlayer;
-        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
-        try {
-            serverPlayer = repository.get(wrapper, PartitionKey.global()).get(3, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            Ari.instance.getLog().error(e, "error on query player {} to check name.", uuid);
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(e.getMessage()));
-            return;
-        }
-        if (serverPlayer == null) return;
-        PlayerNameCache.update(event.getUniqueId(), name);
-        if (serverPlayer.getPlayerName().equals(name)) return;
-        serverPlayer.setPlayerName(name);
-        repository.update(serverPlayer, wrapper, PartitionKey.global())
-            .thenAccept(i -> {
-                if (i) {
-                    Ari.instance.getLog().debug("layer changed name. old: {}, new: {}", serverPlayer.getPlayerName(), name);
-                }
-            }).exceptionally(e -> {
-                Ari.instance.getLog().warn("player {} name changed, but update player {} name error.", name, name);
-                return null;
-            });
-    }
-
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+
         Player player = event.getPlayer();
+        String playerName = player.getName();
+
         EntityRepository<ServerPlayer> repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
         boolean first = Ari.instance.getConfig().getBoolean("server.message.on-first-login", false);
         boolean login = Ari.instance.getConfig().getBoolean("server.message.on-login", false);
@@ -158,17 +128,27 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, player.getUniqueId().toString());
         repository.get(wrapper, PartitionKey.global())
             .thenCompose(i -> {
+                //玩家第一次登录服务器，创建资料
                 if(i == null) {
                     ServerPlayer serverPlayer = new ServerPlayer();
-                    serverPlayer.setPlayerName(player.getName());
+                    serverPlayer.setPlayerName(playerName);
                     serverPlayer.setPlayerUUID(player.getUniqueId().toString());
                     serverPlayer.setFirstLoginTime(System.currentTimeMillis());
-                    repository.create(serverPlayer, PartitionKey.global());
+                    return repository.create(serverPlayer, PartitionKey.global());
                 } else {
+                    //玩家已经登录过服务器，更新上次登录服务器的时间，再判断是否更改过名称
                     i.setLastLoginOffTime(nowLoginTime);
-                    repository.update(i, wrapper, PartitionKey.global());
+                    if (!i.getPlayerName().equals(playerName)) {
+                        i.setPlayerName(playerName);
+                        Ari.instance.getLog().debug("player changed name. old: {}, new: {}", i.getPlayerName(), playerName);
+                    }
+                    try {
+                        repository.update(i, wrapper, PartitionKey.global());
+                    } catch (Exception e) {
+                        Ari.instance.getLog().warn(e, "update player {} profiles error", playerName);
+                    }
+                    return CompletableFuture.completedFuture(i);
                 }
-                return CompletableFuture.completedFuture(null);
             })
             .whenComplete((i, ex) -> {
                 if (ex != null) {
@@ -176,10 +156,10 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                     player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                     return;
                 }
+                //所有检查通过，添加玩家的名称到缓存里
+                PlayerNameCache.update(player.getUniqueId(), playerName);
                 //添加玩家登录的状态
-                Ari.STATE_MACHINE_MANAGER
-                        .get(PlayerSaveStateService.class)
-                        .addState(new PlayerSaveState(player, nowLoginTime));
+                Ari.STATE_MACHINE_MANAGER.get(PlayerSaveStateService.class).addState(new PlayerSaveState(player, nowLoginTime));
                 if(!player.hasPlayedBefore()) {
                     if (Ari.instance.getConfigInstance().getValue("main.first-join", FilePath.SPAWN_CONFIG, Boolean.class, false) &&
                             Ari.instance.getConfigInstance().getValue("main.enable", FilePath.SPAWN_CONFIG, Boolean.class, false)) {
@@ -205,7 +185,6 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 if(login) {
                     ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
                 }
-
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, o -> {
                     if(this.isPlayerInsideBlock(player)) {
                         Ari.instance.getLog().debug("player {} inside block, teleport safe location.", player.getName());
@@ -213,7 +192,6 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                         Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.not-safe-location"), player)));
                     }
                 }, () -> Ari.instance.getLog().error("error on player join server."));
-
             });
     }
 
@@ -230,6 +208,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         if (!states.isEmpty()) {
             states.getFirst().setCount(new AtomicInteger(Integer.MAX_VALUE));
         }
+        OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(player.getUniqueId());
     }
 
     @EventHandler
