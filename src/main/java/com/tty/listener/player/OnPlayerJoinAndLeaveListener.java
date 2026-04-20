@@ -65,7 +65,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void maintenance(AsyncPlayerPreLoginEvent event) {
-        if (event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.KICK_BANNED)) return;
+        if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
         OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(event.getUniqueId());
         if (maintenance.MAINTENANCE_MODE && !offlinePlayer.isOp()) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join").join());
@@ -79,7 +79,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
     @EventHandler
     public void whitelist(AsyncPlayerPreLoginEvent event) {
-        if (event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.KICK_BANNED)) return;
+        if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
         UUID uuid = event.getUniqueId();
         if(!Ari.instance.getConfig().getBoolean("server.whitelist.enable", false)) return;
 
