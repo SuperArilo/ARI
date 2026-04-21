@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class PlayerTabManager implements Listener {
 
+    private boolean isWarninged = false;
+
     private CancellableTask task;
 
     // 每次更新 tab 的周期，单位 tick
@@ -88,7 +90,14 @@ public class PlayerTabManager implements Listener {
                 buildComponent(this.footers, player)
         );
         player.playerListName(ComponentUtils.text(group.line().prefix() + player.getName() + group.line().suffix()));
-        player.setPlayerListOrder(order);
+        try {
+            player.setPlayerListOrder(order);
+        } catch (Exception e) {
+            if (!this.isWarninged) {
+                this.isWarninged = true;
+                Ari.instance.getLog().warn("setPlayerListOrder() requires Minecraft 1.21.3+, current version is lower. Feature disabled.");
+            }
+        }
     }
 
     private Map<String, List<Player>> groupPlayers(Collection<? extends Player> players) {
