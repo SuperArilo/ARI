@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.server.ServerLoadEvent;
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +51,7 @@ public class PlayerSkipNight implements Listener {
         this.update(event.getPlayer().getWorld());
     }
 
-    public static boolean isBedWorksRe(@NonNull World world) {
+    public static boolean isBedWorksRe(@NotNull World world) {
         World.Environment environment = world.getEnvironment();
         boolean a = !(environment.equals(World.Environment.NETHER) || environment.equals(World.Environment.THE_END));
         if (!a) {
