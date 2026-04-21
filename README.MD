@@ -2,13 +2,13 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Java 21+](https://img.shields.io/badge/Java-21%2B-orange)](https://adoptium.net/)
-[![Folia](https://img.shields.io/badge/Folia-1.21.3%2B-brightgreen)](https://papermc.io/folia)
-[![PaperMC](https://img.shields.io/badge/PaperMC-1.21.3%2B-brightgreen)](https://papermc.io/)
+[![Folia](https://img.shields.io/badge/Folia-1.21%2B-brightgreen)](https://papermc.io/folia)
+[![PaperMC](https://img.shields.io/badge/PaperMC-1.21%2B-brightgreen)](https://papermc.io/)
 [![Vault Dependency](https://img.shields.io/badge/Vault-Required-blue)](https://github.com/MilkBowl/Vault)
 [![ARILIB Dependency](https://img.shields.io/badge/ARILIB-Required-blue)](https://github.com/SuperArilo/ARILIB)
 
 
-✨ 一个高度兼容的Minecraft插件，完美支持 **PaperMC** 和 **Folia** 核心，兼容 1.21.3+  
+✨ 一个高度兼容的Minecraft插件，完美支持 **PaperMC** 和 **Folia** 核心，兼容 1.21+  
 📦 提供家园传送、地标系统、玩家交互等核心功能 + 实用游戏工具
 ## ✨ 核心特性
 | 功能             | 描述                         |
@@ -73,7 +73,7 @@
 ## 🛠️ 安装指南
 
 ### 环境要求
-- Folia 1.21.3+ 服务器核心
+- PaperMC 或 Folia 1.21+ 服务器核心
 - Java 21 或更高版本
 - [Vault](https://github.com/MilkBowl/Vault) 前置插件
 - [ARILIB](https://github.com/SuperArilo/ARILIB) 前置插件
