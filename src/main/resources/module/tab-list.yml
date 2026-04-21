@@ -20,6 +20,7 @@ tab:
     _default_:
       prefix: '&f[&a玩家&f] '
       suffix: ''
+  # 仅在 1.21.3 及以上版本生效
   slot:
     - 'owner'
     - 'admin'
