@@ -4,8 +4,8 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Java](https://img.shields.io/badge/Java-21%2B-lightgrey?logo=java)](https://adoptium.net/)
-[![Folia](https://img.shields.io/badge/Folia-1.21%2B-cyan)](https://papermc.io/folia)
-[![PaperMC](https://img.shields.io/badge/PaperMC-1.21%2B-cyan)](https://papermc.io/)
+[![Folia](https://img.shields.io/badge/Folia-1.21%2B-cyan)](https://papermc.io/software/folia/)
+[![PaperMC](https://img.shields.io/badge/PaperMC-1.21%2B-cyan)](https://papermc.io/software/paper/)
 
 [![ARI](https://img.shields.io/github/v/release/SuperArilo/ARI?label=ARI&color=brightgreen)](https://github.com/SuperArilo/ARI/releases)
 [![ARILIB](https://img.shields.io/github/v/release/SuperArilo/ARILIB?label=ARILIB&color=brightgreen)](https://github.com/SuperArilo/ARILIB/releases)
