@@ -51,7 +51,14 @@ jobs:
           cd ..
 
       - name: BUILD
-        run: mvn clean package -DskipTests
+        run: mvn clean package -DskipTests -DoutputDirectory=target
+
+      - name: VERIFY JAR CONTENT
+        run: |
+          echo "=== JAR files in target ==="
+          ls -la target/ari-*.jar
+          echo "=== Checking for bstats classes (relocated) ==="
+          jar tf target/ari-*.jar | grep -E '(org/bstats|com/tty/bstats)' || echo "No bstats found!"
 
       - name: COLLECT PRODUCTS
         run: |
