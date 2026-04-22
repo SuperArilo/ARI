@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.tty</groupId>
     <artifactId>ari</artifactId>
-    <version>1.0</version>
+    <version>dev-snapshot</version>
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -16,7 +16,7 @@
         <version.suffix>-R0.1-SNAPSHOT</version.suffix>
     </properties>
     <build>
-        <finalName>${project.artifactId}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -62,7 +62,7 @@
                                     <shadedPattern>com.tty.bstats</shadedPattern>
                                 </relocation>
                             </relocations>
-                            <outputFile>${outputDirectory}/${project.artifactId}.jar</outputFile>
+                            <outputFile>${outputDirectory}/${project.artifactId}-${project.version}.jar</outputFile>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
