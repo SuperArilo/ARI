@@ -1,12 +1,18 @@
 # Ari - 基于现代化 Minecraft 服务器插件 (正在持续更新中)
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Java 21+](https://img.shields.io/badge/Java-21%2B-orange)](https://adoptium.net/)
-[![Folia](https://img.shields.io/badge/Folia-1.21%2B-brightgreen)](https://papermc.io/folia)
-[![PaperMC](https://img.shields.io/badge/PaperMC-1.21%2B-brightgreen)](https://papermc.io/)
-[![Vault Dependency](https://img.shields.io/badge/Vault-Required-blue)](https://github.com/MilkBowl/Vault)
-[![ARILIB Dependency](https://img.shields.io/badge/ARILIB-Required-blue)](https://github.com/SuperArilo/ARILIB)
+<div style="display: flex; flex-direction: column;align-items: center;">
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Java](https://img.shields.io/badge/Java-21%2B-lightgrey?logo=java)](https://adoptium.net/)
+[![Folia](https://img.shields.io/badge/Folia-1.21%2B-cyan)](https://papermc.io/folia)
+[![PaperMC](https://img.shields.io/badge/PaperMC-1.21%2B-cyan)](https://papermc.io/)
+
+[![ARI](https://img.shields.io/github/v/release/SuperArilo/ARI?label=ARI&color=brightgreen)](https://github.com/SuperArilo/ARI/releases)
+[![ARILIB](https://img.shields.io/github/v/release/SuperArilo/ARILIB?label=ARILIB&color=brightgreen)](https://github.com/SuperArilo/ARILIB/releases)
+
+[![Vault](https://img.shields.io/badge/Vault-Required-orange)](https://github.com/MilkBowl/Vault)
+[![ARILIB](https://img.shields.io/badge/ARILIB-Required-orange)](https://github.com/SuperArilo/ARILIB)
+</div>
 
 ✨ 一个高度兼容的Minecraft插件，完美支持 **PaperMC** 和 **Folia** 核心，兼容 1.21+  
 📦 提供家园传送、地标系统、玩家交互等核心功能 + 实用游戏工具
