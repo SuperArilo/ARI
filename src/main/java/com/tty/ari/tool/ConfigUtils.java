@@ -1,0 +1,39 @@
+package com.tty.ari.tool;
+
+import com.tty.ari.Ari;
+import com.tty.api.utils.ComponentUtils;
+import com.tty.ari.enumType.FilePath;
+import net.kyori.adventure.text.Component;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+public class ConfigUtils {
+
+    public static CompletableFuture<Component> t(String key, Player player) {
+        return Ari.PLACEHOLDER.render(key, player);
+    }
+
+    public static CompletableFuture<Component> t(String key, OfflinePlayer offlinePlayer) {
+        return Ari.PLACEHOLDER.render(key, offlinePlayer);
+    }
+
+    public static CompletableFuture<Component> tList(String key, OfflinePlayer offlinePlayer) {
+        return Ari.PLACEHOLDER.renderList(key, offlinePlayer);
+    }
+
+    public static CompletableFuture<Component> t(String key) {
+        return Ari.PLACEHOLDER.render(key, null);
+    }
+
+    public static Component tAfter(String key, Map<String, Component> map) {
+        return ComponentUtils.text(Ari.instance.getConfigInstance().getValue(key, FilePath.LANG), map);
+    }
+
+    public static Component tAfter(String key) {
+        return ComponentUtils.text(Ari.instance.getConfigInstance().getValue(key, FilePath.LANG));
+    }
+
+}

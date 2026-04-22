@@ -1,6 +1,6 @@
 name: ari
 version: '${project.version}'
-main: com.tty.Ari
+main: com.tty.ari.Ari
 api-version: '1.21'
 authors:
   - Arilo007
