@@ -56,7 +56,8 @@ jobs:
       - name: COLLECT PRODUCTS
         run: |
           mkdir -p build-artifacts
-          cp target/ari*.jar build-artifacts/ari.jar
+          VERSION=${{ steps.tag.outputs.TAG }}
+          cp target/ari-*.jar build-artifacts/ari-${VERSION}.jar
 
       - name: UPLOAD
         uses: actions/upload-artifact@v4
