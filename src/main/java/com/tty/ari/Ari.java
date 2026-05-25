@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@SuppressWarnings("UnstableApiUsage")
+@SuppressWarnings({"UnstableApiUsage", "deprecation"})
 public class Ari extends AbstractJavaPlugin {
 
     private static final int PLUGIN_ID = 29755;
@@ -146,7 +146,6 @@ public class Ari extends AbstractJavaPlugin {
         messenger.registerIncomingPluginChannel(this, "BungeeCord", new GetServerListListener());
     }
 
-    @SuppressWarnings("deprecation")
     private void printLogo() {
         String pluginInfo;
         if (ServerPlatform.isFolia()) {

@@ -24,6 +24,10 @@ public class ConfigUtils {
         return Ari.PLACEHOLDER.renderList(key, offlinePlayer);
     }
 
+    public static CompletableFuture<Component> tList(String key) {
+        return Ari.PLACEHOLDER.renderList(key, null);
+    }
+
     public static CompletableFuture<Component> t(String key) {
         return Ari.PLACEHOLDER.render(key, null);
     }

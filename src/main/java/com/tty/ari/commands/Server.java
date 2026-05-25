@@ -12,7 +12,7 @@ import java.util.List;
 
 @CommandMeta(displayName = "server", permission = "ari.command.server", tokenLength = 2)
 @LiteralCommand
-public class server extends LiteralArgumentCommand {
+public class Server extends LiteralArgumentCommand {
 
     @Override
     public int execute(CommandSender sender, String[] args) {
