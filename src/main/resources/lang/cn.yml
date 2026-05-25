@@ -94,6 +94,10 @@ server:
       daylight: '&f破晓时刻'
       wake_up: '&f起床时间'
   message:
+    about:
+      - '服务器版本: &6<server_version>'
+      - '当前运行插件版本: &6<ari_version>'
+      - '是否开启调试模式: &6<ari_debug_status>'
     on-whitelist-login: '&c您尚未在此服务器的白名单，请联系管理员添加！'
     on-first-login: '&a欢迎玩家 &6<player_name> &a加入我们的服务器！'
     on-login: '&f玩家 &6<player_name> &f加入了服务器！'

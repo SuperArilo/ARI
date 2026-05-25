@@ -2,6 +2,7 @@ package com.tty.ari.commands;
 
 import com.mojang.brigadier.Command;
 import com.tty.ari.command.LiteralArgumentCommand;
+import com.tty.ari.commands.sub.About;
 import com.tty.ari.commands.sub.Reload;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
@@ -37,7 +38,8 @@ public class ari extends LiteralArgumentCommand {
             new infinitytotem(),
             new enderchest(),
             new enchant(),
-            new server(),
+            new Server(),
+            new About(),
             new Reload()
         );
     }

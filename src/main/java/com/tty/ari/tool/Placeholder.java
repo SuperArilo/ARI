@@ -1,6 +1,7 @@
 package com.tty.ari.tool;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tty.api.ServerPlatform;
 import com.tty.ari.Ari;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
@@ -26,11 +27,15 @@ import com.tty.ari.listener.player.PlayerSkipNight;
 import com.tty.ari.states.teleport.PreTeleportStateService;
 import com.tty.ari.states.teleport.RandomTpStateService;
 import com.tty.ari.states.teleport.TeleportStateService;
+import io.papermc.paper.plugin.configuration.PluginMeta;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,6 +43,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.tty.ari.listener.teleport.RecordLastLocationListener.TELEPORT_LAST_LOCATION;
 
+@SuppressWarnings("deprecation")
 public class Placeholder extends BasePlaceholder<FilePath> {
 
     public Placeholder() {
@@ -51,7 +57,30 @@ public class Placeholder extends BasePlaceholder<FilePath> {
         this.addRegister(registry);
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private void register(PlaceholderRegistry registry) {
+        registry.register(PlaceholderDefinition.of(
+                LangServer.SERVER_VERSION,
+                PlaceholderResolve.ofWhenNull((() -> this.set(Bukkit.getName() + " " + Bukkit.getServer().getVersion())))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                LangServer.ARI_VERSION,
+                PlaceholderResolve.ofWhenNull(() -> {
+                    String pluginInfo;
+                    if (ServerPlatform.isFolia()) {
+                        PluginMeta pluginMeta = Ari.instance.getPluginMeta();
+                        pluginInfo = pluginMeta.getName() + " " + pluginMeta.getVersion();
+                    } else {
+                        PluginDescriptionFile description = Ari.instance.getDescription();
+                        pluginInfo = description.getName() + " " + description.getVersion();
+                    }
+                    return this.set(pluginInfo);
+                })
+        ));
+        registry.register(PlaceholderDefinition.of(
+                LangServer.ARI_DEBUG_STATUS,
+                PlaceholderResolve.ofWhenNull(()-> this.set(String.valueOf(Ari.instance.isDebug()))))
+        );
         registry.register(PlaceholderDefinition.of(
                 LangTpa.TPA_SENDER,
                 PlaceholderResolve.ofPlayer(player -> {
