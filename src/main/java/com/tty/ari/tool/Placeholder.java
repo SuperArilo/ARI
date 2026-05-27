@@ -1,15 +1,20 @@
 package com.tty.ari.tool;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tty.api.ConfigInstance;
 import com.tty.api.ServerPlatform;
-import com.tty.ari.Ari;
+import com.tty.api.enumType.Operator;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.service.impl.PlaceholderRegistryImpl;
 import com.tty.api.service.placeholder.BasePlaceholder;
 import com.tty.api.service.placeholder.PlaceholderDefinition;
 import com.tty.api.service.placeholder.PlaceholderRegistry;
 import com.tty.api.service.placeholder.PlaceholderResolve;
+import com.tty.api.state.State;
+import com.tty.api.utils.ComponentUtils;
+import com.tty.api.utils.FormatUtils;
+import com.tty.api.utils.TimeFormatUtils;
+import com.tty.ari.Ari;
 import com.tty.ari.commands.args.zako.ZakoInfoArgs;
 import com.tty.ari.dto.SleepingWorld;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
@@ -19,10 +24,6 @@ import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.lang.*;
-import com.tty.api.state.State;
-import com.tty.api.enumType.Operator;
-import com.tty.api.utils.FormatUtils;
-import com.tty.api.utils.TimeFormatUtils;
 import com.tty.ari.listener.player.PlayerSkipNight;
 import com.tty.ari.states.teleport.PreTeleportStateService;
 import com.tty.ari.states.teleport.RandomTpStateService;
@@ -33,9 +34,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -46,8 +45,8 @@ import static com.tty.ari.listener.teleport.RecordLastLocationListener.TELEPORT_
 @SuppressWarnings("deprecation")
 public class Placeholder extends BasePlaceholder<FilePath> {
 
-    public Placeholder() {
-        super(Ari.instance.getConfigInstance(), FilePath.LANG);
+    public Placeholder(ConfigInstance instance) {
+        super(instance, FilePath.LANG);
         this.init();
     }
 

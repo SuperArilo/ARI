@@ -73,7 +73,7 @@ public class Ari extends AbstractJavaPlugin {
         this.registerBungeeListener();
         CommandRegister.register(this, "com.tty.ari.commands", FormatUtils.yamlConvertToObj(this.getConfigInstance().getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
 
-        PLACEHOLDER = new Placeholder();
+        PLACEHOLDER = new Placeholder(this.getConfigInstance());
         this.initMetrics();
     }
 
