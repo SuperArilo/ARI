@@ -22,6 +22,7 @@ import com.tty.ari.listener.OnGuiEditListener;
 import com.tty.ari.states.GuiEditStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.TextComponent;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -96,17 +97,27 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
                         }
                     });
         });
-        registry.add(FunctionType.LOCATION, (event, homeEditor, player) -> {
+        registry.add(FunctionType.RENAME, (event, homeEditor, player) -> {
             Ari.STATE_MACHINE_MANAGER
                     .get(GuiEditStateService.class)
                     .addState(new EditGuiState(
                             player,
-                            Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new com.google.common.reflect.TypeToken<Integer>(){}.getType()),
+                            Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new TypeToken<Integer>(){}.getType()),
                             new HomeEditor(PublicFunctionUtils.deepCopy(homeEditor.getCurrentEditHome(), ServerHome.class), player),
-                            FunctionType.LOCATION)
+                            FunctionType.RENAME)
                     );
             event.getInventory().close();
         });
+        registry.add(FunctionType.LOCATION, ((event, homeEditor, player) -> {
+            ItemStack clickItem = event.getCurrentItem();
+            if (clickItem == null) return;
+            ItemMeta clickMeta = clickItem.getItemMeta();
+
+            Location newLocation = player.getLocation();
+            homeEditor.getCurrentEditHome().setLocation(newLocation.toString());
+            clickMeta.displayName(ComponentUtils.text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
+            clickItem.setItemMeta(clickMeta);
+        }));
         registry.add(FunctionType.ICON, (event, homeEditor, player) -> {
             ItemStack clickItem = event.getCurrentItem();
             if (clickItem == null) return;
@@ -172,6 +183,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
                 return null;
             });
         });
+
         return registry;
     }
 
