@@ -20,6 +20,7 @@ public class OnPluginReloadListener implements Listener {
         }
         Ari.REPOSITORY_MANAGER.clearAllCache();
         Ari.STATE_MACHINE_MANAGER.forEach(StateService::onReload);
+        Ari.PLACEHOLDER.setInstance(Ari.instance.getConfigInstance());
         BungeeCache.setServers(Set.of());
         BungeeCache.setState(BungeeCache.State.UNKNOWN);
     }
