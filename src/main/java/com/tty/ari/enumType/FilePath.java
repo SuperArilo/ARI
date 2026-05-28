@@ -22,7 +22,9 @@ public enum FilePath implements FilePathEnum {
     ATTACK_BAR_CONFIG("attack-bar", "module/attack-bar.yml"),
 
 
-    DEATH_MESSAGE("death-message", "lang/death-message/[lang].yml");
+    DEATH_MESSAGE("death-message", "lang/death-message/[lang].yml"),
+
+    INV_GUI_CONFIG("inv-gui", "module/inv.yml");
 
     private final String nickName;
     private final String path;

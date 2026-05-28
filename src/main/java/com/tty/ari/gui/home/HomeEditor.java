@@ -1,6 +1,5 @@
 package com.tty.ari.gui.home;
 
-import com.google.common.reflect.TypeToken;
 import com.tty.ari.Ari;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.gui.BaseMenu;
@@ -11,11 +10,12 @@ import com.tty.ari.enumType.FilePath;
 import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.utils.FormatUtils;
-import com.tty.api.utils.PublicFunctionUtils;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,13 +37,12 @@ public class HomeEditor extends BaseConfigInventory {
     }
 
     @Override
-    protected Mask renderCustomMasks() {
-        return null;
+    protected void beforeRenderMasks(@Nullable Mask mask) {
+
     }
 
     @Override
-    protected Map<String, FunctionItems> renderCustomFunctionItems() {
-        Map<String, FunctionItems> functionItems = PublicFunctionUtils.deepCopy(this.getBaseMenu().getFunctionItems(), new TypeToken<Map<String, FunctionItems>>(){}.getType());
+    protected void beforeRenderFunctionItems(Map<String, FunctionItems> functionItems) {
         if (functionItems != null) {
             for (FunctionItems item : functionItems.values()) {
                 switch (item.getType()) {
@@ -61,11 +60,16 @@ public class HomeEditor extends BaseConfigInventory {
                 }
             }
         }
-        return functionItems;
+    }
+
+    @Override
+    protected void whenRenderComplete(@NotNull Inventory inventory) {
+
     }
 
     @Override
     protected void clean() {
+        super.clean();
         this.currentEditHome = null;
     }
 

@@ -5,6 +5,7 @@ import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.ari.gui.OfflineNBTEnderCheat;
 import com.tty.ari.enumType.GuiType;
 import com.tty.api.gui.BaseInventory;
+import com.tty.ari.gui.PlayerInventoryEdit;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
@@ -21,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import java.io.IOException;
 
 import static com.tty.ari.commands.sub.EnderChestToPlayer.OFFLINE_ON_EDIT_ENDER_CHEST_LIST;
+import static com.tty.ari.commands.sub.InventoryCheck.OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST;
 
 
 public class GuiCleanupListener implements Listener {
@@ -41,7 +43,8 @@ public class GuiCleanupListener implements Listener {
         if (!(inventory.getHolder() instanceof BaseInventory baseInventory)) return;
         GuiMeta annotation = baseInventory.getClass().getAnnotation(GuiMeta.class);
         if (annotation == null) return;
-        if (annotation.type().equals(GuiType.OFFLINE_ENDERCHEST.getType()) && baseInventory instanceof OfflineNBTEnderCheat cheat) {
+        String type = annotation.type();
+        if (type.equals(GuiType.OFFLINE_ENDERCHEST.getType()) && baseInventory instanceof OfflineNBTEnderCheat cheat) {
             NBTFileHandle data = cheat.getData();
             data.removeKey("EnderItems");
             ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
@@ -63,8 +66,11 @@ public class GuiCleanupListener implements Listener {
                     Ari.instance.getLog().error(e, "ender chest nbt save error. ");
                 }
             });
-        } else {
+        } else if (type.equals(GuiType.PLAYER_INVENTORY_EDIT.getType()) && baseInventory instanceof PlayerInventoryEdit inventoryEdit) {
+            OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST.remove(inventoryEdit.getOfflinePlayer().getUniqueId());
+        }  else {
             baseInventory.cleanup();
         }
+
     }
 }

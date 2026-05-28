@@ -22,6 +22,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -112,6 +113,16 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
         registry.add(FunctionType.NEXT_PAGE, (event, warpList, player) -> warpList.next());
 
         return registry;
+    }
+
+    @Override
+    protected boolean cancelClick(InventoryClickEvent event, WarpList holder) {
+        return false;
+    }
+
+    @Override
+    protected boolean cancelDrag(InventoryDragEvent event, WarpList holder) {
+        return false;
     }
 
 }

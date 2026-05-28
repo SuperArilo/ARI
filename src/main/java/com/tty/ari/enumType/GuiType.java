@@ -8,7 +8,8 @@ public enum GuiType implements GuiKeyEnum {
     HOME_EDIT("home_edit"),
     WARP_LIST("warp_list"),
     WARP_EDIT("warp_edit"),
-    OFFLINE_ENDERCHEST("offline_enderchest");
+    OFFLINE_ENDERCHEST("offline_enderchest"),
+    PLAYER_INVENTORY_EDIT("player_inventory_edit");
 
     private final String type;
 

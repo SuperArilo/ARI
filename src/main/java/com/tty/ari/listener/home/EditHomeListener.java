@@ -26,6 +26,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -185,6 +187,16 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
         });
 
         return registry;
+    }
+
+    @Override
+    protected boolean cancelClick(InventoryClickEvent event, HomeEditor holder) {
+        return false;
+    }
+
+    @Override
+    protected boolean cancelDrag(InventoryDragEvent event, HomeEditor holder) {
+        return false;
     }
 
 }

@@ -64,3 +64,6 @@ enderchest:
 infinitytotem:
   enable: true
   usage: ""
+inv:
+  enable: true
+  usage: "/inv <player> 打开指定玩家的背包"

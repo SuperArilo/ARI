@@ -19,6 +19,7 @@ import com.tty.ari.states.teleport.TeleportStateService;
 import com.tty.ari.tool.ConfigUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -90,6 +91,16 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
         registry.add(FunctionType.NEXT_PAGE, (event, homeList, player) -> homeList.next());
 
         return registry;
+    }
+
+    @Override
+    protected boolean cancelClick(InventoryClickEvent event, HomeList holder) {
+        return false;
+    }
+
+    @Override
+    protected boolean cancelDrag(InventoryDragEvent event, HomeList holder) {
+        return false;
     }
 
 }

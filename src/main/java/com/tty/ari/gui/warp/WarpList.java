@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -52,20 +53,18 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
     }
 
     @Override
-    protected Map<Integer, ItemStack> getRenderItem() {
-        Map<Integer, ItemStack> map = new HashMap<>();
-        BaseDataMenu baseDataMenu = (BaseDataMenu) this.getBaseMenu();
-        List<Integer> dataSlot = baseDataMenu.getDataItems().getSlot();
-        List<String> rawLore = baseDataMenu.getDataItems().getLore();
+    protected @NotNull List<ItemStack> beforeRenderDataItem(List<ServerWarp> data) {
+        List<ItemStack> list = new ArrayList<>();
+        List<String> rawLore = ((BaseDataMenu) this.getBaseMenu()).getDataItems().getLore();
 
-        for (int i = 0; i < this.data.size(); i++) {
-            ServerWarp serverWarp = this.data.get(i);
-
+        for (ServerWarp serverWarp : data) {
             ItemStack itemStack = this.createItemStack(serverWarp.getShowMaterial());
             if (itemStack == null) {
-                Ari.instance.getLog().warn("There is a problem with the warpID: [{}] of the player: [{}]", serverWarp.getWarpId(), this.player.getName());
+                Ari.instance.getLog().warn("There is a problem with the warpID: [{}] of the player: [{}]", serverWarp.getWarpId(), this.getOfflinePlayer().getName());
                 Ari.instance.getLog().error("Skip the rendering warpId [{}] process...", serverWarp.getWarpId());
-                this.player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
+                if (this.getOfflinePlayer() instanceof Player player) {
+                    player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
+                }
                 continue;
             }
 
@@ -74,8 +73,8 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
             boolean hasPermission = serverWarp.getPermission() == null ||
                     serverWarp.getPermission().isEmpty() ||
-                    Ari.PERMISSION_SERVICE.hasPermission(this.player, serverWarp.getPermission()) ||
-                    UUID.fromString(serverWarp.getCreateBy()).equals(this.player.getUniqueId());
+                    Ari.PERMISSION_SERVICE.hasPermission((Player) this.getOfflinePlayer(), serverWarp.getPermission()) ||
+                    UUID.fromString(serverWarp.getCreateBy()).equals(this.getOfflinePlayer().getUniqueId());
 
             Map<String, Component> types = new HashMap<>();
             types.put(IconKeyType.ID.getKey(), Component.text(serverWarp.getWarpId()));
@@ -95,7 +94,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             }
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(ComponentUtils.text(serverWarp.getWarpName(), this.player));
+            itemMeta.displayName(ComponentUtils.text(serverWarp.getWarpName(), this.getOfflinePlayer()));
             itemMeta.lore(textComponents);
 
             this.setNBT(itemMeta, GuiNBTKeys.GUI_RENDER_DATA_ID, PersistentDataType.STRING, serverWarp.getWarpId());
@@ -105,10 +104,9 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
                 this.setHighlight(itemMeta);
             }
             itemStack.setItemMeta(itemMeta);
-            map.put(dataSlot.get(i), itemStack);
+            list.add(itemStack);
         }
-
-        return map;
+        return list;
     }
 
     @Override
@@ -117,14 +115,15 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
     }
 
     @Override
-    protected Mask renderCustomMasks() {
-        return null;
+    protected void beforeRenderMasks(@Nullable Mask mask) {
+
     }
 
     @Override
-    protected Map<String, FunctionItems> renderCustomFunctionItems() {
-        return null;
+    protected void beforeRenderFunctionItems(Map<String, FunctionItems> functionItems) {
+
     }
+
 
     @Override
     protected void clean() {

@@ -23,6 +23,7 @@ public class ari extends LiteralArgumentCommand {
             new itemlore(),
             new itemname(),
             new itemshow(),
+            new inv(),
             new rtp(),
             new sethome(),
             new setspawn(),

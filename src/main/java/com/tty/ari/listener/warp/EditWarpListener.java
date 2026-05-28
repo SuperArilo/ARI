@@ -27,6 +27,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -201,6 +202,16 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor> {
         return registry;
     }
 
+    @Override
+    protected boolean cancelClick(InventoryClickEvent event, WarpEditor holder) {
+        return false;
+    }
+
+    @Override
+    protected boolean cancelDrag(InventoryDragEvent event, WarpEditor holder) {
+        return false;
+    }
+
     private void onPublic(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
 
         ItemStack clickItem = event.getCurrentItem();
@@ -220,7 +231,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor> {
         Ari.STATE_MACHINE_MANAGER.get(GuiEditStateService.class)
                 .addState(new EditGuiState(
                                 player,
-                                Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new com.google.common.reflect.TypeToken<Integer>(){}.getType()),
+                                Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new TypeToken<Integer>(){}.getType()),
                                 new WarpEditor(PublicFunctionUtils.deepCopy(currentEditWarp, ServerWarp.class), player),
                                 type
                         )

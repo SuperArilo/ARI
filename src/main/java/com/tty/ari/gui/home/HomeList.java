@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,25 +46,26 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
                         this.pageNum,
                         ((BaseDataMenu)this.getBaseMenu()).getDataItems().getSlot().size(),
                         new LambdaQueryWrapper<ServerHome>()
-                                .eq(ServerHome::getPlayerUUID, this.player.getUniqueId().toString())
+                                .eq(ServerHome::getPlayerUUID, this.getOfflinePlayer().getUniqueId().toString())
                                 .orderByDesc(ServerHome::isTopSlot),
-                        PartitionKey.of(this.player.getUniqueId().toString())
+                        PartitionKey.of(this.getOfflinePlayer().getUniqueId().toString())
                 );
     }
 
     @Override
-    protected Map<Integer, ItemStack> getRenderItem() {
-        Map<Integer, ItemStack> map = new HashMap<>();
-        BaseDataMenu baseDataMenu = (BaseDataMenu) this.getBaseMenu();
-        List<Integer> dataSlot = baseDataMenu.getDataItems().getSlot();
-        List<String> rawLore = baseDataMenu.getDataItems().getLore();
-        for (int i = 0; i < this.data.size(); i++) {
-            ServerHome ph = this.data.get(i);
+    protected @NotNull List<ItemStack> beforeRenderDataItem(List<ServerHome> data) {
+        List<ItemStack> list = new ArrayList<>();
+
+        List<String> rawLore = ((BaseDataMenu) this.getBaseMenu()).getDataItems().getLore();
+
+        for (ServerHome ph : data) {
             ItemStack itemStack = this.createItemStack(ph.getShowMaterial());
             if (itemStack == null) {
-                Ari.instance.getLog().error("There is a problem with the homeID: [{}] of the player: [{}]", ph.getHomeId(), this.player.getName());
+                Ari.instance.getLog().error("There is a problem with the homeID: [{}] of the player: [{}]", ph.getHomeId(), this.getOfflinePlayer().getName());
                 Ari.instance.getLog().warn("Skip the rendering homeId [{}] process...", ph.getHomeId());
-                this.player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
+                if (this.getOfflinePlayer() instanceof Player player) {
+                    player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
+                }
                 continue;
             }
 
@@ -82,7 +84,7 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             }
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(ComponentUtils.text(ph.getHomeName(), this.player));
+            itemMeta.displayName(ComponentUtils.text(ph.getHomeName(), this.getOfflinePlayer()));
             itemMeta.lore(textComponents);
 
             this.setNBT(itemMeta, GuiNBTKeys.GUI_RENDER_DATA_ID, PersistentDataType.STRING, ph.getHomeId());
@@ -92,9 +94,9 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
                 this.setHighlight(itemMeta);
             }
             itemStack.setItemMeta(itemMeta);
-            map.put(dataSlot.get(i), itemStack);
+            list.add(itemStack);
         }
-        return map;
+        return list;
     }
 
     @Override
@@ -103,13 +105,13 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
     }
 
     @Override
-    protected Mask renderCustomMasks() {
-        return null;
+    protected void beforeRenderMasks(@Nullable Mask mask) {
+
     }
 
     @Override
-    protected Map<String, FunctionItems> renderCustomFunctionItems() {
-        return null;
+    protected void beforeRenderFunctionItems(Map<String, FunctionItems> functionItems) {
+
     }
 
 }

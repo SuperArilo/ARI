@@ -118,6 +118,7 @@ public class Ari extends AbstractJavaPlugin {
                 new PlayerListener(),
                 new WarpListListener(GuiType.WARP_LIST),
                 new EditWarpListener(GuiType.WARP_EDIT),
+                new InventoryCheckListener(this, GuiType.PLAYER_INVENTORY_EDIT),
                 new OnPlayerJoinAndLeaveListener(),
                 new PlayerSkipNight(),
                 new OnPluginReloadListener(),
