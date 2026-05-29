@@ -116,12 +116,22 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
     }
 
     @Override
-    protected boolean cancelClick(InventoryClickEvent event, WarpList holder) {
+    protected boolean whenClick(InventoryClickEvent event, WarpList holder) {
         return false;
     }
 
     @Override
-    protected boolean cancelDrag(InventoryDragEvent event, WarpList holder) {
+    protected boolean whenDoubleClick(InventoryClickEvent event, WarpList holder) {
+        return false;
+    }
+
+    @Override
+    protected boolean whenShiftClick(InventoryClickEvent event, WarpList holder) {
+        return false;
+    }
+
+    @Override
+    protected boolean whenDrag(InventoryDragEvent event, WarpList holder) {
         return false;
     }
 

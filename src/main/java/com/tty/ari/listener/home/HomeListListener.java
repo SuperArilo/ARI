@@ -94,12 +94,22 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
     }
 
     @Override
-    protected boolean cancelClick(InventoryClickEvent event, HomeList holder) {
+    protected boolean whenClick(InventoryClickEvent event, HomeList holder) {
         return false;
     }
 
     @Override
-    protected boolean cancelDrag(InventoryDragEvent event, HomeList holder) {
+    protected boolean whenDoubleClick(InventoryClickEvent event, HomeList holder) {
+        return false;
+    }
+
+    @Override
+    protected boolean whenShiftClick(InventoryClickEvent event, HomeList holder) {
+        return false;
+    }
+
+    @Override
+    protected boolean whenDrag(InventoryDragEvent event, HomeList holder) {
         return false;
     }
 

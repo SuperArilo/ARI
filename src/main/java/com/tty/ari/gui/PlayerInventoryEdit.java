@@ -30,7 +30,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
     private PlayerInventoryCache cache;
 
-    private static final int[] PLAYER_INVENTORY_SLOT_MAP = new int[36];
+    public static final int[] PLAYER_INVENTORY_SLOT_MAP = new int[36];
 
     static {
         for (int i = 0; i <= 8; i++) PLAYER_INVENTORY_SLOT_MAP[i] = 45 + i;
