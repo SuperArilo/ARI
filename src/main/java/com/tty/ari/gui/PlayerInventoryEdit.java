@@ -6,8 +6,10 @@ import com.tty.api.dto.gui.BaseDataMenu;
 import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
+import com.tty.api.enumType.FunctionType;
 import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.utils.FormatUtils;
+import com.tty.api.utils.GuiNBTKeys;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.PlayerInventoryCache;
 import com.tty.ari.enumType.FilePath;
@@ -15,11 +17,14 @@ import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBTCompoundList;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,9 +44,12 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         for (int i = 27; i <= 35; i++) PLAYER_INVENTORY_SLOT_MAP[i] = 18 + i - 27;
     }
 
+    private final NamespacedKey equipmentKey;
+
     public PlayerInventoryEdit(AbstractJavaPlugin plugin, OfflinePlayer target) {
         super(plugin, target);
         this.cache = this.get(target);
+        this.equipmentKey = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_EQUIPMENT_TYPE);
     }
 
     @Override
@@ -57,31 +65,35 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
     @Override
     protected void beforeRenderFunctionItems(Map<String, FunctionItems> functionItems) {
         if (this.cache == null) return;
+        Ari.instance.getLog().debug("114514");
         for (FunctionItems value : functionItems.values()) {
             switch (value.getType()) {
                 case PLAYER_OFF_HAND -> {
                     ItemStack offHand = this.cache.getOff_hand();
-                    if (offHand == null || offHand.isEmpty()) return;
+                    if (offHand == null || offHand.isEmpty()) break;
+                    ItemMeta itemMeta = offHand.getItemMeta();
+                    itemMeta.getPersistentDataContainer().set(this.equipmentKey, PersistentDataType.STRING, FunctionType.PLAYER_OFF_HAND.name());
+
                     value.setItemStack(offHand);
                 }
                 case PLAYER_HELMET -> {
                     ItemStack helmet = this.cache.getHelmet();
-                    if (helmet == null || helmet.isEmpty()) return;
+                    if (helmet == null || helmet.isEmpty()) break;
                     value.setItemStack(helmet);
                 }
                 case PLAYER_CHESTPLATE -> {
                     ItemStack chestplate = this.cache.getChestplate();
-                    if (chestplate == null || chestplate.isEmpty()) return;
+                    if (chestplate == null || chestplate.isEmpty()) break;
                     value.setItemStack(chestplate);
                 }
                 case PLAYER_LEGGINGS -> {
                     ItemStack leggings = this.cache.getLeggings();
-                    if (leggings == null || leggings.isEmpty()) return;
+                    if (leggings == null || leggings.isEmpty()) break;
                     value.setItemStack(leggings);
                 }
                 case PLAYER_BOOTS -> {
                     ItemStack boots = this.cache.getBoots();
-                    if (boots == null || boots.isEmpty()) return;
+                    if (boots == null || boots.isEmpty()) break;
                     value.setItemStack(boots);
                 }
             }
@@ -173,4 +185,5 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         super.clean();
         this.cache = null;
     }
+
 }
