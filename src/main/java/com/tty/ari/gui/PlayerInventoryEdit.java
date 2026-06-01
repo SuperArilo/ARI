@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @GuiMeta(type = "player_inventory_edit")
 public class PlayerInventoryEdit extends BaseConfigInventory {
@@ -58,14 +59,13 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
     }
 
     @Override
-    protected void beforeRenderMasks(@Nullable Mask mask) {
-
+    protected @NotNull CompletableFuture<Mask> beforeRenderMasks(@Nullable Mask mask) {
+        return CompletableFuture.completedFuture(mask);
     }
 
     @Override
-    protected void beforeRenderFunctionItems(Map<String, FunctionItems> functionItems) {
-        if (this.cache == null) return;
-        Ari.instance.getLog().debug("114514");
+    protected @NotNull CompletableFuture<Map<String, FunctionItems>> beforeRenderFunctionItems(Map<String, FunctionItems> functionItems) {
+        if (this.cache == null) CompletableFuture.completedFuture(functionItems);
         for (FunctionItems value : functionItems.values()) {
             switch (value.getType()) {
                 case PLAYER_OFF_HAND -> {
@@ -98,6 +98,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
                 }
             }
         }
+        return CompletableFuture.completedFuture(functionItems);
     }
 
     @Override

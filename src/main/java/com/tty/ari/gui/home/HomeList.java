@@ -1,21 +1,21 @@
 package com.tty.ari.gui.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.tty.ari.Ari;
-import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
-import com.tty.api.utils.GuiNBTKeys;
-import com.tty.ari.entity.ServerHome;
-import com.tty.ari.enumType.FilePath;
-import com.tty.api.gui.BaseDataItemConfigInventory;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
+import com.tty.api.gui.BaseDataItemConfigInventory;
+import com.tty.api.repository.PartitionKey;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
+import com.tty.api.utils.GuiNBTKeys;
+import com.tty.ari.Ari;
+import com.tty.ari.entity.ServerHome;
+import com.tty.ari.enumType.FilePath;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
@@ -105,13 +105,13 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
     }
 
     @Override
-    protected void beforeRenderMasks(@Nullable Mask mask) {
-
+    protected @NotNull CompletableFuture<Mask> beforeRenderMasks(@Nullable Mask mask) {
+        return CompletableFuture.completedFuture(mask);
     }
 
     @Override
-    protected void beforeRenderFunctionItems(Map<String, FunctionItems> functionItems) {
-
+    protected @NotNull CompletableFuture<Map<String, FunctionItems>> beforeRenderFunctionItems(@Nullable Map<String, FunctionItems> functionItems) {
+        return CompletableFuture.completedFuture(functionItems);
     }
 
 }

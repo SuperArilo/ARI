@@ -1,15 +1,15 @@
 package com.tty.ari.gui.home;
 
-import com.tty.ari.Ari;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
+import com.tty.api.enumType.IconKeyType;
+import com.tty.api.gui.BaseConfigInventory;
+import com.tty.api.utils.FormatUtils;
+import com.tty.ari.Ari;
 import com.tty.ari.entity.ServerHome;
 import com.tty.ari.enumType.FilePath;
-import com.tty.api.gui.BaseConfigInventory;
-import com.tty.api.enumType.IconKeyType;
-import com.tty.api.utils.FormatUtils;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @GuiMeta(type = "home_edit")
 public class HomeEditor extends BaseConfigInventory {
@@ -37,12 +38,12 @@ public class HomeEditor extends BaseConfigInventory {
     }
 
     @Override
-    protected void beforeRenderMasks(@Nullable Mask mask) {
-
+    protected @NotNull CompletableFuture<Mask> beforeRenderMasks(@Nullable Mask mask) {
+        return CompletableFuture.completedFuture(mask);
     }
 
     @Override
-    protected void beforeRenderFunctionItems(Map<String, FunctionItems> functionItems) {
+    protected @NotNull CompletableFuture<Map<String, FunctionItems>> beforeRenderFunctionItems(Map<String, FunctionItems> functionItems) {
         if (functionItems != null) {
             for (FunctionItems item : functionItems.values()) {
                 switch (item.getType()) {
@@ -60,6 +61,7 @@ public class HomeEditor extends BaseConfigInventory {
                 }
             }
         }
+        return CompletableFuture.completedFuture(functionItems);
     }
 
     @Override

@@ -1,8 +1,8 @@
 package com.tty.ari.gui;
 
-import com.tty.ari.Ari;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.gui.BaseInventory;
+import com.tty.ari.Ari;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
