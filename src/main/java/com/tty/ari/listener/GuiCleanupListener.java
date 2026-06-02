@@ -68,9 +68,8 @@ public class GuiCleanupListener implements Listener {
             });
         } else if (type.equals(GuiType.PLAYER_INVENTORY_EDIT.getType()) && baseInventory instanceof PlayerInventoryEdit inventoryEdit) {
             OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST.remove(inventoryEdit.getOfflinePlayer().getUniqueId());
-        }  else {
-            baseInventory.cleanup();
         }
 
+        baseInventory.cleanup();
     }
 }

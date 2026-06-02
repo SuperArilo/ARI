@@ -41,7 +41,7 @@ public class OfflineNBTEnderCheat extends BaseInventory {
     protected void afterCreatedInventory(@NotNull Inventory inventory) {}
 
     @Override
-    protected void clean() {
+    protected void cleanAsync() {
         this.data = null;
         this.target = null;
     }

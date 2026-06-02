@@ -115,18 +115,18 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
     }
 
     @Override
-    protected @NotNull CompletableFuture<Mask> beforeRenderMasks(@Nullable Mask mask) {
+    protected @NotNull CompletableFuture<Mask> beforeRenderMasksAsync(@Nullable Mask mask) {
         return CompletableFuture.completedFuture(mask);
     }
 
     @Override
-    protected @NotNull CompletableFuture<Map<String, FunctionItems>> beforeRenderFunctionItems(@Nullable Map<String, FunctionItems> functionItems) {
+    protected @NotNull CompletableFuture<Map<String, FunctionItems>> beforeRenderFunctionItemsAsync(@Nullable Map<String, FunctionItems> functionItems) {
         return CompletableFuture.completedFuture(functionItems);
     }
 
     @Override
-    protected void clean() {
-        super.clean();
+    protected void cleanAsync() {
+        super.cleanAsync();
         this.baseFree = null;
     }
 

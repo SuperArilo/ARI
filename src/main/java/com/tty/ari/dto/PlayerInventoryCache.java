@@ -5,57 +5,48 @@ import lombok.Setter;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class PlayerInventoryCache {
 
     @Nullable
     @Getter
     private ItemStack off_hand;
+
+    @Setter
     @Nullable
     @Getter
     private ItemStack helmet;
+
+    @Setter
     @Nullable
     @Getter
     private ItemStack chestplate;
+
+    @Setter
     @Nullable
     @Getter
     private ItemStack leggings;
+
+    @Setter
     @Nullable
     @Getter
     private ItemStack boots;
-    @Setter
+
+    /**
+     * 玩家背包映射至箱子 gui 的索引布局 18 开始 53 结束
+     */
     @Getter
-    private ItemStack[] items = new ItemStack[36];
+    private final Map<Integer, ItemStack> items = new HashMap<>();
 
-    public PlayerInventoryCache setOffHand(ItemStack itemStack) {
+    public void setOffHand(ItemStack itemStack) {
         this.off_hand = itemStack;
-        return this;
     }
 
-    public PlayerInventoryCache setHelmet(ItemStack itemStack) {
-        this.helmet = itemStack;
-        return this;
-    }
-
-    public PlayerInventoryCache setChestplate(ItemStack itemStack) {
-        this.chestplate = itemStack;
-        return this;
-    }
-
-    public PlayerInventoryCache setLeggings(ItemStack itemStack) {
-        this.leggings = itemStack;
-        return this;
-    }
-
-    public PlayerInventoryCache setBoots(ItemStack itemStack) {
-        this.boots = itemStack;
-        return this;
-    }
-
-    public PlayerInventoryCache addItem(int slot, ItemStack stack) {
-        if (slot < 0 || slot >= items.length) throw new IllegalArgumentException("Slot out of range: " + slot);
-        items[slot] = stack;
-        return this;
+    public void addItem(int slot, ItemStack stack) {
+        this.items.put(slot,stack);
     }
 
 }

@@ -38,13 +38,13 @@ public class WarpEditor extends BaseConfigInventory {
     }
 
     @Override
-    protected @NotNull CompletableFuture<Mask> beforeRenderMasks(@Nullable Mask mask) {
+    protected @NotNull CompletableFuture<Mask> beforeRenderMasksAsync(@Nullable Mask mask) {
         return CompletableFuture.completedFuture(mask);
     }
 
 
     @Override
-    protected @NotNull CompletableFuture<Map<String, FunctionItems>> beforeRenderFunctionItems(Map<String, FunctionItems> functionItems) {
+    protected @NotNull CompletableFuture<Map<String, FunctionItems>> beforeRenderFunctionItemsAsync(Map<String, FunctionItems> functionItems) {
         if(functionItems != null) {
             for (FunctionItems item : functionItems.values()) {
                 switch (item.getType()) {
@@ -84,8 +84,8 @@ public class WarpEditor extends BaseConfigInventory {
     }
 
     @Override
-    protected void clean() {
-        super.clean();
+    protected void cleanAsync() {
+        super.cleanAsync();
         this.currentEditWarp = null;
     }
 

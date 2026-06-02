@@ -36,7 +36,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
 
     @Override
     protected boolean whenClick(InventoryClickEvent event, PlayerInventoryEdit holder) {
-        boolean fallback = Arrays.stream(PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP).anyMatch(i -> i == event.getSlot());
+        boolean fallback =PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP.contains(event.getSlot());
 
         ItemStack clickItem = event.getCurrentItem();
         if (clickItem == null) return fallback;
@@ -77,8 +77,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         ItemStack clickedItem = event.getCurrentItem();
         if (clickedItem == null || clickedItem.getType().isAir()) return false;
 
-        int[] slotMap = PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP;
-        Arrays.sort(slotMap);
+        List<Integer> slotMap = PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP;
         Inventory gui = event.getInventory();
 
         int originalAmount = clickedItem.getAmount();
