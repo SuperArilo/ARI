@@ -203,23 +203,23 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor> {
     }
 
     @Override
-    protected boolean whenClick(InventoryClickEvent event, WarpEditor holder) {
-        return false;
+    protected void whenClick(InventoryClickEvent event, WarpEditor holder) {
+        event.setCancelled(true);
     }
 
     @Override
-    protected boolean whenDoubleClick(InventoryClickEvent event, WarpEditor holder) {
-        return false;
+    protected void whenDoubleClick(InventoryClickEvent event, WarpEditor holder) {
+        event.setCancelled(true);
     }
 
     @Override
-    protected boolean whenShiftClick(InventoryClickEvent event, WarpEditor holder) {
-        return false;
+    protected void whenShiftClick(InventoryClickEvent event, WarpEditor holder) {
+        event.setCancelled(true);
     }
 
     @Override
-    protected boolean whenDrag(InventoryDragEvent event, WarpEditor holder) {
-        return false;
+    protected void whenDrag(InventoryDragEvent event, WarpEditor holder) {
+        event.setCancelled(true);
     }
 
     private void onPublic(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {

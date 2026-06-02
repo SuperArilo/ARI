@@ -190,23 +190,23 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
     }
 
     @Override
-    protected boolean whenClick(InventoryClickEvent event, HomeEditor holder) {
-        return false;
+    protected void whenClick(InventoryClickEvent event, HomeEditor holder) {
+        event.setCancelled(true);
     }
 
     @Override
-    protected boolean whenDoubleClick(InventoryClickEvent event, HomeEditor holder) {
-        return false;
+    protected void whenDoubleClick(InventoryClickEvent event, HomeEditor holder) {
+        event.setCancelled(true);
     }
 
     @Override
-    protected boolean whenShiftClick(InventoryClickEvent event, HomeEditor holder) {
-        return false;
+    protected void whenShiftClick(InventoryClickEvent event, HomeEditor holder) {
+        event.setCancelled(true);
     }
 
     @Override
-    protected boolean whenDrag(InventoryDragEvent event, HomeEditor holder) {
-        return false;
+    protected void whenDrag(InventoryDragEvent event, HomeEditor holder) {
+        event.setCancelled(true);
     }
 
 }

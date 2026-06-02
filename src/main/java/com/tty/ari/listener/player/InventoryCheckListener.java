@@ -35,44 +35,54 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
     }
 
     @Override
-    protected boolean whenClick(InventoryClickEvent event, PlayerInventoryEdit holder) {
-        boolean fallback =PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP.contains(event.getSlot());
+    protected void whenClick(InventoryClickEvent event, PlayerInventoryEdit holder) {
+        boolean fallback = !PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP.contains(event.getSlot());
 
         ItemStack clickItem = event.getCurrentItem();
-        if (clickItem == null) return fallback;
+        if (clickItem == null) {
+            event.setCancelled(fallback);
+            return;
+        }
 
         ItemMeta itemMeta = clickItem.getItemMeta();
         FunctionType type = this.ItemNBT_TypeCheck(itemMeta.getPersistentDataContainer().get(this.getFunctionIconNamespacedKey(), PersistentDataType.STRING));
-        if (type == null) return fallback;
+        if (type == null) {
+            event.setCancelled(fallback);
+            return;
+        }
 
         Map<String, FunctionItems> functionItems = holder.getBaseMenu().getFunctionItems();
 
         FunctionItems items = functionItems.values().stream().filter(i -> i.getType().equals(type)).findFirst().orElse(null);
 
-        if (items == null) return fallback;
+        if (items == null) {
+            event.setCancelled(fallback);
+            return;
+        }
 
         this.changeEquipment(event, items);
 
-        return fallback;
     }
 
     @Override
-    protected boolean whenDoubleClick(InventoryClickEvent event, PlayerInventoryEdit holder) {
-        return true;
+    protected void whenDoubleClick(InventoryClickEvent event, PlayerInventoryEdit holder) {
     }
 
     @Override
-    protected boolean whenDrag(InventoryDragEvent event, PlayerInventoryEdit holder) {
+    protected void whenDrag(InventoryDragEvent event, PlayerInventoryEdit holder) {
         Set<Integer> slots = event.getInventorySlots();
         Set<Integer> slotSet = new HashSet<>(PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP);
-        return !slots.isEmpty() && slotSet.containsAll(slots);
+        event.setCancelled(slots.isEmpty() || !slotSet.containsAll(slots));
     }
 
     @Override
-    protected boolean whenShiftClick(InventoryClickEvent event, PlayerInventoryEdit holder) {
+    protected void whenShiftClick(InventoryClickEvent event, PlayerInventoryEdit holder) {
 
         ItemStack clickedItem = event.getCurrentItem();
-        if (clickedItem == null || clickedItem.getType().isAir()) return false;
+        if (clickedItem == null || clickedItem.getType().isAir()) {
+            event.setCancelled(true);
+            return;
+        }
 
         List<Integer> slotMap = PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP;
         Inventory gui = event.getInventory();
@@ -96,7 +106,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
 
             if (remaining <= 0) {
                 event.setCurrentItem(null);
-                return true;
+                return;
             }
         }
 
@@ -111,15 +121,13 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             remaining -= placeAmount;
             if (remaining <= 0) {
                 event.setCurrentItem(null);
-                return true;
+                return;
             }
         }
         if (remaining != originalAmount) {
             clickedItem.setAmount(remaining);
             event.setCurrentItem(clickedItem);
-            return false;
         }
-        return false;
     }
 
     @Override
@@ -128,6 +136,8 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
     }
 
     private void changeEquipment(InventoryClickEvent event, FunctionItems items) {
+        event.setCancelled(true);
+
         ItemStack cursor = event.getCursor();
         ItemStack current = event.getCurrentItem();
         if (current == null) return;

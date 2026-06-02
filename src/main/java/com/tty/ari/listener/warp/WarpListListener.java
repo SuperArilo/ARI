@@ -116,23 +116,23 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
     }
 
     @Override
-    protected boolean whenClick(InventoryClickEvent event, WarpList holder) {
-        return false;
+    protected void whenClick(InventoryClickEvent event, WarpList holder) {
+        event.setCancelled(true);
     }
 
     @Override
-    protected boolean whenDoubleClick(InventoryClickEvent event, WarpList holder) {
-        return false;
+    protected void whenDoubleClick(InventoryClickEvent event, WarpList holder) {
+        event.setCancelled(true);
     }
 
     @Override
-    protected boolean whenShiftClick(InventoryClickEvent event, WarpList holder) {
-        return false;
+    protected void whenShiftClick(InventoryClickEvent event, WarpList holder) {
+        event.setCancelled(true);
     }
 
     @Override
-    protected boolean whenDrag(InventoryDragEvent event, WarpList holder) {
-        return false;
+    protected void whenDrag(InventoryDragEvent event, WarpList holder) {
+        event.setCancelled(true);
     }
 
 }
