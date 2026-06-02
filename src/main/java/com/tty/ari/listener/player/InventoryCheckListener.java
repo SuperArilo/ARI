@@ -64,10 +64,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
     @Override
     protected boolean whenDrag(InventoryDragEvent event, PlayerInventoryEdit holder) {
         Set<Integer> slots = event.getInventorySlots();
-        Set<Integer> slotSet = new HashSet<>();
-        for (int i : PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP) {
-            slotSet.add(i);
-        }
+        Set<Integer> slotSet = new HashSet<>(PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP);
         return !slots.isEmpty() && slotSet.containsAll(slots);
     }
 
