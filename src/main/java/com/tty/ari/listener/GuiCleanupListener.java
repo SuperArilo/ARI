@@ -61,7 +61,7 @@ public class GuiCleanupListener implements Listener {
                     data.save();
                     Ari.instance.getLog().debug("ender chest nbt save player {} success.", cheat.getTarget().toString());
                     OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(cheat.getTarget());
-                    Ari.instance.getScheduler().run(Ari.instance, t -> baseInventory.cleanup());
+                    Ari.instance.getScheduler().run(Ari.instance, t -> baseInventory.close());
                 } catch (IOException e) {
                     Ari.instance.getLog().error(e, "ender chest nbt save error. ");
                 }
@@ -70,6 +70,6 @@ public class GuiCleanupListener implements Listener {
             OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST.remove(inventoryEdit.getOfflinePlayer().getUniqueId());
         }
 
-        baseInventory.cleanup();
+        baseInventory.close();
     }
 }

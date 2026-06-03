@@ -2,33 +2,31 @@ package com.tty.ari.gui;
 
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.annotations.gui.GuiMeta;
-import com.tty.api.dto.gui.BaseDataMenu;
 import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.utils.FormatUtils;
-import com.tty.api.utils.GuiNBTKeys;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.PlayerInventoryCache;
+import com.tty.ari.dto.gui.PlayerInventoryCheckMenu;
 import com.tty.ari.enumType.FilePath;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBTCompoundList;
-import org.bukkit.NamespacedKey;
+import lombok.Getter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -38,23 +36,25 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
     private PlayerInventoryCache cache;
 
-    public static final List<Integer> PLAYER_INVENTORY_SLOT_MAP = List.of(
-            45, 46, 47, 48, 49, 50, 51, 52, 53,
-            18, 19, 20, 21, 22, 23, 24, 25, 26,
-            27, 28, 29, 30, 31, 32, 33, 34, 35,
-            36, 37, 38, 39, 40, 41, 42, 43, 44
-    );
+    public static final int MAX_PLAYER_INVENTORY_INDEX = 35;
 
-    private final NamespacedKey equipmentKey;
+    @Getter
+    private final List<Integer> combineInventory = new ArrayList<>();
 
     public PlayerInventoryEdit(AbstractJavaPlugin plugin, OfflinePlayer target) {
         super(plugin, target);
-        this.equipmentKey = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_EQUIPMENT_TYPE);
+        PlayerInventoryCheckMenu menu = (PlayerInventoryCheckMenu) this.getBaseMenu();
+        List<Integer> shortcutBar = menu.getShortcutBar();
+        List<Integer> playerInventory = menu.getPlayerInventory();
+        if (shortcutBar.size() + playerInventory.size() != MAX_PLAYER_INVENTORY_INDEX + 1) throw new IllegalArgumentException("size not allowed");
+        this.combineInventory.addAll(shortcutBar);
+        this.combineInventory.addAll(playerInventory);
+
     }
 
     @Override
     protected @NotNull BaseMenu config() {
-        return FormatUtils.yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.INV_GUI_CONFIG.name()).saveToString(), BaseDataMenu.class);
+        return FormatUtils.yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.INV_GUI_CONFIG.name()).saveToString(), PlayerInventoryCheckMenu.class);
     }
 
     @Override
@@ -71,9 +71,6 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
                 case PLAYER_OFF_HAND -> {
                     ItemStack offHand = this.cache.getOff_hand();
                     if (offHand == null || offHand.isEmpty()) break;
-                    ItemMeta itemMeta = offHand.getItemMeta();
-                    itemMeta.getPersistentDataContainer().set(this.equipmentKey, PersistentDataType.STRING, FunctionType.PLAYER_OFF_HAND.name());
-
                     value.setItemStack(offHand);
                 }
                 case PLAYER_HELMET -> {
@@ -110,6 +107,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
     private @Nullable PlayerInventoryCache get(OfflinePlayer offlinePlayer) {
         PlayerInventoryCache cache = new PlayerInventoryCache();
+
         if (offlinePlayer instanceof Player player) {
             PlayerInventory inventory = player.getInventory();
 
@@ -120,7 +118,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
             }
             ItemStack chestplate = inventory.getChestplate();
             if (chestplate != null) {
-                cache.setChestplate(chestplate);
+                cache.setChestplate(chestplate.clone());
             }
             ItemStack leggings = inventory.getLeggings();
             if (leggings != null) {
@@ -132,10 +130,12 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
             }
 
             @Nullable ItemStack[] contents = inventory.getContents();
-            for (int i = 0; i < PLAYER_INVENTORY_SLOT_MAP.size(); i++) {
+            for (int i = 0; i < inventory.getSize(); i++) {
+                if (i > MAX_PLAYER_INVENTORY_INDEX) break;
                 ItemStack itemStack = contents[i];
                 if (itemStack == null) continue;
-                cache.addItem(PLAYER_INVENTORY_SLOT_MAP.get(i), itemStack.clone());
+                ItemStack clone = itemStack.clone();
+                cache.addItem(this.combineInventory.get(i), clone);
                 this.getLog().debug("index: {}, item: {}", i, itemStack.getType().name());
             }
         } else {
@@ -149,9 +149,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
             for (ReadWriteNBT item : inventory) {
                 int slot = item.getByte("Slot") & 0xFF;
-                if (slot < PLAYER_INVENTORY_SLOT_MAP.size()) {
-                    cache.addItem(PLAYER_INVENTORY_SLOT_MAP.get(slot), NBT.itemStackFromNBT(item));
-                }
+                cache.addItem(this.combineInventory.get(slot), NBT.itemStackFromNBT(item));
             }
 
             if (data.hasTag("equipment")) {
@@ -199,8 +197,38 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         return cache;
     }
 
+    public @Nullable ItemStack getOffhand() {
+        FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(FunctionType.PLAYER_OFF_HAND)).findFirst().orElse(null);
+        if (items == null) return null;
+        return this.getInventory().getItem(items.getSlot().getFirst());
+    }
+
+    public @Nullable ItemStack getHelmet() {
+        FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(FunctionType.PLAYER_HELMET)).findFirst().orElse(null);
+        if (items == null) return null;
+        return this.getInventory().getItem(items.getSlot().getFirst());
+    }
+
+    public @Nullable ItemStack getChestplate() {
+        FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(FunctionType.PLAYER_CHESTPLATE)).findFirst().orElse(null);
+        if (items == null) return null;
+        return this.getInventory().getItem(items.getSlot().getFirst());
+    }
+
+    public @Nullable ItemStack getLeggings() {
+        FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(FunctionType.PLAYER_LEGGINGS)).findFirst().orElse(null);
+        if (items == null) return null;
+        return this.getInventory().getItem(items.getSlot().getFirst());
+    }
+
+    public @Nullable ItemStack getBoots() {
+        FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(FunctionType.PLAYER_BOOTS)).findFirst().orElse(null);
+        if (items == null) return null;
+        return this.getInventory().getItem(items.getSlot().getFirst());
+    }
+
     @Override
-    protected void cleanAsync() {
+    public void close() {
         if (!(this.getOfflinePlayer() instanceof Player)) {
             NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.getOfflinePlayer().getUniqueId().toString());
             if (data == null) {
@@ -214,44 +242,39 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
                 equipment = data.getOrCreateCompound("equipment");
             }
 
-            for (FunctionItems value : this.getBaseMenu().getFunctionItems().values()) {
-                ItemStack itemStack = this.getInventory().getItem(value.getSlot().getFirst());
-
-                if (itemStack == null || itemStack.getType().name().equalsIgnoreCase(value.getMaterial())) continue;
-                ItemMeta itemMeta = itemStack.getItemMeta();
-                itemMeta.getPersistentDataContainer().remove(this.equipmentKey);
-                itemStack.setItemMeta(itemMeta);
-
-                switch (value.getType()) {
-                    case PLAYER_OFF_HAND -> equipment.setItemStack("offhand", itemStack);
-                    case PLAYER_HELMET -> equipment.setItemStack("head", itemStack);
-                    case PLAYER_CHESTPLATE -> equipment.setItemStack("chest", itemStack);
-                    case PLAYER_LEGGINGS -> equipment.setItemStack("legs", itemStack);
-                    case PLAYER_BOOTS -> equipment.setItemStack("feet", itemStack);
-                }
-            }
-
+            //读取箱子GUI里的装备
+            equipment.setItemStack("offhand", this.getOffhand());
+            equipment.setItemStack("head", this.getHelmet());
+            equipment.setItemStack("chest", this.getChestplate());
+            equipment.setItemStack("legs", this.getLeggings());
+            equipment.setItemStack("feet", this.getBoots());
 
             //填充背包
+
             data.removeKey("Inventory");
 
             ReadWriteNBTCompoundList inventory = data.getCompoundList("Inventory");
 
-            int i = this.getInventory().getSize() - PLAYER_INVENTORY_SLOT_MAP.size();
-            for (int slot : PLAYER_INVENTORY_SLOT_MAP) {
-                ItemStack item = this.getInventory().getItem(slot);
+            //填充快捷栏
+
+            for (int i = 0; i < this.combineInventory.size(); i++) {
+                ItemStack item = this.getInventory().getItem(this.combineInventory.get(i));
                 if (item == null || item.getType().isAir()) continue;
-                ReadWriteNBT readWriteNBT = NBT.itemStackToNBT(item);
-                readWriteNBT.setByte("Slot", (byte) (slot - i));
-                inventory.addCompound(readWriteNBT);
+                try {
+                    ReadWriteNBT readWriteNBT = NBT.itemStackToNBT(item);
+                    readWriteNBT.setByte("Slot", (byte) i);
+                    inventory.addCompound(readWriteNBT);
+                } catch (Exception e) {
+                    this.getLog().error("Invalid item in player data, skipping slot {}", i);
+                }
             }
+
             try {
                 data.save();
             } catch (IOException e) {
-                Ari.instance.getLog().error("can not open player {} inventory", this.getOfflinePlayer().getName());
+                this.getLog().error("can not open player {} inventory", this.getOfflinePlayer().getName());
             }
         }
-        super.cleanAsync();
         this.cache = null;
     }
 

@@ -7,6 +7,7 @@ import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.GuiKeyEnum;
 import com.tty.api.listener.BaseGuiListener;
 import com.tty.api.utils.ComponentUtils;
+import com.tty.ari.dto.gui.PlayerInventoryCheckMenu;
 import com.tty.ari.gui.PlayerInventoryEdit;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Material;
@@ -22,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static com.tty.ari.gui.PlayerInventoryEdit.MAX_PLAYER_INVENTORY_INDEX;
+
 public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit> {
 
     public InventoryCheckListener(@NotNull AbstractJavaPlugin plugin, @NotNull GuiKeyEnum guiType) {
@@ -36,7 +39,11 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
 
     @Override
     protected void whenClick(InventoryClickEvent event, PlayerInventoryEdit holder) {
-        boolean fallback = !PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP.contains(event.getSlot());
+
+        PlayerInventoryCheckMenu menu = (PlayerInventoryCheckMenu) holder.getBaseMenu();
+        int slot = event.getSlot();
+
+        boolean fallback = !menu.getShortcutBar().contains(slot) && !menu.getPlayerInventory().contains(slot);
 
         ItemStack clickItem = event.getCurrentItem();
         if (clickItem == null) {
@@ -60,6 +67,8 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             return;
         }
 
+        event.setCancelled(true);
+
         this.changeEquipment(event, items);
 
     }
@@ -70,9 +79,9 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
 
     @Override
     protected void whenDrag(InventoryDragEvent event, PlayerInventoryEdit holder) {
+        List<Integer> inventory = holder.getCombineInventory();
         Set<Integer> slots = event.getInventorySlots();
-        Set<Integer> slotSet = new HashSet<>(PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP);
-        event.setCancelled(slots.isEmpty() || !slotSet.containsAll(slots));
+        event.setCancelled(slots.isEmpty() || !new HashSet<>(inventory).containsAll(slots));
     }
 
     @Override
@@ -84,7 +93,13 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             return;
         }
 
-        List<Integer> slotMap = PlayerInventoryEdit.PLAYER_INVENTORY_SLOT_MAP;
+        PlayerInventoryCheckMenu menu = (PlayerInventoryCheckMenu) holder.getBaseMenu();
+
+        List<Integer> slotMap = new ArrayList<>(MAX_PLAYER_INVENTORY_INDEX);
+        slotMap.addAll(menu.getPlayerInventory());
+        slotMap.addAll(menu.getShortcutBar());
+
+
         Inventory gui = event.getInventory();
 
         int originalAmount = clickedItem.getAmount();
@@ -136,7 +151,6 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
     }
 
     private void changeEquipment(InventoryClickEvent event, FunctionItems items) {
-        event.setCancelled(true);
 
         ItemStack cursor = event.getCursor();
         ItemStack current = event.getCurrentItem();

@@ -125,8 +125,8 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
     }
 
     @Override
-    protected void cleanAsync() {
-        super.cleanAsync();
+    public void close() {
+        super.close();
         this.baseFree = null;
     }
 

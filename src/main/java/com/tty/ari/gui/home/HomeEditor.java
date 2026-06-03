@@ -70,8 +70,7 @@ public class HomeEditor extends BaseConfigInventory {
     }
 
     @Override
-    protected void cleanAsync() {
-        super.cleanAsync();
+    public void close() {
         this.currentEditHome = null;
     }
 
