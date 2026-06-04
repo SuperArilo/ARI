@@ -111,7 +111,6 @@ public class Ari extends AbstractJavaPlugin {
         return List.of(
                 new DamageTrackerListener(),
                 new GuiCleanupListener(),
-                new GuiCleanupListener(),
                 new HomeListListener(GuiType.HOME_LIST),
                 new EditHomeListener(GuiType.HOME_EDIT),
                 new RecordLastLocationListener(),
