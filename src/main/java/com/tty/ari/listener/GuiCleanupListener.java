@@ -29,6 +29,7 @@ public class GuiCleanupListener implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
+        Ari.instance.getLog().debug("clean.");
         this.clean(event.getInventory());
     }
 

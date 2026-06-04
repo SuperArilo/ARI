@@ -8,6 +8,7 @@ import com.tty.api.dto.gui.Mask;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.utils.FormatUtils;
+import com.tty.api.utils.GuiNBTKeys;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.PlayerInventoryCache;
 import com.tty.ari.dto.gui.PlayerInventoryCheckMenu;
@@ -17,6 +18,7 @@ import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBTCompoundList;
 import lombok.Getter;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -199,37 +201,81 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
     public @Nullable ItemStack getOffhand() {
         FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(FunctionType.PLAYER_OFF_HAND)).findFirst().orElse(null);
-        if (items == null) return null;
-        return this.getInventory().getItem(items.getSlot().getFirst());
+        return this.getItemStackAndCheck(items);
+    }
+
+    public @Nullable ItemStack getOffhand(boolean hasNBT) {
+        ItemStack offhand = this.getOffhand();
+        if (offhand == null) return null;
+        if(hasNBT) return offhand;
+        this.removeNBT(offhand, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
+        return offhand;
     }
 
     public @Nullable ItemStack getHelmet() {
         FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(FunctionType.PLAYER_HELMET)).findFirst().orElse(null);
-        if (items == null) return null;
-        return this.getInventory().getItem(items.getSlot().getFirst());
+        return this.getItemStackAndCheck(items);
+    }
+
+    public @Nullable ItemStack getHelmet(boolean hasNBT) {
+        ItemStack helmet = this.getHelmet();
+        if (helmet == null) return null;
+        if (hasNBT) return helmet;
+        this.removeNBT(helmet, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
+        return helmet;
     }
 
     public @Nullable ItemStack getChestplate() {
         FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(FunctionType.PLAYER_CHESTPLATE)).findFirst().orElse(null);
-        if (items == null) return null;
-        return this.getInventory().getItem(items.getSlot().getFirst());
+        return this.getItemStackAndCheck(items);
+    }
+
+    public @Nullable ItemStack getChestplate(boolean hasNBT) {
+        ItemStack chestplate = this.getChestplate();
+        if (chestplate == null) return null;
+        if (hasNBT) return chestplate;
+        this.removeNBT(chestplate, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
+        return chestplate;
     }
 
     public @Nullable ItemStack getLeggings() {
         FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(FunctionType.PLAYER_LEGGINGS)).findFirst().orElse(null);
+        return this.getItemStackAndCheck(items);
+    }
+
+    @Nullable
+    private ItemStack getItemStackAndCheck(FunctionItems items) {
         if (items == null) return null;
-        return this.getInventory().getItem(items.getSlot().getFirst());
+        ItemStack item = this.getInventory().getItem(items.getSlot().getFirst());
+        if (item == null) return null;
+        if (item.getType().name().equalsIgnoreCase(items.getMaterial())) return null;
+        return item;
+    }
+
+    public @Nullable ItemStack getLeggings(boolean hasNBT) {
+        ItemStack leggings = this.getLeggings();
+        if (leggings == null) return null;
+        if (hasNBT) return leggings;
+        this.removeNBT(leggings, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
+        return leggings;
     }
 
     public @Nullable ItemStack getBoots() {
         FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(FunctionType.PLAYER_BOOTS)).findFirst().orElse(null);
-        if (items == null) return null;
-        return this.getInventory().getItem(items.getSlot().getFirst());
+        return this.getItemStackAndCheck(items);
+    }
+
+    public @Nullable ItemStack getBoots(boolean hasNBT) {
+        ItemStack boots = this.getBoots();
+        if (boots == null) return null;
+        if (hasNBT) return boots;
+        this.removeNBT(boots, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
+        return boots;
     }
 
     @Override
     public void close() {
-        if (!(this.getOfflinePlayer() instanceof Player)) {
+        if (!(this.getOfflinePlayer() instanceof Player player && player.isOnline())) {
             NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.getOfflinePlayer().getUniqueId().toString());
             if (data == null) {
                 Ari.instance.getLog().error("can not open player {} inventory", this.getOfflinePlayer().getName());
@@ -243,11 +289,37 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
             }
 
             //读取箱子GUI里的装备
-            equipment.setItemStack("offhand", this.getOffhand());
-            equipment.setItemStack("head", this.getHelmet());
-            equipment.setItemStack("chest", this.getChestplate());
-            equipment.setItemStack("legs", this.getLeggings());
-            equipment.setItemStack("feet", this.getBoots());
+            ItemStack offhand = this.getOffhand(false);
+            if (offhand != null) {
+                equipment.setItemStack("offhand", offhand);
+            } else {
+                equipment.removeKey("offhand");
+            }
+            ItemStack helmet = this.getHelmet(false);
+            if (helmet != null) {
+                equipment.setItemStack("head", helmet);
+            } else {
+                equipment.removeKey("head");
+            }
+            ItemStack chestplate = this.getChestplate(false);
+            if (chestplate != null) {
+                equipment.setItemStack("chest", chestplate);
+            } else {
+                equipment.removeKey("chest");
+            }
+            ItemStack leggings = this.getLeggings(false);
+            if (leggings != null) {
+                equipment.setItemStack("legs", leggings);
+            } else {
+                equipment.removeKey("legs");
+            }
+            ItemStack boots = this.getBoots(false);
+            if (boots != null) {
+                equipment.setItemStack("feet", boots);
+            } else {
+                equipment.removeKey("feet");
+            }
+
 
             //填充背包
 
