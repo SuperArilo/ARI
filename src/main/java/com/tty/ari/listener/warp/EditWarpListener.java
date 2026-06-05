@@ -208,11 +208,6 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor> {
     }
 
     @Override
-    protected void whenDoubleClick(InventoryClickEvent event, WarpEditor holder) {
-        event.setCancelled(true);
-    }
-
-    @Override
     protected void whenShiftClick(InventoryClickEvent event, WarpEditor holder) {
         event.setCancelled(true);
     }

@@ -73,6 +73,9 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
                         }
                         player.openInventory(new PlayerInventoryEdit(Ari.instance, offlinePlayer).getInventory());
                     }, null);
+                }).exceptionally(e -> {
+                    Ari.instance.getLog().error(e);
+                   return null;
                 });
         return Command.SINGLE_SUCCESS;
     }

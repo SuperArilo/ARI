@@ -99,11 +99,6 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
     }
 
     @Override
-    protected void whenDoubleClick(InventoryClickEvent event, HomeList holder) {
-        event.setCancelled(true);
-    }
-
-    @Override
     protected void whenShiftClick(InventoryClickEvent event, HomeList holder) {
         event.setCancelled(true);
     }
