@@ -33,7 +33,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     private final Object rtpConfigMapLock = new Object();
 
     public RandomTpStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
+        super(rate, c, isAsync, Ari.instance);
         this.searchSafeLocation = new SearchSafeLocation(Ari.instance, Ari.INTERACT_SERVICE, 5);
         this.rtpConfigMap = this.getRtpConfigWorlds();
     }

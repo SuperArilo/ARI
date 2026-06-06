@@ -19,7 +19,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
     private final EntityRepository<ServerPlayer> repository;
 
     public PlayerSaveStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
+        super(rate, c, isAsync, Ari.instance);
         this.repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
     }
 

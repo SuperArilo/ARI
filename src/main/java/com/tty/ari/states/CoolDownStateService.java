@@ -8,7 +8,7 @@ import org.bukkit.entity.Entity;
 public class CoolDownStateService extends StateService<CooldownState> {
 
     public CoolDownStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
+        super(rate, c, isAsync, Ari.instance);
     }
 
     @Override

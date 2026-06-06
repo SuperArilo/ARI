@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 public class PlayerRideActionStateService extends StateService<PlayerRideActionState> {
 
     public PlayerRideActionStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
+        super(rate, c, isAsync, Ari.instance);
     }
 
     @Override

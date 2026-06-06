@@ -29,7 +29,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
     private final Object disableBlockListLock = new Object();
 
     public PlayerSitActionStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
+        super(rate, c, isAsync, Ari.instance);
         this.disableBlockList = this.getDisableList();
     }
 

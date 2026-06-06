@@ -16,7 +16,7 @@ import java.util.List;
 public class PreTeleportStateService extends StateService<PreEntityToEntityState> {
 
     public PreTeleportStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
+        super(rate, c, isAsync, Ari.instance);
     }
 
     @Override

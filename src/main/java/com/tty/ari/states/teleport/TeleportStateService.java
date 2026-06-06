@@ -26,7 +26,7 @@ public class TeleportStateService extends StateService<State> {
     private final Map<UUID, Location> initLocationMap = new HashMap<>();
 
     public TeleportStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
+        super(rate, c, isAsync, Ari.instance);
     }
 
     @Override

@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class GuiEditStateService extends StateService<EditGuiState> {
 
     public GuiEditStateService(long rate, long c, boolean isAsync) {
-        super(rate, c, isAsync, Ari.instance, Ari.instance.getScheduler());
+        super(rate, c, isAsync, Ari.instance);
     }
 
     @Override
