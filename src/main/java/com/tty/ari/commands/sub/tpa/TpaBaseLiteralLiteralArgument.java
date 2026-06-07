@@ -49,7 +49,7 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
      * @return 能够执行的列表
      */
     public Set<String> getResponseList(CommandSender sender) {
-        return Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class).getList().stream()
+        return Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class).getAllStates().stream()
                 .filter(i -> i.getTarget().equals(sender))
                 .filter(i -> i.getType().equals(TeleportType.TPA))
                 .map(e -> e.getOwner().getName())

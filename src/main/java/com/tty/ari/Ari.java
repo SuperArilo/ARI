@@ -18,6 +18,8 @@ import com.tty.ari.listener.bungee.GetServerListListener;
 import com.tty.ari.listener.home.EditHomeListener;
 import com.tty.ari.listener.home.HomeListListener;
 import com.tty.ari.listener.player.*;
+import com.tty.ari.listener.player.check.InventoryCheckListener;
+import com.tty.ari.listener.player.check.PlayerInventoryUpdateListener;
 import com.tty.ari.listener.teleport.RecordLastLocationListener;
 import com.tty.ari.listener.unsupported.SandDupeListener;
 import com.tty.ari.listener.warp.EditWarpListener;
@@ -118,6 +120,7 @@ public class Ari extends AbstractJavaPlugin {
                 new WarpListListener(GuiType.WARP_LIST),
                 new EditWarpListener(GuiType.WARP_EDIT),
                 new InventoryCheckListener(this, GuiType.PLAYER_INVENTORY_EDIT),
+                new PlayerInventoryUpdateListener(),
                 new OnPlayerJoinAndLeaveListener(),
                 new PlayerSkipNight(),
                 new OnPluginReloadListener(),

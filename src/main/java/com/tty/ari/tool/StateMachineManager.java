@@ -1,17 +1,20 @@
 package com.tty.ari.tool;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import com.tty.api.state.State;
 import com.tty.api.state.StateService;
-import com.tty.ari.states.*;
+import com.tty.ari.states.CoolDownStateService;
+import com.tty.ari.states.GuiEditStateService;
+import com.tty.ari.states.GuiManagerStateService;
+import com.tty.ari.states.PlayerSaveStateService;
 import com.tty.ari.states.action.PlayerRideActionStateService;
 import com.tty.ari.states.action.PlayerSitActionStateService;
 import com.tty.ari.states.teleport.PreTeleportStateService;
 import com.tty.ari.states.teleport.RandomTpStateService;
 import com.tty.ari.states.teleport.TeleportStateService;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 public class StateMachineManager {
 
@@ -26,6 +29,7 @@ public class StateMachineManager {
         this.registerStateMachine(new RandomTpStateService(20L, 1L, true));
         this.registerStateMachine(new GuiEditStateService(20L,1L, false));
         this.registerStateMachine(new PlayerSaveStateService(20L, 20L, true));
+        this.registerStateMachine(new GuiManagerStateService(20L, 1L, false));
     }
 
     @SuppressWarnings("unchecked")

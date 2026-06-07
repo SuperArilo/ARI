@@ -1,11 +1,13 @@
 package com.tty.ari.listener;
 
-import com.tty.ari.Ari;
 import com.tty.api.annotations.gui.GuiMeta;
-import com.tty.ari.gui.OfflineNBTEnderCheat;
-import com.tty.ari.enumType.GuiType;
 import com.tty.api.gui.BaseInventory;
+import com.tty.ari.Ari;
+import com.tty.ari.dto.state.GuiState;
+import com.tty.ari.enumType.GuiType;
+import com.tty.ari.gui.OfflineNBTEnderCheat;
 import com.tty.ari.gui.PlayerInventoryEdit;
+import com.tty.ari.states.GuiManagerStateService;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
@@ -20,6 +22,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.tty.ari.commands.sub.EnderChestToPlayer.OFFLINE_ON_EDIT_ENDER_CHEST_LIST;
 import static com.tty.ari.commands.sub.InventoryCheck.OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST;
@@ -29,8 +32,12 @@ public class GuiCleanupListener implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        Ari.instance.getLog().debug("clean.");
         this.clean(event.getInventory());
+        GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
+        List<GuiState<PlayerInventoryEdit>> states = service.getStates(event.getPlayer());
+        for (GuiState<PlayerInventoryEdit> state : states) {
+            state.setOver(true);
+        }
     }
 
     @EventHandler

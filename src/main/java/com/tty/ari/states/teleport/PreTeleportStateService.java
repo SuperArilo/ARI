@@ -1,17 +1,15 @@
 package com.tty.ari.states.teleport;
 
-import com.tty.ari.Ari;
-import com.tty.api.utils.ComponentUtils;
-import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
 import com.tty.api.state.StateService;
+import com.tty.api.utils.ComponentUtils;
+import com.tty.ari.Ari;
+import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
 import com.tty.ari.states.CoolDownStateService;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.StateMachineManager;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-
-import java.util.List;
 
 public class PreTeleportStateService extends StateService<PreEntityToEntityState> {
 
@@ -125,7 +123,4 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
         return true;
     }
 
-    public List<PreEntityToEntityState> getList() {
-        return this.stateList;
-    }
 }

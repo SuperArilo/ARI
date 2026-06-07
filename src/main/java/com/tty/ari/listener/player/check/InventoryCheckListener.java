@@ -1,4 +1,4 @@
-package com.tty.ari.listener.player;
+package com.tty.ari.listener.player.check;
 
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.annotations.function_type.FunctionHandler;
