@@ -1,83 +1,23 @@
 package com.tty.ari.listener;
 
-import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.gui.BaseInventory;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
-import com.tty.ari.enumType.GuiType;
-import com.tty.ari.gui.OfflineNBTEnderCheat;
-import com.tty.ari.gui.PlayerInventoryEdit;
 import com.tty.ari.states.GuiManagerStateService;
-import de.tr7zw.nbtapi.NBT;
-import de.tr7zw.nbtapi.iface.NBTFileHandle;
-import de.tr7zw.nbtapi.iface.ReadWriteNBT;
-import de.tr7zw.nbtapi.iface.ReadWriteNBTCompoundList;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
-
-import java.io.IOException;
-import java.util.List;
-
-import static com.tty.ari.commands.sub.EnderChestToPlayer.OFFLINE_ON_EDIT_ENDER_CHEST_LIST;
-import static com.tty.ari.commands.sub.InventoryCheck.OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST;
 
 
 public class GuiCleanupListener implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        this.clean(event.getInventory());
+        if (!(event.getInventory().getHolder() instanceof BaseInventory inventory)) return;
         GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
-        List<OnCheckPlayerGuiState> states = service.getStates(event.getPlayer());
-        for (OnCheckPlayerGuiState state : states) {
+        for (OnCheckPlayerGuiState state : service.getStates(event.getPlayer())) {
             state.setOver(true);
         }
-    }
-
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        InventoryView view = player.getOpenInventory();
-        this.clean(view.getTopInventory());
-    }
-
-    private void clean(Inventory inventory) {
-        if (!(inventory.getHolder() instanceof BaseInventory baseInventory)) return;
-        GuiMeta annotation = baseInventory.getClass().getAnnotation(GuiMeta.class);
-        if (annotation == null) return;
-        String type = annotation.type();
-        if (type.equals(GuiType.OFFLINE_ENDERCHEST.getType()) && baseInventory instanceof OfflineNBTEnderCheat cheat) {
-            NBTFileHandle data = cheat.getData();
-            data.removeKey("EnderItems");
-            ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
-            Inventory inv = cheat.getInventory();
-            for (int slot = 0; slot < inv.getSize(); slot++) {
-                ItemStack item = inv.getItem(slot);
-                if (item == null || item.getType().isAir()) continue;
-                ReadWriteNBT itemNBT = NBT.itemStackToNBT(item);
-                itemNBT.setByte("Slot", (byte) slot);
-                enderItems.addCompound(itemNBT);
-            }
-            Ari.instance.getScheduler().runAsync(Ari.instance, i -> {
-                try {
-                    data.save();
-                    Ari.instance.getLog().debug("ender chest nbt save player {} success.", cheat.getTarget().toString());
-                    OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(cheat.getTarget());
-                    Ari.instance.getScheduler().run(Ari.instance, t -> baseInventory.close());
-                } catch (IOException e) {
-                    Ari.instance.getLog().error(e, "ender chest nbt save error. ");
-                }
-            });
-        } else if (type.equals(GuiType.PLAYER_INVENTORY_EDIT.getType()) && baseInventory instanceof PlayerInventoryEdit inventoryEdit) {
-            OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST.remove(inventoryEdit.getOfflinePlayer().getUniqueId());
-        }
-
-        baseInventory.close();
+        inventory.close();
     }
 }

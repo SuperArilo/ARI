@@ -37,7 +37,7 @@ import java.util.concurrent.CompletableFuture;
 public class PlayerInventoryEdit extends BaseConfigInventory {
 
     @Getter
-    private final OfflinePlayer monitoree;
+    private OfflinePlayer monitoree;
     private PlayerInventoryCache cache;
 
     public static final int MAX_PLAYER_INVENTORY_INDEX = 35;
@@ -278,79 +278,76 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
     @Override
     public void close() {
-        if (!(this.getMonitoree() instanceof Player player && player.isOnline())) {
-            NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.getMonitoree().getUniqueId().toString());
-            if (data == null) {
-                Ari.instance.getLog().error("can not open player {} inventory", this.getMonitoree().getName());
-                return;
-            }
+        this.getPlugin().getScheduler().runAsync(this.getPlugin(), t -> {
+            if (!(this.getMonitoree() instanceof Player player && player.isOnline())) {
+                NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.getMonitoree().getUniqueId().toString());
+                if (data == null) {
+                    Ari.instance.getLog().error("can not open player {} inventory", this.getMonitoree().getName());
+                    return;
+                }
 
-            ReadWriteNBT equipment = data.getCompound("equipment");
+                ReadWriteNBT equipment = data.getCompound("equipment");
 
-            if (equipment == null) {
-                equipment = data.getOrCreateCompound("equipment");
-            }
+                if (equipment == null) {
+                    equipment = data.getOrCreateCompound("equipment");
+                }
 
-            //读取箱子GUI里的装备
-            ItemStack offhand = this.getOffhand(false);
-            if (offhand != null) {
-                equipment.setItemStack("offhand", offhand);
-            } else {
-                equipment.removeKey("offhand");
-            }
-            ItemStack helmet = this.getHelmet(false);
-            if (helmet != null) {
-                equipment.setItemStack("head", helmet);
-            } else {
-                equipment.removeKey("head");
-            }
-            ItemStack chestplate = this.getChestplate(false);
-            if (chestplate != null) {
-                equipment.setItemStack("chest", chestplate);
-            } else {
-                equipment.removeKey("chest");
-            }
-            ItemStack leggings = this.getLeggings(false);
-            if (leggings != null) {
-                equipment.setItemStack("legs", leggings);
-            } else {
-                equipment.removeKey("legs");
-            }
-            ItemStack boots = this.getBoots(false);
-            if (boots != null) {
-                equipment.setItemStack("feet", boots);
-            } else {
-                equipment.removeKey("feet");
-            }
+                //读取箱子GUI里的装备
+                ItemStack offhand = this.getOffhand(false);
+                if (offhand != null) {
+                    equipment.setItemStack("offhand", offhand);
+                } else {
+                    equipment.removeKey("offhand");
+                }
+                ItemStack helmet = this.getHelmet(false);
+                if (helmet != null) {
+                    equipment.setItemStack("head", helmet);
+                } else {
+                    equipment.removeKey("head");
+                }
+                ItemStack chestplate = this.getChestplate(false);
+                if (chestplate != null) {
+                    equipment.setItemStack("chest", chestplate);
+                } else {
+                    equipment.removeKey("chest");
+                }
+                ItemStack leggings = this.getLeggings(false);
+                if (leggings != null) {
+                    equipment.setItemStack("legs", leggings);
+                } else {
+                    equipment.removeKey("legs");
+                }
+                ItemStack boots = this.getBoots(false);
+                if (boots != null) {
+                    equipment.setItemStack("feet", boots);
+                } else {
+                    equipment.removeKey("feet");
+                }
 
+                data.removeKey("Inventory");
+                ReadWriteNBTCompoundList inventory = data.getCompoundList("Inventory");
+                for (int i = 0; i < this.combineInventory.size(); i++) {
+                    ItemStack item = this.getInventory().getItem(this.combineInventory.get(i));
+                    if (item == null || item.getType().isAir()) continue;
+                    try {
+                        ReadWriteNBT readWriteNBT = NBT.itemStackToNBT(item);
+                        readWriteNBT.setByte("Slot", (byte) i);
+                        inventory.addCompound(readWriteNBT);
+                    } catch (Exception e) {
+                        this.getLog().error("Invalid item in player data, skipping slot {}", i);
+                    }
+                }
 
-            //填充背包
-
-            data.removeKey("Inventory");
-
-            ReadWriteNBTCompoundList inventory = data.getCompoundList("Inventory");
-
-            //填充快捷栏
-
-            for (int i = 0; i < this.combineInventory.size(); i++) {
-                ItemStack item = this.getInventory().getItem(this.combineInventory.get(i));
-                if (item == null || item.getType().isAir()) continue;
                 try {
-                    ReadWriteNBT readWriteNBT = NBT.itemStackToNBT(item);
-                    readWriteNBT.setByte("Slot", (byte) i);
-                    inventory.addCompound(readWriteNBT);
-                } catch (Exception e) {
-                    this.getLog().error("Invalid item in player data, skipping slot {}", i);
+                    data.save();
+                } catch (IOException e) {
+                    this.getLog().error("can not open player {} inventory", this.getMonitoree().getName());
+                } finally {
+                    this.cache = null;
+                    this.monitoree = null;
                 }
             }
-
-            try {
-                data.save();
-            } catch (IOException e) {
-                this.getLog().error("can not open player {} inventory", this.getMonitoree().getName());
-            }
-        }
-        this.cache = null;
+        });
     }
 
 }

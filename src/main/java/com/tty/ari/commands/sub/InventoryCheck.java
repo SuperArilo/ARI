@@ -24,14 +24,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @CommandMeta(displayName = "name or uuid (string)", permission = "ari.command.inv", tokenLength = 2)
 @ArgumentCommand(isSuggests = true)
 public class InventoryCheck extends RequiredArgumentCommand<String> {
-
-    public static final List<UUID> OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST = new CopyOnWriteArrayList<>();
 
     @Override
     protected @NotNull ArgumentType<String> argumentType() {
@@ -64,17 +61,19 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
                         sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                         return;
                     }
-                    if (OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST.contains(uuid)) {
+
+                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
+                    GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
+
+                    if (service.getStates(player).stream().anyMatch(i -> i.getMonitoree().equals(offlinePlayer))) {
                         sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.task-occupied")));
                         return;
                     }
-                    Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> {
-                        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
-                        if (!(offlinePlayer instanceof Player)) {
-                            OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST.add(uuid);
-                        }
-                        Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new OnCheckPlayerGuiState(player, offlinePlayer, new PlayerInventoryEdit(Ari.instance, player, offlinePlayer)));
-                    }, null);
+                    Ari.instance.getScheduler().runAtEntity(
+                            Ari.instance,
+                            player,
+                            i -> Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new OnCheckPlayerGuiState(player, offlinePlayer, new PlayerInventoryEdit(Ari.instance, player, offlinePlayer))),
+                            null);
                 }).exceptionally(e -> {
                     Ari.instance.getLog().error(e);
                    return null;

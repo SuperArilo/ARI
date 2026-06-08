@@ -9,11 +9,13 @@ import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.commands.maintenance;
 import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.dto.event.OnZakoSavedEvent;
+import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.dto.state.player.PlayerSaveState;
 import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.enumType.FilePath;
+import com.tty.ari.states.GuiManagerStateService;
 import com.tty.ari.states.PlayerSaveStateService;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerNameCache;
@@ -35,9 +37,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.tty.ari.commands.sub.EnderChestToPlayer.OFFLINE_ON_EDIT_ENDER_CHEST_LIST;
-import static com.tty.ari.commands.sub.InventoryCheck.OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST;
 
 public class OnPlayerJoinAndLeaveListener implements Listener {
 
@@ -73,11 +72,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join").join());
             return;
         }
-
-        if (OFFLINE_ON_EDIT_ENDER_CHEST_LIST.contains(uuid)) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
-        }
-        if (OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST.contains(uuid)) {
+        if (Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getAllStates().stream().anyMatch(t -> t.getMonitoree().equals(offlinePlayer))) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
         }
     }
@@ -213,8 +208,9 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         if (!states.isEmpty()) {
             states.getFirst().setCount(new AtomicInteger(Integer.MAX_VALUE));
         }
-        OFFLINE_ON_EDIT_ENDER_CHEST_LIST.remove(player.getUniqueId());
-        OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST.remove(player.getUniqueId());
+        for (OnCheckPlayerGuiState state : Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getStates(player)) {
+            state.setOver(true);
+        }
     }
 
     @EventHandler
