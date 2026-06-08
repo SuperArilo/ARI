@@ -2,6 +2,7 @@ package com.tty.ari.listener.player.check;
 
 import com.tty.api.gui.BaseInventory;
 import com.tty.ari.Ari;
+import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.gui.PlayerInventoryEdit;
 import com.tty.ari.states.GuiManagerStateService;
@@ -61,8 +62,8 @@ public class PlayerInventoryUpdateListener implements Listener {
     private void syncPlayerInventoryToEdit(HumanEntity entity) {
         Ari.instance.getScheduler().runAtEntity(Ari.instance, entity, i -> {
             GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
-            for (OnCheckPlayerGuiState state : service.getAllStates()) {
-                if (!(state.getMenu() instanceof PlayerInventoryEdit editInventory)) continue;
+            for (GuiState guiState : service.getAllStates()) {
+                if (!(guiState.getMenu() instanceof PlayerInventoryEdit editInventory) || !(guiState instanceof OnCheckPlayerGuiState state)) continue;
 
                 if (!state.getMonitoree().equals(entity) || !state.getOwner().equals(editInventory.getOfflinePlayer())) return;
 

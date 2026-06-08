@@ -2,7 +2,7 @@ package com.tty.ari.listener;
 
 import com.tty.api.gui.BaseInventory;
 import com.tty.ari.Ari;
-import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
+import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.states.GuiManagerStateService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,7 +15,7 @@ public class GuiCleanupListener implements Listener {
     public void onInventoryClose(InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof BaseInventory inventory)) return;
         GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
-        for (OnCheckPlayerGuiState state : service.getStates(event.getPlayer())) {
+        for (GuiState state : service.getStates(event.getPlayer())) {
             state.setOver(true);
         }
         inventory.close();

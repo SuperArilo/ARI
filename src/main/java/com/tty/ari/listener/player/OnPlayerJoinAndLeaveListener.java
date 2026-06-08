@@ -9,6 +9,7 @@ import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.commands.maintenance;
 import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.dto.event.OnZakoSavedEvent;
+import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.dto.state.player.PlayerSaveState;
 import com.tty.ari.entity.BanPlayer;
@@ -72,7 +73,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join").join());
             return;
         }
-        if (Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getAllStates().stream().anyMatch(t -> t.getMonitoree().equals(offlinePlayer))) {
+        if (Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getAllStates().stream().anyMatch(t -> (t instanceof OnCheckPlayerGuiState state && state.getMonitoree().equals(offlinePlayer)))) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
         }
     }
@@ -208,7 +209,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         if (!states.isEmpty()) {
             states.getFirst().setCount(new AtomicInteger(Integer.MAX_VALUE));
         }
-        for (OnCheckPlayerGuiState state : Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getStates(player)) {
+        for (GuiState state : Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getStates(player)) {
             state.setOver(true);
         }
     }
