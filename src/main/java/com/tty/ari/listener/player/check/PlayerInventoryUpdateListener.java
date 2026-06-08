@@ -2,7 +2,7 @@ package com.tty.ari.listener.player.check;
 
 import com.tty.api.gui.BaseInventory;
 import com.tty.ari.Ari;
-import com.tty.ari.dto.state.GuiState;
+import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.gui.PlayerInventoryEdit;
 import com.tty.ari.states.GuiManagerStateService;
 import org.bukkit.entity.HumanEntity;
@@ -61,8 +61,11 @@ public class PlayerInventoryUpdateListener implements Listener {
     private void syncPlayerInventoryToEdit(HumanEntity entity) {
         Ari.instance.getScheduler().runAtEntity(Ari.instance, entity, i -> {
             GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
-            for (GuiState<PlayerInventoryEdit> state : service.getAllStates()) {
-                PlayerInventoryEdit editInventory = state.getMenu();
+            for (OnCheckPlayerGuiState state : service.getAllStates()) {
+                PlayerInventoryEdit editInventory = (PlayerInventoryEdit) state.getMenu();
+
+                if (!state.getMonitoree().equals(entity) || !state.getOwner().equals(editInventory.getOfflinePlayer())) return;
+
                 List<Integer> combineSlots = editInventory.getCombineInventory();
                 ItemStack[] playerContents = entity.getInventory().getContents();
                 int maxIndex = Math.min(PlayerInventoryEdit.MAX_PLAYER_INVENTORY_INDEX + 1, combineSlots.size());

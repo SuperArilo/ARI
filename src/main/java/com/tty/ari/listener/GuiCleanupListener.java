@@ -3,7 +3,7 @@ package com.tty.ari.listener;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.gui.BaseInventory;
 import com.tty.ari.Ari;
-import com.tty.ari.dto.state.GuiState;
+import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.enumType.GuiType;
 import com.tty.ari.gui.OfflineNBTEnderCheat;
 import com.tty.ari.gui.PlayerInventoryEdit;
@@ -34,8 +34,8 @@ public class GuiCleanupListener implements Listener {
     public void onInventoryClose(InventoryCloseEvent event) {
         this.clean(event.getInventory());
         GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
-        List<GuiState<PlayerInventoryEdit>> states = service.getStates(event.getPlayer());
-        for (GuiState<PlayerInventoryEdit> state : states) {
+        List<OnCheckPlayerGuiState> states = service.getStates(event.getPlayer());
+        for (OnCheckPlayerGuiState state : states) {
             state.setOver(true);
         }
     }

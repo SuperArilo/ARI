@@ -12,7 +12,7 @@ import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
-import com.tty.ari.dto.state.GuiState;
+import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.gui.PlayerInventoryEdit;
 import com.tty.ari.states.GuiManagerStateService;
@@ -73,7 +73,7 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
                         if (!(offlinePlayer instanceof Player)) {
                             OFFLINE_ON_EDIT_PLAYER_INVENTORY_LIST.add(uuid);
                         }
-                        Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState<>(player, new PlayerInventoryEdit(Ari.instance, offlinePlayer)));
+                        Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new OnCheckPlayerGuiState(player, offlinePlayer, new PlayerInventoryEdit(Ari.instance, player, offlinePlayer)));
                     }, null);
                 }).exceptionally(e -> {
                     Ari.instance.getLog().error(e);

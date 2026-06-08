@@ -5,12 +5,12 @@ import com.tty.api.state.State;
 import lombok.Getter;
 import org.bukkit.entity.Entity;
 
-public class GuiState<T extends BaseInventory> extends State {
+public class GuiState extends State {
 
     @Getter
-    private final T menu;
+    private final BaseInventory menu;
 
-    public GuiState(Entity owner, T menu) {
+    public GuiState(Entity owner, BaseInventory menu) {
         super(owner, Integer.MAX_VALUE);
         this.menu = menu;
     }

@@ -36,6 +36,8 @@ import java.util.concurrent.CompletableFuture;
 @GuiMeta(type = "player_inventory_edit")
 public class PlayerInventoryEdit extends BaseConfigInventory {
 
+    @Getter
+    private final OfflinePlayer monitoree;
     private PlayerInventoryCache cache;
 
     public static final int MAX_PLAYER_INVENTORY_INDEX = 35;
@@ -43,8 +45,9 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
     @Getter
     private final List<Integer> combineInventory = new ArrayList<>();
 
-    public PlayerInventoryEdit(AbstractJavaPlugin plugin, OfflinePlayer target) {
-        super(plugin, target);
+    public PlayerInventoryEdit(AbstractJavaPlugin plugin, Player owner,  OfflinePlayer monitoree) {
+        super(plugin, owner);
+        this.monitoree = monitoree;
         PlayerInventoryCheckMenu menu = (PlayerInventoryCheckMenu) this.getBaseMenu();
         List<Integer> shortcutBar = menu.getShortcutBar();
         List<Integer> playerInventory = menu.getPlayerInventory();
@@ -61,7 +64,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
     @Override
     protected @NotNull CompletableFuture<Mask> beforeRenderMasksAsync(@Nullable Mask mask) {
-        this.cache = this.get(this.getOfflinePlayer());
+        this.cache = this.get(this.getMonitoree());
         return CompletableFuture.completedFuture(mask);
     }
 
@@ -143,7 +146,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         } else {
             NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(offlinePlayer.getUniqueId().toString());
             if (data == null) {
-                Ari.instance.getLog().debug("can not find player {} data.", this.getOfflinePlayer().getName());
+                Ari.instance.getLog().debug("can not find player {} data.", this.getMonitoree().getName());
                 return null;
             }
 
@@ -275,10 +278,10 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
     @Override
     public void close() {
-        if (!(this.getOfflinePlayer() instanceof Player player && player.isOnline())) {
-            NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.getOfflinePlayer().getUniqueId().toString());
+        if (!(this.getMonitoree() instanceof Player player && player.isOnline())) {
+            NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.getMonitoree().getUniqueId().toString());
             if (data == null) {
-                Ari.instance.getLog().error("can not open player {} inventory", this.getOfflinePlayer().getName());
+                Ari.instance.getLog().error("can not open player {} inventory", this.getMonitoree().getName());
                 return;
             }
 
@@ -344,7 +347,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
             try {
                 data.save();
             } catch (IOException e) {
-                this.getLog().error("can not open player {} inventory", this.getOfflinePlayer().getName());
+                this.getLog().error("can not open player {} inventory", this.getMonitoree().getName());
             }
         }
         this.cache = null;

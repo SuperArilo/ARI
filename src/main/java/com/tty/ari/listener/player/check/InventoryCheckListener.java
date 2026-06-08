@@ -68,13 +68,13 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             if (cursor.isEmpty() && slotItem != null && !slotItem.isEmpty()) {
                 view.setCursor(slotItem.clone());
                 view.setItem(event.getSlot(), null);
-                if (holder.getOfflinePlayer() instanceof Player player) {
+                if (holder.getMonitoree() instanceof Player player) {
                     player.getInventory().setItem(playerSlot, null);
                 }
 
 
             } else if (!cursor.isEmpty() && (slotItem == null || slotItem.isEmpty())) {
-                if (holder.getOfflinePlayer() instanceof Player player) {
+                if (holder.getMonitoree() instanceof Player player) {
                     player.getInventory().setItem(playerSlot, cursor.clone());
                 }
 
@@ -88,7 +88,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
                     slotItem.setAmount(slotItem.getAmount() + move);
                     cursor.setAmount(cursor.getAmount() - move);
                     view.setItem(event.getSlot(), slotItem.clone());
-                    if (holder.getOfflinePlayer() instanceof Player player) {
+                    if (holder.getMonitoree() instanceof Player player) {
                         player.getInventory().setItem(playerSlot, slotItem.clone());
                     }
                     if (cursor.getAmount() <= 0) {
@@ -99,7 +99,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
                 } else {
                     view.setCursor(slotItem.clone());
                     view.setItem(event.getSlot(), cursor.clone());
-                    if (holder.getOfflinePlayer() instanceof Player player) {
+                    if (holder.getMonitoree() instanceof Player player) {
                         player.getInventory().setItem(playerSlot, cursor.clone());
                     }
                 }
@@ -116,7 +116,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             event.setCancelled(true);
             return;
         }
-        if (!(holder.getOfflinePlayer() instanceof Player player)) return;
+        if (!(holder.getMonitoree() instanceof Player player)) return;
 
         InventoryView view = event.getView();
         Ari.instance.getScheduler().run(Ari.instance, i -> {
