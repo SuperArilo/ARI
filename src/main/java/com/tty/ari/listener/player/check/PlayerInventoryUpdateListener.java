@@ -5,11 +5,15 @@ import com.tty.ari.Ari;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.gui.PlayerInventoryEdit;
 import com.tty.ari.states.GuiManagerStateService;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -18,33 +22,58 @@ public class PlayerInventoryUpdateListener implements Listener {
 
     @EventHandler
     public void onPlayerClick(InventoryClickEvent event) {
-
         if (event.getInventory().getHolder() instanceof BaseInventory) return;
+        this.syncPlayerInventoryToEdit(event.getWhoClicked());
+    }
 
-        GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
-        Ari.instance.getScheduler().run(Ari.instance, i -> {
-            for (GuiState<PlayerInventoryEdit> state : service.getAllStates()) {
-                PlayerInventoryEdit inventory = state.getMenu();
+    @EventHandler
+    public void onPlayerPickup(EntityPickupItemEvent event) {
+        if (!(event.getEntity() instanceof HumanEntity entity)) return;
+        if (entity.getInventory().getHolder() instanceof BaseInventory) return;
+        this.syncPlayerInventoryToEdit(entity);
+    }
 
-                ItemStack currentItem = event.getCurrentItem();
-                int slot = event.getSlot();
+    @EventHandler
+    public void onPlayerDrop(PlayerDropItemEvent event) {
+        this.syncPlayerInventoryToEdit(event.getPlayer());
+    }
 
-                List<Integer> combineSlots = inventory.getCombineInventory();
+    @EventHandler
+    public void onPlayerConsume(PlayerItemConsumeEvent event) {
+        this.syncPlayerInventoryToEdit(event.getPlayer());
+    }
 
-                inventory.getInventory().setItem(combineSlots.get(slot), currentItem);
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (!event.hasItem()) return;
+        Player player = event.getPlayer();
+        ItemStack before;
+        if (event.getItem() == null) return;
+        before = event.getItem().clone();
+        Ari.instance.getScheduler().runLater(Ari.instance, i -> {
+            ItemStack current = player.getInventory().getItemInMainHand();
+            if (!before.equals(current)) {
+                this.syncPlayerInventoryToEdit(player);
             }
-        });
-
+        }, 1);
     }
 
-    @EventHandler
-    public void onPlayerPickup(InventoryPickupItemEvent event) {
-
-    }
-
-    @EventHandler
-    public void onPlayerDrag(InventoryDragEvent event) {
-
+    private void syncPlayerInventoryToEdit(HumanEntity entity) {
+        Ari.instance.getScheduler().runAtEntity(Ari.instance, entity, i -> {
+            GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
+            for (GuiState<PlayerInventoryEdit> state : service.getAllStates()) {
+                PlayerInventoryEdit editInventory = state.getMenu();
+                List<Integer> combineSlots = editInventory.getCombineInventory();
+                ItemStack[] playerContents = entity.getInventory().getContents();
+                int maxIndex = Math.min(PlayerInventoryEdit.MAX_PLAYER_INVENTORY_INDEX + 1, combineSlots.size());
+                for (int slot = 0; slot < maxIndex; slot++) {
+                    Integer targetSlot = combineSlots.get(slot);
+                    if (targetSlot != null && targetSlot < editInventory.getInventory().getSize()) {
+                        editInventory.getInventory().setItem(targetSlot, playerContents[slot]);
+                    }
+                }
+            }
+        }, null);
     }
 
 }
