@@ -136,9 +136,6 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         event.setCancelled(true);
     }
 
-    @Override
-    public void passClick(InventoryClickEvent event) {}
-
     private void changeEquipment(InventoryClickEvent event, FunctionItems items) {
 
         ItemStack cursor = event.getCursor();

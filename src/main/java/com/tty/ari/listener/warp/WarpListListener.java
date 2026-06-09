@@ -39,9 +39,6 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
     }
 
     @Override
-    public void passClick(InventoryClickEvent event) {}
-
-    @Override
     protected @NotNull FunctionHandler<WarpList> registry() {
         FunctionHandler<WarpList> registry = new FunctionHandler<>();
 

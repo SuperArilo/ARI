@@ -36,11 +36,6 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
     }
 
     @Override
-    public void passClick(InventoryClickEvent event) {
-
-    }
-
-    @Override
     protected @NotNull FunctionHandler<HomeList> registry() {
         FunctionHandler<HomeList> registry = new FunctionHandler<>();
 
