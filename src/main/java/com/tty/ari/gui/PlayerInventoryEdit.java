@@ -7,6 +7,7 @@ import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.gui.BaseConfigInventory;
+import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.GuiNBTKeys;
 import com.tty.ari.Ari;
@@ -18,12 +19,17 @@ import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBTCompoundList;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,7 +60,11 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         if (shortcutBar.size() + playerInventory.size() != MAX_PLAYER_INVENTORY_INDEX + 1) throw new IllegalArgumentException("size not allowed");
         this.combineInventory.addAll(shortcutBar);
         this.combineInventory.addAll(playerInventory);
+    }
 
+    @Override
+    protected @NotNull Component title() {
+        return ComponentUtils.text(this.getBaseMenu().getTitle(), this.monitoree);
     }
 
     @Override
@@ -73,6 +83,14 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         if(functionItems == null) return CompletableFuture.completedFuture(null);
         for (FunctionItems value : functionItems.values()) {
             switch (value.getType()) {
+                case PLAYER_HEAD -> {
+                    ItemStack itemStack = ItemStack.of(Material.valueOf(value.getMaterial()));
+                    if (!(itemStack.getItemMeta() instanceof SkullMeta skullMeta)) break;
+                    skullMeta.setPlayerProfile(this.monitoree.getPlayerProfile());
+                    skullMeta.displayName(ComponentUtils.text(this.monitoree.getName()));
+                    itemStack.setItemMeta(skullMeta);
+                    value.setItemStack(itemStack);
+                }
                 case PLAYER_OFF_HAND -> {
                     ItemStack offHand = this.cache.getOff_hand();
                     if (offHand == null || offHand.isEmpty()) break;
@@ -215,6 +233,10 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         return offhand;
     }
 
+    public void setOffhand(@Nullable ItemStack itemStack) {
+        this.setEquipment(FunctionType.PLAYER_OFF_HAND, itemStack);
+    }
+
     public @Nullable ItemStack getHelmet() {
         FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(FunctionType.PLAYER_HELMET)).findFirst().orElse(null);
         return this.getItemStackAndCheck(items);
@@ -226,6 +248,10 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         if (hasNBT) return helmet;
         this.removeNBT(helmet, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
         return helmet;
+    }
+
+    public void setHelmet(@Nullable ItemStack itemStack) {
+        this.setEquipment(FunctionType.PLAYER_HELMET, itemStack);
     }
 
     public @Nullable ItemStack getChestplate() {
@@ -241,18 +267,13 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         return chestplate;
     }
 
+    public void setChestplate(@Nullable ItemStack itemStack) {
+        this.setEquipment(FunctionType.PLAYER_CHESTPLATE, itemStack);
+    }
+
     public @Nullable ItemStack getLeggings() {
         FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(FunctionType.PLAYER_LEGGINGS)).findFirst().orElse(null);
         return this.getItemStackAndCheck(items);
-    }
-
-    @Nullable
-    private ItemStack getItemStackAndCheck(FunctionItems items) {
-        if (items == null) return null;
-        ItemStack item = this.getInventory().getItem(items.getSlot().getFirst());
-        if (item == null) return null;
-        if (item.getType().name().equalsIgnoreCase(items.getMaterial())) return null;
-        return item;
     }
 
     public @Nullable ItemStack getLeggings(boolean hasNBT) {
@@ -261,6 +282,10 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         if (hasNBT) return leggings;
         this.removeNBT(leggings, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
         return leggings;
+    }
+
+    public void setLeggings(@Nullable ItemStack itemStack) {
+        this.setEquipment(FunctionType.PLAYER_LEGGINGS, itemStack);
     }
 
     public @Nullable ItemStack getBoots() {
@@ -274,6 +299,50 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         if (hasNBT) return boots;
         this.removeNBT(boots, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
         return boots;
+    }
+
+    public void setBoots(@Nullable ItemStack itemStack) {
+        this.setEquipment(FunctionType.PLAYER_BOOTS, itemStack);
+    }
+
+    private void setEquipment(FunctionType type, @Nullable ItemStack itemStack) {
+        FunctionItems items = this.getBaseMenu().getFunctionItems().values().stream().filter(i -> i.getType().equals(type)).findFirst().orElse(null);
+        if (items == null) return;
+        if (itemStack == null) {
+            itemStack = ItemStack.of(Material.valueOf(items.getMaterial()));
+            this.setNBT(itemStack, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON), PersistentDataType.STRING, type.name());
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.displayName(ComponentUtils.text(items.getName(), this.getOfflinePlayer()));
+            itemStack.setItemMeta(itemMeta);
+        }
+        for (Integer i : items.getSlot()) {
+            this.getInventory().setItem(i, itemStack);
+        }
+    }
+
+    public void setItem(int index, @Nullable ItemStack stack) {
+        if (index <= MAX_PLAYER_INVENTORY_INDEX) {
+            this.getInventory().setItem(this.combineInventory.get(index), stack);
+        } else {
+            int offset = index - MAX_PLAYER_INVENTORY_INDEX;
+            switch (offset) {
+                case 1: this.setHelmet(stack); break;
+                case 2: this.setChestplate(stack); break;
+                case 3: this.setLeggings(stack); break;
+                case 4: this.setBoots(stack); break;
+                case 5: this.setOffhand(stack); break;
+                default:
+            }
+        }
+    }
+
+    @Nullable
+    private ItemStack getItemStackAndCheck(FunctionItems items) {
+        if (items == null) return null;
+        ItemStack item = this.getInventory().getItem(items.getSlot().getFirst());
+        if (item == null) return null;
+        if (item.getType().name().equalsIgnoreCase(items.getMaterial())) return null;
+        return item;
     }
 
     @Override

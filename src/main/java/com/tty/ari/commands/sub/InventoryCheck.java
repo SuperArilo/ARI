@@ -38,18 +38,23 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
         Collection<? extends Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
-        Set<String> strings = onlinePlayers.stream().map(Player::getName).collect(Collectors.toSet());
+        Set<String> strings = onlinePlayers.stream().map(Player::getName).filter(name -> !name.equals(sender.getName())).collect(Collectors.toSet());
         if (onlinePlayers.isEmpty() || args.length != 3) return CompletableFuture.completedFuture(strings);
         return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[2], strings));
     }
 
     @Override
     public int execute(CommandSender sender, String[] args) {
-        if (args.length < 2) return 0;
-        Player player = (Player) sender;
+        if (args.length < 2 || !(sender instanceof Player player)) return 0;
+
         UUID uuid = PublicFunctionUtils.parseUUID(args[1]);
         if (uuid == null) {
             sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            return 0;
+        }
+
+        if (player.getUniqueId().equals(uuid)) {
+            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.command.self-not-allowed")));
             return 0;
         }
 

@@ -12,6 +12,7 @@ import com.tty.ari.dto.gui.PlayerInventoryCheckMenu;
 import com.tty.ari.gui.PlayerInventoryEdit;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -33,6 +34,11 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
     @Override
     protected @NotNull FunctionHandler<PlayerInventoryEdit> registry() {
         FunctionHandler<PlayerInventoryEdit> handler = new FunctionHandler<>();
+        handler.add(FunctionType.PLAYER_HELMET, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
+        handler.add(FunctionType.PLAYER_CHESTPLATE, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
+        handler.add(FunctionType.PLAYER_LEGGINGS, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
+        handler.add(FunctionType.PLAYER_BOOTS, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
+        handler.add(FunctionType.PLAYER_OFF_HAND, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
         return handler;
     }
 
@@ -41,21 +47,9 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
 
         PlayerInventoryCheckMenu menu = (PlayerInventoryCheckMenu) holder.getBaseMenu();
         int slot = event.getSlot();
-        boolean isGuiRound = menu.getShortcutBar().contains(slot) || menu.getPlayerInventory().contains(slot);
-        ItemStack clickItem = event.getCurrentItem();
         event.setCancelled(true);
-        if (!isGuiRound) {
-            if (clickItem == null) return;
 
-            ItemMeta itemMeta = clickItem.getItemMeta();
-            FunctionType type = this.ItemNBT_TypeCheck(itemMeta.getPersistentDataContainer().get(this.getFunctionIconNamespacedKey(), PersistentDataType.STRING));
-            if (type == null) return;
-
-            Map<String, FunctionItems> functionItems = holder.getBaseMenu().getFunctionItems();
-            functionItems.values().stream().filter(i -> i.getType().equals(type)).findFirst().ifPresent(items -> this.changeEquipment(event, items));
-
-        } else {
-
+        if (menu.getShortcutBar().contains(slot) || menu.getPlayerInventory().contains(slot)) {
             ItemStack cursor = event.getCursor();
             ItemStack slotItem = event.getCurrentItem();
             InventoryView view = event.getView();
@@ -136,39 +130,61 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         event.setCancelled(true);
     }
 
-    private void changeEquipment(InventoryClickEvent event, FunctionItems items) {
+    private void changeEquipment(InventoryClickEvent event, PlayerInventoryEdit inventoryEdit) {
 
+        ItemStack clickItem = event.getCurrentItem();
+        if (clickItem == null) return;
         ItemStack cursor = event.getCursor();
-        ItemStack current = event.getCurrentItem();
-        if (current == null) return;
 
+        ItemMeta itemMeta = clickItem.getItemMeta();
+        FunctionType type = this.ItemNBT_TypeCheck(itemMeta.getPersistentDataContainer().get(this.getFunctionIconNamespacedKey(), PersistentDataType.STRING));
+        if (type == null) return;
+
+        Map<String, FunctionItems> functionItems = inventoryEdit.getBaseMenu().getFunctionItems();
         Inventory inventory = event.getInventory();
+        OfflinePlayer monitoree = inventoryEdit.getMonitoree();
 
-        boolean isPlaceholderItem = current.getType().name().equals(items.getMaterial());
-        boolean isClickItemHasNBT = current.getItemMeta().getPersistentDataContainer().has(this.getFunctionIconNamespacedKey());
+        for (FunctionItems value : functionItems.values()) {
+            if (!value.getType().equals(type)) continue;
 
-        if (cursor.isEmpty()) {
-            if (isClickItemHasNBT && !isPlaceholderItem) {
-                inventory.setItem(event.getSlot(), this.createFunctionItem(items));
-                ItemStack equipmentWithoutTag = this.removeFunctionTag(current.clone());
-                event.getView().setCursor(equipmentWithoutTag);
+            boolean isPlaceholderItem = clickItem.getType().name().equals(value.getMaterial());
+            boolean isClickItemHasNBT = clickItem.getItemMeta().getPersistentDataContainer().has(this.getFunctionIconNamespacedKey());
+
+            if (cursor.isEmpty()) {
+                if (isClickItemHasNBT && !isPlaceholderItem) {
+                    inventory.setItem(event.getSlot(), this.createFunctionItem(value));
+                    ItemStack equipmentWithoutTag = this.removeFunctionTag(clickItem.clone());
+                    event.getView().setCursor(equipmentWithoutTag);
+                    if (monitoree instanceof Player player) {
+                        this.setEquipmentToPlayer(player, value.getType(), null);
+                    }
+                }
+                return;
             }
-            return;
+
+            FunctionType equipment = this.isEquipment(cursor, value);
+
+            if (equipment == null || !equipment.equals(value.getType())) return;
+
+            if (isClickItemHasNBT && !isPlaceholderItem) {
+                ItemStack slotItemWithoutTag = this.removeFunctionTag(clickItem.clone());
+                event.getView().setCursor(slotItemWithoutTag);
+
+                ItemStack cursorItemWithTag = this.addFunctionTag(cursor.clone(), value.getType().name());
+                inventory.setItem(event.getSlot(), cursorItemWithTag);
+                if (monitoree instanceof Player player) {
+                    this.setEquipmentToPlayer(player, value.getType(), cursor.clone());
+                }
+            } else {
+                ItemStack cursorItemWithTag = this.addFunctionTag(cursor.clone(), value.getType().name());
+                inventory.setItem(event.getSlot(), cursorItemWithTag);
+                event.getView().setCursor(null);
+                if (monitoree instanceof Player player) {
+                    this.setEquipmentToPlayer(player, value.getType(), cursor.clone());
+                }
+            }
         }
 
-        if (!this.isEquipment(cursor, items).equals(items.getType())) return;
-
-        if (isClickItemHasNBT && !isPlaceholderItem) {
-            ItemStack slotItemWithoutTag = this.removeFunctionTag(current.clone());
-            event.getView().setCursor(slotItemWithoutTag);
-
-            ItemStack cursorItemWithTag = this.addFunctionTag(cursor.clone(), items.getType().name());
-            inventory.setItem(event.getSlot(), cursorItemWithTag);
-        } else {
-            ItemStack cursorItemWithTag = this.addFunctionTag(cursor.clone(), items.getType().name());
-            inventory.setItem(event.getSlot(), cursorItemWithTag);
-            event.getView().setCursor(null);
-        }
     }
 
     /**
@@ -202,7 +218,6 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         return itemStack;
     }
 
-    @NotNull
     private FunctionType isEquipment(@Nullable ItemStack item, FunctionItems functionItems) {
         if (item == null || item.getType().isAir() || functionItems.getType().equals(FunctionType.PLAYER_OFF_HAND)) return FunctionType.PLAYER_OFF_HAND;
         EquipmentSlot slot = item.getType().getEquipmentSlot();
@@ -211,8 +226,19 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             case CHEST -> FunctionType.PLAYER_CHESTPLATE;
             case LEGS -> FunctionType.PLAYER_LEGGINGS;
             case FEET -> FunctionType.PLAYER_BOOTS;
-            default -> FunctionType.PLAYER_OFF_HAND;
+            default -> null;
         };
+    }
+
+    private void setEquipmentToPlayer(Player player, FunctionType type, @Nullable ItemStack stack) {
+        PlayerInventory inventory = player.getInventory();
+        switch (type) {
+            case PLAYER_HELMET -> inventory.setHelmet(stack);
+            case PLAYER_CHESTPLATE -> inventory.setChestplate(stack);
+            case PLAYER_LEGGINGS -> inventory.setLeggings(stack);
+            case PLAYER_BOOTS -> inventory.setBoots(stack);
+            case PLAYER_OFF_HAND -> inventory.setItemInOffHand(stack);
+        }
     }
 
 }

@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
 
 public class PlayerInventoryUpdateListener implements Listener {
 
@@ -66,15 +65,9 @@ public class PlayerInventoryUpdateListener implements Listener {
                 if (!(guiState.getMenu() instanceof PlayerInventoryEdit editInventory) || !(guiState instanceof OnCheckPlayerGuiState state)) continue;
 
                 if (!state.getMonitoree().equals(entity) || !state.getOwner().equals(editInventory.getOfflinePlayer())) return;
-
-                List<Integer> combineSlots = editInventory.getCombineInventory();
                 ItemStack[] playerContents = entity.getInventory().getContents();
-                int maxIndex = Math.min(PlayerInventoryEdit.MAX_PLAYER_INVENTORY_INDEX + 1, combineSlots.size());
-                for (int slot = 0; slot < maxIndex; slot++) {
-                    Integer targetSlot = combineSlots.get(slot);
-                    if (targetSlot != null && targetSlot < editInventory.getInventory().getSize()) {
-                        editInventory.getInventory().setItem(targetSlot, playerContents[slot]);
-                    }
+                for (int slot = 0; slot < entity.getInventory().getSize(); slot++) {
+                    editInventory.setItem(slot, playerContents[slot]);
                 }
             }
         }, null);
