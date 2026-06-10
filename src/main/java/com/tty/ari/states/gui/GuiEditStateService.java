@@ -29,7 +29,7 @@ public class GuiEditStateService extends StateService<EditGuiState> {
             return;
         }
         state.setPending(false);
-        BaseInventory i = state.getI();
+        BaseInventory i = state.getInventory();
         GuiMeta annotation = i.getClass().getAnnotation(GuiMeta.class);
         Ari.instance.getLog().debug("checking player {} edit gui {}, type {}. count = {} max_count = {}",
                 owner.getName(),

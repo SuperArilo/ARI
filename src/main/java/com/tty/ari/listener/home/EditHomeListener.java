@@ -13,12 +13,14 @@ import com.tty.api.state.EditGuiState;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.entity.ServerHome;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.GuiType;
 import com.tty.ari.gui.home.HomeEditor;
 import com.tty.ari.gui.home.HomeList;
 import com.tty.ari.listener.OnGuiEditListener;
+import com.tty.ari.states.GuiManagerStateService;
 import com.tty.ari.states.gui.GuiEditStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.TextComponent;
@@ -59,9 +61,9 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
             player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
             return false;
         }
-        HomeEditor homeEditor = (HomeEditor) state.getI();
+        HomeEditor homeEditor = (HomeEditor) state.getInventory();
         homeEditor.getCurrentEditHome().setHomeName(message);
-        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, p -> player.openInventory(homeEditor.getInventory()), () -> {});
+        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, p -> Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, homeEditor)), null);
         return true;
     }
 
@@ -76,7 +78,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
 
         registry.add(FunctionType.REBACK, (event, homeEditor, player) -> {
             event.getInventory().close();
-            player.openInventory(new HomeList(player).getInventory());
+            Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
         });
         registry.add(FunctionType.DELETE, (event, homeEditor, player) -> {
             LambdaQueryWrapper<ServerHome> wrapper = new LambdaQueryWrapper<>(ServerHome.class)
@@ -91,7 +93,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
                                     .thenAccept(player::sendMessage)
                                     .thenRun(() -> Ari.instance.getScheduler().run(Ari.instance, j -> {
                                         event.getInventory().close();
-                                        player.openInventory(new HomeList(player).getInventory());
+                                        Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
                                     }));
                         } else {
                             return ConfigUtils.t("function.home.not-found", player).thenAccept(player::sendMessage);

@@ -13,12 +13,14 @@ import com.tty.api.state.EditGuiState;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.entity.ServerWarp;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.GuiType;
 import com.tty.ari.gui.warp.WarpEditor;
 import com.tty.ari.gui.warp.WarpList;
 import com.tty.ari.listener.OnGuiEditListener;
+import com.tty.ari.states.GuiManagerStateService;
 import com.tty.ari.states.gui.GuiEditStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.TextComponent;
@@ -52,7 +54,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor> {
             player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
             return false;
         }
-        WarpEditor warpEditor = (WarpEditor) state.getI();
+        WarpEditor warpEditor = (WarpEditor) state.getInventory();
         switch (type) {
             case RENAME -> {
                 if(!FormatUtils.checkName(message) || value.contains(message) || !FormatUtils.checkName(message)) {
@@ -82,7 +84,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor> {
                 }
             }
         }
-        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> player.openInventory(warpEditor.getInventory()), () -> {});
+        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, warpEditor)), null);
         return true;
     }
 
@@ -97,7 +99,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor> {
 
         registry.add(FunctionType.REBACK, (event, warpEditor, player) -> {
             event.getInventory().close();
-            player.openInventory(new WarpList(player).getInventory());
+            Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
         });
         registry.add(FunctionType.DELETE, (event, warpEditor, player) -> {
             EntityRepository<ServerWarp> repository = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
@@ -107,7 +109,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor> {
                     return ConfigUtils.t("function.warp.delete-success", player).thenAccept(player::sendMessage)
                             .thenRun(() -> Ari.instance.getScheduler().run(Ari.instance, ab -> {
                                 event.getInventory().close();
-                                player.openInventory(new WarpList(player).getInventory());
+                                Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
                             }));
                 } else {
                     return ConfigUtils.t("function.warp.not-found").thenAccept(player::sendMessage);

@@ -13,7 +13,7 @@ public class GuiManagerStateService extends StateService<GuiState> {
 
     @Override
     protected boolean canAddState(GuiState state) {
-        return this.isNotHaveState(state.getOwner());
+        return getStates(state.getOwner()).stream().noneMatch(s -> s.getMenu().equals(state.getMenu()));
     }
 
     @Override

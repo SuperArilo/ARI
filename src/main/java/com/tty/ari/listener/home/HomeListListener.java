@@ -8,6 +8,7 @@ import com.tty.api.enumType.FunctionType;
 import com.tty.api.listener.BaseGuiListener;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.FormatUtils;
+import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.teleport.EntityToLocationState;
 import com.tty.ari.entity.ServerHome;
 import com.tty.ari.enumType.FilePath;
@@ -15,6 +16,7 @@ import com.tty.ari.enumType.GuiType;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.gui.home.HomeEditor;
 import com.tty.ari.gui.home.HomeList;
+import com.tty.ari.states.GuiManagerStateService;
 import com.tty.ari.states.teleport.TeleportStateService;
 import com.tty.ari.tool.ConfigUtils;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -65,10 +67,10 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
                                             FormatUtils.parseLocation(home.getLocation()),
                                             TeleportType.HOME));
                         } else if (event.isRightClick()) {
-                            Ari.instance.getScheduler().run(Ari.instance, p -> {
+                            Ari.instance.getScheduler().runAtEntity(Ari.instance, player, p -> {
                                 event.getInventory().close();
-                                player.openInventory(new HomeEditor(home, player).getInventory());
-                            });
+                                Ari.instance.getScheduler().run(Ari.instance, i-> Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new HomeEditor(home, player))));
+                            }, null);
                         }
                         return CompletableFuture.completedFuture(true);
                     }).whenComplete((i, ex) -> {

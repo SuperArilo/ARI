@@ -8,6 +8,7 @@ import com.tty.api.enumType.FunctionType;
 import com.tty.api.listener.BaseGuiListener;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.FormatUtils;
+import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.ari.entity.ServerWarp;
 import com.tty.ari.enumType.FilePath;
@@ -16,6 +17,7 @@ import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.enumType.lang.LangVault;
 import com.tty.ari.gui.warp.WarpEditor;
 import com.tty.ari.gui.warp.WarpList;
+import com.tty.ari.states.GuiManagerStateService;
 import com.tty.ari.states.teleport.TeleportStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
@@ -92,7 +94,7 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
                     if(isOwner || player.isOp()) {
                         Ari.instance.getScheduler().run(Ari.instance, i -> {
                             event.getInventory().close();
-                            player.openInventory(new WarpEditor(instance, player).getInventory());
+                            Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new WarpEditor(instance, player)));
                         });
                     } else {
                         ConfigUtils.t("function.warp.no-permission-edit", player).thenAccept(player::sendMessage);
