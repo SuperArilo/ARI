@@ -9,11 +9,11 @@ import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
+import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.gui.BaseDataItemConfigInventory;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
-import com.tty.api.utils.GuiNBTKeys;
 import com.tty.ari.Ari;
 import com.tty.ari.entity.ServerWarp;
 import com.tty.ari.enumType.FilePath;
@@ -93,12 +93,12 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
                 textComponents.add(ComponentUtils.text(s, types));
             }
 
+            this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_DATA_ID, itemStack, PersistentDataType.STRING, serverWarp.getWarpId());
+            this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, FunctionType.DATA.getName());
+
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.displayName(ComponentUtils.text(serverWarp.getWarpName(), this.getOfflinePlayer()));
             itemMeta.lore(textComponents);
-
-            this.setNBT(itemMeta, GuiNBTKeys.GUI_RENDER_DATA_ID, PersistentDataType.STRING, serverWarp.getWarpId());
-            this.setNBT(itemMeta, GuiNBTKeys.GUI_RENDER_FUNCTION_ICON, PersistentDataType.STRING, FunctionType.DATA.name());
 
             if (serverWarp.isTopSlot()) {
                 this.setHighlight(itemMeta);

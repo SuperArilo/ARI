@@ -2,6 +2,7 @@ package com.tty.ari.listener.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
+import com.tty.api.enumType.NbtGuiValue;
 import com.tty.ari.Ari;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.enumType.FunctionType;
@@ -11,7 +12,6 @@ import com.tty.api.repository.PartitionKey;
 import com.tty.api.state.EditGuiState;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
-import com.tty.api.utils.GuiNBTKeys;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.entity.ServerHome;
 import com.tty.ari.enumType.FilePath;
@@ -19,12 +19,11 @@ import com.tty.ari.enumType.GuiType;
 import com.tty.ari.gui.home.HomeEditor;
 import com.tty.ari.gui.home.HomeList;
 import com.tty.ari.listener.OnGuiEditListener;
-import com.tty.ari.states.GuiEditStateService;
+import com.tty.ari.states.gui.GuiEditStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -133,10 +132,10 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
             newItemMeta.displayName(clickMeta.displayName());
             newItemMeta.lore(clickItem.lore());
 
-            NamespacedKey namespacedKey = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_RENDER_FUNCTION_ICON);
-            String string = clickMeta.getPersistentDataContainer().get(namespacedKey, PersistentDataType.STRING);
+            String string = Ari.instance.getNbtManager().getNbt(NbtGuiValue.GUI_FUNCTION_ICON, clickItem, PersistentDataType.STRING);
             if (string == null) return;
-            newItemMeta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.STRING, string);
+            Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, newItemStake, PersistentDataType.STRING, string);
+
             newItemStake.setItemMeta(newItemMeta);
             event.getInventory().setItem(event.getSlot(), newItemStake);
             homeEditor.getCurrentEditHome().setShowMaterial(current.name());

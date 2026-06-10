@@ -6,10 +6,10 @@ import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.dto.gui.Mask;
 import com.tty.api.enumType.FunctionType;
+import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
-import com.tty.api.utils.GuiNBTKeys;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.PlayerInventoryCache;
 import com.tty.ari.dto.gui.PlayerInventoryCheckMenu;
@@ -21,7 +21,6 @@ import de.tr7zw.nbtapi.iface.ReadWriteNBTCompoundList;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -229,7 +228,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         ItemStack offhand = this.getOffhand();
         if (offhand == null) return null;
         if(hasNBT) return offhand;
-        this.removeNBT(offhand, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
+        Ari.instance.getNbtManager().removeNbt(NbtGuiValue.GUI_FUNCTION_ICON, offhand);
         return offhand;
     }
 
@@ -246,7 +245,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         ItemStack helmet = this.getHelmet();
         if (helmet == null) return null;
         if (hasNBT) return helmet;
-        this.removeNBT(helmet, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
+        Ari.instance.getNbtManager().removeNbt(NbtGuiValue.GUI_FUNCTION_ICON, helmet);
         return helmet;
     }
 
@@ -263,7 +262,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         ItemStack chestplate = this.getChestplate();
         if (chestplate == null) return null;
         if (hasNBT) return chestplate;
-        this.removeNBT(chestplate, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
+        Ari.instance.getNbtManager().removeNbt(NbtGuiValue.GUI_FUNCTION_ICON, chestplate);
         return chestplate;
     }
 
@@ -280,7 +279,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         ItemStack leggings = this.getLeggings();
         if (leggings == null) return null;
         if (hasNBT) return leggings;
-        this.removeNBT(leggings, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
+        Ari.instance.getNbtManager().removeNbt(NbtGuiValue.GUI_FUNCTION_ICON, leggings);
         return leggings;
     }
 
@@ -297,7 +296,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         ItemStack boots = this.getBoots();
         if (boots == null) return null;
         if (hasNBT) return boots;
-        this.removeNBT(boots, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON));
+        Ari.instance.getNbtManager().removeNbt(NbtGuiValue.GUI_FUNCTION_ICON, boots);
         return boots;
     }
 
@@ -310,7 +309,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         if (items == null) return;
         if (itemStack == null) {
             itemStack = ItemStack.of(Material.valueOf(items.getMaterial()));
-            this.setNBT(itemStack, new NamespacedKey(this.getPlugin(), GuiNBTKeys.GUI_RENDER_FUNCTION_ICON), PersistentDataType.STRING, type.name());
+            Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, type.getName());
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.displayName(ComponentUtils.text(items.getName(), this.getOfflinePlayer()));
             itemStack.setItemMeta(itemMeta);

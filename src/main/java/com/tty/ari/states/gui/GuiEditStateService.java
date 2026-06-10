@@ -1,4 +1,4 @@
-package com.tty.ari.states;
+package com.tty.ari.states.gui;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.ari.Ari;

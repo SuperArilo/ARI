@@ -1,13 +1,13 @@
 package com.tty.ari.listener.warp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tty.api.enumType.NbtGuiValue;
 import com.tty.ari.Ari;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.listener.BaseGuiListener;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.FormatUtils;
-import com.tty.api.utils.GuiNBTKeys;
 import com.tty.ari.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.ari.entity.ServerWarp;
 import com.tty.ari.enumType.FilePath;
@@ -20,7 +20,6 @@ import com.tty.ari.states.teleport.TeleportStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -31,8 +30,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class WarpListListener extends BaseGuiListener<WarpList> {
-
-    private final NamespacedKey WARP_ID_KEY = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_RENDER_DATA_ID);
 
     public WarpListListener(GuiType guiType) {
         super(Ari.instance, guiType);
@@ -47,7 +44,7 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
             ItemStack currentItem = event.getCurrentItem();
             if (currentItem == null) return;
 
-            String warpId = currentItem.getItemMeta().getPersistentDataContainer().get(this.WARP_ID_KEY, PersistentDataType.STRING);
+            String warpId = Ari.instance.getNbtManager().getNbt(NbtGuiValue.GUI_DATA_ID, currentItem, PersistentDataType.STRING);
             //从数据库查询最新的
             Ari.REPOSITORY_MANAGER.get(ServerWarp.class).get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId), PartitionKey.global()).thenAccept((instance) -> {
                 if (instance == null) {

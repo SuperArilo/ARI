@@ -5,6 +5,7 @@ import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.GuiKeyEnum;
+import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.listener.BaseGuiListener;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.Ari;
@@ -136,8 +137,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         if (clickItem == null) return;
         ItemStack cursor = event.getCursor();
 
-        ItemMeta itemMeta = clickItem.getItemMeta();
-        FunctionType type = this.ItemNBT_TypeCheck(itemMeta.getPersistentDataContainer().get(this.getFunctionIconNamespacedKey(), PersistentDataType.STRING));
+        FunctionType type = this.ItemNBT_TypeCheck(Ari.instance.getNbtManager().getNbt(NbtGuiValue.GUI_FUNCTION_ICON, clickItem, PersistentDataType.STRING));
         if (type == null) return;
 
         Map<String, FunctionItems> functionItems = inventoryEdit.getBaseMenu().getFunctionItems();
@@ -148,13 +148,14 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             if (!value.getType().equals(type)) continue;
 
             boolean isPlaceholderItem = clickItem.getType().name().equals(value.getMaterial());
-            boolean isClickItemHasNBT = clickItem.getItemMeta().getPersistentDataContainer().has(this.getFunctionIconNamespacedKey());
+            boolean isClickItemHasNBT = Ari.instance.getNbtManager().hasNbt(NbtGuiValue.GUI_FUNCTION_ICON, clickItem, PersistentDataType.STRING);
 
             if (cursor.isEmpty()) {
                 if (isClickItemHasNBT && !isPlaceholderItem) {
                     inventory.setItem(event.getSlot(), this.createFunctionItem(value));
-                    ItemStack equipmentWithoutTag = this.removeFunctionTag(clickItem.clone());
-                    event.getView().setCursor(equipmentWithoutTag);
+                    ItemStack clone = clickItem.clone();
+                    Ari.instance.getNbtManager().removeNbt(NbtGuiValue.GUI_FUNCTION_ICON, clone);
+                    event.getView().setCursor(clone);
                     if (monitoree instanceof Player player) {
                         this.setEquipmentToPlayer(player, value.getType(), null);
                     }
@@ -167,17 +168,22 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             if (equipment == null || !equipment.equals(value.getType())) return;
 
             if (isClickItemHasNBT && !isPlaceholderItem) {
-                ItemStack slotItemWithoutTag = this.removeFunctionTag(clickItem.clone());
-                event.getView().setCursor(slotItemWithoutTag);
+                ItemStack clone = clickItem.clone();
+                Ari.instance.getNbtManager().removeNbt(NbtGuiValue.GUI_FUNCTION_ICON, clone);
+                event.getView().setCursor(clone);
 
-                ItemStack cursorItemWithTag = this.addFunctionTag(cursor.clone(), value.getType().name());
-                inventory.setItem(event.getSlot(), cursorItemWithTag);
+                ItemStack cloned = cursor.clone();
+                Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, cloned, PersistentDataType.STRING, value.getType().getName());
+
+                inventory.setItem(event.getSlot(), cloned);
                 if (monitoree instanceof Player player) {
                     this.setEquipmentToPlayer(player, value.getType(), cursor.clone());
                 }
             } else {
-                ItemStack cursorItemWithTag = this.addFunctionTag(cursor.clone(), value.getType().name());
-                inventory.setItem(event.getSlot(), cursorItemWithTag);
+                ItemStack cloned = cursor.clone();
+                Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, cloned, PersistentDataType.STRING, value.getType().getName());
+
+                inventory.setItem(event.getSlot(), cloned);
                 event.getView().setCursor(null);
                 if (monitoree instanceof Player player) {
                     this.setEquipmentToPlayer(player, value.getType(), cursor.clone());
@@ -187,33 +193,13 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
 
     }
 
-    /**
-     * 为物品添加功能NBT标签
-     */
-    private ItemStack addFunctionTag(ItemStack item, String typeName) {
-        ItemMeta meta = item.getItemMeta();
-        meta.getPersistentDataContainer().set(this.getFunctionIconNamespacedKey(), PersistentDataType.STRING, typeName);
-        item.setItemMeta(meta);
-        return item;
-    }
-
-    /**
-     * 移除物品的功能NBT标签
-     */
-    private ItemStack removeFunctionTag(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        meta.getPersistentDataContainer().remove(this.getFunctionIconNamespacedKey());
-        item.setItemMeta(meta);
-        return item;
-    }
-
     private ItemStack createFunctionItem(FunctionItems item) {
         ItemStack itemStack = ItemStack.of(Material.valueOf(item.getMaterial()));
+        Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, item.getType().getName());
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.displayName(ComponentUtils.text(item.getName()));
         List<TextComponent> collect = item.getLore().stream().map(ComponentUtils::text).toList();
         itemMeta.lore(collect);
-        itemMeta.getPersistentDataContainer().set(this.getFunctionIconNamespacedKey(), PersistentDataType.STRING, item.getType().name());
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }

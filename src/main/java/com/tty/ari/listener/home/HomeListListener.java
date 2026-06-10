@@ -1,13 +1,13 @@
 package com.tty.ari.listener.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tty.api.enumType.NbtGuiValue;
 import com.tty.ari.Ari;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.listener.BaseGuiListener;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.FormatUtils;
-import com.tty.api.utils.GuiNBTKeys;
 import com.tty.ari.dto.state.teleport.EntityToLocationState;
 import com.tty.ari.entity.ServerHome;
 import com.tty.ari.enumType.FilePath;
@@ -17,7 +17,6 @@ import com.tty.ari.gui.home.HomeEditor;
 import com.tty.ari.gui.home.HomeList;
 import com.tty.ari.states.teleport.TeleportStateService;
 import com.tty.ari.tool.ConfigUtils;
-import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -26,10 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
-
 public class HomeListListener extends BaseGuiListener<HomeList> {
-
-    private final NamespacedKey homeIdKey = new NamespacedKey(Ari.instance, GuiNBTKeys.GUI_RENDER_DATA_ID);
 
     public HomeListListener(GuiType guiType) {
         super(Ari.instance, guiType);
@@ -45,7 +41,7 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
             ItemStack currentItem = event.getCurrentItem();
             if (currentItem == null) return;
 
-            String homeId = currentItem.getItemMeta().getPersistentDataContainer().get(this.homeIdKey, PersistentDataType.STRING);
+            String homeId = Ari.instance.getNbtManager().getNbt(NbtGuiValue.GUI_DATA_ID, currentItem, PersistentDataType.STRING);
             if (homeId == null) return;
             Ari.REPOSITORY_MANAGER
                     .get(ServerHome.class)

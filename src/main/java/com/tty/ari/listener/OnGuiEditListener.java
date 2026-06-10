@@ -6,7 +6,7 @@ import com.tty.api.gui.BaseInventory;
 import com.tty.api.listener.BaseEditFunctionGuiListener;
 import com.tty.api.state.EditGuiState;
 import com.tty.ari.enumType.GuiType;
-import com.tty.ari.states.GuiEditStateService;
+import com.tty.ari.states.gui.GuiEditStateService;
 import org.bukkit.entity.Player;
 
 import java.util.List;
