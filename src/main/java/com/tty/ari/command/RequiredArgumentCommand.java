@@ -11,6 +11,10 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class RequiredArgumentCommand<T> extends BaseRequiredArgumentCommand<T> {
 
+    protected RequiredArgumentCommand() {
+        super(Ari.instance);
+    }
+
     protected boolean getDisableStatus(YamlConfiguration configuration) {
         return !configuration.getBoolean("main.enable", false);
     }

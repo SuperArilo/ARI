@@ -10,6 +10,10 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class LiteralArgumentCommand extends BaseLiteralArgumentCommand {
 
+    protected LiteralArgumentCommand() {
+        super(Ari.instance);
+    }
+
     protected boolean getDisableStatus(YamlConfiguration configuration) {
         return !configuration.getBoolean("main.enable", false);
     }
