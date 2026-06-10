@@ -1,4 +1,4 @@
-package com.tty.ari.states.gui;
+package com.tty.ari.states;
 
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.CooldownState;

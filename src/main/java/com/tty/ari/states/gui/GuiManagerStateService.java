@@ -1,4 +1,4 @@
-package com.tty.ari.states;
+package com.tty.ari.states.gui;
 
 import com.tty.api.state.StateService;
 import com.tty.ari.Ari;

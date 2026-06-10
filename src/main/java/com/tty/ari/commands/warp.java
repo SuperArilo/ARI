@@ -9,7 +9,7 @@ import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.gui.warp.WarpList;
-import com.tty.ari.states.GuiManagerStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

@@ -4,7 +4,7 @@ import com.tty.api.state.StateService;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
-import com.tty.ari.states.gui.CoolDownStateService;
+import com.tty.ari.states.CoolDownStateService;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.StateMachineManager;
 import net.kyori.adventure.text.event.ClickEvent;

@@ -9,7 +9,7 @@ import com.tty.ari.gui.home.HomeList;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.ari.states.GuiManagerStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

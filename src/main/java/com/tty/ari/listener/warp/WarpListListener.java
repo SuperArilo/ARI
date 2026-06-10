@@ -17,7 +17,7 @@ import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.enumType.lang.LangVault;
 import com.tty.ari.gui.warp.WarpEditor;
 import com.tty.ari.gui.warp.WarpList;
-import com.tty.ari.states.GuiManagerStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.states.teleport.TeleportStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;

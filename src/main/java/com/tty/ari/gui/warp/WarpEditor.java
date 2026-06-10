@@ -84,8 +84,11 @@ public class WarpEditor extends BaseConfigInventory {
     }
 
     @Override
-    protected void onClose() {
-        this.currentEditWarp = null;
+    protected CompletableFuture<Boolean> onClose() {
+        return CompletableFuture.supplyAsync(() -> {
+            this.currentEditWarp = null;
+            return true;
+        }, this.getExecutor());
     }
 
 }

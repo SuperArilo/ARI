@@ -20,7 +20,7 @@ import com.tty.ari.enumType.GuiType;
 import com.tty.ari.gui.home.HomeEditor;
 import com.tty.ari.gui.home.HomeList;
 import com.tty.ari.listener.OnGuiEditListener;
-import com.tty.ari.states.GuiManagerStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.states.gui.GuiEditStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.TextComponent;

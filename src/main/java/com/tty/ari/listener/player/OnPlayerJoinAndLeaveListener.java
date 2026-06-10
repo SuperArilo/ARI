@@ -16,7 +16,7 @@ import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.enumType.FilePath;
-import com.tty.ari.states.GuiManagerStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.states.PlayerSaveStateService;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerNameCache;

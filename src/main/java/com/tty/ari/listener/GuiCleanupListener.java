@@ -3,7 +3,7 @@ package com.tty.ari.listener;
 import com.tty.api.gui.BaseInventory;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.GuiState;
-import com.tty.ari.states.GuiManagerStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;

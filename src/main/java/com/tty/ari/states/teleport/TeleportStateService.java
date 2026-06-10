@@ -11,7 +11,7 @@ import com.tty.ari.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.ari.dto.state.teleport.EntityToLocationState;
 import com.tty.ari.enumType.FilePath;
 import com.tty.api.state.StateService;
-import com.tty.ari.states.gui.CoolDownStateService;
+import com.tty.ari.states.CoolDownStateService;
 import com.tty.ari.tool.ConfigUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Damageable;

@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 @GuiMeta(type = "offline_enderchest")
 public class EnderChestEdit extends BaseInventory {
@@ -64,18 +65,18 @@ public class EnderChestEdit extends BaseInventory {
     }
 
     @Override
-    protected void onClose() {
+    protected CompletableFuture<Boolean> onClose() {
         if (this.monitoree.isOnline()) {
             this.surveillant = null;
             this.monitoree = null;
-            return;
+            return CompletableFuture.completedFuture(true);
         }
-        this.getPlugin().getScheduler().runAsync(this.getPlugin(), i -> {
+        return CompletableFuture.supplyAsync(() -> {
             NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.monitoree.getUniqueId().toString());
             if (data == null) {
                 this.surveillant.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                 this.getPlugin().getLog().error("uuid is not exist.", this.monitoree.getName());
-                return;
+                return true;
             }
             data.removeKey("EnderItems");
             ReadWriteNBTCompoundList enderItems = data.getCompoundList("EnderItems");
@@ -95,7 +96,8 @@ public class EnderChestEdit extends BaseInventory {
                 this.surveillant = null;
                 this.monitoree = null;
             }
-        });
+            return true;
+        }, this.getExecutor());
     }
 
 }

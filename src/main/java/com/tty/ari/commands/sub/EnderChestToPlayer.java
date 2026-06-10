@@ -15,7 +15,7 @@ import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.gui.EnderChestEdit;
-import com.tty.ari.states.GuiManagerStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;

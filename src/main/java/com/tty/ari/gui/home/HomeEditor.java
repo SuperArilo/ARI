@@ -70,8 +70,11 @@ public class HomeEditor extends BaseConfigInventory {
     }
 
     @Override
-    protected void onClose() {
-        this.currentEditHome = null;
+    protected CompletableFuture<Boolean> onClose() {
+        return CompletableFuture.supplyAsync(() -> {
+            this.currentEditHome = null;
+            return true;
+        }, this.getExecutor());
     }
 
 }

@@ -5,7 +5,7 @@ import com.tty.ari.Ari;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.gui.PlayerInventoryEdit;
-import com.tty.ari.states.GuiManagerStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

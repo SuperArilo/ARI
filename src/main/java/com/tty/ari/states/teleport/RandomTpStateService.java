@@ -11,7 +11,7 @@ import com.tty.ari.enumType.TeleportType;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.api.utils.SearchSafeLocation;
-import com.tty.ari.states.gui.CoolDownStateService;
+import com.tty.ari.states.CoolDownStateService;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.StateMachineManager;
 import org.bukkit.Bukkit;

@@ -2,9 +2,9 @@ package com.tty.ari.tool;
 
 import com.tty.api.state.State;
 import com.tty.api.state.StateService;
-import com.tty.ari.states.gui.CoolDownStateService;
+import com.tty.ari.states.CoolDownStateService;
 import com.tty.ari.states.gui.GuiEditStateService;
-import com.tty.ari.states.GuiManagerStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.states.PlayerSaveStateService;
 import com.tty.ari.states.action.PlayerRideActionStateService;
 import com.tty.ari.states.action.PlayerSitActionStateService;

@@ -16,7 +16,7 @@ import com.tty.ari.enumType.GuiType;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.gui.home.HomeEditor;
 import com.tty.ari.gui.home.HomeList;
-import com.tty.ari.states.GuiManagerStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.states.teleport.TeleportStateService;
 import com.tty.ari.tool.ConfigUtils;
 import org.bukkit.event.inventory.InventoryClickEvent;
