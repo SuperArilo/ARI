@@ -64,7 +64,7 @@ public class EnderChestEdit extends BaseInventory {
     }
 
     @Override
-    public void close() {
+    protected void onClose() {
         if (this.monitoree.isOnline()) {
             this.surveillant = null;
             this.monitoree = null;

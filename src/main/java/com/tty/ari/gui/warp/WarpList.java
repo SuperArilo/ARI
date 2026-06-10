@@ -125,8 +125,8 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
     }
 
     @Override
-    public void close() {
-        super.close();
+    protected void onClose() {
+        super.onClose();
         this.baseFree = null;
     }
 

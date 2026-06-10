@@ -70,7 +70,7 @@ public class HomeEditor extends BaseConfigInventory {
     }
 
     @Override
-    public void close() {
+    protected void onClose() {
         this.currentEditHome = null;
     }
 

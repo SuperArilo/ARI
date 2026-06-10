@@ -345,7 +345,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
     }
 
     @Override
-    public void close() {
+    protected void onClose() {
         this.getPlugin().getScheduler().runAsync(this.getPlugin(), t -> {
             if (!(this.getMonitoree() instanceof Player player && player.isOnline())) {
                 NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.getMonitoree().getUniqueId().toString());

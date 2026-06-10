@@ -35,12 +35,14 @@ public class GuiManagerStateService extends StateService<GuiState> {
 
     @Override
     protected void onEarlyExit(GuiState state) {
+        state.getMenu().close();
         Ari.instance.getLog().debug("remove state to player {} inventory. type {}.", state.getOwner().getName(), state.getMenu().getType());
     }
 
     @Override
     protected void onFinished(GuiState state) {
-
+        state.getMenu().close();
+        Ari.instance.getLog().debug("remove state to player {} inventory. type {}.", state.getOwner().getName(), state.getMenu().getType());
     }
 
     @Override

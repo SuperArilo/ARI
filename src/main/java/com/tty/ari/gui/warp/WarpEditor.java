@@ -84,7 +84,7 @@ public class WarpEditor extends BaseConfigInventory {
     }
 
     @Override
-    public void close() {
+    protected void onClose() {
         this.currentEditWarp = null;
     }
 
