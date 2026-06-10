@@ -325,10 +325,10 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         } else {
             int offset = index - MAX_PLAYER_INVENTORY_INDEX;
             switch (offset) {
-                case 1: this.setHelmet(stack); break;
-                case 2: this.setChestplate(stack); break;
-                case 3: this.setLeggings(stack); break;
-                case 4: this.setBoots(stack); break;
+                case 1: this.setBoots(stack); break;
+                case 2: this.setLeggings(stack); break;
+                case 3: this.setChestplate(stack); break;
+                case 4: this.setHelmet(stack); break;
                 case 5: this.setOffhand(stack); break;
                 default:
             }

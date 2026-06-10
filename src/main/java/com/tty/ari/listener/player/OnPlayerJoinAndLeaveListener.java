@@ -73,7 +73,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join").join());
             return;
         }
-        if (Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getAllStates().stream().anyMatch(t -> (t instanceof OnCheckPlayerGuiState state && state.getMonitoree().equals(offlinePlayer)))) {
+        if (Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getAllStates().stream().anyMatch(t -> (t instanceof OnCheckPlayerGuiState state && state.getMonitoree().getUniqueId().equals(offlinePlayer.getUniqueId())))) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
         }
     }
