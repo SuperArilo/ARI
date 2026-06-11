@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @CommandMeta(displayName = "list", permission = "ari.command.zako.list", tokenLength = 2, allowConsole = true)
 @LiteralCommand(directExecute = true)
@@ -47,16 +48,18 @@ public class ZakoList extends LiteralArgumentCommand {
         String baseCommand = "/ari zako list ";
         String suggestCommand = "/ari zako info ";
 
+        Executor executor = task -> Ari.instance.getScheduler().runAsync(Ari.instance, t -> task.run());
+
         CompletableFuture<Component> requesting = (sender instanceof Player player)
                 ? ConfigUtils.t("function.zako.list-requesting", player)
                 : ConfigUtils.t("function.zako.list-requesting");
 
-        requesting.thenAcceptAsync(component -> Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(component))).thenCompose(v -> {
+        requesting.thenAcceptAsync(component -> Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(component)), executor).thenComposeAsync(v -> {
 
             EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
             return repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new LambdaQueryWrapper<>(WhitelistInstance.class), PartitionKey.global());
 
-        }).thenCompose(result -> {
+        }, executor).thenComposeAsync(result -> {
 
             List<WhitelistInstance> records = result.records();
             if (records.isEmpty()) {
@@ -93,18 +96,19 @@ public class ZakoList extends LiteralArgumentCommand {
             }
 
             return CompletableFuture.allOf(renderFutures.toArray(new CompletableFuture[0])).thenApply(v -> dataPage);
-        }).thenAccept(dataPage -> {
+        }, executor).thenAcceptAsync(dataPage -> {
             if (dataPage != null) {
                 Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(dataPage.build()));
             }
-        }).exceptionally(ex -> {
+        }, executor)
+        .exceptionallyAsync(ex -> {
             Ari.instance.getLog().error(ex, "query zako list error.");
             CompletableFuture<Component> errorMsg = (sender instanceof Player player)
                     ? ConfigUtils.t("function.zako.list-request-error", player)
                     : ConfigUtils.t("function.zako.list-request-error");
             errorMsg.thenAccept(msg -> Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(msg)));
             return null;
-        });
+        }, executor);
         return Command.SINGLE_SUCCESS;
     }
 
