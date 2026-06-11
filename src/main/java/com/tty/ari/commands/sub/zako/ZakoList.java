@@ -106,7 +106,7 @@ public class ZakoList extends LiteralArgumentCommand {
             CompletableFuture<Component> errorMsg = (sender instanceof Player player)
                     ? ConfigUtils.t("function.zako.list-request-error", player)
                     : ConfigUtils.t("function.zako.list-request-error");
-            errorMsg.thenAccept(msg -> Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(msg)));
+            errorMsg.thenAcceptAsync(msg -> Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(msg)), executor);
             return null;
         }, executor);
         return Command.SINGLE_SUCCESS;
