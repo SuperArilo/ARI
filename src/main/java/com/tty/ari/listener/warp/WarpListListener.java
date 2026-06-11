@@ -94,7 +94,7 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
                     if(isOwner || player.isOp()) {
                         Ari.instance.getScheduler().run(Ari.instance, i -> {
                             event.getInventory().close();
-                            Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new WarpEditor(instance, player)));
+                            Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new WarpEditor(player, instance)));
                         });
                     } else {
                         ConfigUtils.t("function.warp.no-permission-edit", player).thenAccept(player::sendMessage);

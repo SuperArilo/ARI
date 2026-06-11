@@ -11,14 +11,14 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public abstract class OnGuiEditListener<T extends BaseInventory> extends BaseEditFunctionGuiListener<T> {
+public abstract class OnGuiEditListener<T extends BaseInventory, D> extends BaseEditFunctionGuiListener<T, D> {
 
     protected OnGuiEditListener(AbstractJavaPlugin plugin, GuiType guiType) {
         super(plugin, guiType);
     }
 
     @Override
-    public EditGuiState isHaveState(Player player) {
+    public EditGuiState<D> isHaveState(Player player) {
         GuiEditStateService stateService = Ari.STATE_MACHINE_MANAGER.get(GuiEditStateService.class);
         if (stateService.stateIsEmpty()) return null;
         if (stateService.isNotHaveState(player)) return null;

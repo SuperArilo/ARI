@@ -123,12 +123,9 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
     }
 
     @Override
-    protected CompletableFuture<Boolean> onClose() {
-        return CompletableFuture.supplyAsync(() -> {
-            super.onClose();
-            this.baseFree = null;
-            return true;
-        }, this.getExecutorAsync());
+    protected void onClose() {
+        super.onClose();
+        this.baseFree = null;
     }
 
 }

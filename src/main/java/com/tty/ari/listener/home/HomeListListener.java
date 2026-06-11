@@ -69,7 +69,7 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
                         } else if (event.isRightClick()) {
                             Ari.instance.getScheduler().runAtEntity(Ari.instance, player, p -> {
                                 event.getInventory().close();
-                                Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new HomeEditor(home, player)));
+                                Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new HomeEditor(player, home)));
                             }, null);
                         }
                         return CompletableFuture.completedFuture(true);

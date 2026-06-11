@@ -19,17 +19,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @GuiMeta(type = "warp_edit")
 public class WarpEditor extends BaseConfigInventory {
 
     @Getter
-    private volatile ServerWarp currentEditWarp;
+    private volatile ServerWarp warp;
 
-    public WarpEditor(ServerWarp serverWarp, Player player) {
+    public WarpEditor(Player player, ServerWarp serverWarp) {
         super(Ari.instance, player);
-        this.currentEditWarp = serverWarp;
+        this.warp = serverWarp;
     }
 
     @Override
@@ -46,10 +45,10 @@ public class WarpEditor extends BaseConfigInventory {
         if(functionItems != null) {
             for (FunctionItems item : functionItems.values()) {
                 switch (item.getType()) {
-                    case ICON -> item.setMaterial(this.currentEditWarp.getShowMaterial());
-                    case RENAME -> item.setName(this.currentEditWarp.getWarpName());
+                    case ICON -> item.setMaterial(this.warp.getShowMaterial());
+                    case RENAME -> item.setName(this.warp.getWarpName());
                     case LOCATION -> {
-                        Location location = FormatUtils.parseLocation(this.currentEditWarp.getLocation());
+                        Location location = FormatUtils.parseLocation(this.warp.getLocation());
                         Map<String, String> m = new HashMap<>();
                         m.put(IconKeyType.X.getKey(), FormatUtils.formatTwoDecimalPlaces(location.getX()));
                         m.put(IconKeyType.Y.getKey(), FormatUtils.formatTwoDecimalPlaces(location.getY()));
@@ -57,7 +56,7 @@ public class WarpEditor extends BaseConfigInventory {
                         item.setName(this.replaceKey(item.getName(), m));
                     }
                     case PERMISSION -> {
-                        String permission = this.currentEditWarp.getPermission();
+                        String permission = this.warp.getPermission();
                         item.setName(permission == null ? "":permission);
                     }
                     case COST -> {
@@ -65,11 +64,11 @@ public class WarpEditor extends BaseConfigInventory {
                             item.setName(Ari.instance.getConfigInstance().getValue("server.message.no-economy", FilePath.LANG));
                             item.setMaterial("barrier");
                         } else {
-                            Double cost = this.currentEditWarp.getCost();
+                            Double cost = this.warp.getCost();
                             item.setName(cost == null ? "":cost.toString());
                         }
                     }
-                    case TOP_SLOT -> item.setLore(item.getLore().stream().map(lore -> this.replaceKey(lore, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.DATA_SERVICE.getValue(this.currentEditWarp.isTopSlot() ? "base.yes_re":"base.no_re")))).toList());
+                    case TOP_SLOT -> item.setLore(item.getLore().stream().map(lore -> this.replaceKey(lore, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.DATA_SERVICE.getValue(this.warp.isTopSlot() ? "base.yes_re":"base.no_re")))).toList());
                 }
             }
         }
@@ -81,11 +80,8 @@ public class WarpEditor extends BaseConfigInventory {
     }
 
     @Override
-    protected CompletableFuture<Boolean> onClose() {
-        return CompletableFuture.supplyAsync(() -> {
-            this.currentEditWarp = null;
-            return true;
-        }, this.getExecutorAsync());
+    protected void onClose() {
+        this.warp = null;
     }
 
 }

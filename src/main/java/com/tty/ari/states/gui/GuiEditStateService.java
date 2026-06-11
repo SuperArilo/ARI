@@ -3,8 +3,6 @@ package com.tty.ari.states.gui;
 import com.google.common.reflect.TypeToken;
 import com.tty.ari.Ari;
 import com.tty.api.utils.ComponentUtils;
-import com.tty.api.annotations.gui.GuiMeta;
-import com.tty.api.gui.BaseInventory;
 import com.tty.api.state.EditGuiState;
 import com.tty.api.state.StateService;
 import org.bukkit.entity.Player;
@@ -29,11 +27,8 @@ public class GuiEditStateService extends StateService<EditGuiState> {
             return;
         }
         state.setPending(false);
-        BaseInventory i = state.getInventory();
-        GuiMeta annotation = i.getClass().getAnnotation(GuiMeta.class);
-        Ari.instance.getLog().debug("checking player {} edit gui {}, type {}. count = {} max_count = {}",
+        Ari.instance.getLog().debug("checking player {} edit gui {}. count = {} max_count = {}",
                 owner.getName(),
-                annotation.type(),
                 state.getFunctionType(),
                 state.getCount(),
                 state.getMax_count()

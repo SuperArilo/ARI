@@ -12,7 +12,6 @@ import com.tty.api.repository.PartitionKey;
 import com.tty.api.state.EditGuiState;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.entity.ServerHome;
 import com.tty.ari.enumType.FilePath;
@@ -37,14 +36,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
-public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
+public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> {
 
     public EditHomeListener(GuiType guiType) {
         super(Ari.instance, guiType);
     }
 
     @Override
-    public boolean onTitleEditStatus(String message, EditGuiState state) {
+    public boolean onTitleEditStatus(String message, EditGuiState<ServerHome> state) {
         Player player = (Player) state.getOwner();
         List<Object> checkList = Ari.instance.getConfigInstance()
                 .getValue(
@@ -61,9 +60,9 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
             player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
             return false;
         }
-        HomeEditor homeEditor = (HomeEditor) state.getInventory();
-        homeEditor.getCurrentEditHome().setHomeName(message);
-        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, p -> Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, homeEditor)), null);
+        ServerHome data = state.getData();
+        data.setHomeName(message);
+        Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new HomeEditor(player, data)));
         return true;
     }
 
@@ -82,8 +81,8 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
         });
         registry.add(FunctionType.DELETE, (event, homeEditor, player) -> {
             LambdaQueryWrapper<ServerHome> wrapper = new LambdaQueryWrapper<>(ServerHome.class)
-                    .eq(ServerHome::getHomeId, homeEditor.getCurrentEditHome().getHomeId())
-                    .eq(ServerHome::getPlayerUUID, homeEditor.getCurrentEditHome().getPlayerUUID());
+                    .eq(ServerHome::getHomeId, homeEditor.getHome().getHomeId())
+                    .eq(ServerHome::getPlayerUUID, homeEditor.getHome().getPlayerUUID());
 
             EntityRepository<ServerHome> repository = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
             repository.delete(wrapper, PartitionKey.of(player.getUniqueId().toString()))
@@ -101,15 +100,16 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
                     });
         });
         registry.add(FunctionType.RENAME, (event, homeEditor, player) -> {
+            event.getInventory().close();
             Ari.STATE_MACHINE_MANAGER
                     .get(GuiEditStateService.class)
-                    .addState(new EditGuiState(
+                    .addState(new EditGuiState<>(
                             player,
                             Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new TypeToken<Integer>(){}.getType()),
-                            new HomeEditor(PublicFunctionUtils.deepCopy(homeEditor.getCurrentEditHome(), ServerHome.class), player),
-                            FunctionType.RENAME)
+                            homeEditor.getHome(),
+                            FunctionType.RENAME,
+                            GuiType.HOME_EDIT)
                     );
-            event.getInventory().close();
         });
         registry.add(FunctionType.LOCATION, ((event, homeEditor, player) -> {
             ItemStack clickItem = event.getCurrentItem();
@@ -117,7 +117,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
             ItemMeta clickMeta = clickItem.getItemMeta();
 
             Location newLocation = player.getLocation();
-            homeEditor.getCurrentEditHome().setLocation(newLocation.toString());
+            homeEditor.getHome().setLocation(newLocation.toString());
             clickMeta.displayName(ComponentUtils.text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
             clickItem.setItemMeta(clickMeta);
         }));
@@ -140,18 +140,18 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
 
             newItemStake.setItemMeta(newItemMeta);
             event.getInventory().setItem(event.getSlot(), newItemStake);
-            homeEditor.getCurrentEditHome().setShowMaterial(current.name());
+            homeEditor.getHome().setShowMaterial(current.name());
         });
         registry.add(FunctionType.TOP_SLOT, (event, homeEditor, player) -> {
             ItemStack clickItem = event.getCurrentItem();
             if (clickItem == null) return;
             ItemMeta clickMeta = clickItem.getItemMeta();
 
-            homeEditor.getCurrentEditHome().setTopSlot(!homeEditor.getCurrentEditHome().isTopSlot());
+            homeEditor.getHome().setTopSlot(!homeEditor.getHome().isTopSlot());
             homeEditor.getBaseMenu().getFunctionItems().forEach((k, v) -> {
                 if (v.getType().equals(FunctionType.TOP_SLOT)) {
                     List<String> lore = v.getLore();
-                    List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(homeEditor.getCurrentEditHome().isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
+                    List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(homeEditor.getHome().isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
                     clickMeta.lore(list);
                     clickItem.setItemMeta(clickMeta);
                 }
@@ -166,12 +166,12 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor> {
             clickItem.setItemMeta(clickMeta);
 
             LambdaQueryWrapper<ServerHome> wrapper = new LambdaQueryWrapper<>(ServerHome.class)
-                    .eq(ServerHome::getHomeId, homeEditor.getCurrentEditHome().getHomeId())
-                    .eq(ServerHome::getPlayerUUID, homeEditor.getCurrentEditHome().getPlayerUUID());
+                    .eq(ServerHome::getHomeId, homeEditor.getHome().getHomeId())
+                    .eq(ServerHome::getPlayerUUID, homeEditor.getHome().getPlayerUUID());
 
             EntityRepository<ServerHome> repository = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
 
-            repository.update(homeEditor.getCurrentEditHome(), wrapper, PartitionKey.of(player.getUniqueId().toString())).thenAccept(status -> {
+            repository.update(homeEditor.getHome(), wrapper, PartitionKey.of(player.getUniqueId().toString())).thenAccept(status -> {
                 clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                 clickItem.setItemMeta(clickMeta);
                 Ari.instance.getScheduler().runAsyncDelayed(Ari.instance, e -> {
