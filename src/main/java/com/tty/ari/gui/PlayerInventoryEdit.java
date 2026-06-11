@@ -321,7 +321,6 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
             this.cache = null;
             this.monitoree = null;
         }
-        return;
     }
 
     private @Nullable PlayerInventoryCache get(OfflinePlayer offlinePlayer) {

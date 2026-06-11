@@ -94,7 +94,6 @@ public class EnderChestEdit extends BaseInventory {
             this.surveillant = null;
             this.monitoree = null;
         }
-        return;
     }
 
 }
