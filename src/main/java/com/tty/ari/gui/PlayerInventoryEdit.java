@@ -11,7 +11,6 @@ import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
-import com.tty.ari.dto.PlayerInventoryCache;
 import com.tty.ari.dto.gui.PlayerInventoryCheckMenu;
 import com.tty.ari.enumType.FilePath;
 import de.tr7zw.nbtapi.NBT;
@@ -19,6 +18,7 @@ import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBTCompoundList;
 import lombok.Getter;
+import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -34,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -125,98 +126,6 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
         if (this.cache == null) return;
         Map<Integer, ItemStack> items = this.cache.getItems();
         items.forEach(inventory::setItem);
-    }
-
-    private @Nullable PlayerInventoryCache get(OfflinePlayer offlinePlayer) {
-        PlayerInventoryCache cache = new PlayerInventoryCache();
-
-        if (offlinePlayer instanceof Player player) {
-            PlayerInventory inventory = player.getInventory();
-
-            cache.setOffHand(inventory.getItemInOffHand().clone());
-            ItemStack helmet = inventory.getHelmet();
-            if (helmet != null) {
-                cache.setHelmet(helmet.clone());
-            }
-            ItemStack chestplate = inventory.getChestplate();
-            if (chestplate != null) {
-                cache.setChestplate(chestplate.clone());
-            }
-            ItemStack leggings = inventory.getLeggings();
-            if (leggings != null) {
-                cache.setLeggings(leggings.clone());
-            }
-            ItemStack boots = inventory.getBoots();
-            if (boots != null) {
-                cache.setBoots(boots.clone());
-            }
-
-            @Nullable ItemStack[] contents = inventory.getContents();
-            for (int i = 0; i < inventory.getSize(); i++) {
-                if (i > MAX_PLAYER_INVENTORY_INDEX) break;
-                ItemStack itemStack = contents[i];
-                if (itemStack == null) continue;
-                ItemStack clone = itemStack.clone();
-                cache.addItem(this.combineInventory.get(i), clone);
-                this.getPlugin().getLog().debug("index: {}, item: {}", i, itemStack.getType().name());
-            }
-        } else {
-            NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(offlinePlayer.getUniqueId().toString());
-            if (data == null) {
-                Ari.instance.getLog().debug("can not find player {} data.", this.getMonitoree().getName());
-                return null;
-            }
-
-            ReadWriteNBTCompoundList inventory = data.getCompoundList("Inventory");
-
-            for (ReadWriteNBT item : inventory) {
-                int slot = item.getByte("Slot") & 0xFF;
-                cache.addItem(this.combineInventory.get(slot), NBT.itemStackFromNBT(item));
-            }
-
-            if (data.hasTag("equipment")) {
-                ReadWriteNBT equipment = data.getCompound("equipment");
-                if (equipment == null) return null;
-
-                if (equipment.hasTag("offhand")) {
-                    ReadWriteNBT offhandItem = equipment.getCompound("offhand");
-                    if (offhandItem != null) {
-                        cache.setOffHand(NBT.itemStackFromNBT(offhandItem));
-                    }
-                }
-
-                if (equipment.hasTag("head")) {
-                    ReadWriteNBT head = equipment.getCompound("head");
-                    if (head != null) {
-                        cache.setHelmet(NBT.itemStackFromNBT(head));
-                    }
-                }
-
-                if (equipment.hasTag("chest")) {
-                    ReadWriteNBT chest = equipment.getCompound("chest");
-                    if (chest != null) {
-                        cache.setChestplate(NBT.itemStackFromNBT(chest));
-                    }
-                }
-
-                if (equipment.hasTag("legs")) {
-                    ReadWriteNBT legs = equipment.getCompound("legs");
-                    if (legs != null) {
-                        cache.setLeggings(NBT.itemStackFromNBT(legs));
-                    }
-                }
-
-                if (equipment.hasTag("feet")) {
-                    ReadWriteNBT feet = equipment.getCompound("feet");
-                    if (feet != null) {
-                        cache.setBoots(NBT.itemStackFromNBT(feet));
-                    }
-                }
-            }
-
-        }
-
-        return cache;
     }
 
     public @Nullable ItemStack getOffhand() {
@@ -418,6 +327,137 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
             }
             return true;
         }, this.getExecutor());
+    }
+
+    private @Nullable PlayerInventoryCache get(OfflinePlayer offlinePlayer) {
+        PlayerInventoryCache cache = new PlayerInventoryCache();
+
+        if (offlinePlayer instanceof Player player) {
+            PlayerInventory inventory = player.getInventory();
+
+            cache.setOffHand(inventory.getItemInOffHand().clone());
+            ItemStack helmet = inventory.getHelmet();
+            if (helmet != null) {
+                cache.setHelmet(helmet.clone());
+            }
+            ItemStack chestplate = inventory.getChestplate();
+            if (chestplate != null) {
+                cache.setChestplate(chestplate.clone());
+            }
+            ItemStack leggings = inventory.getLeggings();
+            if (leggings != null) {
+                cache.setLeggings(leggings.clone());
+            }
+            ItemStack boots = inventory.getBoots();
+            if (boots != null) {
+                cache.setBoots(boots.clone());
+            }
+
+            @Nullable ItemStack[] contents = inventory.getContents();
+            for (int i = 0; i < inventory.getSize(); i++) {
+                if (i > MAX_PLAYER_INVENTORY_INDEX) break;
+                ItemStack itemStack = contents[i];
+                if (itemStack == null) continue;
+                ItemStack clone = itemStack.clone();
+                cache.addItem(this.combineInventory.get(i), clone);
+                this.getPlugin().getLog().debug("index: {}, item: {}", i, itemStack.getType().name());
+            }
+        } else {
+            NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(offlinePlayer.getUniqueId().toString());
+            if (data == null) {
+                Ari.instance.getLog().debug("can not find player {} data.", this.getMonitoree().getName());
+                return null;
+            }
+
+            ReadWriteNBTCompoundList inventory = data.getCompoundList("Inventory");
+
+            for (ReadWriteNBT item : inventory) {
+                int slot = item.getByte("Slot") & 0xFF;
+                cache.addItem(this.combineInventory.get(slot), NBT.itemStackFromNBT(item));
+            }
+
+            if (data.hasTag("equipment")) {
+                ReadWriteNBT equipment = data.getCompound("equipment");
+                if (equipment == null) return null;
+
+                if (equipment.hasTag("offhand")) {
+                    ReadWriteNBT offhandItem = equipment.getCompound("offhand");
+                    if (offhandItem != null) {
+                        cache.setOffHand(NBT.itemStackFromNBT(offhandItem));
+                    }
+                }
+
+                if (equipment.hasTag("head")) {
+                    ReadWriteNBT head = equipment.getCompound("head");
+                    if (head != null) {
+                        cache.setHelmet(NBT.itemStackFromNBT(head));
+                    }
+                }
+
+                if (equipment.hasTag("chest")) {
+                    ReadWriteNBT chest = equipment.getCompound("chest");
+                    if (chest != null) {
+                        cache.setChestplate(NBT.itemStackFromNBT(chest));
+                    }
+                }
+
+                if (equipment.hasTag("legs")) {
+                    ReadWriteNBT legs = equipment.getCompound("legs");
+                    if (legs != null) {
+                        cache.setLeggings(NBT.itemStackFromNBT(legs));
+                    }
+                }
+
+                if (equipment.hasTag("feet")) {
+                    ReadWriteNBT feet = equipment.getCompound("feet");
+                    if (feet != null) {
+                        cache.setBoots(NBT.itemStackFromNBT(feet));
+                    }
+                }
+            }
+
+        }
+
+        return cache;
+    }
+
+    public static class PlayerInventoryCache {
+
+        @Nullable
+        @Getter
+        private ItemStack off_hand;
+
+        @Setter
+        @Nullable
+        @Getter
+        private ItemStack helmet;
+
+        @Setter
+        @Nullable
+        @Getter
+        private ItemStack chestplate;
+
+        @Setter
+        @Nullable
+        @Getter
+        private ItemStack leggings;
+
+        @Setter
+        @Nullable
+        @Getter
+        private ItemStack boots;
+
+        @Getter
+        private final Map<Integer, ItemStack> items = new HashMap<>();
+
+        public void setOffHand(ItemStack itemStack) {
+            this.off_hand = itemStack;
+        }
+
+        public void addItem(int slot, ItemStack stack) {
+            this.items.put(slot,stack);
+        }
+
     }
 
 }
