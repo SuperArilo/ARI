@@ -9,7 +9,6 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.ari.enumType.TeleportType;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.states.teleport.PreTeleportStateService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -47,8 +46,6 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        Set<String> strings = this.getOnlinePlayers(sender);
-        if (args.length != 2) return CompletableFuture.completedFuture(strings);
-        return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[1], strings));
+        return CompletableFuture.completedFuture(this.getExcludeMePlayerList(sender, args));
     }
 }

@@ -24,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @CommandMeta(displayName = "name or uuid (string)", permission = "ari.command.enderchest.player", tokenLength = 2)
 @ArgumentCommand(isSuggests = true)
@@ -69,10 +68,7 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        Collection<? extends Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
-        Set<String> strings = onlinePlayers.stream().map(Player::getName).collect(Collectors.toSet());
-        if (onlinePlayers.isEmpty() || args.length != 3) return CompletableFuture.completedFuture(strings);
-        return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[2], strings));
+        return CompletableFuture.completedFuture(this.getExcludeMePlayerList(sender, args));
     }
 
     @Override

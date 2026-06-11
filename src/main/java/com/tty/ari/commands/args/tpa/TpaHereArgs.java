@@ -6,7 +6,6 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.utils.ComponentUtils;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
 import com.tty.ari.enumType.FilePath;
@@ -25,9 +24,7 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        Set<String> strings = this.getOnlinePlayers(sender);
-        if (args.length != 2) return CompletableFuture.completedFuture(strings);
-        return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[1], strings));
+        return CompletableFuture.completedFuture(this.getExcludeMePlayerList(sender, args));
     }
 
     @Override

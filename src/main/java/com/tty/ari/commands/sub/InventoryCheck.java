@@ -24,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @CommandMeta(displayName = "name or uuid (string)", permission = "ari.command.inv", tokenLength = 2)
 @ArgumentCommand(isSuggests = true)
@@ -37,10 +36,7 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        Collection<? extends Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
-        Set<String> strings = onlinePlayers.stream().map(Player::getName).filter(name -> !name.equals(sender.getName())).collect(Collectors.toSet());
-        if (onlinePlayers.isEmpty() || args.length != 3) return CompletableFuture.completedFuture(strings);
-        return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[2], strings));
+        return CompletableFuture.completedFuture(this.getExcludeMePlayerList(sender, args));
     }
 
     @Override
@@ -74,11 +70,7 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
                         sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.task-occupied")));
                         return;
                     }
-                    Ari.instance.getScheduler().runAtEntity(
-                            Ari.instance,
-                            player,
-                            i -> Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new OnCheckPlayerGuiState(player, offlinePlayer, new PlayerInventoryEdit(Ari.instance, player, offlinePlayer))),
-                            null);
+                    Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new OnCheckPlayerGuiState(player, offlinePlayer, new PlayerInventoryEdit(Ari.instance, player, offlinePlayer)));
                 }).exceptionally(e -> {
                     Ari.instance.getLog().error(e);
                    return null;
