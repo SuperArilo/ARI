@@ -73,14 +73,13 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
     }
 
     @Override
-    protected @NotNull CompletableFuture<Mask> beforeRenderMasksAsync(@Nullable Mask mask) {
+    protected void beforeRenderMasksAsync(@Nullable Mask mask) {
         this.cache = this.get(this.getMonitoree());
-        return CompletableFuture.completedFuture(mask);
     }
 
     @Override
-    protected @NotNull CompletableFuture<Map<String, FunctionItems>> beforeRenderFunctionItemsAsync(Map<String, FunctionItems> functionItems) {
-        if(functionItems == null) return CompletableFuture.completedFuture(null);
+    protected void beforeRenderFunctionItemsAsync(Map<String, FunctionItems> functionItems) {
+        if(functionItems == null) return;
         for (FunctionItems value : functionItems.values()) {
             switch (value.getType()) {
                 case PLAYER_HEAD -> {
@@ -118,7 +117,6 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
                 }
             }
         }
-        return CompletableFuture.completedFuture(functionItems);
     }
 
     @Override
@@ -326,7 +324,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
                 this.monitoree = null;
             }
             return true;
-        }, this.getExecutor());
+        }, this.getExecutorAsync());
     }
 
     private @Nullable PlayerInventoryCache get(OfflinePlayer offlinePlayer) {

@@ -105,13 +105,9 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
     }
 
     @Override
-    protected @NotNull CompletableFuture<Mask> beforeRenderMasksAsync(@Nullable Mask mask) {
-        return CompletableFuture.completedFuture(mask);
-    }
+    protected void beforeRenderMasksAsync(@Nullable Mask mask) {}
 
     @Override
-    protected @NotNull CompletableFuture<Map<String, FunctionItems>> beforeRenderFunctionItemsAsync(@Nullable Map<String, FunctionItems> functionItems) {
-        return CompletableFuture.completedFuture(functionItems);
-    }
+    protected void beforeRenderFunctionItemsAsync(@Nullable Map<String, FunctionItems> functionItems) {}
 
 }

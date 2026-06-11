@@ -97,7 +97,7 @@ public class EnderChestEdit extends BaseInventory {
                 this.monitoree = null;
             }
             return true;
-        }, this.getExecutor());
+        }, this.getExecutorAsync());
     }
 
 }
