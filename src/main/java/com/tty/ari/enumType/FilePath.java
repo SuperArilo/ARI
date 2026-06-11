@@ -24,7 +24,7 @@ public enum FilePath implements FilePathEnum {
 
     DEATH_MESSAGE("death-message", "lang/death-message/[lang].yml"),
 
-    INV_GUI_CONFIG("inv-gui", "module/inv.yml");
+    INV_GUI_CONFIG("inv-gui", "module/check-inventory-layout.yml");
 
     private final String nickName;
     private final String path;
