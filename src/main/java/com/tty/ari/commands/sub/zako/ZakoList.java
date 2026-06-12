@@ -44,8 +44,8 @@ public class ZakoList extends LiteralArgumentCommand {
 
     public static int Build_Zako_List(CommandSender sender, Integer pageNum) {
 
-        String baseCommand = "/ari zako list ";
-        String suggestCommand = "/ari zako info ";
+        String baseCommand = "/" + Ari.instance.getName() + " zako list ";
+        String suggestCommand = "/" + Ari.instance.getName() +" zako info ";
 
         CompletableFuture<Component> requesting = (sender instanceof Player player)
                 ? ConfigUtils.t("function.zako.list-requesting", player)
@@ -72,27 +72,27 @@ public class ZakoList extends LiteralArgumentCommand {
                     (int) result.totalPages(),
                     (int) result.total());
 
-            List<CompletableFuture<Void>> renderFutures = new ArrayList<>();
-            for (WhitelistInstance instance : records) {
+            List<CompletableFuture<Component>> lineFutures = new ArrayList<>();
 
+            for (WhitelistInstance instance : records) {
                 String uuid = instance.getPlayerUUID();
                 OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(uuid));
-
-                CompletableFuture<Component> renderList = Ari.PLACEHOLDER.renderList("server.player.zako.list-show", offlinePlayer);
-                CompletableFuture<Component> unableFuture = Ari.PLACEHOLDER.render("server.player.zako.unable-record", offlinePlayer);
-
-                CompletableFuture<Void> lineFuture = renderList.thenCombineAsync(unableFuture, (e, i) -> {
-                    Component t = e;
-                    if (offlinePlayer.getName() == null) {
-                        t = t.appendNewline().append(i);
-                    }
-                    return t.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, suggestCommand + uuid));
-                }, Ari.instance.getExecutorAsync()).thenAccept(dataPage::addLine);
-
-                renderFutures.add(lineFuture);
+                lineFutures.add(Ari.PLACEHOLDER.renderList("server.player.zako.list-show", offlinePlayer)
+                    .thenCombineAsync(Ari.PLACEHOLDER.render("server.player.zako.unable-record", offlinePlayer),
+                        (e, i) -> {
+                            Component t = e;
+                            if (offlinePlayer.getName() == null) {
+                                t = t.appendNewline().append(i);
+                            }
+                            return t.clickEvent(ClickEvent.runCommand(suggestCommand + uuid));
+                        }, Ari.instance.getExecutorAsync()
+                    )
+                );
             }
-
-            return CompletableFuture.allOf(renderFutures.toArray(new CompletableFuture[0])).thenApply(v -> dataPage);
+            return CompletableFuture.allOf(lineFutures.toArray(new CompletableFuture[0])).thenApply(v -> {
+                        lineFutures.stream().map(CompletableFuture::join).forEach(dataPage::addLine);
+                        return dataPage;
+                    });
         }).thenAcceptAsync(dataPage -> {
             if (dataPage != null) {
                 Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(dataPage.build()));
