@@ -3,6 +3,7 @@ package com.tty.ari.commands.args;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.command.RequiredArgumentCommand;
@@ -40,7 +41,8 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
         for (TimePeriod value : TimePeriod.values()) {
             strings.add(value.getDescription());
         }
-        return CompletableFuture.completedFuture(strings);
+        if (args.length == 1) return CompletableFuture.completedFuture(strings);
+        return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[1], strings));
     }
 
     @Override

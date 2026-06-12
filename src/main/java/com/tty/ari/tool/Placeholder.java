@@ -1,7 +1,7 @@
 package com.tty.ari.tool;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.tty.api.ConfigInstance;
+import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.ServerPlatform;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.PartitionKey;
@@ -45,8 +45,8 @@ import static com.tty.ari.listener.teleport.RecordLastLocationListener.TELEPORT_
 @SuppressWarnings("deprecation")
 public class Placeholder extends BasePlaceholder<FilePath> {
 
-    public Placeholder(ConfigInstance instance) {
-        super(instance, FilePath.LANG);
+    public Placeholder(AbstractJavaPlugin plugin) {
+        super(plugin, FilePath.LANG);
         this.init();
     }
 

@@ -161,21 +161,18 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         }
 
         this.searchSafeLocation.search(world, randomXZ[0], randomXZ[1])
-            .thenAccept(location -> {
+            .thenAcceptAsync(location -> {
                 state.setPending(false);
                 state.setRunning(false);
                 if (location == null) return;
                 state.setTrueLocation(location);
                 state.setOver(true);
-            })
-            .exceptionally(e -> {
+            }, Ari.instance.getExecutorSync())
+            .exceptionallyAsync(e -> {
                 if (e.getCause() instanceof TimeoutException && owner instanceof Player player) {
                     state.setRunning(false);
                     state.setPending(false);
-                    Ari.PLACEHOLDER.render("function.rtp.abort-search", player)
-                            .thenAccept(i ->
-                                    Ari.instance.getScheduler().runAtEntity(Ari.instance, player, t ->
-                                            player.sendMessage(i), null));
+                    Ari.PLACEHOLDER.render("function.rtp.abort-search", player).thenAccept(player::sendMessage);
                 } else {
                     state.setOver(true);
                     if (owner instanceof Player player) {
@@ -184,7 +181,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                     Ari.instance.getLog().error(e, "running rtp error on entity {}.", owner.getName());
                 }
                 return null;
-            });
+            }, Ari.instance.getExecutorSync());
     }
 
     private int[] calculateRandomXZ(World world, int minRadius, int maxRadius) {

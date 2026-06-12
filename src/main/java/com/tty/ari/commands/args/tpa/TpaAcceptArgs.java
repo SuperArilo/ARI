@@ -39,7 +39,6 @@ public class TpaAcceptArgs extends TpaBaseLiteralLiteralArgument {
 
         Player player = (Player) sender;
         Player target = Ari.instance.getServer().getPlayerExact(args[1]);
-
         return this.checkAfterResponse(player, target, s -> {
 
             int value = Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.TPA_CONFIG, Integer.class, 3);

@@ -53,7 +53,7 @@ public final class RepositoryManager {
     }
 
     public void stop() {
-        this.repositories.forEach((k, v) -> v.abort());
+        this.repositories.forEach((k, v) -> v.shutdown());
     }
 
 }
