@@ -81,31 +81,31 @@ public class ZakoList extends LiteralArgumentCommand {
                 CompletableFuture<Component> renderList = Ari.PLACEHOLDER.renderList("server.player.zako.list-show", offlinePlayer);
                 CompletableFuture<Component> unableFuture = Ari.PLACEHOLDER.render("server.player.zako.unable-record", offlinePlayer);
 
-                CompletableFuture<Void> lineFuture = renderList.thenCombine(unableFuture, (e, i) -> {
+                CompletableFuture<Void> lineFuture = renderList.thenCombineAsync(unableFuture, (e, i) -> {
                     Component t = e;
                     if (offlinePlayer.getName() == null) {
                         t = t.appendNewline().append(i);
                     }
                     return t.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, suggestCommand + uuid));
-                }).thenAccept(dataPage::addLine);
+                }, Ari.instance.getExecutorAsync()).thenAccept(dataPage::addLine);
 
                 renderFutures.add(lineFuture);
             }
 
             return CompletableFuture.allOf(renderFutures.toArray(new CompletableFuture[0])).thenApply(v -> dataPage);
-        }).thenAccept(dataPage -> {
+        }).thenAcceptAsync(dataPage -> {
             if (dataPage != null) {
                 Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(dataPage.build()));
             }
-        })
-        .exceptionally(ex -> {
+        }, Ari.instance.getExecutorAsync())
+        .exceptionallyAsync(ex -> {
             Ari.instance.getLog().error(ex, "query zako list error.");
             CompletableFuture<Component> errorMsg = (sender instanceof Player player)
                     ? ConfigUtils.t("function.zako.list-request-error", player)
                     : ConfigUtils.t("function.zako.list-request-error");
             errorMsg.thenAccept(msg -> Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(msg)));
             return null;
-        });
+        }, Ari.instance.getExecutorAsync());
         return Command.SINGLE_SUCCESS;
     }
 
