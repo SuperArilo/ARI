@@ -40,7 +40,7 @@ public class setspawn extends LiteralArgumentCommand {
         spawnLocation.setYaw(location.getYaw());
 
         try {
-            Ari.instance.getConfigInstance().setValue(Ari.instance, "main.location", FilePath.SPAWN_CONFIG, spawnLocation.toMap());
+            Ari.instance.getConfigInstance().setValue("main.location", FilePath.SPAWN_CONFIG, spawnLocation.toMap());
         } catch (IOException e) {
             sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             Ari.instance.getLog().error(e);

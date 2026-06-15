@@ -241,7 +241,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             }
         }
         try {
-            Ari.instance.getConfigInstance().setValue(Ari.instance,"main.worlds", FilePath.RTP_CONFIG, value);
+            Ari.instance.getConfigInstance().setValue("main.worlds", FilePath.RTP_CONFIG, value);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
