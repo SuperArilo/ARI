@@ -22,6 +22,10 @@ public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
 
     protected int addPlayer(CommandSender sender, String[] args) {
         String value = args[2];
+        if (!this.isValidPlayerName(value)) {
+            ConfigUtils.t("function.zako.zako-add-name-invalid").thenAccept(sender::sendMessage);
+            return 0;
+        }
         UUID uuid = PublicFunctionUtils.parseUUID(value);
         if (uuid == null) return 0;
 
@@ -70,6 +74,13 @@ public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
     @Override
     protected boolean isDisabledInGame() {
         return false;
+    }
+
+    protected boolean isValidPlayerName(String name) {
+        if (name == null) {
+            return false;
+        }
+        return name.matches("^[a-zA-Z0-9_]{3,16}$");
     }
 
 }

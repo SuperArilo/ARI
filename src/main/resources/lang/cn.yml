@@ -54,8 +54,8 @@ function:
     zako-add-success: '&a✔ 白名单添加成功'
     zako-add-failure: '&c✖ 添加失败，请查看控制台'
     zako-add-exist: '&c✖ 添加失败，玩家已经存在'
+    zako-add-name-invalid: "&c✖ 添加失败，玩家名称不合法"
     zako-check-not-exist: '&c✖ 该玩家不存在，或者从没登录过服务器'
-    public-zako-not-exist: '&c✖ 添加失败，玩家不存在'
     whitelist-remove-success: '&a✔ 白名单移除成功'
     whitelist-remove-failure: '&c✖ 白名单移除失败，不存在或者存在错误'
     ban-remove-success: '&a✔ 黑名单移除成功'
