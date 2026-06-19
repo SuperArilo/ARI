@@ -43,18 +43,13 @@ public class RecordLastLocationListener implements Listener {
         if (!ServerPlatform.isFolia()) return;
         Player player = event.getPlayer();
         Location respawnLocation = event.getRespawnLocation();
-        Ari.instance.getScheduler().runAtRegion(
-            Ari.instance,
-            respawnLocation,
-            i -> player.teleportAsync(respawnLocation)
-                    .thenAccept(t -> {
-                        if(t && TELEPORT_LAST_LOCATION.containsKey(player.getUniqueId())) {
-                            this.setPlayerLastLocation(player);
-                        } else {
-                            Ari.instance.getLog().warn("player {} teleport status error.", player.getName());
-                        }
-                    })
-        );
+        Ari.instance.getScheduler().runAtRegion(Ari.instance, respawnLocation, i -> player.teleportAsync(respawnLocation).thenAccept(t -> {
+            if(t && TELEPORT_LAST_LOCATION.containsKey(player.getUniqueId())) {
+                this.setPlayerLastLocation(player);
+            } else {
+                Ari.instance.getLog().warn("player {} teleport status error. location: {}", player.getName(), respawnLocation.toString());
+            }
+        }));
     }
 
     @EventHandler
