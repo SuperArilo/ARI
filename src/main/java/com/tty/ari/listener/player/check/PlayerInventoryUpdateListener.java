@@ -64,7 +64,7 @@ public class PlayerInventoryUpdateListener implements Listener {
             for (GuiState guiState : service.getAllStates()) {
                 if (!(guiState.getMenu() instanceof PlayerInventoryEdit editInventory) || !(guiState instanceof OnCheckPlayerGuiState state)) continue;
 
-                if (!state.getMonitoree().equals(entity) || !state.getOwner().equals(editInventory.getOfflinePlayer())) return;
+                if (!state.getMonitoree().equals(entity) || !state.getOwner().equals(editInventory.getOfflinePlayer())) continue;
                 ItemStack[] playerContents = entity.getInventory().getContents();
                 for (int slot = 0; slot < entity.getInventory().getSize(); slot++) {
                     editInventory.setItem(slot, playerContents[slot]);
