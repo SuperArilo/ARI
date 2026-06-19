@@ -51,6 +51,14 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
 
     @Override
     protected void whenClick(InventoryClickEvent event, PlayerInventoryEdit holder) {
+
+        OfflinePlayer monitoree = holder.getMonitoree();
+
+        if (monitoree instanceof Player player) {
+            event.setCancelled(true);
+            if (this.isUpdating((Player) event.getWhoClicked(), player)) return;
+        }
+
         GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
         PlayerInventoryCheckMenu menuConfig = (PlayerInventoryCheckMenu) holder.getBaseMenu();
         int slot = event.getSlot();
@@ -103,6 +111,13 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
 
     @Override
     protected void whenDrag(InventoryDragEvent event, PlayerInventoryEdit holder) {
+        OfflinePlayer monitoree = holder.getMonitoree();
+
+        if (monitoree instanceof Player player) {
+            event.setCancelled(true);
+            if (this.isUpdating((Player) event.getWhoClicked(), player)) return;
+        }
+
         List<Integer> bindingSlots = holder.getCombineInventory();
         Set<Integer> draggedSlots = event.getInventorySlots();
 
@@ -112,31 +127,30 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         }
 
         InventoryView view = event.getView();
-        Ari.instance.getScheduler().run(Ari.instance, i -> {
-            if (view.getTopInventory() != holder.getInventory()) return;
 
-            GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
-            PlayerInventoryCheckMenu menuConfig = (PlayerInventoryCheckMenu) holder.getBaseMenu();
+        if (view.getTopInventory() != holder.getInventory()) return;
 
-            for (int guiSlot : draggedSlots) {
-                int playerSlot = bindingSlots.indexOf(guiSlot);
-                if (playerSlot == -1) continue;
+        GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
+        PlayerInventoryCheckMenu menuConfig = (PlayerInventoryCheckMenu) holder.getBaseMenu();
 
-                ItemStack guiItem = view.getItem(guiSlot);
-                ItemStack newItem = guiItem != null ? guiItem.clone() : null;
+        for (int guiSlot : draggedSlots) {
+            int playerSlot = bindingSlots.indexOf(guiSlot);
+            if (playerSlot == -1) continue;
 
-                if (holder.getMonitoree() instanceof Player monitored && monitored.isOnline()) {
-                    monitored.getInventory().setItem(playerSlot, newItem);
-                }
+            ItemStack guiItem = view.getItem(guiSlot);
+            ItemStack newItem = guiItem != null ? guiItem.clone() : null;
 
-                for (GuiState guiState : service.getAllStates()) {
-                    if (!(guiState instanceof OnCheckPlayerGuiState state)) continue;
-                    if (!state.getMonitoree().equals(holder.getMonitoree())) continue;
-                    if (menuConfig.getShortcutBar().contains(guiSlot) && menuConfig.getPlayerInventory().contains(guiSlot)) continue;
-                    state.getMenu().getInventory().setItem(guiSlot, newItem != null ? newItem.clone() : null);
-                }
+            if (holder.getMonitoree() instanceof Player monitored && monitored.isOnline()) {
+                monitored.getInventory().setItem(playerSlot, newItem);
             }
-        });
+
+            for (GuiState guiState : service.getAllStates()) {
+                if (!(guiState instanceof OnCheckPlayerGuiState state)) continue;
+                if (!state.getMonitoree().equals(holder.getMonitoree())) continue;
+                if (menuConfig.getShortcutBar().contains(guiSlot) && menuConfig.getPlayerInventory().contains(guiSlot)) continue;
+                state.getMenu().getInventory().setItem(guiSlot, newItem != null ? newItem.clone() : null);
+            }
+        }
     }
 
     @Override
@@ -145,6 +159,12 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
     }
 
     private void changeEquipment(InventoryClickEvent event, PlayerInventoryEdit inventoryEdit) {
+        OfflinePlayer monitoree = inventoryEdit.getMonitoree();
+
+        if (monitoree instanceof Player player) {
+            if (this.isUpdating((Player) event.getWhoClicked(), player)) return;
+        }
+
         ItemStack clickItem = event.getCurrentItem();
         if (clickItem == null) return;
         ItemStack cursor = event.getCursor();
@@ -153,7 +173,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         if (type == null) return;
 
         Map<String, FunctionItems> functionItems = inventoryEdit.getBaseMenu().getFunctionItems();
-        OfflinePlayer monitoree = inventoryEdit.getMonitoree();
+
 
         for (FunctionItems value : functionItems.values()) {
             if (!value.getType().equals(type)) continue;
@@ -237,6 +257,10 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             case PLAYER_BOOTS -> inventory.setBoots(stack);
             case PLAYER_OFF_HAND -> inventory.setItemInOffHand(stack);
         }
+    }
+
+    private boolean isUpdating(Player owner, Player monitoree) {
+        return Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getStates(owner).stream().anyMatch(i -> i instanceof OnCheckPlayerGuiState state && state.getMonitoree().equals(monitoree) && state.isUpdating());
     }
 
 }
