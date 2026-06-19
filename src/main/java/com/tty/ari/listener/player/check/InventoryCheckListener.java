@@ -10,7 +10,10 @@ import com.tty.api.listener.BaseGuiListener;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.gui.PlayerInventoryCheckMenu;
+import com.tty.ari.dto.state.GuiState;
+import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.gui.PlayerInventoryEdit;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -23,7 +26,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit> {
@@ -45,61 +51,54 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
 
     @Override
     protected void whenClick(InventoryClickEvent event, PlayerInventoryEdit holder) {
-
-        PlayerInventoryCheckMenu menu = (PlayerInventoryCheckMenu) holder.getBaseMenu();
+        GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
+        PlayerInventoryCheckMenu menuConfig = (PlayerInventoryCheckMenu) holder.getBaseMenu();
         int slot = event.getSlot();
         event.setCancelled(true);
 
-        if (menu.getShortcutBar().contains(slot) || menu.getPlayerInventory().contains(slot)) {
-            ItemStack cursor = event.getCursor();
-            ItemStack slotItem = event.getCurrentItem();
-            InventoryView view = event.getView();
-            List<Integer> binding = holder.getCombineInventory();
+        List<Integer> binding = holder.getCombineInventory();
+        int playerSlot = binding.indexOf(slot);
+        if (playerSlot == -1) return;
 
+        ItemStack cursor = event.getCursor().clone();
+        ItemStack slotItem = event.getCurrentItem() != null ? event.getCurrentItem().clone() : null;
 
-            int playerSlot = binding.indexOf(event.getSlot());
-            if (playerSlot == -1) return;
+        ItemStack newCursor = cursor.clone();
+        ItemStack newSlotItem = slotItem != null ? slotItem.clone() : null;
 
-            if (cursor.isEmpty() && slotItem != null && !slotItem.isEmpty()) {
-                view.setCursor(slotItem.clone());
-                view.setItem(event.getSlot(), null);
-                if (holder.getMonitoree() instanceof Player player) {
-                    player.getInventory().setItem(playerSlot, null);
+        if (cursor.isEmpty() && slotItem != null && !slotItem.isEmpty()) {
+            newCursor = slotItem.clone();
+            newSlotItem = null;
+        } else if (!cursor.isEmpty() && (slotItem == null || slotItem.isEmpty())) {
+            newCursor = null;
+            newSlotItem = cursor.clone();
+        } else if (!cursor.isEmpty() && slotItem != null && !slotItem.isEmpty()) {
+            if (cursor.isSimilar(slotItem) && slotItem.getAmount() < slotItem.getMaxStackSize()) {
+                int space = slotItem.getMaxStackSize() - slotItem.getAmount();
+                int move = Math.min(cursor.getAmount(), space);
+                newSlotItem.setAmount(slotItem.getAmount() + move);
+                newCursor.setAmount(cursor.getAmount() - move);
+                if (newCursor.getAmount() <= 0) {
+                    newCursor = null;
                 }
-
-
-            } else if (!cursor.isEmpty() && (slotItem == null || slotItem.isEmpty())) {
-                if (holder.getMonitoree() instanceof Player player) {
-                    player.getInventory().setItem(playerSlot, cursor.clone());
-                }
-
-                view.setItem(event.getSlot(), cursor.clone());
-                view.setCursor(null);
-
-            } else if (!cursor.isEmpty() && slotItem != null && !slotItem.isEmpty()) {
-                if (cursor.isSimilar(slotItem) && slotItem.getAmount() < slotItem.getMaxStackSize()) {
-                    int space = slotItem.getMaxStackSize() - slotItem.getAmount();
-                    int move = Math.min(cursor.getAmount(), space);
-                    slotItem.setAmount(slotItem.getAmount() + move);
-                    cursor.setAmount(cursor.getAmount() - move);
-                    view.setItem(event.getSlot(), slotItem.clone());
-                    if (holder.getMonitoree() instanceof Player player) {
-                        player.getInventory().setItem(playerSlot, slotItem.clone());
-                    }
-                    if (cursor.getAmount() <= 0) {
-                        view.setCursor(null);
-                    } else {
-                        view.setCursor(cursor.clone());
-                    }
-                } else {
-                    view.setCursor(slotItem.clone());
-                    view.setItem(event.getSlot(), cursor.clone());
-                    if (holder.getMonitoree() instanceof Player player) {
-                        player.getInventory().setItem(playerSlot, cursor.clone());
-                    }
-                }
+            } else {
+                newCursor = slotItem.clone();
+                newSlotItem = cursor.clone();
             }
         }
+
+        if (holder.getMonitoree() instanceof Player monitored && monitored.isOnline()) {
+            monitored.getInventory().setItem(playerSlot, newSlotItem);
+        }
+
+        for (GuiState guiState : service.getAllStates()) {
+            if (!(guiState instanceof OnCheckPlayerGuiState state)) continue;
+            if (!state.getMonitoree().equals(holder.getMonitoree())) continue;
+            if (menuConfig.getShortcutBar().contains(slot) && menuConfig.getPlayerInventory().contains(slot)) continue;
+            state.getMenu().getInventory().setItem(slot, newSlotItem != null ? newSlotItem.clone() : null);
+        }
+
+        event.getView().setCursor(newCursor);
     }
 
     @Override
@@ -111,16 +110,30 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             event.setCancelled(true);
             return;
         }
-        if (!(holder.getMonitoree() instanceof Player player)) return;
 
         InventoryView view = event.getView();
         Ari.instance.getScheduler().run(Ari.instance, i -> {
-            if (!player.isOnline() || view.getTopInventory() != holder.getInventory()) return;
+            if (view.getTopInventory() != holder.getInventory()) return;
+
+            GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
+            PlayerInventoryCheckMenu menuConfig = (PlayerInventoryCheckMenu) holder.getBaseMenu();
+
             for (int guiSlot : draggedSlots) {
                 int playerSlot = bindingSlots.indexOf(guiSlot);
-                if (playerSlot != -1) {
-                    ItemStack guiItem = view.getItem(guiSlot);
-                    player.getInventory().setItem(playerSlot, guiItem != null ? guiItem.clone() : null);
+                if (playerSlot == -1) continue;
+
+                ItemStack guiItem = view.getItem(guiSlot);
+                ItemStack newItem = guiItem != null ? guiItem.clone() : null;
+
+                if (holder.getMonitoree() instanceof Player monitored && monitored.isOnline()) {
+                    monitored.getInventory().setItem(playerSlot, newItem);
+                }
+
+                for (GuiState guiState : service.getAllStates()) {
+                    if (!(guiState instanceof OnCheckPlayerGuiState state)) continue;
+                    if (!state.getMonitoree().equals(holder.getMonitoree())) continue;
+                    if (menuConfig.getShortcutBar().contains(guiSlot) && menuConfig.getPlayerInventory().contains(guiSlot)) continue;
+                    state.getMenu().getInventory().setItem(guiSlot, newItem != null ? newItem.clone() : null);
                 }
             }
         });
@@ -132,7 +145,6 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
     }
 
     private void changeEquipment(InventoryClickEvent event, PlayerInventoryEdit inventoryEdit) {
-
         ItemStack clickItem = event.getCurrentItem();
         if (clickItem == null) return;
         ItemStack cursor = event.getCursor();
@@ -141,7 +153,6 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         if (type == null) return;
 
         Map<String, FunctionItems> functionItems = inventoryEdit.getBaseMenu().getFunctionItems();
-        Inventory inventory = event.getInventory();
         OfflinePlayer monitoree = inventoryEdit.getMonitoree();
 
         for (FunctionItems value : functionItems.values()) {
@@ -150,47 +161,48 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             boolean isPlaceholderItem = clickItem.getType().name().equals(value.getMaterial());
             boolean isClickItemHasNBT = Ari.instance.getNbtManager().hasNbt(NbtGuiValue.GUI_FUNCTION_ICON, clickItem, PersistentDataType.STRING);
 
+            ItemStack finalGuiItem = null;
+            ItemStack finalPlayerItem = null;
+            ItemStack finalCursor = null;
+
             if (cursor.isEmpty()) {
                 if (isClickItemHasNBT && !isPlaceholderItem) {
-                    inventory.setItem(event.getSlot(), this.createFunctionItem(value));
+                    finalGuiItem = this.createFunctionItem(value);
                     ItemStack clone = clickItem.clone();
                     Ari.instance.getNbtManager().removeNbt(NbtGuiValue.GUI_FUNCTION_ICON, clone);
-                    event.getView().setCursor(clone);
-                    if (monitoree instanceof Player player) {
-                        this.setEquipmentToPlayer(player, value.getType(), null);
-                    }
+                    finalCursor = clone;
                 }
-                return;
-            }
-
-            FunctionType equipment = this.isEquipment(cursor, value);
-
-            if (equipment == null || !equipment.equals(value.getType())) return;
-
-            if (isClickItemHasNBT && !isPlaceholderItem) {
-                ItemStack clone = clickItem.clone();
-                Ari.instance.getNbtManager().removeNbt(NbtGuiValue.GUI_FUNCTION_ICON, clone);
-                event.getView().setCursor(clone);
-
-                ItemStack cloned = cursor.clone();
-                Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, cloned, PersistentDataType.STRING, value.getType().getName());
-
-                inventory.setItem(event.getSlot(), cloned);
-                if (monitoree instanceof Player player) {
-                    this.setEquipmentToPlayer(player, value.getType(), cursor.clone());
-                }
+                if (finalCursor == null) return;
             } else {
-                ItemStack cloned = cursor.clone();
-                Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, cloned, PersistentDataType.STRING, value.getType().getName());
+                FunctionType equipment = this.isEquipment(cursor, value);
+                if (equipment == null || !equipment.equals(value.getType())) return;
 
-                inventory.setItem(event.getSlot(), cloned);
-                event.getView().setCursor(null);
-                if (monitoree instanceof Player player) {
-                    this.setEquipmentToPlayer(player, value.getType(), cursor.clone());
+                ItemStack cloneCursor = cursor.clone();
+                Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, cloneCursor, PersistentDataType.STRING, value.getType().getName());
+
+                if (isClickItemHasNBT && !isPlaceholderItem) {
+                    ItemStack oldItemClone = clickItem.clone();
+                    Ari.instance.getNbtManager().removeNbt(NbtGuiValue.GUI_FUNCTION_ICON, oldItemClone);
+                    finalCursor = oldItemClone;
                 }
-            }
-        }
 
+                finalGuiItem = cloneCursor;
+                finalPlayerItem = cursor.clone();
+            }
+
+            if (monitoree instanceof Player player && player.isOnline()) {
+                this.setEquipmentToPlayer(player, value.getType(), finalPlayerItem);
+            }
+
+            GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
+            for (GuiState guiState : service.getAllStates()) {
+                if (!(guiState instanceof OnCheckPlayerGuiState state)) continue;
+                if (!state.getMonitoree().equals(monitoree)) continue;
+                state.getMenu().getInventory().setItem(event.getSlot(), finalGuiItem.clone());
+            }
+            event.getView().setCursor(finalCursor);
+            return;
+        }
     }
 
     private ItemStack createFunctionItem(FunctionItems item) {
