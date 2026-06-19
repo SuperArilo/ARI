@@ -263,14 +263,15 @@ public class LastDamageTracker {
     }
 
     private void log(Entity victim, EntityDamageEvent.DamageCause cause, Long timeDiff, Long threshold, Entity attacker) {
-        Ari.instance.getLog().debug("[RECORD_BEFORE_CHECK] victim: {}, damage_type: {}, time_difference: {} ms (threshold: {} ms), attacker: {}, location: {}",
+        if (!Ari.instance.isDebug()) return;
+        Ari.instance.getScheduler().runAtEntity(Ari.instance, attacker, i -> Ari.instance.getLog().debug("[RECORD_BEFORE_CHECK] victim: {}, damage_type: {}, time_difference: {} ms (threshold: {} ms), attacker: {}, location: {}",
                 victim.getName(),
                 cause.name(),
                 timeDiff,
                 threshold,
                 attacker != null ? attacker.getName() : "null",
                 victim.getLocation().toString()
-        );
+        ), null);
     }
 
     public record AttackCheckResult(boolean involvesPlayer, Entity resolvedAttacker) {}
