@@ -3,6 +3,8 @@ package com.tty.ari.tool;
 import com.tty.api.state.State;
 import com.tty.api.state.StateService;
 import com.tty.ari.states.CoolDownStateService;
+import com.tty.ari.states.PlayerChatService;
+import com.tty.ari.states.PlayerCommandPreprocessService;
 import com.tty.ari.states.gui.GuiEditStateService;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.states.PlayerSaveStateService;
@@ -30,6 +32,8 @@ public class StateMachineManager {
         this.registerStateMachine(new GuiEditStateService(20L,1L, false));
         this.registerStateMachine(new PlayerSaveStateService(20L, 20L, true));
         this.registerStateMachine(new GuiManagerStateService(10L, 1L, false));
+        this.registerStateMachine(new PlayerCommandPreprocessService(20L, 0L, true));
+        this.registerStateMachine(new PlayerChatService(20L, 0L, true));
     }
 
     @SuppressWarnings("unchecked")

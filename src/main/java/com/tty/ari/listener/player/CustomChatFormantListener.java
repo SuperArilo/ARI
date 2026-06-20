@@ -4,8 +4,11 @@ import com.google.gson.reflect.TypeToken;
 import com.tty.ari.Ari;
 import com.tty.api.utils.ComponentUtils;
 import com.tty.api.event.CustomPluginReloadEvent;
+import com.tty.ari.dto.state.player.PlayerChatState;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.lang.LangPlayerChat;
+import com.tty.ari.states.PlayerChatService;
+import com.tty.ari.tool.ConfigUtils;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -20,30 +23,45 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CustomChatFormantListener implements Listener {
 
     private Map<String, String> groupsPattern = new HashMap<>();
+    private boolean chatIsEnable;
+    private boolean cooldownIsEnable;
+    private int cooldownTime;
 
     public CustomChatFormantListener() {
-        this.groupsPattern = this.set();
+        this.groupsPattern = this.getGroupsPattern();
+        this.chatIsEnable = this.isChatIsEnable();
+        this.cooldownIsEnable = this.isCooldownIsEnable();
+        this.cooldownTime = this.getCooldownTime();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerSendMessage(AsyncChatEvent event) {
-        if (this.isNotEnable()) return;
-        event.renderer((source, sourceDisplayName, msg, viewer) ->
-                ComponentUtils.text(
-                        this.getPattern(source),
-                        Map.of(LangPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), LangPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
-    }
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void whenPluginReload(CustomPluginReloadEvent event) {
-        if (this.isNotEnable()) return;
-        this.groupsPattern = this.set();
+        Player player = event.getPlayer();
+        if (this.chatIsEnable) {
+           event.renderer((source, sourceDisplayName, msg, viewer) ->
+                   ComponentUtils.text(this.getPattern(source), player, Map.of(LangPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), LangPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
+       }
+       if (this.cooldownIsEnable) {
+           if(!Ari.STATE_MACHINE_MANAGER.get(PlayerChatService.class).addState(new PlayerChatState(player, event.message(), this.cooldownTime))) {
+               ConfigUtils.t("server.message.chat-cooldown", player).thenAccept(player::sendMessage);
+               event.setCancelled(true);
+           }
+       }
     }
 
-    private Map<String, String> set() {
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void whenPluginReload(CustomPluginReloadEvent event) {
+        this.chatIsEnable = this.isChatIsEnable();
+        this.cooldownTime = this.getCooldownTime();
+        this.cooldownIsEnable = this.isCooldownIsEnable();
+        this.groupsPattern = this.getGroupsPattern();
+    }
+
+    private Map<String, String> getGroupsPattern() {
         return Ari.instance.getConfigInstance().getValue("chat.groups-pattern", FilePath.CHAT_CONFIG, new TypeToken<Map<String, String>>(){}.getType(), Map.of());
     }
 
-    private String getPattern(Player player)                      {
+    private String getPattern(Player player) {
         AtomicReference<String> s = new AtomicReference<>("");
         this.groupsPattern.forEach((k, v) -> {
             if (!s.get().isEmpty()) return;
@@ -57,7 +75,16 @@ public class CustomChatFormantListener implements Listener {
         return s.get();
     }
 
-    private boolean isNotEnable() {
-        return !Ari.instance.getConfigInstance().getValue("chat.enable", FilePath.CHAT_CONFIG, Boolean.class, false);
+    private boolean isChatIsEnable() {
+        return Ari.instance.getConfigInstance().getValue("chat.enable", FilePath.CHAT_CONFIG, Boolean.class, false);
     }
+
+    private boolean isCooldownIsEnable() {
+        return Ari.instance.getConfigInstance().getValue("chat.cooldown.enable", FilePath.CHAT_CONFIG, Boolean.class, false);
+    }
+
+    private int getCooldownTime() {
+        return Ari.instance.getConfigInstance().getValue("chat.cooldown.value", FilePath.CHAT_CONFIG, Integer.class, 2);
+    }
+
 }

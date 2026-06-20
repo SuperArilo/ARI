@@ -134,7 +134,8 @@ public class Ari extends AbstractJavaPlugin {
                 new MobBossBarListener(),
                 new DisableMobSpawnListener(),
                 new CustomTotemCostListener(),
-                new SandDupeListener()
+                new SandDupeListener(),
+                new PlayerCommandCoolDownListener()
         );
     }
 

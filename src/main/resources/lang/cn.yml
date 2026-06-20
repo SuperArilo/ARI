@@ -103,6 +103,8 @@ server:
     on-login: '&f玩家 &6<player_name> &f加入了服务器！'
     on-leave: '&f玩家 &6<player_name> &f离开了服务器！'
     no-economy: '&c服务器未使用经济插件'
+    command-cooldown: "&e你输入指令过快，休息一下吧"
+    chat-cooldown: "&e你发消息的频率过快，休息一下吧"
   player:
     info:
       - "&f玩家 &6<player_name> &f的信息"

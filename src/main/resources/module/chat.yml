@@ -1,5 +1,8 @@
 chat:
   enable: true
+  cooldown:
+    enable: true
+    value: 2
   groups-pattern:
     owner: '<&4腐竹&f> &6<source_display_name>&7: &f<message>'
     admin: '<&3管理员&f> &6<source_display_name>&7: &f<message>'

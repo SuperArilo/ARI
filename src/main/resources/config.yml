@@ -60,6 +60,10 @@ server:
   # 开启服务器的维护模式（默认10秒后踢出玩家
   maintenance:
     kick_delay: 10
+  # 开启指令输入间隔检测
+  command-cooldown:
+    enable: true
+    value: 3
   # 开启用于被官方修复后的特性（嗯？
   unsupported-settings:
     sand-dupe:
