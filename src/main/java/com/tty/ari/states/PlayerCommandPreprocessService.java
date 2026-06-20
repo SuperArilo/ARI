@@ -18,7 +18,7 @@ public class PlayerCommandPreprocessService extends StateService<PlayerPreComman
         String command = state.getMainCommand();
         for (PlayerPreCommandState s : this.getAllStates()) {
             if (s.getMainCommand().equals(command) && s.getOwner().equals(owner)) {
-                Ari.instance.getLog().warn("find same PlayerPreCommandState, player: {}, command: {}", owner, command);
+                Ari.instance.getLog().debug("find same PlayerPreCommandState, player: {}, command: {}", owner.getName(), command);
                 return false;
             }
         }
