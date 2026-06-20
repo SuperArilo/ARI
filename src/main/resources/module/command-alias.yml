@@ -63,7 +63,7 @@ enderchest:
   usage: '/enderchest <player> 打开自己或者指定玩家的末影箱'
 infinitytotem:
   enable: true
-  usage: ""
+  usage: "启动无限不死图腾使用"
 inv:
   enable: true
   usage: "/inv <player> 打开指定玩家的背包"
