@@ -33,6 +33,7 @@ public class ari extends LiteralArgumentCommand {
             new tpa(),
             new tpaaccept(),
             new tpahere(),
+            new maintenance(),
             new tparefuse(),
             new warp(),
             new zako(),
