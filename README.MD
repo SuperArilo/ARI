@@ -69,6 +69,7 @@
 | `ari.command.itemshow`        | 展示物品            |
 | `ari.command.zako`            | 服务器玩家设置         |
 | `ari.command.enchant`         | 使用自定义附魔         |
+| `ari.command.inv`             | 可查看和编辑指定玩家的背包   |
 | `ari.command.reload`          | 重载插件配置          |
 | `ari.command.maintenance`     | 启动服务器维护模式       |
 | `ari.count.home.<数量>`         | 设置玩家可拥有的最大家数量限制 |
@@ -77,7 +78,8 @@
 | `ari.keep-experience`         | 玩家死亡时保留经验值和等级   |
 | `ari.cooldown.<传送类型>`         | 指定某种传送类型没有CD时间  |
 | `ari.totem.inventory-trigger` | 可将不死图腾放在背包里直接使用 |
-| `ari.command.inv`             | 指定玩家(或离线)的背包    |
+| `ari.totem.inventory-trigger` | 可将不死图腾放在背包里直接使用 |
+| `ari.skip-command-cooldown`   | 可跳过指令冷却时间限制     |
 ## 🛠️ 安装指南
 
 ### 环境要求
