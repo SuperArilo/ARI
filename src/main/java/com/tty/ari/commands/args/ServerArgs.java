@@ -26,7 +26,7 @@ public class ServerArgs extends RequiredArgumentCommand<String> {
 
     @Override
     protected @NotNull ArgumentType<String> argumentType() {
-        return StringArgumentType.string();
+        return StringArgumentType.greedyString();
     }
 
     @Override
