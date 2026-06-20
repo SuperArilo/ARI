@@ -47,7 +47,7 @@ public class GuiManagerStateService extends StateService<GuiState> {
 
     @Override
     protected void onServiceAbort(GuiState state) {
-
+        state.getMenu().close();
     }
 
     @Override
