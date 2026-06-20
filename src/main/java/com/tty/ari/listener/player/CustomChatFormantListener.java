@@ -1,9 +1,9 @@
 package com.tty.ari.listener.player;
 
 import com.google.gson.reflect.TypeToken;
-import com.tty.ari.Ari;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.event.CustomPluginReloadEvent;
+import com.tty.api.utils.ComponentUtils;
+import com.tty.ari.Ari;
 import com.tty.ari.dto.state.player.PlayerChatState;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.lang.LangPlayerChat;
@@ -38,14 +38,15 @@ public class CustomChatFormantListener implements Listener {
     public void playerSendMessage(AsyncChatEvent event) {
         Player player = event.getPlayer();
         if (this.chatIsEnable) {
+            if (this.cooldownIsEnable) {
+                if(!Ari.STATE_MACHINE_MANAGER.get(PlayerChatService.class).addState(new PlayerChatState(player, event.message(), this.cooldownTime))) {
+                    ConfigUtils.t("server.message.chat-cooldown", player).thenAccept(player::sendMessage);
+                    event.setCancelled(true);
+                    return;
+                }
+            }
            event.renderer((source, sourceDisplayName, msg, viewer) ->
                    ComponentUtils.text(this.getPattern(source), player, Map.of(LangPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), LangPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
-       }
-       if (this.cooldownIsEnable) {
-           if(!Ari.STATE_MACHINE_MANAGER.get(PlayerChatService.class).addState(new PlayerChatState(player, event.message(), this.cooldownTime))) {
-               ConfigUtils.t("server.message.chat-cooldown", player).thenAccept(player::sendMessage);
-               event.setCancelled(true);
-           }
        }
     }
 
