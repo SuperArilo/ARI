@@ -3,7 +3,6 @@ package com.tty.ari.listener.bungee;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import com.tty.ari.Ari;
-import com.tty.ari.dto.BungeeCache;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +22,7 @@ public class GetServerListListener implements PluginMessageListener {
             String serverList = in.readUTF();
             Set<String> servers = Set.of(serverList.split(",\\s*"));
             Ari.instance.getLog().debug("Received server list from BungeeCord: " + servers);
-            BungeeCache.onServersLoaded(servers);
+            Ari.BUNGEECACHE.onServersLoaded(servers);
         }
 
     }

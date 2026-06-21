@@ -10,6 +10,7 @@ import com.tty.api.service.*;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.CommandRegister;
 import com.tty.api.utils.FormatUtils;
+import com.tty.ari.dto.BungeeCache;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.GuiType;
 import com.tty.ari.function.PlayerTabManager;
@@ -58,6 +59,7 @@ public class Ari extends AbstractJavaPlugin {
     public static InteractService INTERACT_SERVICE;
     public static StateMachineManager STATE_MACHINE_MANAGER;
     public static Placeholder PLACEHOLDER;
+    public static BungeeCache BUNGEECACHE;
 
     @Override
     protected void loading() {
@@ -76,6 +78,7 @@ public class Ari extends AbstractJavaPlugin {
         CommandRegister.register(this, "com.tty.ari.commands", FormatUtils.yamlConvertToObj(this.getConfigInstance().getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
 
         PLACEHOLDER = new Placeholder(this);
+        BUNGEECACHE = new BungeeCache(this);
         this.initMetrics();
     }
 

@@ -11,6 +11,7 @@ import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.dto.BungeeCache;
+import com.tty.ari.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -33,13 +34,13 @@ public class ServerArgs extends RequiredArgumentCommand<String> {
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) return CompletableFuture.completedFuture(Set.of());
         if (args.length == 1) {
-            if (BungeeCache.getState() == BungeeCache.State.UNKNOWN) {
-                return BungeeCache.waitForLoad(2, () -> Ari.instance.getScheduler().runAsync(Ari.instance, i -> this.request(player)));
-            } else if (BungeeCache.getState() == BungeeCache.State.READY) {
-                return CompletableFuture.completedFuture(BungeeCache.getServers());
+            if (Ari.BUNGEECACHE.getState() == BungeeCache.State.UNKNOWN) {
+                return Ari.BUNGEECACHE.waitForLoad(2, () -> Ari.instance.getScheduler().runAsync(Ari.instance, i -> this.request(player)));
+            } else if (Ari.BUNGEECACHE.getState() == BungeeCache.State.READY) {
+                return CompletableFuture.completedFuture(Ari.BUNGEECACHE.getServers());
             }
         } else if (args.length == 2) {
-            if(BungeeCache.getState() == BungeeCache.State.READY) return BungeeCache.getServers(args[1]);
+            if(Ari.BUNGEECACHE.getState() == BungeeCache.State.READY) return Ari.BUNGEECACHE.getServers(args[1]);
 
         }
         return CompletableFuture.completedFuture(Set.of());
@@ -48,12 +49,20 @@ public class ServerArgs extends RequiredArgumentCommand<String> {
     @Override
     public int execute(CommandSender sender, String[] args) {
         if(!(sender instanceof Player player)) return 0;
+        String serverName = args[1];
 
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Connect");
-        out.writeUTF(args[1]);
-
-        player.sendPluginMessage(Ari.instance, "BungeeCord", out.toByteArray());
+        Ari.BUNGEECACHE.waitForLoad(2)
+            .thenCompose(list -> CompletableFuture.completedFuture(!list.isEmpty() && list.contains(serverName)))
+            .thenAccept(status -> {
+                if (!status) {
+                    ConfigUtils.t("server.message.bungee.can-not-connect", player).thenAccept(player::sendMessage);
+                } else {
+                    ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                    out.writeUTF("Connect");
+                    out.writeUTF(serverName);
+                    player.sendPluginMessage(Ari.instance, "BungeeCord", out.toByteArray());
+                }
+            });
         return Command.SINGLE_SUCCESS;
     }
 
