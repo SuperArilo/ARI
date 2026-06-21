@@ -36,7 +36,7 @@ public class MobBossBarListener implements Listener {
     private long tick_clear_dealy;
     private int maxBar = 0;
     private boolean isDisabled = true;
-    private final Map<Player, LinkedHashMap<Damageable, PlayerAttackBar>> playerBars = new ConcurrentHashMap<>();
+    private final Map<Player, Map<Damageable, PlayerAttackBar>> playerBars = new ConcurrentHashMap<>();
 
     private CancellableTask cleanTask;
 
@@ -125,49 +125,49 @@ public class MobBossBarListener implements Listener {
     private void updateBar(double finalDamage, Damageable damageable, Player player) {
         if (!(damageable instanceof Attributable attr)) return;
 
-        LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.get(player);
-        if (bars == null) {
-            LinkedHashMap<Damageable, PlayerAttackBar> created = new LinkedHashMap<>();
-            LinkedHashMap<Damageable, PlayerAttackBar> race = this.playerBars.putIfAbsent(player, created);
-            bars = (race == null) ? created : race;
-        }
+        Map<Damageable, PlayerAttackBar> bars = playerBars.computeIfAbsent(player, k -> Collections.synchronizedMap(new LinkedHashMap<>()));
 
-        while (bars.size() >= this.maxBar) {
-            Map.Entry<Damageable, PlayerAttackBar> oldest = bars.entrySet().iterator().next();
-            oldest.getValue().remove(player);
-            bars.remove(oldest.getKey());
-        }
-
-        PlayerAttackBar bar = bars.get(damageable);
-
-        AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
-        double maxHealth = attribute == null ? 1 : attribute.getValue();
-        double currentHealth = Math.clamp(damageable.getHealth() - finalDamage, 0, maxHealth);
-        double healthRatio = (currentHealth / Math.max(1, maxHealth));
-
-        Component t = ConfigUtils.tAfter(
-                "server.boss-bar.player-attack",
-                Map.of(
-                        LangPlayerDamageBar.MOB_UNRESOLVED.getType(), damageable.name(),
-                        LangPlayerDamageBar.MOB_CURRENT_HEALTH_UNRESOLVED.getType(),
-                        Component.text(FormatUtils.formatTwoDecimalPlaces(currentHealth)).color(this.getMobHealthTextColor(healthRatio)),
-                        LangPlayerDamageBar.MOB_MAX_HEALTH_UNRESOLVED.getType(),
-                        Component.text(FormatUtils.formatTwoDecimalPlaces(maxHealth))
-                )
-        );
-
-        if (bar == null || bar.isRemoved()) {
-            if (bar != null) {
-                bar.remove(player);
+        synchronized (bars) {
+            if (this.maxBar <= 0) return;
+            while (bars.size() >= this.maxBar) {
+                Map.Entry<Damageable, PlayerAttackBar> oldest = bars.entrySet().iterator().next();
+                oldest.getValue().remove(player);
+                bars.remove(oldest.getKey());
             }
-            bar = new PlayerAttackBar(player, t, Float.parseFloat(FormatUtils.formatTwoDecimalPlaces(healthRatio)), this.getMobBarColor(healthRatio));
-            bars.put(damageable, bar);
-        } else {
-            bar.setName(t);
-        }
-        if (bar.getProgress() != healthRatio) {
-            bar.setProgress(Float.parseFloat(FormatUtils.formatTwoDecimalPlaces(Math.max(0, healthRatio))));
-            bar.setColor(this.getMobBarColor(healthRatio));
+
+            AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
+            double maxHealth = attribute == null ? 1 : attribute.getValue();
+            double currentHealth = Math.clamp(damageable.getHealth() - finalDamage, 0, maxHealth);
+            double healthRatio = currentHealth / Math.max(1, maxHealth);
+
+            Component t = ConfigUtils.tAfter(
+                    "server.boss-bar.player-attack",
+                    Map.of(
+                            LangPlayerDamageBar.MOB_UNRESOLVED.getType(), damageable.name(),
+                            LangPlayerDamageBar.MOB_CURRENT_HEALTH_UNRESOLVED.getType(),
+                            Component.text(FormatUtils.formatTwoDecimalPlaces(currentHealth))
+                                    .color(this.getMobHealthTextColor(healthRatio)),
+                            LangPlayerDamageBar.MOB_MAX_HEALTH_UNRESOLVED.getType(),
+                            Component.text(FormatUtils.formatTwoDecimalPlaces(maxHealth))
+                    )
+            );
+
+            PlayerAttackBar bar = bars.get(damageable);
+            if (bar == null || bar.isRemoved()) {
+                if (bar != null) {
+                    bar.remove(player);
+                }
+                bar = new PlayerAttackBar(player, t, Float.parseFloat(FormatUtils.formatTwoDecimalPlaces(healthRatio)), this.getMobBarColor(healthRatio));
+                bars.put(damageable, bar);
+            } else {
+                bar.setName(t);
+            }
+
+            float newProgress = Float.parseFloat(FormatUtils.formatTwoDecimalPlaces(Math.max(0, healthRatio)));
+            if (bar.getProgress() != newProgress) {
+                bar.setProgress(newProgress);
+                bar.setColor(this.getMobBarColor(healthRatio));
+            }
         }
     }
 
@@ -184,7 +184,7 @@ public class MobBossBarListener implements Listener {
         if (deadEntity instanceof Player player) {
             this.removePlayerRecord(player);
         } else {
-            var affectedPlayers = new LinkedHashMap<Player, PlayerAttackBar>();
+            var affectedPlayers = new HashMap<Player, PlayerAttackBar>();
             this.playerBars.forEach((player, bars) -> {
                 PlayerAttackBar bar = bars.get(deadEntity);
                 if (bar != null) {
@@ -195,14 +195,14 @@ public class MobBossBarListener implements Listener {
 
             Ari.instance.getScheduler().runAtEntity(Ari.instance, deadEntity, i ->
                     affectedPlayers.forEach((player, bar) -> {
-                        LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.get(player);
+                        Map<Damageable, PlayerAttackBar> bars = this.playerBars.get(player);
                         if (bars != null) bars.remove(deadEntity);
                     }), null);
         }
     }
 
     private void removePlayerRecord(Player player) {
-        LinkedHashMap<Damageable, PlayerAttackBar> bars = this.playerBars.remove(player);
+        Map<Damageable, PlayerAttackBar> bars = this.playerBars.remove(player);
         if (bars != null) {
             bars.values().forEach(bar -> bar.remove(player));
         }
@@ -237,44 +237,63 @@ public class MobBossBarListener implements Listener {
         return TextColor.color(0xFF5555);
     }
 
-    private boolean isDisabled() {
-        return !Ari.instance.getConfigInstance().getValue("attack-bar.enable", FilePath.ATTACK_BAR_CONFIG, Boolean.class, false);
-    }
-
-    private int getMaxBar() {
-        return Ari.instance.getConfigInstance().getValue("attack-bar.max-bar", FilePath.ATTACK_BAR_CONFIG, Integer.class, 1);
-    }
-
     private CancellableTask createCleanTask() {
         if (this.cleanTask != null) {
             this.cleanTask.cancel();
             this.cleanTask = null;
         }
         return Ari.instance.getScheduler().runAtFixedRate(Ari.instance, i -> {
+
             long now = System.currentTimeMillis();
             Map<Player, Integer> removedCountByPlayer = new LinkedHashMap<>();
-            for (Map.Entry<Player, LinkedHashMap<Damageable, PlayerAttackBar>> entry : this.playerBars.entrySet()) {
+            for (Map.Entry<Player, Map<Damageable, PlayerAttackBar>> entry : this.playerBars.entrySet()) {
                 Player player = entry.getKey();
-                LinkedHashMap<Damageable, PlayerAttackBar> bars = entry.getValue();
-                Iterator<Map.Entry<Damageable, PlayerAttackBar>> it = bars.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry<Damageable, PlayerAttackBar> barEntry = it.next();
-                    Damageable mob = barEntry.getKey();
-                    PlayerAttackBar bar = barEntry.getValue();
-                    long lastAttackTs = DAMAGE_TRACKER.getLastTimestamp(mob);
-                    if (bar.isRemoved() || lastAttackTs == 0 || (now - lastAttackTs) > this.clear_last_attack_record * 1000L) {
-                        bar.remove(player);
-                        it.remove();
-                        removedCountByPlayer.merge(player, 1, Integer::sum);
+                Map<Damageable, PlayerAttackBar> bars = entry.getValue();
+                if (bars == null || bars.isEmpty()) {
+                    this.playerBars.remove(player);
+                    continue;
+                }
+
+                List<Damageable> expiredKeys = new ArrayList<>();
+
+                synchronized (bars) {
+                    for (Map.Entry<Damageable, PlayerAttackBar> barEntry : bars.entrySet()) {
+                        Damageable mob = barEntry.getKey();
+                        PlayerAttackBar bar = barEntry.getValue();
+                        long lastAttackTs = DAMAGE_TRACKER.getLastTimestamp(mob);
+                        if (bar.isRemoved() || lastAttackTs == 0 || (now - lastAttackTs) > this.clear_last_attack_record * 1000L) {
+                            expiredKeys.add(mob);
+                        }
                     }
                 }
-                if (bars.isEmpty()) {
-                    this.playerBars.remove(player);
+
+                int removed = 0;
+                for (Damageable mob : expiredKeys) {
+                    PlayerAttackBar bar;
+                    synchronized (bars) {
+                        bar = bars.remove(mob);
+                    }
+                    if (bar != null) {
+                        bar.remove(player);
+                        removed++;
+                    }
+                }
+
+                if (removed > 0) {
+                    synchronized (bars) {
+                        if (bars.isEmpty()) {
+                            playerBars.remove(player);
+                        }
+                    }
+                    removedCountByPlayer.put(player, removed);
                 }
             }
+
             removedCountByPlayer.forEach((player, count) ->
-                    Ari.instance.getLog().debug("mob bar expired: player={}, removedEntities={}, current_bar_count={}, max_bar_count={}",
-                            player.getName(), count, this.playerBars.getOrDefault(player, new LinkedHashMap<>()).size(), this.maxBar)
+                    Ari.instance.getLog().debug("mob bar expired: player: {}, removedEntities: {}, current_bar_count: {}, max_bar_count: {}",
+                            player.getName(), count,
+                            this.playerBars.getOrDefault(player, Collections.emptyMap()).size(),
+                            this.maxBar)
             );
         }, 1L, this.tick_clear_dealy * 20L);
     }
@@ -285,6 +304,14 @@ public class MobBossBarListener implements Listener {
 
     private long loadClear_last_attack_record() {
         return Ari.instance.getConfigInstance().getValue("attack-bar.clear_last_attack_record", FilePath.ATTACK_BAR_CONFIG, Long.class, 20L);
+    }
+
+    private boolean isDisabled() {
+        return !Ari.instance.getConfigInstance().getValue("attack-bar.enable", FilePath.ATTACK_BAR_CONFIG, Boolean.class, false);
+    }
+
+    private int getMaxBar() {
+        return Ari.instance.getConfigInstance().getValue("attack-bar.max-bar", FilePath.ATTACK_BAR_CONFIG, Integer.class, 1);
     }
 
 }
