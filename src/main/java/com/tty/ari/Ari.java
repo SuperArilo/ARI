@@ -96,6 +96,9 @@ public class Ari extends AbstractJavaPlugin {
         if (SQL_INSTANCE != null) {
             SQL_INSTANCE.close();
         }
+        if (BUNGEECACHE != null) {
+            BUNGEECACHE.shutdown();
+        }
     }
 
     @Override

@@ -10,13 +10,14 @@ import java.util.concurrent.TimeUnit;
 
 public class BungeeCache {
 
-    private final AbstractJavaPlugin plugin;
+    private final Object lock = new Object();
 
+    private final AbstractJavaPlugin plugin;
     @Getter
-    private volatile Set<String> servers = Set.of();
+    private volatile Set<String> servers;
+
     @Getter
     private volatile State state = State.UNKNOWN;
-
     private CompletableFuture<Set<String>> pendingFuture = null;
 
     public BungeeCache(AbstractJavaPlugin plugin) {
@@ -33,81 +34,63 @@ public class BungeeCache {
         return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(prefix, this.servers));
     }
 
-    public synchronized CompletableFuture<Set<String>> waitForLoad(int timeoutSeconds) {
-        if (this.state == State.READY) {
-            return CompletableFuture.completedFuture(this.servers);
-        }
-        if (this.pendingFuture != null && !this.pendingFuture.isDone()) {
-            return this.pendingFuture;
-        }
-
-        CompletableFuture<Set<String>> future = new CompletableFuture<>();
-        this.pendingFuture = future;
-
-        CompletableFuture.delayedExecutor(timeoutSeconds, TimeUnit.SECONDS, this.plugin.getExecutorAsync()).execute(() -> {
-            synchronized (BungeeCache.class) {
-                if (!future.isDone()) {
-                    future.complete(Set.of());
-                    this.state = State.UNKNOWN;
-                    if (this.pendingFuture == future) {
-                        this.pendingFuture = null;
-                    }
-                }
+    public void onServersLoaded(Set<String> newServers) {
+        CompletableFuture<Set<String>> toComplete = null;
+        synchronized (this.lock) {
+            this.servers = newServers;
+            this.state = State.READY;
+            if (this.pendingFuture != null && !this.pendingFuture.isDone()) {
+                toComplete = pendingFuture;
+                this.pendingFuture = null;
             }
-        });
-
-        return future;
-    }
-
-    public synchronized void onServersLoaded(Set<String> newServers) {
-        servers = newServers;
-        state = State.READY;
-        if (pendingFuture != null && !pendingFuture.isDone()) {
-            pendingFuture.complete(newServers);
-            pendingFuture = null;
+        }
+        if (toComplete != null) {
+            toComplete.complete(newServers);
         }
     }
 
-    public CompletableFuture<Set<String>> waitForLoad(int timeoutSeconds, Runnable triggerLoad) {
-        synchronized (BungeeCache.class) {
+    public CompletableFuture<Set<String>> waitForLoad(int timeoutSeconds, Runnable runnable) {
+        synchronized (this.lock) {
             if (this.state == State.READY) {
                 return CompletableFuture.completedFuture(this.servers);
             }
-
-            if (this.state == State.UNKNOWN) {
-                this.state = State.LOADING;
-
-                if (triggerLoad != null) {
-                    try {
-                        triggerLoad.run();
-                    } catch (Exception e) {
-                        this.state = State.UNKNOWN;
-                        CompletableFuture<Set<String>> failed = new CompletableFuture<>();
-                        failed.completeExceptionally(e);
-                        return failed;
-                    }
+            if (this.state == State.LOADING) {
+                if (this.pendingFuture != null && !this.pendingFuture.isDone()) {
+                    return this.pendingFuture;
                 }
             }
-
-            if (this.pendingFuture != null && !this.pendingFuture.isDone()) {
-                return this.pendingFuture;
-            }
-
+            this.state = State.LOADING;
             CompletableFuture<Set<String>> future = new CompletableFuture<>();
             this.pendingFuture = future;
 
-            CompletableFuture.delayedExecutor(timeoutSeconds, TimeUnit.SECONDS, this.plugin.getExecutorAsync())
-                    .execute(() -> {
-                        synchronized (BungeeCache.class) {
+            CompletableFuture.delayedExecutor(timeoutSeconds, TimeUnit.SECONDS, this.plugin.getExecutorAsync()).execute(() -> {
+                synchronized (this.lock) {
+                    if (!future.isDone()) {
+                        future.complete(Set.of());
+                        this.state = State.UNKNOWN;
+                        if (this.pendingFuture == future) {
+                            this.pendingFuture = null;
+                        }
+                    }
+                }
+            });
+            if (runnable != null) {
+                this.plugin.getExecutorAsync().execute(() -> {
+                    try {
+                        runnable.run();
+                    } catch (Exception e) {
+                        synchronized (this.lock) {
                             if (!future.isDone()) {
-                                future.complete(Set.of());
+                                future.completeExceptionally(e);
                                 this.state = State.UNKNOWN;
                                 if (this.pendingFuture == future) {
                                     this.pendingFuture = null;
                                 }
                             }
                         }
-                    });
+                    }
+                });
+            }
             return future;
         }
     }

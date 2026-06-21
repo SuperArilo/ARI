@@ -35,7 +35,7 @@ public class ServerArgs extends RequiredArgumentCommand<String> {
         if (!(sender instanceof Player player)) return CompletableFuture.completedFuture(Set.of());
         if (args.length == 1) {
             if (Ari.BUNGEECACHE.getState() == BungeeCache.State.UNKNOWN) {
-                return Ari.BUNGEECACHE.waitForLoad(2, () -> Ari.instance.getScheduler().runAsync(Ari.instance, i -> this.request(player)));
+                return Ari.BUNGEECACHE.waitForLoad(2, () -> this.request(player));
             } else if (Ari.BUNGEECACHE.getState() == BungeeCache.State.READY) {
                 return CompletableFuture.completedFuture(Ari.BUNGEECACHE.getServers());
             }
@@ -51,7 +51,7 @@ public class ServerArgs extends RequiredArgumentCommand<String> {
         if(!(sender instanceof Player player)) return 0;
         String serverName = args[1];
 
-        Ari.BUNGEECACHE.waitForLoad(2)
+        Ari.BUNGEECACHE.waitForLoad(2, () -> this.request(player))
             .thenCompose(list -> CompletableFuture.completedFuture(!list.isEmpty() && list.contains(serverName)))
             .thenAccept(status -> {
                 if (!status) {
@@ -63,6 +63,7 @@ public class ServerArgs extends RequiredArgumentCommand<String> {
                     player.sendPluginMessage(Ari.instance, "BungeeCord", out.toByteArray());
                 }
             });
+
         return Command.SINGLE_SUCCESS;
     }
 
