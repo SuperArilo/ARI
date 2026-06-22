@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.ari.command.RequiredArgumentCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,11 +20,16 @@ import java.util.stream.Collectors;
 
 @CommandMeta(displayName = "player name or uuid (string)", permission = "ari.command.zako.ban", tokenLength = 4, allowConsole = true)
 @ArgumentCommand(isSuggests = true)
-public class ZakoBanPlayer extends ZakoBanBase<String> {
+public class ZakoBanPlayer extends RequiredArgumentCommand<String> {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new ZakoBanReason());
+        return List.of(new ZakoBanDay());
+    }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
     }
 
     @Override

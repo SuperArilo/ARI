@@ -9,7 +9,6 @@ import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.utils.ComponentUtils;
-import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.gui.PlayerInventoryCheckMenu;
 import com.tty.ari.enumType.FilePath;
@@ -68,7 +67,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
     @Override
     protected @NotNull BaseMenu config() {
-        return FormatUtils.yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.INV_GUI_CONFIG.name()).saveToString(), PlayerInventoryCheckMenu.class);
+        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.INV_GUI_CONFIG.name()).saveToString(), PlayerInventoryCheckMenu.class);
     }
 
     @Override

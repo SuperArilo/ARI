@@ -101,7 +101,7 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     @Override
     protected @NotNull BaseDataMenu config() {
-        return FormatUtils.yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.HOME_LIST_GUI.name()).saveToString(), BaseDataMenu.class);
+        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.HOME_LIST_GUI.name()).saveToString(), BaseDataMenu.class);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.tty.ari.listener.warp;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
 import com.tty.api.enumType.NbtGuiValue;
+import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.ari.Ari;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.enumType.FunctionType;
@@ -26,6 +27,7 @@ import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -39,35 +41,35 @@ import java.util.concurrent.CompletableFuture;
 
 public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> {
 
+    private List<String> banNameList;
+    private int maxNameLength;
+
     public EditWarpListener(GuiType guiType) {
         super(Ari.instance, guiType);
+        this.banNameList = this.getBanNameList();
+        this.maxNameLength = this.getMaxNameLength();
     }
 
     @Override
     public boolean onTitleEditStatus(String message, EditGuiState<ServerWarp> state) {
         FunctionType type = state.getFunctionType();
         Player player = (Player) state.getOwner();
-        List<String> value = Ari.instance.getConfigInstance().getValue("main.name-check", FilePath.WARP_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
-        if(value == null) {
-            Ari.instance.getLog().error("name-check list is null, check config");
-            player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
-            return false;
-        }
+
         ServerWarp data = state.getData();
         switch (type) {
             case RENAME -> {
-                if(!FormatUtils.checkName(message) || value.contains(message) || !FormatUtils.checkName(message)) {
+                if(!this.isContentValid(message) || this.banNameList.contains(message)) {
                     player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
                     return false;
                 }
-                if(message.length() > Ari.instance.getConfigInstance().getValue("main.name-length", FilePath.WARP_CONFIG, new TypeToken<Integer>(){}.getType(), 15)) {
+                if(message.length() > this.maxNameLength) {
                     player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
                     return false;
                 }
                 data.setWarpName(message);
             }
             case PERMISSION -> {
-                if(!FormatUtils.isValidPermissionNode(message)) {
+                if(!this.isValidPermissionNode(message)) {
                     player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.permission.permission-error")));
                     return false;
                 }
@@ -216,6 +218,12 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
         event.setCancelled(true);
     }
 
+    @EventHandler
+    public void onReload(CustomPluginReloadEvent event) {
+        this.maxNameLength = this.getMaxNameLength();
+        this.banNameList = this.getBanNameList();
+    }
+
     private void onPublic(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
 
         ItemStack clickItem = event.getCurrentItem();
@@ -242,6 +250,14 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
                         GuiType.WARP_EDIT
                 )
         );
+    }
+
+    private List<String> getBanNameList() {
+        return Ari.instance.getConfigInstance().getValue("main.name-check", FilePath.WARP_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
+    }
+
+    private int getMaxNameLength() {
+        return Ari.instance.getConfigInstance().getValue("main.name-length", FilePath.WARP_CONFIG, new TypeToken<Integer>(){}.getType(), 15);
     }
 
 }

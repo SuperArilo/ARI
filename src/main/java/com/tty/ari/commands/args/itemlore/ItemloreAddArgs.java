@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-@CommandMeta(displayName = "\"content\" (string)", permission = "ari.command.itemlore.add", tokenLength = 3)
+@CommandMeta(displayName = "content (string)", permission = "ari.command.itemlore.add", tokenLength = 3)
 @ArgumentCommand
 public class ItemloreAddArgs extends RequiredArgumentCommand<String> {
 
@@ -32,7 +32,7 @@ public class ItemloreAddArgs extends RequiredArgumentCommand<String> {
 
     @Override
     protected @NotNull ArgumentType<String> argumentType() {
-        return StringArgumentType.string();
+        return StringArgumentType.greedyString();
     }
 
     @Override

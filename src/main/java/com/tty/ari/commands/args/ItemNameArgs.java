@@ -19,13 +19,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-@CommandMeta(displayName = "\"content\" (string)", permission = "ari.command.itemname", tokenLength = 2)
+@CommandMeta(displayName = "content (string)", permission = "ari.command.itemname", tokenLength = 2)
 @ArgumentCommand
 public class ItemNameArgs extends RequiredArgumentCommand<String> {
 
     @Override
     protected @NotNull ArgumentType<String> argumentType() {
-        return StringArgumentType.string();
+        return StringArgumentType.greedyString();
     }
 
     @Override

@@ -15,10 +15,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
 public abstract class RequiredArgumentCommand<T> extends BaseRequiredArgumentCommand<T> {
+
+    private static final Pattern ENTITY_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9\\u4e00-\\u9fa5]+$");
+
 
     protected RequiredArgumentCommand() {
         super(Ari.instance);
@@ -57,6 +61,15 @@ public abstract class RequiredArgumentCommand<T> extends BaseRequiredArgumentCom
                 .collect(Collectors.toSet());
         if (args.length == 1) return otherPlayers;
         return PublicFunctionUtils.tabList(args[1], otherPlayers);
+    }
+
+    /**
+     * 检查创建实体的 id 字符串是否合法
+     * @param id 待检查字符串
+     * @return 空值或不符合格式返回 false
+     */
+    protected boolean isEntityIdValid(String id) {
+        return id != null && ENTITY_ID_PATTERN.matcher(id).matches();
     }
 
 }

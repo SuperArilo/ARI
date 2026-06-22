@@ -33,7 +33,7 @@ public class HomeEditor extends BaseConfigInventory {
 
     @Override
     protected @NotNull BaseMenu config() {
-        return FormatUtils.yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.HOME_EDIT_GUI.name()).saveToString(), BaseMenu.class);
+        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.HOME_EDIT_GUI.name()).saveToString(), BaseMenu.class);
     }
 
     @Override

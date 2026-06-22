@@ -9,7 +9,6 @@ import com.tty.api.enumType.FilePathEnum;
 import com.tty.api.service.*;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.CommandRegister;
-import com.tty.api.utils.FormatUtils;
 import com.tty.ari.dto.BungeeCache;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.GuiType;
@@ -75,7 +74,7 @@ public class Ari extends AbstractJavaPlugin {
         STATE_MACHINE_MANAGER = new StateMachineManager();
 
         this.registerBungeeListener();
-        CommandRegister.register(this, "com.tty.ari.commands", FormatUtils.yamlConvertToObj(this.getConfigInstance().getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
+        CommandRegister.register(this, "com.tty.ari.commands", Ari.instance.getConfigInstance().yamlConvertToObj(this.getConfigInstance().getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
 
         PLACEHOLDER = new Placeholder(this);
         BUNGEECACHE = new BungeeCache(this);

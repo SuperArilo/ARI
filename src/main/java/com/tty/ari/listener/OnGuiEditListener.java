@@ -10,8 +10,13 @@ import com.tty.ari.states.gui.GuiEditStateService;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public abstract class OnGuiEditListener<T extends BaseInventory, D> extends BaseEditFunctionGuiListener<T, D> {
+
+    private static final Pattern CONTENT_MESSAGE_PATTERN = Pattern.compile("^[a-zA-Z0-9\\\\u4e00-\\\\9fa5 ]+$");
+
+    private static final Pattern PERMISSION_NODE_PATTERN = Pattern.compile("^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$");
 
     protected OnGuiEditListener(AbstractJavaPlugin plugin, GuiType guiType) {
         super(plugin, guiType);
@@ -29,4 +34,23 @@ public abstract class OnGuiEditListener<T extends BaseInventory, D> extends Base
         }
         return states.getFirst();
     }
+
+    /**
+     * 检查 content内容 字符串是否合法
+     * @param content 待检查字符串
+     * @return 空值或不符合格式返回 false
+     */
+    protected boolean isContentValid(String content) {
+        return content != null && CONTENT_MESSAGE_PATTERN.matcher(content).matches();
+    }
+
+    /**
+     * 验证Minecraft权限节点格式
+     * @param node 权限节点字符串
+     * @return 空值或不符合格式返回false
+     */
+    public boolean isValidPermissionNode(String node) {
+        return node != null && PERMISSION_NODE_PATTERN.matcher(node).matches();
+    }
+
 }

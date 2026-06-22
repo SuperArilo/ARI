@@ -1,10 +1,12 @@
 package com.tty.ari.commands.args.zako.ban;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.ari.command.RequiredArgumentCommand;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "second (int)", permission = "ari.command.zako.ban", tokenLength = 8, allowConsole = true)
 @ArgumentCommand
-public class ZakoBanSecond extends ZakoBanBase<Integer>{
+public class ZakoBanSecond extends RequiredArgumentCommand<Integer> {
 
     @Override
     protected @NotNull ArgumentType<Integer> argumentType() {
@@ -28,11 +30,16 @@ public class ZakoBanSecond extends ZakoBanBase<Integer>{
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of();
+        return List.of(new ZakoBanReason());
+    }
+
+    @Override
+    protected boolean isDisabledInGame() {
+        return false;
     }
 
     @Override
     public int execute(CommandSender sender, String[] args) {
-        return this.ban(sender, args);
+        return Command.SINGLE_SUCCESS;
     }
 }

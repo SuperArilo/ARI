@@ -111,7 +111,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     @Override
     protected @NotNull BaseMenu config() {
-        return FormatUtils.yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.WARP_LIST_GUI.name()).saveToString(), BaseDataMenu.class);
+        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.WARP_LIST_GUI.name()).saveToString(), BaseDataMenu.class);
     }
 
     @Override

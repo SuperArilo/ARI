@@ -13,7 +13,6 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.EntityRepository;
-import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.tool.ConfigUtils;
@@ -50,7 +49,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
 
         String homeId = args[1];
         Player player = (Player) sender;
-        if (!FormatUtils.checkIdName(homeId)) {
+        if (!this.isEntityIdValid(homeId)) {
             ConfigUtils.t("function.home.id-error", player).thenAccept(sender::sendMessage);
             return 0;
         }

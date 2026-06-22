@@ -13,7 +13,6 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.EntityRepository;
-import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.tool.ConfigUtils;
@@ -51,7 +50,7 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
         String warpId = args[1];
         Player player = (Player) sender;
 
-        if(!FormatUtils.checkIdName(warpId)) {
+        if(!this.isEntityIdValid(warpId)) {
             ConfigUtils.t("function.warp.id-error", player).thenAccept(player::sendMessage);
             return 0;
         }

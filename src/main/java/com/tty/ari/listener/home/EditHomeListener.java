@@ -3,6 +3,7 @@ package com.tty.ari.listener.home;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
 import com.tty.api.enumType.NbtGuiValue;
+import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.ari.Ari;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.enumType.FunctionType;
@@ -26,6 +27,7 @@ import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -38,25 +40,23 @@ import java.util.Map;
 
 public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> {
 
+    private List<String> banNameList;
+    private int maxNameLength;
+
     public EditHomeListener(GuiType guiType) {
         super(Ari.instance, guiType);
+        this.banNameList = this.getBanNameList();
+        this.maxNameLength = this.getMaxNameLength();
     }
 
     @Override
     public boolean onTitleEditStatus(String message, EditGuiState<ServerHome> state) {
         Player player = (Player) state.getOwner();
-        List<Object> checkList = Ari.instance.getConfigInstance()
-                .getValue(
-                        "main.name-check",
-                        FilePath.HOME_CONFIG,
-                        new TypeToken<List<String>>() {
-                        }.getType(),
-                        List.of());
-        if(!FormatUtils.checkName(message) || checkList.contains(message)) {
+        if(!this.isContentValid(message) || this.banNameList.contains(message)) {
             player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
             return false;
         }
-        if(message.length() > Ari.instance.getConfigInstance().getValue("main.name-length", FilePath.HOME_CONFIG, Integer.class, 15)) {
+        if(message.length() > this.maxNameLength) {
             player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
             return false;
         }
@@ -203,6 +203,20 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
     @Override
     protected void whenDrag(InventoryDragEvent event, HomeEditor holder) {
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onReload(CustomPluginReloadEvent event) {
+        this.maxNameLength = this.getMaxNameLength();
+        this.banNameList = this.getBanNameList();
+    }
+
+    private List<String> getBanNameList() {
+        return Ari.instance.getConfigInstance().getValue("main.name-check", FilePath.HOME_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
+    }
+
+    private int getMaxNameLength() {
+        return Ari.instance.getConfigInstance().getValue("main.name-length", FilePath.HOME_CONFIG, new TypeToken<Integer>(){}.getType(), 15);
     }
 
 }

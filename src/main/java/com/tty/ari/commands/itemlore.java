@@ -17,8 +17,7 @@ public class itemlore extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new ItemLoreAdd(),
-                new ItemLoreRemove());
+        return List.of(new ItemLoreAdd(), new ItemLoreRemove());
     }
 
     @Override

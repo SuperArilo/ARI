@@ -1,10 +1,12 @@
 package com.tty.ari.commands.args.zako.ban;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.ari.command.RequiredArgumentCommand;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,9 +14,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-@CommandMeta(displayName = "minute (int)", permission = "ari.command.zako.ban", tokenLength = 7, allowConsole = true)
+@CommandMeta(displayName = "minute (int)", permission = "ari.command.zako.ban", tokenLength = 8, allowConsole = true)
 @ArgumentCommand
-public class ZakoBanMinute extends ZakoBanBase<Integer>{
+public class ZakoBanMinute extends RequiredArgumentCommand<Integer> {
 
     @Override
     protected @NotNull ArgumentType<Integer> argumentType() {
@@ -32,7 +34,12 @@ public class ZakoBanMinute extends ZakoBanBase<Integer>{
     }
 
     @Override
+    protected boolean isDisabledInGame() {
+        return false;
+    }
+
+    @Override
     public int execute(CommandSender sender, String[] args) {
-        return this.ban(sender, args);
+        return Command.SINGLE_SUCCESS;
     }
 }

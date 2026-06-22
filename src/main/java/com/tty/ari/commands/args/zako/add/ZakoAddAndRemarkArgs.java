@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-@CommandMeta(displayName = "\"remark\" (string)", permission = "ari.command.zako.add", tokenLength = 4, allowConsole = true)
+@CommandMeta(displayName = "remark (string)", permission = "ari.command.zako.add", tokenLength = 4, allowConsole = true)
 @ArgumentCommand
 public class ZakoAddAndRemarkArgs extends ZakoAddBase<String>{
 
     @Override
     protected @NotNull ArgumentType<String> argumentType() {
-        return StringArgumentType.string();
+        return StringArgumentType.greedyString();
     }
 
     @Override
