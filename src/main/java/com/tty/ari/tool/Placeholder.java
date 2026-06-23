@@ -273,7 +273,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
         ));
         registry.register(PlaceholderDefinition.of(
                 LangShowItem.SHOW_ITEM,
-                PlaceholderResolve.ofPlayer(player -> Ari.instance.getComponentTool().setHoverItemText(player, player.getInventory().getItemInMainHand()))
+                PlaceholderResolve.ofPlayer(player -> Ari.instance.getComponentTool().setHoverItemText(player.getInventory().getItemInMainHand()))
         ));
     }
 
