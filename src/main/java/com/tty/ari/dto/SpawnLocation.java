@@ -1,5 +1,6 @@
 package com.tty.ari.dto;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
@@ -9,12 +10,18 @@ import java.util.Map;
 @Data
 public class SpawnLocation {
 
+    @Expose
     @SerializedName("world")
     private String worldName;
+    @Expose
     private double x;
+    @Expose
     private double y;
+    @Expose
     private double z;
+    @Expose
     private float pitch;
+    @Expose
     private float yaw;
 
     public Map<String, Object> toMap() {
