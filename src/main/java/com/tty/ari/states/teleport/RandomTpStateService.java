@@ -2,7 +2,6 @@ package com.tty.ari.states.teleport;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.ari.Ari;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.dto.rtp.RtpConfig;
 import com.tty.ari.dto.state.teleport.EntityToLocationState;
 import com.tty.ari.dto.state.teleport.RandomTpState;
@@ -62,7 +61,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         if (!manager.get(TeleportStateService.class).getStates(owner).isEmpty() ||
                 !this.getStates(owner).isEmpty() ||
                 !manager.get(PreTeleportStateService.class).getStates(owner).isEmpty()) {
-            Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), owner)), null);
+            Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), owner)), null);
             return false;
         }
 
@@ -81,7 +80,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             Ari.instance.getScheduler().runAtEntity(
                     Ari.instance,
                     owner,
-                    i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.break"),owner)),
+                    i -> owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.break"),owner)),
                     null);
             state.setOver(true);
             return;
@@ -176,7 +175,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 } else {
                     state.setOver(true);
                     if (owner instanceof Player player) {
-                        player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
+                        player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
                     }
                     Ari.instance.getLog().error(e, "running rtp error on entity {}.", owner.getName());
                 }
@@ -212,7 +211,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     private void sendCountTitle(Player player) {
         if (!player.isOnline()) return;
         Ari.PLACEHOLDER.render("function.rtp.title-search-count", player).thenAccept(result ->
-                Ari.instance.getScheduler().runAtEntity(Ari.instance, player, task -> player.showTitle(ComponentUtils.setPlayerTitle(
+                Ari.instance.getScheduler().runAtEntity(Ari.instance, player, task -> player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
                         Ari.instance.getConfigInstance().getValue("function.rtp.title-searching", FilePath.LANG, String.class, "null"),
                         result,
                         0,

@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.ari.Ari;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.api.annotations.command.ArgumentCommand;
@@ -56,7 +55,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
             if(player != null) {
                 Ari.instance.getScheduler().runAtEntity(Ari.instance,
                         player, i->
-                                player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
+                                player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
             }
             String key = "function.zako.whitelist-remove-" + (status ? "success":"failure");
             if (sender instanceof Player p) {
@@ -66,7 +65,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
             }
         }).exceptionally(i -> {
             Ari.instance.getLog().error(i);
-            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
             return null;
         });
         return Command.SINGLE_SUCCESS;

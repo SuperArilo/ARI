@@ -3,7 +3,6 @@ package com.tty.ari.command;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.api.command.BaseRequiredArgumentCommand;
-import com.tty.api.utils.ComponentUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -34,12 +33,12 @@ public abstract class RequiredArgumentCommand<T> extends BaseRequiredArgumentCom
 
     @Override
     protected @NotNull Component tokenNotAllow() {
-        return ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.fail"));
+        return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.public.fail"));
     }
 
     @Override
     protected @NotNull Component onlyUseInGame() {
-        return ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.not-player"));
+        return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.public.not-player"));
     }
 
     @Override
@@ -49,7 +48,7 @@ public abstract class RequiredArgumentCommand<T> extends BaseRequiredArgumentCom
 
     @Override
     protected @NotNull Component disableInGame() {
-        return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.command.disabled"));
+        return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.command.disabled"));
     }
 
     protected Set<String> getExcludeMePlayerList(CommandSender sender, String[] args) {

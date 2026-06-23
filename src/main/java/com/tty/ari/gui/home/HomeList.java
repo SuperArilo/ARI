@@ -11,7 +11,6 @@ import com.tty.api.enumType.IconKeyType;
 import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.gui.BaseDataItemConfigInventory;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.entity.ServerHome;
@@ -80,14 +79,14 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
 
             for (String line : rawLore) {
-                textComponents.add(ComponentUtils.text(line, types));
+                textComponents.add(Ari.instance.getComponentTool().text(line, types));
             }
 
             this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_DATA_ID, itemStack, PersistentDataType.STRING, ph.getHomeId());
             this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, FunctionType.DATA.getName());
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(ComponentUtils.text(ph.getHomeName(), this.getOfflinePlayer()));
+            itemMeta.displayName(Ari.instance.getComponentTool().text(ph.getHomeName(), this.getOfflinePlayer()));
             itemMeta.lore(textComponents);
 
             if (ph.isTopSlot()) {

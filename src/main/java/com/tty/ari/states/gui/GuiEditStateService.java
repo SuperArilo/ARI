@@ -2,7 +2,6 @@ package com.tty.ari.states.gui;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.ari.Ari;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.state.EditGuiState;
 import com.tty.api.state.StateService;
 import org.bukkit.entity.Player;
@@ -45,7 +44,7 @@ public class GuiEditStateService extends StateService<EditGuiState> {
         Player owner = (Player) state.getOwner();
         int i = Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new TypeToken<Integer>(){}.getType());
         owner.showTitle(
-                ComponentUtils.setPlayerTitle(
+                Ari.instance.getComponentTool().setPlayerTitle(
                         Ari.DATA_SERVICE.getValue("base.on-edit.title"),
                         Ari.DATA_SERVICE.getValue("base.on-edit.sub-title"),
                         1000,
@@ -62,7 +61,7 @@ public class GuiEditStateService extends StateService<EditGuiState> {
     @Override
     protected void onFinished(EditGuiState state) {
         Player owner = (Player) state.getOwner();
-        owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.timeout-cancel")));
+        owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.timeout-cancel")));
         owner.clearTitle();
         Ari.instance.getLog().debug("player {} edit status timeout.", owner.getName());
     }

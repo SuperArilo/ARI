@@ -1,7 +1,6 @@
 package com.tty.ari.listener.teleport;
 
 import com.tty.ari.Ari;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.dto.event.CustomPlayerRespawnEvent;
 import com.tty.api.ServerPlatform;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -74,6 +73,6 @@ public class RecordLastLocationListener implements Listener {
     private void setPlayerLastLocation(Player player) {
         Ari.PLACEHOLDER.render("teleport.tips-back", player).thenAccept(i ->
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, t ->
-                        player.sendMessage(ComponentUtils.setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/" + Ari.instance.getName() + " back")), null));
+                        player.sendMessage(Ari.instance.getComponentTool().setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/" + Ari.instance.getName() + " back")), null));
     }
 }

@@ -1,7 +1,6 @@
 package com.tty.ari.states.teleport;
 
 import com.tty.ari.Ari;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.dto.TeleportState;
 import com.tty.ari.dto.state.teleport.PlayerToPlayerState;
 import com.tty.ari.enumType.TeleportType;
@@ -40,14 +39,14 @@ public class TeleportStateService extends StateService<State> {
         if (state instanceof PlayerToPlayerState playerToPlayerState) {
             Entity target = playerToPlayerState.getTarget();
             if (target instanceof Player targetPlayer && !targetPlayer.isOnline()) {
-                owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.break"), player));
+                owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.break"), player));
                 state.setOver(true);
                 return;
             }
         }
 
         if (this.hasMoved(owner) || this.hasLostHealth(player)) {
-            owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.break"), player));
+            owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.break"), player));
             state.setOver(true);
             return;
         }
@@ -55,7 +54,7 @@ public class TeleportStateService extends StateService<State> {
         if (state.isOver() || state.isDone()) return;
         Ari.PLACEHOLDER.render("teleport.title.sub-title", player).thenAccept(result ->
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, task -> {
-                    player.showTitle(ComponentUtils.setPlayerTitle(
+                    player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
                             Ari.instance.getConfigInstance().getValue("teleport.title.main", FilePath.LANG),
                             result,
                             200,
@@ -74,7 +73,7 @@ public class TeleportStateService extends StateService<State> {
         if (!(owner instanceof Player player && player.isOnline())) return false;
 
         if (!(state instanceof TeleportState ts) || !Ari.INTERACT_SERVICE.canTeleport(ts.getLocation(), player)) {
-            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.no-permission")));
+            player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.no-permission")));
             return false;
         }
 
@@ -85,7 +84,7 @@ public class TeleportStateService extends StateService<State> {
         }
 
         if(!Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).getStates(owner).isEmpty()) {
-            Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), player)), null);
+            Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), player)), null);
             return false;
         }
 

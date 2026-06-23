@@ -1,10 +1,11 @@
 package com.tty.ari.listener.player;
 
+import com.tty.api.ComponentTool;
 import com.tty.ari.Ari;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.enumType.lang.LangPlayerDeath;
 import com.tty.ari.tool.PlayerDeathInfoCollector;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -15,6 +16,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class CustomPlayerDeathListener implements Listener {
 
@@ -23,25 +25,38 @@ public class CustomPlayerDeathListener implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         if (!Ari.instance.getConfig().getBoolean("server.custom-death", false)) return;
-
+        event.deathMessage(null);
         PlayerDeathInfoCollector.DeathInfo info = collector.collect(event);
         Ari.instance.getLog().debug(info.toString());
 
-        String message = getDeathMessage(info, event);
-        Component killerInfo = info.killer != null ?
-                (info.killer.equals(info.victim) ?
-                        ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.self")): ComponentUtils.setEntityHoverText(info.killer))
-                :Component.empty();
-        if (message != null) {
-            event.deathMessage(ComponentUtils.text(
-                    message,
-                    Map.of(
-                            LangPlayerDeath.VICTIM_UNRESOLVED.getType(), ComponentUtils.setEntityHoverText(info.victim),
-                            LangPlayerDeath.KILLER_UNRESOLVED.getType(), killerInfo,
-                            LangPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), ComponentUtils.setHoverItemText(info.weapon)
-                    )
-            ));
-        }
+        ComponentTool tool = Ari.instance.getComponentTool();
+
+        CompletableFuture<Component> killerFuture = tool.setEntityHoverText(info.killer)
+            .thenComposeAsync(killerComp -> {
+                if (info.killer.equals(info.victim) && info.killer instanceof Player) {
+                    return CompletableFuture.completedFuture(
+                            tool.text(Ari.DATA_SERVICE.getValue("base.on-player.self"))
+                    );
+                }
+                return CompletableFuture.completedFuture(killerComp);
+            }, Ari.instance.getExecutorSync());
+
+        CompletableFuture<Component> victimFuture = tool.setEntityHoverText(info.victim);
+        CompletableFuture<Component> weaponFuture = tool.setHoverItemText(info.killer, info.weapon);
+
+        CompletableFuture.allOf(killerFuture, victimFuture, weaponFuture)
+            .thenRunAsync(() -> {
+                Component killComp = killerFuture.join();
+                Component victimComp = victimFuture.join();
+                Component weaponComp = weaponFuture.join();
+
+                Component deathMsg = tool.text(this.getDeathMessage(info, event), Map.of(
+                        LangPlayerDeath.VICTIM_UNRESOLVED.getType(), victimComp,
+                        LangPlayerDeath.KILLER_UNRESOLVED.getType(), killComp,
+                        LangPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), weaponComp
+                ));
+                Bukkit.getServer().broadcast(deathMsg);
+            }, Ari.instance.getExecutorSync());
     }
 
     private String getDeathMessage(PlayerDeathInfoCollector.DeathInfo info, PlayerDeathEvent event) {

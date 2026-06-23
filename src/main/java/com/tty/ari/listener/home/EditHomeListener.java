@@ -11,7 +11,6 @@ import com.tty.api.enumType.IconKeyType;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.state.EditGuiState;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.entity.ServerHome;
@@ -53,11 +52,11 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
     public boolean onTitleEditStatus(String message, EditGuiState<ServerHome> state) {
         Player player = (Player) state.getOwner();
         if(!this.isContentValid(message) || this.banNameList.contains(message)) {
-            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
+            player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
             return false;
         }
         if(message.length() > this.maxNameLength) {
-            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
+            player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
             return false;
         }
         ServerHome data = state.getData();
@@ -68,7 +67,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
 
     @Override
     public void whenTimeout(Player player) {
-        player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
+        player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
     }
 
     @Override
@@ -118,7 +117,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
 
             Location newLocation = player.getLocation();
             homeEditor.getHome().setLocation(newLocation.toString());
-            clickMeta.displayName(ComponentUtils.text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
+            clickMeta.displayName(Ari.instance.getComponentTool().text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
             clickItem.setItemMeta(clickMeta);
         }));
         registry.add(FunctionType.ICON, (event, homeEditor, player) -> {
@@ -151,7 +150,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
             homeEditor.getBaseMenu().getFunctionItems().forEach((k, v) -> {
                 if (v.getType().equals(FunctionType.TOP_SLOT)) {
                     List<String> lore = v.getLore();
-                    List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(homeEditor.getHome().isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
+                    List<TextComponent> list = lore.stream().map(p -> Ari.instance.getComponentTool().text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue(homeEditor.getHome().isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
                     clickMeta.lore(list);
                     clickItem.setItemMeta(clickMeta);
                 }
@@ -162,7 +161,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
             if (clickItem == null) return;
             ItemMeta clickMeta = clickItem.getItemMeta();
 
-            clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
+            clickMeta.lore(List.of(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
             clickItem.setItemMeta(clickMeta);
 
             LambdaQueryWrapper<ServerHome> wrapper = new LambdaQueryWrapper<>(ServerHome.class)
@@ -172,7 +171,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
             EntityRepository<ServerHome> repository = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
 
             repository.update(homeEditor.getHome(), wrapper, PartitionKey.of(player.getUniqueId().toString())).thenAccept(status -> {
-                clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
+                clickMeta.lore(List.of(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                 clickItem.setItemMeta(clickMeta);
                 Ari.instance.getScheduler().runAsyncDelayed(Ari.instance, e -> {
                     clickMeta.lore(List.of());
@@ -180,7 +179,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
                 }, 20);
             }).exceptionally(i -> {
                 Ari.instance.getLog().error(i, "save home error");
-                clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.error"))));
+                clickMeta.lore(List.of(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.save.error"))));
                 clickItem.setItemMeta(clickMeta);
                 player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
                 return null;

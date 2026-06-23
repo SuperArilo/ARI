@@ -2,7 +2,6 @@ package com.tty.ari.commands;
 
 import com.mojang.brigadier.Command;
 import com.tty.ari.Ari;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.enumType.FilePath;
@@ -42,7 +41,7 @@ public class setspawn extends LiteralArgumentCommand {
         try {
             Ari.instance.getConfigInstance().setValue("main.location", FilePath.SPAWN_CONFIG, spawnLocation.toMap());
         } catch (IOException e) {
-            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
             Ari.instance.getLog().error(e);
         }
 

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.Command;
 import com.tty.ari.Ari;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.commands.args.zako.ZakoListArgs;
 import com.tty.ari.entity.WhitelistInstance;
@@ -60,7 +59,7 @@ public class ZakoList extends LiteralArgumentCommand {
 
             List<WhitelistInstance> records = result.records();
             if (records.isEmpty()) {
-                Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next"))));
+                Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.page-change.none-next"))));
                 return CompletableFuture.completedFuture(null);
             }
 

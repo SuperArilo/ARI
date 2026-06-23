@@ -2,7 +2,6 @@ package com.tty.ari.listener.player;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.api.event.CustomPluginReloadEvent;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.player.PlayerChatState;
 import com.tty.ari.enumType.FilePath;
@@ -46,7 +45,7 @@ public class CustomChatFormantListener implements Listener {
                 }
             }
            event.renderer((source, sourceDisplayName, msg, viewer) ->
-                   ComponentUtils.text(this.getPattern(source), player, Map.of(LangPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), LangPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
+                   Ari.instance.getComponentTool().text(this.getPattern(source), player, Map.of(LangPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), LangPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
        }
     }
 

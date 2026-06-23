@@ -8,7 +8,6 @@ import com.tty.api.dto.gui.Mask;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.gui.BaseConfigInventory;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.gui.PlayerInventoryCheckMenu;
 import com.tty.ari.enumType.FilePath;
@@ -62,7 +61,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
     @Override
     protected @NotNull Component title() {
-        return ComponentUtils.text(this.getBaseMenu().getTitle(), this.monitoree);
+        return Ari.instance.getComponentTool().text(this.getBaseMenu().getTitle(), this.monitoree);
     }
 
     @Override
@@ -84,7 +83,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
                     ItemStack itemStack = ItemStack.of(Material.valueOf(value.getMaterial()));
                     if (!(itemStack.getItemMeta() instanceof SkullMeta skullMeta)) break;
                     skullMeta.setPlayerProfile(this.monitoree.getPlayerProfile());
-                    skullMeta.displayName(ComponentUtils.text(this.monitoree.getName()));
+                    skullMeta.displayName(Ari.instance.getComponentTool().text(this.monitoree.getName()));
                     itemStack.setItemMeta(skullMeta);
                     value.setItemStack(itemStack);
                 }
@@ -216,7 +215,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
             itemStack = ItemStack.of(Material.valueOf(items.getMaterial()));
             Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, type.getName());
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(ComponentUtils.text(items.getName(), this.getOfflinePlayer()));
+            itemMeta.displayName(Ari.instance.getComponentTool().text(items.getName(), this.getOfflinePlayer()));
             itemStack.setItemMeta(itemMeta);
         }
         for (Integer i : items.getSlot()) {

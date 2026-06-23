@@ -4,7 +4,6 @@ package com.tty.ari.commands.sub.tpa;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.ari.Ari;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
 import com.tty.ari.enumType.FilePath;
@@ -63,7 +62,7 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
      */
     public int checkAfterResponse(Player sender, Player target, Consumer<PreEntityToEntityState> consumer) {
         if (target == null) {
-            Ari.instance.getScheduler().runAtEntity(Ari.instance, sender, i -> sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), sender)), null);
+            Ari.instance.getScheduler().runAtEntity(Ari.instance, sender, i -> sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), sender)), null);
             return 0;
         }
         PreTeleportStateService machine = Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class);
@@ -85,7 +84,7 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
     public boolean preCheckIsNotPass(CommandSender sender, String[] args) {
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
         if (player == null || sender.getName().equals(player.getName())) {
-            Ari.instance.getScheduler().runAtEntity(Ari.instance, (Player) sender, i -> sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), (Player) sender)), null);
+            Ari.instance.getScheduler().runAtEntity(Ari.instance, (Player) sender, i -> sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), (Player) sender)), null);
             return true;
         }
         return false;

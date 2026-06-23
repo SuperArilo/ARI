@@ -4,7 +4,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.tty.ari.Ari;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -46,7 +45,7 @@ public class ItemLoreRemoveArgs extends RequiredArgumentCommand<Integer> {
         String content = args[2];
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         if (mainHand.isEmpty()) {
-            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
+            player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
             return 0;
         }
         ItemMeta itemMeta = mainHand.getItemMeta();
@@ -61,7 +60,7 @@ public class ItemLoreRemoveArgs extends RequiredArgumentCommand<Integer> {
             }
             lore.remove(index);
         } catch (Exception e) {
-            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.input-error")));
+            player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.input-error")));
         }
         itemMeta.lore(lore);
         mainHand.setItemMeta(itemMeta);

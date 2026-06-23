@@ -11,7 +11,6 @@ import com.tty.api.service.placeholder.PlaceholderDefinition;
 import com.tty.api.service.placeholder.PlaceholderRegistry;
 import com.tty.api.service.placeholder.PlaceholderResolve;
 import com.tty.api.state.State;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.TimeFormatUtils;
 import com.tty.ari.Ari;
@@ -38,7 +37,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import static com.tty.ari.listener.teleport.RecordLastLocationListener.TELEPORT_LAST_LOCATION;
 
@@ -160,7 +158,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .get(ServerPlayer.class)
                         .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(i -> {
-                            if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                            if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
                             return Component.text(TimeFormatUtils.format(i.getFirstLoginTime(), ZakoInfoArgs.getPatternDatetime()));
                         }))
         ));
@@ -170,7 +168,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .get(ServerPlayer.class)
                         .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(i -> {
-                            if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                            if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
                             return Component.text(TimeFormatUtils.format(i.getLastLoginOffTime(), ZakoInfoArgs.getPatternDatetime()));
                         }))
         ));
@@ -180,7 +178,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .get(ServerPlayer.class)
                         .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(i -> {
-                            if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                            if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
                             return Component.text(TimeFormatUtils.format(i.getTotalOnlineTime()));
                         }))
         ));
@@ -198,14 +196,14 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .get(WhitelistInstance.class)
                         .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(whitelistInstance -> {
-                            if (whitelistInstance == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                            if (whitelistInstance == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
                             String operator;
                             if(whitelistInstance.getOperator().equals(Operator.CONSOLE.getUuid())) {
                                 operator = "CONSOLE";
                             } else {
                                 operator = Bukkit.getOfflinePlayer(UUID.fromString(whitelistInstance.getOperator())).getName();
                             }
-                            return ComponentUtils.text(operator == null ? Ari.DATA_SERVICE.getValue("base.none"):operator);
+                            return Ari.instance.getComponentTool().text(operator == null ? Ari.DATA_SERVICE.getValue("base.none"):operator);
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
@@ -214,7 +212,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .get(WhitelistInstance.class)
                         .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(i -> {
-                            if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                            if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
                             return Component.text(TimeFormatUtils.format(i.getAddTime(), ZakoInfoArgs.getPatternDatetime()));
                         })
         )));
@@ -230,12 +228,12 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .get(WhitelistInstance.class)
                         .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(i -> {
-                            if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                            if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
                             String remark = i.getRemark();
                             if (remark == null || remark.isEmpty()) {
-                                return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                                return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
                             }
-                            return ComponentUtils.text(remark);
+                            return Ari.instance.getComponentTool().text(remark);
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
@@ -251,7 +249,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
                 .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                 .thenApply(i -> {
-                    if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                    if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
                     return Component.text(TimeFormatUtils.format(i.getEndTime() - i.getStartTime()));
                 }))
         ));
@@ -260,7 +258,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
                 .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                 .thenApply(i -> {
-                    if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
+                    if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
                     return Component.text(TimeFormatUtils.format(i.getEndTime() - System.currentTimeMillis()));
                 }))
         ));
@@ -269,13 +267,13 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
                         .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(i -> {
-                            if (i == null) return ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.none"));
-                            return ComponentUtils.text(i.getReason());
+                            if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
+                            return Ari.instance.getComponentTool().text(i.getReason());
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
                 LangShowItem.SHOW_ITEM,
-                PlaceholderResolve.ofPlayer(player -> CompletableFuture.completedFuture(ComponentUtils.setHoverItemText(player.getInventory().getItemInMainHand())))
+                PlaceholderResolve.ofPlayer(player -> Ari.instance.getComponentTool().setHoverItemText(player, player.getInventory().getItemInMainHand()))
         ));
     }
 

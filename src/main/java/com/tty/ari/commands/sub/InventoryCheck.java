@@ -8,7 +8,6 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
@@ -44,13 +43,9 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
         if (args.length < 2 || !(sender instanceof Player player)) return 0;
 
         UUID uuid = PublicFunctionUtils.parseUUID(args[1]);
-        if (uuid == null) {
-            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-            return 0;
-        }
 
         if (player.getUniqueId().equals(uuid)) {
-            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.command.self-not-allowed")));
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.command.self-not-allowed")));
             return 0;
         }
 
@@ -59,7 +54,7 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
                 .thenCompose(serverPlayer -> CompletableFuture.completedFuture(serverPlayer != null))
                 .thenAccept(status -> {
                     if (!status) {
-                        sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                        sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                         return;
                     }
 
@@ -67,7 +62,7 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
                     GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
 
                     if (service.getStates(player).stream().anyMatch(i -> (i instanceof OnCheckPlayerGuiState state && state.getOwner().equals(player)))) {
-                        sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.task-occupied")));
+                        sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.task-occupied")));
                         return;
                     }
                     Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new OnCheckPlayerGuiState(player, offlinePlayer, new PlayerInventoryEdit(Ari.instance, player, offlinePlayer)));

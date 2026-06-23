@@ -6,7 +6,6 @@ import com.tty.ari.Ari;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.WhitelistInstance;
@@ -65,7 +64,7 @@ public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
                 .whenComplete((v, ex) -> {
                     if (ex != null) {
                         Ari.instance.getLog().error(ex, "add zako error.");
-                        sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-error")));
+                        sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
                     }
                 });
         return Command.SINGLE_SUCCESS;

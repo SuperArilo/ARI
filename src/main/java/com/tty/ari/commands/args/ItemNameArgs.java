@@ -4,7 +4,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.ari.Ari;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -43,11 +42,11 @@ public class ItemNameArgs extends RequiredArgumentCommand<String> {
         Player player = (Player) sender;
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         if (mainHand.isEmpty()) {
-            player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
+            player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
             return 0;
         }
         ItemMeta itemMeta = mainHand.getItemMeta();
-        itemMeta.displayName(ComponentUtils.text(args[1]));
+        itemMeta.displayName(Ari.instance.getComponentTool().text(args[1]));
         mainHand.setItemMeta(itemMeta);
         return Command.SINGLE_SUCCESS;
     }

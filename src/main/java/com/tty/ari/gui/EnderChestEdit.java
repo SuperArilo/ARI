@@ -2,7 +2,6 @@ package com.tty.ari.gui;
 
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.gui.BaseInventory;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.Ari;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
@@ -49,7 +48,7 @@ public class EnderChestEdit extends BaseInventory {
         this.getPlugin().getScheduler().runAsync(this.getPlugin(), i -> {
             NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.monitoree.getUniqueId().toString());
             if (data == null) {
-                this.surveillant.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                this.surveillant.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                 Ari.instance.getLog().error("uuid is not exist.", this.monitoree.getName());
                 return;
             }
@@ -72,7 +71,7 @@ public class EnderChestEdit extends BaseInventory {
         }
         NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.monitoree.getUniqueId().toString());
         if (data == null) {
-            this.surveillant.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            this.surveillant.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             this.getPlugin().getLog().error("uuid is not exist.", this.monitoree.getName());
             return;
         }

@@ -11,7 +11,6 @@ import com.tty.api.enumType.IconKeyType;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.state.EditGuiState;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.entity.ServerWarp;
@@ -59,18 +58,18 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
         switch (type) {
             case RENAME -> {
                 if(!this.isContentValid(message) || this.banNameList.contains(message)) {
-                    player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
+                    player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
                     return false;
                 }
                 if(message.length() > this.maxNameLength) {
-                    player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
+                    player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
                     return false;
                 }
                 data.setWarpName(message);
             }
             case PERMISSION -> {
                 if(!this.isValidPermissionNode(message)) {
-                    player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.permission.permission-error")));
+                    player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.permission.permission-error")));
                     return false;
                 }
                 data.setPermission(message);
@@ -80,7 +79,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
                     Double i = Double.parseDouble(message);
                     data.setCost(i);
                 } catch (NumberFormatException e) {
-                    player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.cost.format-error")));
+                    player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.cost.format-error")));
                     return false;
                 }
             }
@@ -91,7 +90,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
 
     @Override
     public void whenTimeout(Player player) {
-        player.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
+        player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
     }
 
     @Override
@@ -130,7 +129,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
 
             Location newLocation = player.getLocation();
             warpEditor.getWarp().setLocation(newLocation.toString());
-            clickMeta.displayName(ComponentUtils.text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
+            clickMeta.displayName(Ari.instance.getComponentTool().text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
             clickItem.setItemMeta(clickMeta);
         });
         registry.add(FunctionType.ICON, (event, warpEditor, player) -> {
@@ -163,11 +162,11 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
             LambdaQueryWrapper<ServerWarp> wrapper = new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpEditor.getWarp().getWarpId());
 
             Ari.instance.getLog().debug("start saving warp id: {}", warpEditor.getWarp().getWarpId());
-            clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
+            clickMeta.lore(List.of(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.save.ing"))));
             clickItem.setItemMeta(clickMeta);
             CompletableFuture<Boolean> future = repository.update(warpEditor.getWarp(), wrapper, PartitionKey.global());
             future.thenAccept(status -> {
-                clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
+                clickMeta.lore(List.of(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                 clickItem.setItemMeta(clickMeta);
                 if(status) {
                     Ari.instance.getScheduler().runAsyncDelayed(Ari.instance, e ->{
@@ -175,12 +174,12 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
                         clickItem.setItemMeta(clickMeta);
                     }, 20L);
                 } else {
-                    clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.error"))));
+                    clickMeta.lore(List.of(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.save.error"))));
                     clickItem.setItemMeta(clickMeta);
                 }
             }).exceptionally(i -> {
                 Ari.instance.getLog().error(i, "saving warp error");
-                clickMeta.lore(List.of(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.save.error"))));
+                clickMeta.lore(List.of(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.save.error"))));
                 clickItem.setItemMeta(clickMeta);
                 return null;
             });
@@ -194,7 +193,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
             warpEditor.getBaseMenu().getFunctionItems().forEach((k, v) -> {
                 if (v.getType().equals(FunctionType.TOP_SLOT)) {
                     List<String> lore = v.getLore();
-                    List<TextComponent> list = lore.stream().map(p -> ComponentUtils.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentUtils.text(Ari.DATA_SERVICE.getValue(currentEditWarp.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
+                    List<TextComponent> list = lore.stream().map(p -> Ari.instance.getComponentTool().text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue(currentEditWarp.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
                     clickMeta.lore(list);
                     clickItem.setItemMeta(clickMeta);
                 }
@@ -235,7 +234,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
         //检查是否有经济插件，如果没有就return
         if (type.equals(FunctionType.COST) && Ari.ECONOMY_SERVICE.isNull()) return;
         if (type.equals(FunctionType.PERMISSION) && event.getClick().isRightClick()) {
-            clickMeta.displayName(ComponentUtils.text(""));
+            clickMeta.displayName(Ari.instance.getComponentTool().text(""));
             clickItem.setItemMeta(clickMeta);
             currentEditWarp.setPermission(null);
             return;

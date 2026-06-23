@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.lang.LangTime;
@@ -72,7 +71,7 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
             player.sendMessage("no content " + timePeriod + "in lang");
             return 0;
         }
-        player.sendMessage(ComponentUtils.text(value, Map.of(LangTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.tAfter("server.time.name." + period.getDescription()))));
+        player.sendMessage(Ari.instance.getComponentTool().text(value, Map.of(LangTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.tAfter("server.time.name." + period.getDescription()))));
         return Command.SINGLE_SUCCESS;
     }
 

@@ -5,7 +5,6 @@ import com.tty.ari.Ari;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
 import com.tty.ari.enumType.FilePath;
@@ -40,7 +39,7 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
 
         if (player == null) {
-            owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner));
+            owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner));
             return 0;
         }
 

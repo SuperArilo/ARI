@@ -8,7 +8,6 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
@@ -39,16 +38,13 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
         if (args.length < 2) return 0;
         Player player = (Player) sender;
         UUID uuid = PublicFunctionUtils.parseUUID(args[1]);
-        if (uuid == null) {
-            sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-            return 0;
-        }
+
         Ari.REPOSITORY_MANAGER.get(ServerPlayer.class)
             .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global())
             .thenCompose(serverPlayer -> CompletableFuture.completedFuture(serverPlayer != null))
             .thenAccept(status -> {
                 if (!status) {
-                    sender.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                    sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                     return;
                 }
                 OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);

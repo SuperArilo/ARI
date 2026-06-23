@@ -1,7 +1,6 @@
 package com.tty.ari.states.teleport;
 
 import com.tty.api.state.StateService;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
 import com.tty.ari.states.CoolDownStateService;
@@ -33,7 +32,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
             Ari.instance.getScheduler().runAtEntity(
                     Ari.instance,
                     owner,
-                    i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner)),
+                    i -> owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner)),
                     null);
             state.setOver(true);
             return;
@@ -64,15 +63,15 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                     Ari.instance.getScheduler().runAtEntity(Ari.instance, target, task -> target.sendMessage(
                         result
                         .appendNewline()
-                        .append(ComponentUtils.setClickEventText(
+                        .append(Ari.instance.getComponentTool().setClickEventText(
                                 Ari.DATA_SERVICE.getValue("function.public.agree"),
                                 ClickEvent.Action.RUN_COMMAND,
-                                "/ari tpaaccept " + owner.getName()))
-                        .append(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.public.center")))
-                        .append(ComponentUtils.setClickEventText(
+                                "/" + Ari.instance.getName() + " tpaaccept " + owner.getName()))
+                        .append(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.public.center")))
+                        .append(Ari.instance.getComponentTool().setClickEventText(
                                 Ari.DATA_SERVICE.getValue("function.public.refuse"),
                                 ClickEvent.Action.RUN_COMMAND,
-                                "/ari tparefuse " + owner.getName()))), null));
+                                "/" + Ari.instance.getName() + " tparefuse " + owner.getName()))), null));
     }
 
     @Override
@@ -116,7 +115,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                 !manager.get(RandomTpStateService.class).getStates(owner).isEmpty() ||
                 !manager.get(TeleportStateService.class).getStates(target).isEmpty() ||
                 !manager.get(RandomTpStateService.class).getStates(target).isEmpty()) {
-            Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> owner.sendMessage(ComponentUtils.text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), owner)), null);
+            Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), owner)), null);
             return false;
         }
 

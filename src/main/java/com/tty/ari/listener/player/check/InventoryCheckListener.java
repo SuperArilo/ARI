@@ -7,7 +7,6 @@ import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.GuiKeyEnum;
 import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.listener.BaseGuiListener;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.gui.PlayerInventoryCheckMenu;
 import com.tty.ari.dto.state.GuiState;
@@ -229,8 +228,8 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         ItemStack itemStack = ItemStack.of(Material.valueOf(item.getMaterial()));
         Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, item.getType().getName());
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.displayName(ComponentUtils.text(item.getName()));
-        List<TextComponent> collect = item.getLore().stream().map(ComponentUtils::text).toList();
+        itemMeta.displayName(Ari.instance.getComponentTool().text(item.getName()));
+        List<TextComponent> collect = item.getLore().stream().map(Ari.instance.getComponentTool()::text).toList();
         itemMeta.lore(collect);
         itemStack.setItemMeta(itemMeta);
         return itemStack;

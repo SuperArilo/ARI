@@ -10,7 +10,6 @@ import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.ComponentUtils;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
@@ -105,7 +104,7 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
                 if (status) {
                     OfflinePlayer kickPlayer = Bukkit.getServer().getOfflinePlayer(uuid);
                     if (kickPlayer instanceof Player player) {
-                        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> player.kick(ComponentUtils.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"), player)),  null);
+                        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"), player)),  null);
                     }
                     ConfigUtils.t("function.zako.baned", kickPlayer).thenAccept(m -> Bukkit.getServer().getOnlinePlayers().stream().filter(i -> !i.equals(kickPlayer)).forEach(i -> i.sendMessage(m)));
                 }
