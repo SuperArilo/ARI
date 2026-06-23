@@ -149,7 +149,7 @@ custom-death:
     air:
       destine:
         public:
-          - '&2<victim>&7注定要因&2<killer>&7而死于混战'
+          - '&2<victim>&7注定要死于&2<killer>&7之手'
       public:
         - '&2<victim>&7被&2<killer>&7击杀'
 
