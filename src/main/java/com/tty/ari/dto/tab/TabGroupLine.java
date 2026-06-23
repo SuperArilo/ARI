@@ -1,3 +1,5 @@
 package com.tty.ari.dto.tab;
 
-public record TabGroupLine (String prefix, String suffix) {}
+import com.google.gson.annotations.Expose;
+
+public record TabGroupLine (@Expose String prefix, @Expose String suffix) {}
