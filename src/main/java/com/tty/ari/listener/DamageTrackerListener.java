@@ -7,7 +7,6 @@ import com.tty.api.task.CancellableTask;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.tool.LastDamageTracker;
-import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -41,22 +40,8 @@ public class DamageTrackerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntity(EntityDamageEvent event) {
         Entity entity = event.getEntity();
-        if (!(entity instanceof Damageable victim)) return;
         if (this.excludedEntities.contains(entity.getType())) return;
-
-        DamageSource damageSource = event.getDamageSource();
-        Entity causingEntity = damageSource.getCausingEntity();
-        Entity directEntity = damageSource.getDirectEntity();
-
-        LastDamageTracker.AttackCheckResult result = DAMAGE_TRACKER.checkAttackInvolvesPlayer(victim, causingEntity, directEntity, event.getCause());
-        if (!result.involvesPlayer()) return;
-        Entity attacker = result.resolvedAttacker();
-        DAMAGE_TRACKER.addRecord(
-                victim,
-                attacker,
-                event.getFinalDamage(),
-                DAMAGE_TRACKER.getWeapon(attacker, directEntity, causingEntity)
-        );
+        DAMAGE_TRACKER.addRecord(event);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
