@@ -51,8 +51,7 @@ public class DamageTrackerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event) {
-        LivingEntity entity = event.getEntity();
-        DAMAGE_TRACKER.clearRecords(entity);
+        DAMAGE_TRACKER.clearRecords(event.getEntity());
     }
 
     @EventHandler
