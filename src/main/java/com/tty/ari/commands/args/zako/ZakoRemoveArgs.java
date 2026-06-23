@@ -47,7 +47,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
     public int execute(CommandSender sender, String[] args) {
         String value = args[2];
         UUID uuid = PublicFunctionUtils.parseUUID(value);
-        if (uuid == null) return 0;
+
         EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
         repository.delete(wrapper, PartitionKey.global()).thenAccept(status -> {

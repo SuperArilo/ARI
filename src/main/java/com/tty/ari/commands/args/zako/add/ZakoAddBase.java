@@ -26,7 +26,6 @@ public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
             return 0;
         }
         UUID uuid = PublicFunctionUtils.parseUUID(value);
-        if (uuid == null) return 0;
 
         EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         repository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()), PartitionKey.global())
