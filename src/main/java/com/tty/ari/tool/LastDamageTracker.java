@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class LastDamageTracker {
 
@@ -245,8 +246,7 @@ public class LastDamageTracker {
         //检查是否涉及玩家
         if (!this.checkInvolvesPlayer(victim, resolvedAttacker, directEntity)) return;
 
-        Entity finalResolvedAttacker = resolvedAttacker;
-        Ari.instance.getScheduler().runAtEntity(Ari.instance, victim, i -> this.records.computeIfAbsent(victim, k -> new ArrayList<>()).add(new DamageRecord(System.currentTimeMillis(), finalResolvedAttacker, event.getFinalDamage(), victim.getLocation(), this.getWeapon(finalResolvedAttacker, directEntity, causingEntity))), null);
+        this.records.computeIfAbsent(victim, k -> new CopyOnWriteArrayList<>()).add(new DamageRecord(System.currentTimeMillis(), resolvedAttacker, event.getFinalDamage(), victim.getLocation(), this.getWeapon(resolvedAttacker, directEntity, causingEntity)));
     }
 
     private void log(Entity victim, EntityDamageEvent.DamageCause cause, Long timeDiff, Long threshold, Entity attacker) {
