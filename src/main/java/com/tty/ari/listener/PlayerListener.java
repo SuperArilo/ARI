@@ -46,7 +46,7 @@ public class PlayerListener implements Listener {
         Location location;
         SpawnLocation value = Ari.instance.getConfigInstance().getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
         if (value != null) {
-            location = new Location(Bukkit.getWorld(value.getWorldName()), value.getX(), value.getY(), value.getZ(), value.getYaw(), value.getPitch());
+            location = new Location(Bukkit.getServer().getWorld(value.getWorldName()), value.getX(), value.getY(), value.getZ(), value.getYaw(), value.getPitch());
         } else {
             Ari.instance.getLog().debug("not setting spawn location.fallback server spawn location.");
             location = world.getSpawnLocation();
