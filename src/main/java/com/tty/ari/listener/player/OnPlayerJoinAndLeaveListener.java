@@ -59,7 +59,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             Ari.instance.getLog().debug("free player uuid {}.", banPlayer.getPlayerUUID());
         } else {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ConfigUtils.tList("server.player.baned", Bukkit.getOfflinePlayer(uuid)).join());
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ConfigUtils.tList("server.player.banned", Bukkit.getOfflinePlayer(uuid)).join());
         }
     }
 
