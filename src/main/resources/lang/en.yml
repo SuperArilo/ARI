@@ -1,0 +1,138 @@
+teleport:
+  title:
+    main: '&ePlease do not move...'
+    sub-title: '&6<teleport_delay>'
+  cooling: '&eTeleport is cooling down...'
+  none-location: '&eNo previous location saved'
+  costed: '&aThis teleport cost <costed>'
+  again: '&eYou already have a pending teleport request. Please wait a while before trying again.'
+  tips-back: '&bLast death location: <death_location> &7– use /back or click this message to return'
+
+function:
+  tpa:
+    again: '&eYou have already sent a request to &a<tpa_be_sender> &e'
+    send-message: '&eTeleport request sent to player...'
+    to-message: '&6Player &a<tpa_sender> &6wants to teleport to you'
+    here-message: '&6Player &a<tpa_sender> &6wants you to teleport to them'
+    agree: '&a✔ You accepted the teleport request'
+    been-done: '&cThat request has already been handled or does not exist!'
+    refuse-success: '&a✔ Request declined!'
+    refused: '&6Player &a<tpa_be_sender> &6declined your teleport request'
+    error: '&cTeleport state error – unable to complete'
+  home:
+    create-success: '&a✔ Home created successfully!'
+    id-error: '&cHome ID is invalid'
+    exceeds: '&cYou have reached the maximum number of homes allowed for your rank'
+    exist: '&cA home with that ID already exists'
+    delete-success: '&a✔ Home deleted successfully'
+    not-found: '&cHome ID not found'
+  warp:
+    no-permission-teleport: '&cYou do not have permission to teleport to that warp'
+    no-permission-edit: '&cYou do not have permission to edit that warp'
+    create-success: '&a✔ Warp created successfully!'
+    delete-success: '&a✔ Warp deleted successfully'
+    id-error: '&cWarp ID is invalid'
+    exist: '&cA warp with that ID already exists'
+    exceeds: '&cWarp limit reached!'
+    not-found: '&cWarp not found, or it has been removed'
+    not-enough-money: '&cYou do not have enough money to teleport to that warp'
+  spawn:
+    no-spawn: '&cThe server does not have a spawn point set yet'
+    create-success: '&a✔ Spawn point created successfully!'
+  rtp:
+    title-searching: '&eSearching for a safe location...'
+    title-search-count: '&eAttempts remaining: &6<rtp_search_count>'
+    location-found: '&a✔ Location found – teleporting now...'
+    search-failure: '&c✖ Search failed – please try again'
+    world-disable: '&8Random teleport is disabled in this world'
+    no-rtp: '&eYou have not used random teleport yet'
+    rtp-cancel: '&7Cancelled current random teleport'
+    abort-search: "&c✖ Chunk loading timed out – skipping this attempt..."
+  sit:
+    tips: '&fPress &2Sneak &fto cancel'
+    error-location: '&cYou cannot sit here'
+  zako:
+    zako-add-success: '&a✔ Whitelist entry added successfully'
+    zako-add-failure: '&c✖ Failed to add – check console for details'
+    zako-add-exist: '&c✖ That player is already on the whitelist'
+    zako-add-name-invalid: "&c✖ Invalid player name"
+    zako-check-not-exist: '&c✖ That player has never joined the server'
+    whitelist-remove-success: '&a✔ Whitelist entry removed successfully'
+    whitelist-remove-failure: '&c✖ Failed to remove – entry not found or error occurred'
+    ban-remove-success: '&a✔ Ban removed successfully'
+    ban-remove-failure: '&c✖ Failed to remove ban – not found or error'
+    had-banned: '&c✖ That player is already banned'
+    banned: '&a✔ Player &6<ban_player_name> &ahas been banned! &7Duration: &6<ban_total_time> &fReason: &3<ban_reason>'
+    list-requesting: '&3Fetching data...'
+    list-request-error: '&cFailed to fetch data – check console'
+    list-title: '&7Whitelist'
+  enchant:
+    not-exist: '&c✖ That enchantment type does not exist'
+    can-not-apply-item: '&c✖ That enchantment cannot be applied to this item'
+    level-too-high: '&c✖ Level exceeds the maximum for that enchantment'
+    enchant-success: '&a✔ Added enchantment &b<enchant_name> &alevel &6<enchant_level>'
+  itemshow:
+    no-item-in-hand: '&eYou are not holding any item in your main hand'
+    show-to-players: '&aPlayer &6<player_name> &ashowed their held item: <show_item>'
+  infinitytotem:
+    enable: '&aInfinite totem use enabled'
+    disable: '&eInfinite totem use disabled'
+  unknown: '&cUnknown command – please check your input'
+
+server:
+  time:
+    tips: '&eSet time to &6<execute_target_time>'
+    not-exist-period: '&cUnknown time period: &3<time_period>'
+    not-allowed-world: '&cYou cannot change the time in this world'
+    skip-to-night: '&eSkipping night at speed &7Rate: &5<skip_night_tick_increment>'
+    report-status: '&7<sleep_players> player(s) are sleeping – time speed: <skip_night_tick_increment>'
+    name:
+      sunrise: '&eSunrise'
+      day: '&fDay'
+      noon: '&fNoon'
+      sunset: '&eSunset'
+      night: '&7Night'
+      midnight: '&8Midnight'
+      daylight: '&fDaybreak'
+      wake_up: '&fWake-up time'
+  message:
+    about:
+      - 'Server version: &6<server_version>'
+      - 'Plugin version: &6<ari_version>'
+      - 'Debug mode: &6<ari_debug_status>'
+    on-whitelist-login: '&cYou are not on the server whitelist – contact an administrator'
+    on-first-login: '&aWelcome to the server, &6<player_name> &a!'
+    on-login: '&fPlayer &6<player_name> &fjoined the game'
+    on-leave: '&fPlayer &6<player_name> &fleft the game'
+    no-economy: '&cNo economy plugin detected'
+    command-cooldown: "&ePlease slow down – you are using commands too quickly"
+    chat-cooldown: "&ePlease slow down – you are chatting too quickly"
+    bungee:
+      can-not-connect: '&cCould not connect to that server – please try again later'
+  player:
+    info:
+      - "&fInfo for &6<player_name> &f"
+      - "&fFirst joined: &6<first_login_server_time>"
+      - "&fLast joined: &6<last_login_server_time>"
+      - "&fTotal online time: &6<total_online_time_on_server>"
+      - "&fOperator: &6<zako_whitelist_operator>"
+      - "&fWhitelisted on: &6<zako_whitelist_add_time>"
+      - "&fNote: &6<zako_list_item_remark>"
+      - "&fWorld: &8<player_world>"
+      - "&fLocation: <player_location>"
+    baned:
+      - "&4You have been banned from this server!"
+      - "&3Reason&f: <ban_reason>"
+      - "&3Time remaining&f: &6<ban_end_time>"
+    zako:
+      list-show:
+        - "&e- &6<zako_list_item_name>"
+        - "&fNote: <zako_list_item_remark>"
+      unable-record: "&7Possible reason: player has never joined before"
+  boss-bar:
+    player-attack: "<mob> &6<mob_current_health>&f / &3<mob_max_health>"
+  maintenance:
+    on-enable: '&eServer maintenance mode enabled'
+    on-disable: '&aServer maintenance mode disabled'
+    to-player: '&eMaintenance mode is active – you will be kicked in &6<maintenance_kick_delay> seconds'
+    when-player-join: '&6The server is currently under maintenance – please try again later'

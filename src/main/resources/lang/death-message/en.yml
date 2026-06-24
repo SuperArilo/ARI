@@ -1,0 +1,226 @@
+custom-death:
+  running-away:
+    public:
+      - ' &7while trying to flee from &2<killer>&7'
+      - ' &7while fighting &2<killer>&7'
+
+  player:
+    air:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to die in a brawl caused by &2<killer>&7'
+      public:
+        - '&2<victim>&7 was slain by &2<killer>&7'
+        - '&2<victim>&7 died under &2<killer>&7''s fierce assault'
+        - '&2<victim>&7 was knocked out by &2<killer>&7 with a single punch'
+
+    item:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to fall to &2<killer>&7''s weapon'
+      public:
+        - '&2<victim>&7 was killed by &2<killer>&7 using &2<killer_item>&7'
+
+    projectile:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be shot down by &2<killer>&7'
+      public:
+        - '&2<victim>&7 was shot by &2<killer>&7 using &2<killer_item>&7'
+
+    fall:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to fall from a great height because of &2<killer>&7'
+      public:
+        - '&2<victim>&7 fell from a high place'
+        - '&2<victim>&7 took a fatal fall'
+
+    fire:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be consumed by flames thanks to &2<killer>&7'
+      public:
+        - '&2<victim>&7 burned to death'
+        - '&2<victim>&7 was engulfed in fire'
+
+    lightning:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be struck by divine lightning because of &2<killer>&7'
+      public:
+        - '&2<victim>&7 was struck by lightning'
+        - '&2<victim>&7 failed to survive the thunderstorm'
+
+    suffocation:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to suffocate inside a wall thanks to &2<killer>&7'
+      public:
+        - '&2<victim>&7 suffocated in a wall'
+
+    drowning:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to drown because of &2<killer>&7'
+      public:
+        - '&2<victim>&7 drowned'
+
+    freeze:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to freeze solid because of &2<killer>&7'
+      public:
+        - '&2<victim>&7 froze to death'
+
+    suicide:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to end their own life'
+      public:
+        - '&2<victim>&7 took their own life'
+
+    void:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to fall into the void because of &2<killer>&7'
+      public:
+        - '&2<victim>&7 fell into the void'
+        - '&2<victim>&7 entered another dimension'
+
+    wither:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to wither away because of &2<killer>&7'
+      public:
+        - '&2<victim>&7 withered away'
+
+    fly_into_wall:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to crash into a wall because of &2<killer>&7'
+      public:
+        - '&2<victim>&7 experienced the power of kinetic energy'
+        - '&2<victim>&7 learned about the laws of momentum'
+
+    kill:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to end their own life'
+      public:
+        - '&2<victim>&7 took their own life'
+
+    starvation:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to starve because of &2<killer>&7'
+      public:
+        - '&2<victim>&7 starved to death'
+
+    sonic_boom:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be erased by a sonic boom from &2<killer>&7'
+      public:
+        - '&2<victim>&7 was obliterated by &2<killer>&7''s sonic boom'
+
+    magic:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be finished by &2<killer>&7''s magic'
+      public:
+        - '&2<victim>&7 was killed by &2<killer>&7''s magic'
+
+    explosion:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to die in an explosion caused by &2<killer>&7'
+      public:
+        - '&2<victim>&7 was blown up by &2<killer>&7'
+
+    thorns:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be killed by &2<killer>&7''s thorns'
+      public:
+        - '&2<victim>&7 was killed by &2<killer>&7''s thorns'
+
+  mob:
+    air:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to die at the hands of &2<killer>&7'
+      public:
+        - '&2<victim>&7 was slain by &2<killer>&7'
+
+    item:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be killed by &2<killer>&7''s &2<killer_item>&7 in the chaos'
+          - '&2<victim>&7 was destined to be finished off by &2<killer>&7 with &2<killer_item>&7'
+      public:
+        - '&2<victim>&7 was killed by &2<killer>&7 using &2<killer_item>&7'
+
+    projectile:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be shot by &2<killer>&7''s &2<killer_item>&7 in the fray'
+          - '&2<victim>&7 was destined to be sniped by &2<killer>&7 with &2<killer_item>&7'
+      public:
+        - '&2<victim>&7 was shot by &2<killer>&7 with &2<killer_item>&7'
+
+    explosion:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be blown up by &2<killer>&7'
+      public:
+        - '&2<victim>&7 was blown up by &2<killer>&7'
+
+  falling-blocks:
+    anvil:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be squashed by an anvil'
+      public:
+        - '&2<victim>&7 was crushed by &2<killer>&7'
+        - '&2<victim>&7 was flattened by &2<killer>&7'
+        - '&2<victim>&7 headbutted &2<killer>&7'
+        - '&2<victim>&7 tried to kiss &2<killer>&7'
+
+  block:
+    cactus:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be pricked to death by a cactus because of &2<killer>&7'
+      public:
+        - '&2<victim>&7 was pricked to death by a cactus'
+        - '&2<victim>&7 tried to hug a cactus and lost'
+
+    magma_block:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to dance on magma blocks because of &2<killer>&7'
+      public:
+        - '&2<victim>&7 discovered the floor was lava'
+
+    sweet_berry_bush:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to die in a sweet berry bush because of &2<killer>&7'
+          - '&2<victim>&7''s grave is a sweet berry bush'
+      public:
+        - '&2<victim>&7 was pricked to death by a sweet berry bush'
+
+    lava:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be consumed by lava because of &2<killer>&7'
+      public:
+        - '&2<victim>&7 tried to swim in lava'
+
+    pointed_dripstone:
+      destine:
+        public:
+          - '&2<victim>&7 was destined to be impaled by a stalactite because of &2<killer>&7'
+      public:
+        - '&2<victim>&7 was impaled by a stalactite'
