@@ -253,17 +253,21 @@ public class LastDamageTracker {
         if (victim == null) return;
         Ari.instance.getScheduler().runAtEntity(Ari.instance, victim, i -> {
             Location location = victim.getLocation();
+            double x = location.getX();
+            double y = location.getY();
+            double z = location.getZ();
+            String victimName = victim.getName();
             if (attacker == null) return;
             Ari.instance.getScheduler().runAtEntity(Ari.instance, attacker, t ->
                 Ari.instance.getLog().debug("victim: {}, damage_type: {}, time_difference: {} ms (threshold: {} ms), attacker: {}, location: x: {}, y: {}, z: {}",
-                    victim.getName(),
+                    victimName,
                     cause.name(),
                     timeDiff,
                     threshold,
                     attacker.getName(),
-                    location.getX(),
-                    location.getY(),
-                    location.getZ()
+                    x,
+                    y,
+                    z
                 ), null);
         }, null);
     }
