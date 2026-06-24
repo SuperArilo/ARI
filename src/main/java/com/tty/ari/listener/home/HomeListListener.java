@@ -44,34 +44,27 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
             if (currentItem == null) return;
 
             String homeId = Ari.instance.getNbtManager().getNbt(NbtGuiValue.GUI_DATA_ID, currentItem, PersistentDataType.STRING);
-            if (homeId == null) return;
-            Ari.REPOSITORY_MANAGER
-                    .get(ServerHome.class)
-                    .get(new LambdaQueryWrapper<>(ServerHome.class)
+
+            Ari.REPOSITORY_MANAGER.get(ServerHome.class).get(new LambdaQueryWrapper<>(ServerHome.class)
                                     .eq(ServerHome::getHomeId, homeId)
                                     .eq(ServerHome::getPlayerUUID, player.getUniqueId().toString()),
-                            PartitionKey.of(player.getUniqueId().toString())
-                    )
+                            PartitionKey.of(player.getUniqueId().toString()))
                     .thenCompose(home -> {
                         if (home == null) {
-                            return ConfigUtils.t("function.home.not-found", player)
-                                    .thenAccept(player::sendMessage)
-                                    .thenApply(v -> false);
+                            Ari.instance.getLog().error("can't find homeId: {}", homeId);
+                            return ConfigUtils.t("function.home.not-found", player).thenAccept(player::sendMessage).thenApply(v -> false);
                         }
-                        if (event.isLeftClick()) {
-                            Ari.STATE_MACHINE_MANAGER
-                                    .get(TeleportStateService.class)
-                                    .addState(new EntityToLocationState(
-                                            player,
-                                            Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.HOME_CONFIG, Integer.class, 3),
-                                            FormatUtils.parseLocation(home.getLocation()),
-                                            TeleportType.HOME));
-                        } else if (event.isRightClick()) {
-                            Ari.instance.getScheduler().runAtEntity(Ari.instance, player, p -> {
-                                event.getInventory().close();
+                        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> {
+                            if (event.isLeftClick()) {
+                                Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).addState(new EntityToLocationState(
+                                        player,
+                                        Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.HOME_CONFIG, Integer.class, 3),
+                                        FormatUtils.parseLocation(home.getLocation()),
+                                        TeleportType.HOME));
+                            } else if (event.isRightClick()) {
                                 Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new HomeEditor(player, home)));
-                            }, null);
-                        }
+                            }
+                        }, null);
                         return CompletableFuture.completedFuture(true);
                     }).whenComplete((i, ex) -> {
                         if (ex != null) {
