@@ -3,7 +3,7 @@ package com.tty.ari.commands.args.enchant;
 import com.mojang.brigadier.Command;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
-import com.tty.ari.enumType.lang.LangEnchant;
+import com.tty.ari.enumType.lang.PlaceholderEnchant;
 import com.tty.ari.tool.ConfigUtils;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
@@ -93,7 +93,7 @@ public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
 
         String value = Ari.DATA_SERVICE.getValue("enchantment." + enchantment.key().value());
         sender.sendMessage(ConfigUtils.tAfter("function.enchant.enchant-success",
-                Map.of(LangEnchant.ENCHANT_NAME_UNRESOLVED.getType(), Component.text(value), LangEnchant.ENCHANT_LEVEL_UNRESOLVED.getType(), Component.text(level))));
+                Map.of(PlaceholderEnchant.ENCHANT_NAME_UNRESOLVED.getType(), Component.text(value), PlaceholderEnchant.ENCHANT_LEVEL_UNRESOLVED.getType(), Component.text(level))));
         return Command.SINGLE_SUCCESS;
     }
 }

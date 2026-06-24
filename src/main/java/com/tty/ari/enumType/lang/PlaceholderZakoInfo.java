@@ -1,8 +1,8 @@
 package com.tty.ari.enumType.lang;
 
-import com.tty.api.enumType.LangTypeEnum;
+import com.tty.api.enumType.PlaceholderTypeEnum;
 
-public enum LangZakoInfo implements LangTypeEnum {
+public enum PlaceholderZakoInfo implements PlaceholderTypeEnum {
 
     FIRST_LOGIN_SERVER_TIME("first_login_server_time"),
     LAST_LOGIN_SERVER_TIME("last_login_server_time"),
@@ -12,7 +12,7 @@ public enum LangZakoInfo implements LangTypeEnum {
 
     private final String type;
 
-    LangZakoInfo(String type) {
+    PlaceholderZakoInfo(String type) {
         this.type = type;
     }
 

@@ -1,8 +1,8 @@
 package com.tty.ari.enumType.lang;
 
-import com.tty.api.enumType.LangTypeEnum;
+import com.tty.api.enumType.PlaceholderTypeEnum;
 
-public enum LangPlayerDeath implements LangTypeEnum {
+public enum PlaceholderPlayerDeath implements PlaceholderTypeEnum {
 
     KILLER_UNRESOLVED("killer"),
     VICTIM_UNRESOLVED("victim"),
@@ -10,7 +10,7 @@ public enum LangPlayerDeath implements LangTypeEnum {
 
     private final String type;
 
-    LangPlayerDeath(String type) {
+    PlaceholderPlayerDeath(String type) {
         this.type = type;
     }
 

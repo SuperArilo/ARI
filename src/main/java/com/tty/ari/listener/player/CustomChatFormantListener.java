@@ -5,7 +5,7 @@ import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.player.PlayerChatState;
 import com.tty.ari.enumType.FilePath;
-import com.tty.ari.enumType.lang.LangPlayerChat;
+import com.tty.ari.enumType.lang.PlaceholderPlayerChat;
 import com.tty.ari.states.PlayerChatService;
 import com.tty.ari.tool.ConfigUtils;
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -45,7 +45,7 @@ public class CustomChatFormantListener implements Listener {
                 }
             }
            event.renderer((source, sourceDisplayName, msg, viewer) ->
-                   Ari.instance.getComponentTool().text(this.getPattern(source), player, Map.of(LangPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), LangPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
+                   Ari.instance.getComponentTool().text(this.getPattern(source), player, Map.of(PlaceholderPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), PlaceholderPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
        }
     }
 

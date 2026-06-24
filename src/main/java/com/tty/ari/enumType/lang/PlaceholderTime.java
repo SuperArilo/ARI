@@ -1,8 +1,8 @@
 package com.tty.ari.enumType.lang;
 
-import com.tty.api.enumType.LangTypeEnum;
+import com.tty.api.enumType.PlaceholderTypeEnum;
 
-public enum LangTime implements LangTypeEnum {
+public enum PlaceholderTime implements PlaceholderTypeEnum {
 
     TIME_PERIOD_UNRESOLVED("time_period"),
     EXECUTE_TARGET_TIME("execute_target_time"),
@@ -11,7 +11,7 @@ public enum LangTime implements LangTypeEnum {
 
     private final String type;
 
-    LangTime(String type) {
+    PlaceholderTime(String type) {
         this.type = type;
     }
 

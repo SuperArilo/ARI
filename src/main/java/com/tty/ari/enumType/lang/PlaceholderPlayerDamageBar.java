@@ -1,8 +1,8 @@
 package com.tty.ari.enumType.lang;
 
-import com.tty.api.enumType.LangTypeEnum;
+import com.tty.api.enumType.PlaceholderTypeEnum;
 
-public enum LangPlayerDamageBar implements LangTypeEnum {
+public enum PlaceholderPlayerDamageBar implements PlaceholderTypeEnum {
 
     MOB_UNRESOLVED("mob"),
     MOB_CURRENT_HEALTH_UNRESOLVED("mob_current_health"),
@@ -10,7 +10,7 @@ public enum LangPlayerDamageBar implements LangTypeEnum {
 
     private final String type;
 
-    LangPlayerDamageBar(String type) {
+    PlaceholderPlayerDamageBar(String type) {
         this.type = type;
     }
 

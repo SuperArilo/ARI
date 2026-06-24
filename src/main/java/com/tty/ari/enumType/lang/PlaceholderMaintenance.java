@@ -1,14 +1,14 @@
 package com.tty.ari.enumType.lang;
 
-import com.tty.api.enumType.LangTypeEnum;
+import com.tty.api.enumType.PlaceholderTypeEnum;
 
-public enum LangMaintenance implements LangTypeEnum {
+public enum PlaceholderMaintenance implements PlaceholderTypeEnum {
 
     MAINTENANCE_KICK_DEALY("maintenance_kick_delay");
 
     private final String type;
 
-    LangMaintenance(String type) {
+    PlaceholderMaintenance(String type) {
         this.type = type;
     }
 

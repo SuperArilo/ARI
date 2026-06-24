@@ -1,13 +1,13 @@
 package com.tty.ari.enumType.lang;
 
-import com.tty.api.enumType.LangTypeEnum;
+import com.tty.api.enumType.PlaceholderTypeEnum;
 
-public enum LangShowItem implements LangTypeEnum {
+public enum PlaceholderShowItem implements PlaceholderTypeEnum {
     SHOW_ITEM("show_item");
 
     private final String type;
 
-    LangShowItem(String type) {
+    PlaceholderShowItem(String type) {
         this.type = type;
     }
 

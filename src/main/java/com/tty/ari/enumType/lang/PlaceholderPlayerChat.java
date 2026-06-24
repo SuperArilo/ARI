@@ -1,15 +1,15 @@
 package com.tty.ari.enumType.lang;
 
-import com.tty.api.enumType.LangTypeEnum;
+import com.tty.api.enumType.PlaceholderTypeEnum;
 
-public enum LangPlayerChat implements LangTypeEnum {
+public enum PlaceholderPlayerChat implements PlaceholderTypeEnum {
 
     SOURCE_DISPLAY_NAME_UNRESOLVED("source_display_name"),
     CHAT_MESSAGE_UNRESOLVED("message");
 
     private final String type;
 
-    LangPlayerChat(String type) {
+    PlaceholderPlayerChat(String type) {
         this.type = type;
     }
 

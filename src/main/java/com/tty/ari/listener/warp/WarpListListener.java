@@ -14,7 +14,7 @@ import com.tty.ari.entity.ServerWarp;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.GuiType;
 import com.tty.ari.enumType.TeleportType;
-import com.tty.ari.enumType.lang.LangVault;
+import com.tty.ari.enumType.lang.PlaceholderVault;
 import com.tty.ari.gui.warp.WarpEditor;
 import com.tty.ari.gui.warp.WarpList;
 import com.tty.ari.states.gui.GuiManagerStateService;
@@ -82,7 +82,7 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
                                         Ari.instance.getConfigInstance().getValue("main.cost", FilePath.WARP_CONFIG, Boolean.class, false) &&
                                         !Ari.ECONOMY_SERVICE.isNull()) {
                                     Ari.ECONOMY_SERVICE.withdrawPlayer(player, instance.getCost());
-                                    player.sendMessage(ConfigUtils.tAfter("teleport.costed", Map.of(LangVault.COSTED_UNRESOLVED.getType(), Component.text(instance.getCost().toString() + Ari.ECONOMY_SERVICE.getNamePlural()))));
+                                    player.sendMessage(ConfigUtils.tAfter("teleport.costed", Map.of(PlaceholderVault.COSTED_UNRESOLVED.getType(), Component.text(instance.getCost().toString() + Ari.ECONOMY_SERVICE.getNamePlural()))));
                                 }}, TeleportType.WARP));
                 } else if (event.isRightClick()) {
                     if(isOwner || player.isOp()) {

@@ -1,8 +1,8 @@
 package com.tty.ari.enumType.lang;
 
-import com.tty.api.enumType.LangTypeEnum;
+import com.tty.api.enumType.PlaceholderTypeEnum;
 
-public enum LangBanPlayerType implements LangTypeEnum {
+public enum PlaceholderBanPlayerType implements PlaceholderTypeEnum {
 
     BAN_PLAYER_NAME("ban_player_name"),
     BAN_T0TAL_TIME("ban_total_time"),
@@ -11,7 +11,7 @@ public enum LangBanPlayerType implements LangTypeEnum {
 
     private final String type;
 
-    LangBanPlayerType(String type) {
+    PlaceholderBanPlayerType(String type) {
         this.type = type;
     }
 

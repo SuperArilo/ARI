@@ -1,8 +1,8 @@
 package com.tty.ari.enumType.lang;
 
-import com.tty.api.enumType.LangTypeEnum;
+import com.tty.api.enumType.PlaceholderTypeEnum;
 
-public enum LangPlayer implements LangTypeEnum {
+public enum PlaceholderPlayer implements PlaceholderTypeEnum {
 
     PLAYER_NAME("player_name"),
     PLAYER_WORLD("player_world"),
@@ -12,7 +12,7 @@ public enum LangPlayer implements LangTypeEnum {
 
     private final String type;
 
-    LangPlayer(String type) {
+    PlaceholderPlayer(String type) {
         this.type = type;
     }
 

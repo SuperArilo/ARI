@@ -1,14 +1,14 @@
 package com.tty.ari.enumType.lang;
 
-import com.tty.api.enumType.LangTypeEnum;
+import com.tty.api.enumType.PlaceholderTypeEnum;
 
-public enum LangRTP  implements LangTypeEnum {
+public enum PlaceholderRTP implements PlaceholderTypeEnum {
 
     RTP_SEARCH_COUNT("rtp_search_count");
 
     private final String type;
 
-    LangRTP(String type) {
+    PlaceholderRTP(String type) {
         this.type = type;
     }
 

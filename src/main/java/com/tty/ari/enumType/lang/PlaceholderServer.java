@@ -1,8 +1,8 @@
 package com.tty.ari.enumType.lang;
 
-import com.tty.api.enumType.LangTypeEnum;
+import com.tty.api.enumType.PlaceholderTypeEnum;
 
-public enum LangServer  implements LangTypeEnum {
+public enum PlaceholderServer implements PlaceholderTypeEnum {
 
     SERVER_VERSION("server_version"),
     ARI_VERSION("ari_version"),
@@ -10,7 +10,7 @@ public enum LangServer  implements LangTypeEnum {
 
     private final String type;
 
-    LangServer(String type) {
+    PlaceholderServer(String type) {
         this.type = type;
     }
 

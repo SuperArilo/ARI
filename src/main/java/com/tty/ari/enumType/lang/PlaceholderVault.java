@@ -1,14 +1,14 @@
 package com.tty.ari.enumType.lang;
 
-import com.tty.api.enumType.LangTypeEnum;
+import com.tty.api.enumType.PlaceholderTypeEnum;
 
-public enum LangVault implements LangTypeEnum {
+public enum PlaceholderVault implements PlaceholderTypeEnum {
 
     COSTED_UNRESOLVED("costed");
 
     private final String type;
 
-    LangVault(String type) {
+    PlaceholderVault(String type) {
         this.type = type;
     }
 

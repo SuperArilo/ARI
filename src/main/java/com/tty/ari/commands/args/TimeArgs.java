@@ -7,7 +7,7 @@ import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.enumType.FilePath;
-import com.tty.ari.enumType.lang.LangTime;
+import com.tty.ari.enumType.lang.PlaceholderTime;
 import com.tty.ari.function.TimeManager;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
@@ -57,7 +57,7 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
         try {
             period = TimePeriod.valueOf(timePeriod.toUpperCase());
         } catch (Exception e) {
-            player.sendMessage(ConfigUtils.tAfter("server.time.not-exist-period", Map.of(LangTime.TIME_PERIOD_UNRESOLVED.getType(), Component.text(timePeriod))));
+            player.sendMessage(ConfigUtils.tAfter("server.time.not-exist-period", Map.of(PlaceholderTime.TIME_PERIOD_UNRESOLVED.getType(), Component.text(timePeriod))));
             return 0;
         }
         World world = player.getWorld();
@@ -71,7 +71,7 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
             player.sendMessage("no content " + timePeriod + "in lang");
             return 0;
         }
-        player.sendMessage(Ari.instance.getComponentTool().text(value, Map.of(LangTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.tAfter("server.time.name." + period.getDescription()))));
+        player.sendMessage(Ari.instance.getComponentTool().text(value, Map.of(PlaceholderTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.tAfter("server.time.name." + period.getDescription()))));
         return Command.SINGLE_SUCCESS;
     }
 

@@ -2,7 +2,7 @@ package com.tty.ari.listener.player;
 
 import com.tty.api.ComponentTool;
 import com.tty.ari.Ari;
-import com.tty.ari.enumType.lang.LangPlayerDeath;
+import com.tty.ari.enumType.lang.PlaceholderPlayerDeath;
 import com.tty.ari.tool.PlayerDeathInfoCollector;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -57,9 +57,9 @@ public class CustomPlayerDeathListener implements Listener {
                 String message = messageFuture.join();
 
                 Component deathMsg = tool.text(message, Map.of(
-                        LangPlayerDeath.VICTIM_UNRESOLVED.getType(), victimComp,
-                        LangPlayerDeath.KILLER_UNRESOLVED.getType(), killComp,
-                        LangPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), weaponComp));
+                        PlaceholderPlayerDeath.VICTIM_UNRESOLVED.getType(), victimComp,
+                        PlaceholderPlayerDeath.KILLER_UNRESOLVED.getType(), killComp,
+                        PlaceholderPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), weaponComp));
                 Bukkit.getServer().broadcast(deathMsg);
 
         }, Ari.instance.getExecutorSync()).exceptionally(e -> {
