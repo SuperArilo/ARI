@@ -1,12 +1,12 @@
 package com.tty.ari.function;
 
 import com.google.gson.reflect.TypeToken;
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
+import com.tty.api.task.CancellableTask;
 import com.tty.ari.Ari;
-import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.ari.dto.tab.TabGroup;
 import com.tty.ari.dto.tab.TabGroupLine;
 import com.tty.ari.enumType.FilePath;
-import com.tty.api.task.CancellableTask;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import org.bukkit.Bukkit;
@@ -163,7 +163,7 @@ public class PlayerTabManager implements Listener {
     }
 
     @EventHandler
-    public void onReload(CustomPluginReloadEvent event) {
+    public void onReload(WhenPluginConfigReloadCompleteEvent event) {
         this.reloadConfig();
         this.start();
     }

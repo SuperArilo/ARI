@@ -2,16 +2,16 @@ package com.tty.ari.listener.warp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
-import com.tty.api.enumType.NbtGuiValue;
-import com.tty.api.event.CustomPluginReloadEvent;
-import com.tty.ari.Ari;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
+import com.tty.api.enumType.NbtGuiValue;
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.state.EditGuiState;
 import com.tty.api.utils.FormatUtils;
+import com.tty.ari.Ari;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.entity.ServerWarp;
 import com.tty.ari.enumType.FilePath;
@@ -19,8 +19,8 @@ import com.tty.ari.enumType.GuiType;
 import com.tty.ari.gui.warp.WarpEditor;
 import com.tty.ari.gui.warp.WarpList;
 import com.tty.ari.listener.OnGuiEditListener;
-import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.states.gui.GuiEditStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
@@ -218,7 +218,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
     }
 
     @EventHandler
-    public void onReload(CustomPluginReloadEvent event) {
+    public void onReload(WhenPluginConfigReloadCompleteEvent event) {
         this.maxNameLength = this.getMaxNameLength();
         this.banNameList = this.getBanNameList();
     }

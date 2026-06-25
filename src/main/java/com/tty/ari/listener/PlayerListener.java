@@ -1,6 +1,6 @@
 package com.tty.ari.listener;
 
-import com.tty.api.event.OnPluginConfigReloadedEvent;
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
 import com.tty.ari.commands.infinitytotem;
 import com.tty.ari.dto.SpawnLocation;
@@ -65,7 +65,7 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onPluginRelo(OnPluginConfigReloadedEvent event) {
+    public void onPluginRelo(WhenPluginConfigReloadCompleteEvent event) {
         SPAWN_LOCATION = this.getSpawnLocation();
     }
 

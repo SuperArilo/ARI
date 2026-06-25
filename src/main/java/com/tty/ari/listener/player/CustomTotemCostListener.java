@@ -1,7 +1,7 @@
 package com.tty.ari.listener.player;
 
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
-import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.ari.commands.infinitytotem;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
@@ -66,7 +66,7 @@ public class CustomTotemCostListener implements Listener {
     }
 
     @EventHandler
-    public void onPluginReload(CustomPluginReloadEvent event) {
+    public void onPluginReload(WhenPluginConfigReloadCompleteEvent event) {
         this.enable = this.isEnable();
         this.disableWorlds = this.getDisableWorlds();
     }

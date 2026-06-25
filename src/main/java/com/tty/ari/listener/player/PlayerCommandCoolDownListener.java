@@ -1,6 +1,6 @@
 package com.tty.ari.listener.player;
 
-import com.tty.api.event.CustomPluginReloadEvent;
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.player.PlayerPreCommandState;
 import com.tty.ari.states.PlayerCommandPreprocessService;
@@ -46,7 +46,7 @@ public class PlayerCommandCoolDownListener implements Listener {
     }
 
     @EventHandler
-    public void reload(CustomPluginReloadEvent event) {
+    public void reload(WhenPluginConfigReloadCompleteEvent event) {
         this.isEnable = this.isEnable();
         this.commandCoolDown = this.getCommandCoolDown();
     }

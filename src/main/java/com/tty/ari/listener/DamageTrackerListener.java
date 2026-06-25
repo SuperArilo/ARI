@@ -1,13 +1,15 @@
 package com.tty.ari.listener;
 
 import com.google.common.reflect.TypeToken;
-import com.tty.ari.Ari;
-import com.tty.api.event.CustomPluginReloadEvent;
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.task.CancellableTask;
 import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.ari.Ari;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.tool.LastDamageTracker;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -15,7 +17,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class DamageTrackerListener implements Listener {
 
@@ -55,7 +59,7 @@ public class DamageTrackerListener implements Listener {
     }
 
     @EventHandler
-    public void onPluginReload(CustomPluginReloadEvent event) {
+    public void onPluginReload(WhenPluginConfigReloadCompleteEvent event) {
         DAMAGE_TRACKER.removeAll();
         if (this.cleanTask != null) {
             this.cleanTask.cancel();

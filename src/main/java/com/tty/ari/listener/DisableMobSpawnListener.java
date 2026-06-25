@@ -1,8 +1,8 @@
 package com.tty.ari.listener;
 
-import com.tty.ari.Ari;
-import com.tty.api.event.CustomPluginReloadEvent;
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.ari.Ari;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -34,7 +34,7 @@ public class DisableMobSpawnListener implements Listener {
     }
 
     @EventHandler
-    public void reload(CustomPluginReloadEvent event) {
+    public void reload(WhenPluginConfigReloadCompleteEvent event) {
         this.isDisabled = this.loadDisabled();
         this.disableList = this.loadDisableList();
     }

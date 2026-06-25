@@ -1,12 +1,12 @@
 package com.tty.ari.listener.player;
 
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
+import com.tty.api.task.CancellableTask;
+import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
-import com.tty.api.event.CustomPluginReloadEvent;
 import com.tty.ari.dto.bar.PlayerAttackBar;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.lang.PlaceholderPlayerDamageBar;
-import com.tty.api.task.CancellableTask;
-import com.tty.api.utils.FormatUtils;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.LastDamageTracker;
 import net.kyori.adventure.bossbar.BossBar;
@@ -15,7 +15,10 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Boss;
+import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -209,7 +212,7 @@ public class MobBossBarListener implements Listener {
     }
 
     @EventHandler
-    public void onPluginReload(CustomPluginReloadEvent event) {
+    public void onPluginReload(WhenPluginConfigReloadCompleteEvent event) {
         this.maxBar = this.getMaxBar();
         this.isDisabled = this.isDisabled();
         this.tick_clear_dealy = this.loadTick_clear_dealy();

@@ -1,7 +1,7 @@
 package com.tty.ari.listener;
 
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
-import com.tty.api.event.CustomPluginReloadEvent;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.World;
@@ -120,7 +120,7 @@ public class BreakAndExplodeListener implements Listener {
     }
 
     @EventHandler
-    public void onReload(CustomPluginReloadEvent event) {
+    public void onReload(WhenPluginConfigReloadCompleteEvent event) {
         this.passExplosionList = this.loadPassExplosionList();
         this.antiExplosion = this.loadAntiExplosion();
         this.antiTrampleFarmland = this.loadAntiTrampleFarmland();

@@ -1,7 +1,7 @@
 package com.tty.ari.listener.player;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.tty.api.event.OnPluginConfigReloadedEvent;
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
@@ -241,7 +241,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     }
 
     @EventHandler
-    public void onReload(OnPluginConfigReloadedEvent event) {
+    public void onReload(WhenPluginConfigReloadCompleteEvent event) {
         this.whitelistEnable = this.getWhitelistEnable();
         this.messageFirstJoin = this.getMessageFirstJoin();
         this.messageOnLogin = this.getMessageOnLogin();

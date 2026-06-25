@@ -1,7 +1,7 @@
 package com.tty.ari.listener;
 
-import com.tty.api.event.CustomPluginReloadEvent;
-import com.tty.api.event.OnPluginConfigReloadedEvent;
+import com.tty.api.event.WhenPluginExecuteReloadCommandEvent;
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.state.StateService;
 import com.tty.ari.Ari;
 
@@ -13,14 +13,14 @@ import org.bukkit.event.Listener;
 public class OnPluginReloadListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void pluginReload(CustomPluginReloadEvent event) {
+    public void pluginReload(WhenPluginExecuteReloadCommandEvent event) {
         if (!event.getPlugin().equals(Ari.instance)) return;
         Ari.instance.doReloadAllFiles(event.getSender());
     }
 
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onConfigReloaded(OnPluginConfigReloadedEvent event) {
+    public void onConfigReloaded(WhenPluginConfigReloadCompleteEvent event) {
         if (!event.getPlugin().equals(Ari.instance)) return;
         CommandSender sender = event.getSender();
         if (sender != null) {

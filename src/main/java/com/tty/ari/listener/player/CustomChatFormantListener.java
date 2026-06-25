@@ -1,7 +1,7 @@
 package com.tty.ari.listener.player;
 
 import com.google.gson.reflect.TypeToken;
-import com.tty.api.event.CustomPluginReloadEvent;
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.player.PlayerChatState;
 import com.tty.ari.enumType.FilePath;
@@ -50,7 +50,7 @@ public class CustomChatFormantListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void whenPluginReload(CustomPluginReloadEvent event) {
+    public void whenPluginReload(WhenPluginConfigReloadCompleteEvent event) {
         this.chatIsEnable = this.isChatIsEnable();
         this.cooldownTime = this.getCooldownTime();
         this.cooldownIsEnable = this.isCooldownIsEnable();
