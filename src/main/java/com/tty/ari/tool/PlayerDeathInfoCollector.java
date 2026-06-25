@@ -2,8 +2,8 @@ package com.tty.ari.tool;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.ari.Ari;
-import com.tty.ari.enumType.FilePath;
 import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.ari.enumType.LangFile;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attributable;
@@ -70,7 +70,7 @@ public class PlayerDeathInfoCollector {
         private void findMessages(String basePath, String killerName, Type type, List<String> pool, List<String> resolvedKeys) {
             if (killerName != null) {
                 String killerKey = basePath + "." + killerName;
-                List<String> killerList = Ari.instance.getConfigInstance().getValue(killerKey, FilePath.DEATH_MESSAGE, type, null);
+                List<String> killerList = Ari.instance.getConfigInstance().getValue(killerKey, LangFile.DEATH_MESSAGE, type, null);
                 if (killerList != null && !killerList.isEmpty()) {
                     pool.addAll(killerList);
                     resolvedKeys.add(killerKey);
@@ -78,7 +78,7 @@ public class PlayerDeathInfoCollector {
                 }
             }
             String publicKey = basePath + ".public";
-            List<String> publicList = Ari.instance.getConfigInstance().getValue(publicKey, FilePath.DEATH_MESSAGE, type, null);
+            List<String> publicList = Ari.instance.getConfigInstance().getValue(publicKey, LangFile.DEATH_MESSAGE, type, null);
             if (publicList != null && !publicList.isEmpty()) {
                 pool.addAll(publicList);
                 resolvedKeys.add(publicKey);

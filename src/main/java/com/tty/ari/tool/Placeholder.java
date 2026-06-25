@@ -14,14 +14,13 @@ import com.tty.api.state.State;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.TimeFormatUtils;
 import com.tty.ari.Ari;
-import com.tty.ari.commands.args.zako.ZakoInfoArgs;
 import com.tty.ari.dto.SleepingWorld;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
 import com.tty.ari.dto.state.teleport.RandomTpState;
 import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
-import com.tty.ari.enumType.FilePath;
+import com.tty.ari.enumType.LangFile;
 import com.tty.ari.enumType.lang.*;
 import com.tty.ari.listener.player.PlayerSkipNight;
 import com.tty.ari.states.teleport.PreTeleportStateService;
@@ -41,10 +40,10 @@ import java.util.UUID;
 import static com.tty.ari.listener.teleport.RecordLastLocationListener.TELEPORT_LAST_LOCATION;
 
 @SuppressWarnings("deprecation")
-public class Placeholder extends BasePlaceholder<FilePath> {
+public class Placeholder extends BasePlaceholder<LangFile> {
 
     public Placeholder(AbstractJavaPlugin plugin) {
-        super(plugin, FilePath.LANG);
+        super(plugin, LangFile.LANG);
         this.init();
     }
 
@@ -159,7 +158,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(i -> {
                             if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
-                            return Component.text(TimeFormatUtils.format(i.getFirstLoginTime(), ZakoInfoArgs.getPatternDatetime()));
+                            return Component.text(TimeFormatUtils.format(i.getFirstLoginTime(), "yyyy-MM-dd HH:mm:ss"));
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
@@ -169,7 +168,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(i -> {
                             if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
-                            return Component.text(TimeFormatUtils.format(i.getLastLoginOffTime(), ZakoInfoArgs.getPatternDatetime()));
+                            return Component.text(TimeFormatUtils.format(i.getLastLoginOffTime(), "yyyy-MM-dd HH:mm:ss"));
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
@@ -213,7 +212,7 @@ public class Placeholder extends BasePlaceholder<FilePath> {
                         .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(i -> {
                             if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
-                            return Component.text(TimeFormatUtils.format(i.getAddTime(), ZakoInfoArgs.getPatternDatetime()));
+                            return Component.text(TimeFormatUtils.format(i.getAddTime(), "yyyy-MM-dd HH:mm:ss"));
                         })
         )));
         registry.register(PlaceholderDefinition.of(

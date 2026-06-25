@@ -3,6 +3,7 @@ package com.tty.ari.states.teleport;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.TeleportState;
 import com.tty.ari.dto.state.teleport.PlayerToPlayerState;
+import com.tty.ari.enumType.LangFile;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.api.state.State;
 import com.tty.ari.dto.state.CooldownState;
@@ -55,7 +56,7 @@ public class TeleportStateService extends StateService<State> {
         Ari.PLACEHOLDER.render("teleport.title.sub-title", player).thenAccept(result ->
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, task -> {
                     player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
-                            Ari.instance.getConfigInstance().getValue("teleport.title.main", FilePath.LANG),
+                            Ari.instance.getConfigInstance().getValue("teleport.title.main", LangFile.LANG),
                             result,
                             200,
                             1000,

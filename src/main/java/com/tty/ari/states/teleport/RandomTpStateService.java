@@ -6,6 +6,7 @@ import com.tty.ari.dto.rtp.RtpConfig;
 import com.tty.ari.dto.state.teleport.EntityToLocationState;
 import com.tty.ari.dto.state.teleport.RandomTpState;
 import com.tty.ari.enumType.FilePath;
+import com.tty.ari.enumType.LangFile;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.PublicFunctionUtils;
@@ -212,7 +213,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         if (!player.isOnline()) return;
         Ari.PLACEHOLDER.render("function.rtp.title-search-count", player).thenAccept(result ->
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, task -> player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
-                        Ari.instance.getConfigInstance().getValue("function.rtp.title-searching", FilePath.LANG, String.class, "null"),
+                        Ari.instance.getConfigInstance().getValue("function.rtp.title-searching", LangFile.LANG, String.class, "null"),
                         result,
                         0,
                         1000L,

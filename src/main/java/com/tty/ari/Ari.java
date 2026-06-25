@@ -12,6 +12,7 @@ import com.tty.api.utils.CommandRegister;
 import com.tty.ari.dto.BungeeCache;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.GuiType;
+import com.tty.ari.enumType.LangFile;
 import com.tty.ari.function.PlayerTabManager;
 import com.tty.ari.listener.*;
 import com.tty.ari.listener.bungee.GetServerListListener;
@@ -35,6 +36,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.messaging.Messenger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -147,6 +149,11 @@ public class Ari extends AbstractJavaPlugin {
     @Override
     protected @NotNull FilePathEnum @NotNull [] fileList() {
         return FilePath.values();
+    }
+
+    @Override
+    protected @Nullable FilePathEnum @Nullable [] langFiles() {
+        return LangFile.values();
     }
 
     private void registerBungeeListener() {

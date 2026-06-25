@@ -10,6 +10,7 @@ import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.entity.ServerWarp;
 import com.tty.ari.enumType.FilePath;
+import com.tty.ari.enumType.LangFile;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -61,7 +62,7 @@ public class WarpEditor extends BaseConfigInventory {
                     }
                     case COST -> {
                         if (Ari.ECONOMY_SERVICE.isNull()) {
-                            item.setName(Ari.instance.getConfigInstance().getValue("server.message.no-economy", FilePath.LANG));
+                            item.setName(Ari.instance.getConfigInstance().getValue("server.message.no-economy", LangFile.LANG));
                             item.setMaterial("barrier");
                         } else {
                             Double cost = this.warp.getCost();

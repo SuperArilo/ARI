@@ -6,7 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
-import com.tty.ari.enumType.FilePath;
+import com.tty.ari.enumType.LangFile;
 import com.tty.ari.enumType.lang.PlaceholderTime;
 import com.tty.ari.function.TimeManager;
 import com.tty.api.annotations.command.ArgumentCommand;
@@ -66,7 +66,7 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
             return 0;
         }
         TimeManager.build(world).timeSet(period.getStart());
-        String value = Ari.instance.getConfigInstance().getValue("server.time.tips", FilePath.LANG);
+        String value = Ari.instance.getConfigInstance().getValue("server.time.tips", LangFile.LANG);
         if (value == null) {
             player.sendMessage("no content " + timePeriod + "in lang");
             return 0;

@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.ari.Ari;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.service.ConfigDataService;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.api.annotations.command.ArgumentCommand;
@@ -50,7 +49,7 @@ public class ZakoInfoArgs extends RequiredArgumentCommand<String> {
     public int execute(CommandSender sender, String[] args) {
         String value = args[2];
         UUID uuid = PublicFunctionUtils.parseUUID(value);
-        if (uuid == null) return 0;
+
         Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global()).thenCompose(i -> {
            if (i == null) {
                CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.zako-check-not-exist", player):ConfigUtils.t("function.zako.zako-check-not-exist");
@@ -72,17 +71,6 @@ public class ZakoInfoArgs extends RequiredArgumentCommand<String> {
         });
         return Command.SINGLE_SUCCESS;
 
-    }
-
-    public static @NotNull String getPatternDatetime() {
-        ConfigDataService service = Ari.DATA_SERVICE;
-        return "yyyy"
-                + Objects.toString(service.getValue("base.time-format.year"), "")
-                + "MM" + Objects.toString(service.getValue("base.time-format.month"), "")
-                + "dd" + Objects.toString(service.getValue("base.time-format.day"), "")
-                + "HH" + Objects.toString(service.getValue("base.time-format.hour"), "")
-                + "mm" + Objects.toString(service.getValue("base.time-format.minute"), "")
-                + "ss" + Objects.toString(service.getValue("base.time-format.second"), "");
     }
 
     @Override
