@@ -4,16 +4,13 @@ import com.tty.api.enumType.FilePathEnum;
 
 public enum FilePath implements FilePathEnum {
     COMMAND_ALIAS("module/command-alias.yml"),
-    TPA_CONFIG("module/tpa/setting.yml"),
-    BACK_CONFIG("module/back.yml"),
-    RTP_CONFIG("module/rtp/setting.yml"),
+    FUNCTION_CONFIG("module/function.yml"),
     HOME_LIST_GUI("module/home/home-gui.yml"),
     HOME_CONFIG("module/home/setting.yml"),
     HOME_EDIT_GUI("module/home/home-edit-gui.yml"),
     WARP_LIST_GUI("module/warp/warp-gui.yml"),
     WARP_CONFIG("module/warp/setting.yml"),
     WARP_EDIT_GUI("module/warp/warp-edit-gui.yml"),
-    SPAWN_CONFIG("module/spawn.yml"),
     TAB_LIST_CONFIG("module/tab-list.yml"),
     GAME_ACTION_CONFIG("module/game-action.yml"),
     CHAT_CONFIG("module/chat.yml"),

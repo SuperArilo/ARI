@@ -40,8 +40,8 @@ public class ZakoListArgs extends RequiredArgumentCommand<Integer> {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return false;
+    protected boolean isEnableInGame() {
+        return true;
     }
 
 }

@@ -1,0 +1,26 @@
+rtp:
+  enable: true
+  search-count: 10
+  teleport:
+    delay: 3
+    cooldown: 10
+  worlds:
+
+tpa:
+  enable: true
+  teleport:
+    delay: 3
+    request-expired-time: 10
+    cooldown: 10
+back:
+  enable: true
+  teleport:
+    delay: 3
+    cooldown: 10
+spawn:
+  enable: true
+  first-join: true
+  teleport:
+    delay: 3
+    cooldown: 10
+  location:

@@ -42,7 +42,7 @@ public class back extends LiteralArgumentCommand {
                 .get(TeleportStateService.class)
                 .addState(new EntityToLocationState(
                         player,
-                        Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.BACK_CONFIG, Integer.class, 3),
+                        Ari.instance.getConfigInstance().getValue("back.teleport.delay", FilePath.FUNCTION_CONFIG, Integer.class, 3),
                         beforeLocation,
                         TeleportType.BACK));
 
@@ -50,7 +50,7 @@ public class back extends LiteralArgumentCommand {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.BACK_CONFIG.name()));
+    protected boolean isEnableInGame() {
+        return Ari.instance.getConfigInstance().getValue("back.enable", FilePath.FUNCTION_CONFIG, Boolean.class, true);
     }
 }

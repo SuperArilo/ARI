@@ -31,13 +31,13 @@ public class rtp extends LiteralArgumentCommand {
                 .get(RandomTpStateService.class)
                 .addState(new RandomTpState(
                         player,
-                        Ari.instance.getConfigInstance().getValue("main.search-count", FilePath.RTP_CONFIG, Integer.class, 10),
+                        Ari.instance.getConfigInstance().getValue("rtp.search-count", FilePath.FUNCTION_CONFIG, Integer.class, 10),
                         player.getWorld()));
         return Command.SINGLE_SUCCESS;
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.RTP_CONFIG.name()));
+    protected boolean isEnableInGame() {
+        return Ari.instance.getConfigInstance().getValue("rtp.enable", FilePath.FUNCTION_CONFIG, Boolean.class, true);
     }
 }

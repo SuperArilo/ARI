@@ -39,7 +39,7 @@ public class setspawn extends LiteralArgumentCommand {
         spawnLocation.setYaw(location.getYaw());
 
         try {
-            Ari.instance.getConfigInstance().setValue("main.location", FilePath.SPAWN_CONFIG, spawnLocation.toMap());
+            Ari.instance.getConfigInstance().setValue("spawn.location", FilePath.FUNCTION_CONFIG, spawnLocation.toMap());
         } catch (IOException e) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
             Ari.instance.getLog().error(e);
@@ -51,8 +51,8 @@ public class setspawn extends LiteralArgumentCommand {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.SPAWN_CONFIG.name()));
+    protected boolean isEnableInGame() {
+        return Ari.instance.getConfigInstance().getValue("spawn.enable", FilePath.FUNCTION_CONFIG, Boolean.class, true);
     }
 
 }

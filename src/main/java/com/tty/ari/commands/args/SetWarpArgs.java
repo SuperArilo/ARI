@@ -123,7 +123,7 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.WARP_CONFIG.name()));
+    protected boolean isEnableInGame() {
+        return Ari.instance.getConfigInstance().getValue("main.enable", FilePath.WARP_CONFIG, Boolean.class, true);
     }
 }

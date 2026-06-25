@@ -111,7 +111,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             .get(TeleportStateService.class)
                 .addState(new EntityToLocationState(
                     owner,
-                    Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.RTP_CONFIG, Integer.class, 3),
+                    Ari.instance.getConfigInstance().getValue("rtp.teleport.delay", FilePath.FUNCTION_CONFIG, Integer.class, 3),
                     state.getTrueLocation(),
                     TeleportType.RTP));
 
@@ -224,8 +224,8 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     private Map<String, RtpConfig> getRtpConfigWorlds() {
 
         Map<String, RtpConfig> value = Ari.instance.getConfigInstance().getValue(
-                "main.worlds",
-                FilePath.RTP_CONFIG,
+                "rtp.worlds",
+                FilePath.FUNCTION_CONFIG,
                 new TypeToken<Map<String, RtpConfig>>(){}.getType(),
                 null);
 
@@ -241,7 +241,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             }
         }
         try {
-            Ari.instance.getConfigInstance().setValue("main.worlds", FilePath.RTP_CONFIG, value);
+            Ari.instance.getConfigInstance().setValue("rtp.worlds", FilePath.FUNCTION_CONFIG, value);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

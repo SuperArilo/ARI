@@ -52,8 +52,8 @@ public class ari extends LiteralArgumentCommand {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return false;
+    protected boolean isEnableInGame() {
+        return true;
     }
 
 }

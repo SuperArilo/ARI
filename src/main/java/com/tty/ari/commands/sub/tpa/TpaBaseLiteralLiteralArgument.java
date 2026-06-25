@@ -91,8 +91,8 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.TPA_CONFIG.name()));
+    protected boolean isEnableInGame() {
+        return Ari.instance.getConfigInstance().getValue("tpa.enable", FilePath.FUNCTION_CONFIG, Boolean.class, true);
     }
 
 }

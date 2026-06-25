@@ -186,12 +186,12 @@ public class TeleportStateService extends StateService<State> {
 
     private int getCooldownTime(TeleportType type) {
         return switch (type) {
-            case RTP -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.RTP_CONFIG, Integer.class, 10);
-            case TPA, TPAHERE -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.TPA_CONFIG, Integer.class, 10);
-            case BACK -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.BACK_CONFIG, Integer.class, 10);
+            case RTP -> Ari.instance.getConfigInstance().getValue("rtp.teleport.cooldown", FilePath.FUNCTION_CONFIG, Integer.class, 10);
+            case TPA, TPAHERE -> Ari.instance.getConfigInstance().getValue("tpa.teleport.cooldown", FilePath.FUNCTION_CONFIG, Integer.class, 10);
+            case BACK -> Ari.instance.getConfigInstance().getValue("back.teleport.cooldown", FilePath.FUNCTION_CONFIG, Integer.class, 10);
             case WARP -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.WARP_CONFIG, Integer.class, 10);
             case HOME -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.HOME_CONFIG, Integer.class, 10);
-            case SPAWN -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.SPAWN_CONFIG, Integer.class, 10);
+            case SPAWN -> Ari.instance.getConfigInstance().getValue("spawn.teleport.cooldown", FilePath.FUNCTION_CONFIG, Integer.class, 10);
         };
     }
 

@@ -42,8 +42,8 @@ public class EnchantForceEnchant extends EnchantBaseArgs<Boolean> {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return false;
+    protected boolean isEnableInGame() {
+        return true;
     }
 
 }

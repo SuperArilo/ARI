@@ -1,6 +1,0 @@
-main:
-  enable: true
-  teleport:
-    delay: 3
-    request-expired-time: 10
-    cooldown: 10

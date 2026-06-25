@@ -70,8 +70,8 @@ public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return false;
+    protected boolean isEnableInGame() {
+        return true;
     }
 
     protected boolean isValidPlayerName(String name) {

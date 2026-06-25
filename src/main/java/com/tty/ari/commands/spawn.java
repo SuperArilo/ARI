@@ -33,9 +33,8 @@ public class spawn extends LiteralArgumentCommand {
 
         Player player = (Player) sender;
 
-        SpawnLocation value = Ari.instance.getConfigInstance().getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
+        SpawnLocation value = Ari.instance.getConfigInstance().getValue("spawn.location", FilePath.FUNCTION_CONFIG, SpawnLocation.class, null);
         if(value == null) {
-            Ari.instance.getLog().debug("location null");
             ConfigUtils.t("function.spawn.no-spawn", player).thenAccept(player::sendMessage);
             return 0;
         }
@@ -43,7 +42,7 @@ public class spawn extends LiteralArgumentCommand {
             .get(TeleportStateService.class)
             .addState(new EntityToLocationState(
                     player,
-                    Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.SPAWN_CONFIG, Integer.class, 3),
+                    Ari.instance.getConfigInstance().getValue("spawn.teleport.delay", FilePath.FUNCTION_CONFIG, Integer.class, 3),
                     new Location(Bukkit.getWorld(value.getWorldName()), value.getX(), value.getY(), value.getZ(), value.getYaw(), value.getPitch()),
                     TeleportType.SPAWN));
 
@@ -51,7 +50,7 @@ public class spawn extends LiteralArgumentCommand {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.SPAWN_CONFIG.name()));
+    protected boolean isEnableInGame() {
+        return Ari.instance.getConfigInstance().getValue("spawn.enable", FilePath.FUNCTION_CONFIG, Boolean.class, true);
     }
 }

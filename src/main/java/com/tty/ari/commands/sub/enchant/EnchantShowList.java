@@ -54,8 +54,8 @@ public class EnchantShowList extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return false;
+    protected boolean isEnableInGame() {
+        return true;
     }
 
 }

@@ -32,7 +32,7 @@ public class home extends LiteralArgumentCommand {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.HOME_CONFIG.name()));
+    protected boolean isEnableInGame() {
+        return Ari.instance.getConfigInstance().getValue("home.enable", FilePath.FUNCTION_CONFIG, Boolean.class, true);
     }
 }

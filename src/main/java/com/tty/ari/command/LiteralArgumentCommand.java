@@ -1,20 +1,15 @@
 package com.tty.ari.command;
 
-import com.tty.ari.Ari;
 import com.tty.api.command.BaseLiteralArgumentCommand;
+import com.tty.ari.Ari;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class LiteralArgumentCommand extends BaseLiteralArgumentCommand {
 
     protected LiteralArgumentCommand() {
         super(Ari.instance);
-    }
-
-    protected boolean getDisableStatus(YamlConfiguration configuration) {
-        return !configuration.getBoolean("main.enable", false);
     }
 
     @Override

@@ -111,7 +111,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return this.getDisableStatus(Ari.instance.getConfigInstance().getObject(FilePath.HOME_CONFIG.name()));
+    protected boolean isEnableInGame() {
+        return Ari.instance.getConfigInstance().getValue("main.enable", FilePath.HOME_CONFIG, Boolean.class, true);
     }
 }

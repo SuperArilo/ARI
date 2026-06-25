@@ -1,5 +1,0 @@
-main:
-  enable: true
-  teleport:
-    delay: 3
-    cooldown: 10

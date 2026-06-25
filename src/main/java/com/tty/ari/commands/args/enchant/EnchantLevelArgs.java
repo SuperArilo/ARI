@@ -52,8 +52,8 @@ public class EnchantLevelArgs extends EnchantBaseArgs<Integer> {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return false;
+    protected boolean isEnableInGame() {
+        return true;
     }
 
 }

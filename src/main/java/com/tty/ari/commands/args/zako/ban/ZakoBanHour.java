@@ -34,8 +34,8 @@ public class ZakoBanHour extends RequiredArgumentCommand<Integer> {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return false;
+    protected boolean isEnableInGame() {
+        return true;
     }
 
     @Override

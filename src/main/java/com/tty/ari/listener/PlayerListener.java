@@ -1,5 +1,6 @@
 package com.tty.ari.listener;
 
+import com.tty.api.event.OnPluginConfigReloadedEvent;
 import com.tty.ari.Ari;
 import com.tty.ari.commands.infinitytotem;
 import com.tty.ari.dto.SpawnLocation;
@@ -19,6 +20,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerListener implements Listener {
+
+    private static SpawnLocation SPAWN_LOCATION;
+
+    public PlayerListener() {
+        SPAWN_LOCATION = this.getSpawnLocation();
+    }
 
     @EventHandler
     public void onRespawnOnFolia(InventoryCloseEvent event) {
@@ -44,14 +51,22 @@ public class PlayerListener implements Listener {
 
     public static Location getRespawnLocation(@NotNull World world) {
         Location location;
-        SpawnLocation value = Ari.instance.getConfigInstance().getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
-        if (value != null) {
-            location = new Location(Bukkit.getServer().getWorld(value.getWorldName()), value.getX(), value.getY(), value.getZ(), value.getYaw(), value.getPitch());
+        if (SPAWN_LOCATION != null) {
+            location = new Location(Bukkit.getServer().getWorld(SPAWN_LOCATION.getWorldName()), SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), SPAWN_LOCATION.getZ(), SPAWN_LOCATION.getYaw(), SPAWN_LOCATION.getPitch());
         } else {
             Ari.instance.getLog().debug("not setting spawn location.fallback server spawn location.");
             location = world.getSpawnLocation();
         }
         return location;
+    }
+
+    private SpawnLocation getSpawnLocation() {
+        return Ari.instance.getConfigInstance().getValue("spawn.location", FilePath.FUNCTION_CONFIG, SpawnLocation.class, null);
+    }
+
+    @EventHandler
+    public void onPluginRelo(OnPluginConfigReloadedEvent event) {
+        SPAWN_LOCATION = this.getSpawnLocation();
     }
 
 }

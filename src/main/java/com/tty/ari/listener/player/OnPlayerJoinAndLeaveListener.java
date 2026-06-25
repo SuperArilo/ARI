@@ -1,6 +1,7 @@
 package com.tty.ari.listener.player;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tty.api.event.OnPluginConfigReloadedEvent;
 import com.tty.ari.Ari;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
@@ -39,6 +40,27 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OnPlayerJoinAndLeaveListener implements Listener {
+
+    private boolean whitelistEnable;
+
+    private boolean messageFirstJoin;
+    private boolean messageOnLogin;
+    private boolean messageOnLeave;
+
+    private boolean spawnFirstJoin;
+    private boolean spawnEnable;
+
+    private SpawnLocation spawnLocation;
+
+    public OnPlayerJoinAndLeaveListener() {
+        this.whitelistEnable = this.getWhitelistEnable();
+        this.messageFirstJoin = this.getMessageFirstJoin();
+        this.messageOnLogin = this.getMessageOnLogin();
+        this.messageOnLeave = this.getMessageOnLeave();
+        this.spawnFirstJoin = this.getSpawnFirstJoin();
+        this.spawnEnable = this.getSpawnEnable();
+        this.spawnLocation = this.getSpawnLocation();
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void banCheck(AsyncPlayerPreLoginEvent event) {
@@ -81,7 +103,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     public void whitelist(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
         UUID uuid = event.getUniqueId();
-        if(!Ari.instance.getConfig().getBoolean("server.whitelist.enable", false)) return;
+        if(!this.whitelistEnable) return;
 
         EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         WhitelistInstance instance;
@@ -118,16 +140,13 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         String playerName = player.getName();
 
         EntityRepository<ServerPlayer> repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
-        boolean first = Ari.instance.getConfig().getBoolean("server.message.on-first-login", false);
-        boolean login = Ari.instance.getConfig().getBoolean("server.message.on-login", false);
 
-        if (first || login) {
+        if (this.messageFirstJoin || this.getMessageOnLogin()) {
             event.joinMessage(null);
         }
         long nowLoginTime = System.currentTimeMillis();
         LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, player.getUniqueId().toString());
-        repository.get(wrapper, PartitionKey.global())
-            .thenCompose(i -> {
+        repository.get(wrapper, PartitionKey.global()).thenCompose(i -> {
                 //玩家第一次登录服务器，创建资料
                 if(i == null) {
                     ServerPlayer serverPlayer = new ServerPlayer();
@@ -149,8 +168,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                     }
                     return CompletableFuture.completedFuture(i);
                 }
-            })
-            .whenComplete((i, ex) -> {
+            }).whenComplete((i, ex) -> {
                 if (ex != null) {
                     Ari.instance.getLog().error("player {} login in server error.", player.getName());
                     player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
@@ -161,28 +179,26 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 //添加玩家登录的状态
                 Ari.STATE_MACHINE_MANAGER.get(PlayerSaveStateService.class).addState(new PlayerSaveState(player, nowLoginTime));
                 if(!player.hasPlayedBefore()) {
-                    if (Ari.instance.getConfigInstance().getValue("main.first-join", FilePath.SPAWN_CONFIG, Boolean.class, false) &&
-                            Ari.instance.getConfigInstance().getValue("main.enable", FilePath.SPAWN_CONFIG, Boolean.class, false)) {
-                        SpawnLocation value = Ari.instance.getConfigInstance().getValue("main.location", FilePath.SPAWN_CONFIG, SpawnLocation.class, null);
-                        if (value != null) {
+                    if (this.spawnFirstJoin && this.spawnEnable) {
+                        if (this.spawnLocation != null) {
                             Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), new Location(
-                                    Bukkit.getWorld(value.getWorldName()),
-                                    value.getX(),
-                                    value.getY(),
-                                    value.getZ(),
-                                    value.getYaw(),
-                                    value.getPitch()
+                                    Bukkit.getServer().getWorld(this.spawnLocation.getWorldName()),
+                                    this.spawnLocation.getX(),
+                                    this.spawnLocation.getY(),
+                                    this.spawnLocation.getZ(),
+                                    this.spawnLocation.getYaw(),
+                                    this.spawnLocation.getPitch()
                             ));
                         } else {
                             Ari.instance.getLog().info("server not set spawn location.");
                         }
                     }
-                    if(first) {
+                    if(this.messageFirstJoin) {
                         ConfigUtils.t("server.message.on-first-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
                         return;
                     }
                 }
-                if(login) {
+                if(this.messageOnLogin) {
                     ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
                 }
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, o -> {
@@ -198,7 +214,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if(Ari.instance.getConfig().getBoolean("server.message.on-leave")) {
+        if(this.messageOnLeave) {
             event.quitMessage(null);
             Ari.PLACEHOLDER.render("server.message.on-leave", player).thenAccept(i -> Ari.instance.getScheduler().run(Ari.instance, t -> Bukkit.broadcast(i)));
         }
@@ -222,6 +238,17 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         Ari.STATE_MACHINE_MANAGER
                 .get(PlayerSaveStateService.class)
                 .addState(new PlayerSaveState(player, System.currentTimeMillis()));
+    }
+
+    @EventHandler
+    public void onReload(OnPluginConfigReloadedEvent event) {
+        this.whitelistEnable = this.getWhitelistEnable();
+        this.messageFirstJoin = this.getMessageFirstJoin();
+        this.messageOnLogin = this.getMessageOnLogin();
+        this.messageOnLeave = this.getMessageOnLeave();
+        this.spawnFirstJoin = this.getSpawnFirstJoin();
+        this.spawnEnable = this.getSpawnEnable();
+        this.spawnLocation = this.getSpawnLocation();
     }
 
     private boolean isPlayerInsideBlock(Player player) {
@@ -263,6 +290,34 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             }
         }
         return world.getSpawnLocation();
+    }
+
+    private boolean getWhitelistEnable() {
+        return Ari.instance.getConfig().getBoolean("server.whitelist.enable", false);
+    }
+
+    private boolean getMessageFirstJoin() {
+        return Ari.instance.getConfig().getBoolean("server.message.on-first-login", false);
+    }
+
+    private boolean getMessageOnLogin() {
+        return Ari.instance.getConfig().getBoolean("server.message.on-login", false);
+    }
+
+    private boolean getMessageOnLeave() {
+        return Ari.instance.getConfig().getBoolean("server.message.on-leave", false);
+    }
+
+    private boolean getSpawnFirstJoin() {
+        return Ari.instance.getConfigInstance().getValue("spawn.first-join", FilePath.FUNCTION_CONFIG, Boolean.class, false);
+    }
+
+    private boolean getSpawnEnable() {
+        return Ari.instance.getConfigInstance().getValue("spawn.enable", FilePath.FUNCTION_CONFIG, Boolean.class, false);
+    }
+
+    private SpawnLocation getSpawnLocation() {
+        return Ari.instance.getConfigInstance().getValue("spawn.location", FilePath.FUNCTION_CONFIG, SpawnLocation.class, null);
     }
 
 }

@@ -1,12 +1,11 @@
 package com.tty.ari.command;
 
+import com.tty.api.command.BaseRequiredArgumentCommand;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
-import com.tty.api.command.BaseRequiredArgumentCommand;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,10 +24,6 @@ public abstract class RequiredArgumentCommand<T> extends BaseRequiredArgumentCom
 
     protected RequiredArgumentCommand() {
         super(Ari.instance);
-    }
-
-    protected boolean getDisableStatus(YamlConfiguration configuration) {
-        return !configuration.getBoolean("main.enable", false);
     }
 
     @Override

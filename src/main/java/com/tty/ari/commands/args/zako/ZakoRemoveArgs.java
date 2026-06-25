@@ -72,8 +72,8 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    protected boolean isDisabledInGame() {
-        return false;
+    protected boolean isEnableInGame() {
+        return true;
     }
 
 }
