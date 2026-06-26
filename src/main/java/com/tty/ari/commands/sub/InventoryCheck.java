@@ -68,6 +68,7 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
                     Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new OnCheckPlayerGuiState(player, offlinePlayer, new PlayerInventoryEdit(Ari.instance, player, offlinePlayer)));
                 }).exceptionally(e -> {
                     Ari.instance.getLog().error(e);
+                    sender.sendMessage(this.getPlugin().getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
                    return null;
                 });
         return Command.SINGLE_SUCCESS;
