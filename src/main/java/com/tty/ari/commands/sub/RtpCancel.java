@@ -33,10 +33,10 @@ public class RtpCancel extends LiteralArgumentCommand {
             ConfigUtils.t("function.rtp.no-rtp", player).thenAccept(player::sendMessage);
             return 0;
         }
-        if(machine.removeState(states.getFirst())) {
-            ConfigUtils.t("function.rtp.rtp-cancel", player).thenAccept(player::sendMessage);
-            return Command.SINGLE_SUCCESS;
+        for (RandomTpState state : states) {
+            machine.stopState(state);
         }
+        ConfigUtils.t("function.rtp.rtp-cancel", player).thenAccept(player::sendMessage);
         return Command.SINGLE_SUCCESS;
     }
 

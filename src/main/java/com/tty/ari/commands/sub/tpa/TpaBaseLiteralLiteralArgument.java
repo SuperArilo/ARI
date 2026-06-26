@@ -77,7 +77,7 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
         }
         consumer.accept(anElse);
         //移除发起者的请求
-        machine.removeState(anElse);
+        machine.stopState(anElse);
         return Command.SINGLE_SUCCESS;
     }
 
