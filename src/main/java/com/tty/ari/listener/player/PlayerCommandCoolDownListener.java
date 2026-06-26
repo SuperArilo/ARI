@@ -28,11 +28,6 @@ public class PlayerCommandCoolDownListener implements Listener {
     private int commandCoolDown;
     private boolean isEnable;
 
-    public PlayerCommandCoolDownListener() {
-        this.isEnable = this.isEnable();
-        this.commandCoolDown = this.getCommandCoolDown();
-    }
-
     @EventHandler
     public void whenPlayerPreprocess(PlayerCommandPreprocessEvent event) {
         if (!this.isEnable) return;
@@ -47,6 +42,7 @@ public class PlayerCommandCoolDownListener implements Listener {
 
     @EventHandler
     public void reload(WhenPluginConfigReloadCompleteEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
         this.isEnable = this.isEnable();
         this.commandCoolDown = this.getCommandCoolDown();
     }

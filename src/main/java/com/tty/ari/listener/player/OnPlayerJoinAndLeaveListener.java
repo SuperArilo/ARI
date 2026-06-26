@@ -52,16 +52,6 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
     private SpawnLocation spawnLocation;
 
-    public OnPlayerJoinAndLeaveListener() {
-        this.whitelistEnable = this.getWhitelistEnable();
-        this.messageFirstJoin = this.getMessageFirstJoin();
-        this.messageOnLogin = this.getMessageOnLogin();
-        this.messageOnLeave = this.getMessageOnLeave();
-        this.spawnFirstJoin = this.getSpawnFirstJoin();
-        this.spawnEnable = this.getSpawnEnable();
-        this.spawnLocation = this.getSpawnLocation();
-    }
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void banCheck(AsyncPlayerPreLoginEvent event) {
         EntityRepository<BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
@@ -242,6 +232,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
     @EventHandler
     public void onReload(WhenPluginConfigReloadCompleteEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
         this.whitelistEnable = this.getWhitelistEnable();
         this.messageFirstJoin = this.getMessageFirstJoin();
         this.messageOnLogin = this.getMessageOnLogin();

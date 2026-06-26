@@ -26,13 +26,6 @@ public class CustomChatFormantListener implements Listener {
     private boolean cooldownIsEnable;
     private int cooldownTime;
 
-    public CustomChatFormantListener() {
-        this.groupsPattern = this.getGroupsPattern();
-        this.chatIsEnable = this.isChatIsEnable();
-        this.cooldownIsEnable = this.isCooldownIsEnable();
-        this.cooldownTime = this.getCooldownTime();
-    }
-
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerSendMessage(AsyncChatEvent event) {
         Player player = event.getPlayer();
@@ -51,6 +44,7 @@ public class CustomChatFormantListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void whenPluginReload(WhenPluginConfigReloadCompleteEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
         this.chatIsEnable = this.isChatIsEnable();
         this.cooldownTime = this.getCooldownTime();
         this.cooldownIsEnable = this.isCooldownIsEnable();

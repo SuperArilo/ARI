@@ -43,14 +43,6 @@ public class MobBossBarListener implements Listener {
 
     private CancellableTask cleanTask;
 
-    public MobBossBarListener() {
-        this.tick_clear_dealy = this.loadTick_clear_dealy();
-        this.clear_last_attack_record = this.loadClear_last_attack_record();
-        this.maxBar = this.getMaxBar();
-        this.isDisabled = this.isDisabled();
-        this.cleanTask = this.createCleanTask();
-    }
-
     private void debugLog(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Damageable victim)) return;
         double health = Math.max(0, victim.getHealth() - event.getFinalDamage());
@@ -213,6 +205,7 @@ public class MobBossBarListener implements Listener {
 
     @EventHandler
     public void onPluginReload(WhenPluginConfigReloadCompleteEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
         this.maxBar = this.getMaxBar();
         this.isDisabled = this.isDisabled();
         this.tick_clear_dealy = this.loadTick_clear_dealy();
@@ -302,11 +295,11 @@ public class MobBossBarListener implements Listener {
     }
 
     private long loadTick_clear_dealy() {
-        return Ari.instance.getConfigInstance().getValue("attack-bar.tick_clear_dealy", FilePath.ATTACK_BAR_CONFIG, Long.class, 30L);
+        return Ari.instance.getConfigInstance().getValue("attack-bar.tick_clear_dealy", FilePath.ATTACK_BAR_CONFIG, Integer.class, 30);
     }
 
     private long loadClear_last_attack_record() {
-        return Ari.instance.getConfigInstance().getValue("attack-bar.clear_last_attack_record", FilePath.ATTACK_BAR_CONFIG, Long.class, 20L);
+        return Ari.instance.getConfigInstance().getValue("attack-bar.clear_last_attack_record", FilePath.ATTACK_BAR_CONFIG, Integer.class, 20);
     }
 
     private boolean isDisabled() {

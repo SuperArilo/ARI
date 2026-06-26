@@ -45,8 +45,6 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
 
     public EditWarpListener(GuiType guiType) {
         super(Ari.instance, guiType);
-        this.banNameList = this.getBanNameList();
-        this.maxNameLength = this.getMaxNameLength();
     }
 
     @Override
@@ -219,6 +217,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
 
     @EventHandler
     public void onReload(WhenPluginConfigReloadCompleteEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
         this.maxNameLength = this.getMaxNameLength();
         this.banNameList = this.getBanNameList();
     }

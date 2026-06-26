@@ -44,8 +44,6 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
 
     public EditHomeListener(GuiType guiType) {
         super(Ari.instance, guiType);
-        this.banNameList = this.getBanNameList();
-        this.maxNameLength = this.getMaxNameLength();
     }
 
     @Override
@@ -206,6 +204,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
 
     @EventHandler
     public void onReload(WhenPluginConfigReloadCompleteEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
         this.maxNameLength = this.getMaxNameLength();
         this.banNameList = this.getBanNameList();
     }

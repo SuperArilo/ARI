@@ -25,7 +25,6 @@ public class CustomTotemCostListener implements Listener {
 
     private boolean enable;
     private List<String> disableWorlds = new ArrayList<>();
-    private final EntityEffect DEATH_PROTECTION_EFFECT;
 
     private static final Set<PotionEffectType> NEGATIVE_EFFECTS = Set.of(
             PotionEffectType.BAD_OMEN,
@@ -41,12 +40,6 @@ public class CustomTotemCostListener implements Listener {
             PotionEffectType.UNLUCK,
             PotionEffectType.LEVITATION
     );
-
-    public CustomTotemCostListener() {
-        this.enable = this.isEnable();
-        this.disableWorlds = this.getDisableWorlds();
-        this.DEATH_PROTECTION_EFFECT = this.resolveEffect();
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onFatalDamage(EntityDamageEvent event) {
@@ -67,6 +60,7 @@ public class CustomTotemCostListener implements Listener {
 
     @EventHandler
     public void onPluginReload(WhenPluginConfigReloadCompleteEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
         this.enable = this.isEnable();
         this.disableWorlds = this.getDisableWorlds();
     }
@@ -124,7 +118,7 @@ public class CustomTotemCostListener implements Listener {
         player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 800, 0));
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, SoundCategory.PLAYERS, 1.0f, 1.0f);
         player.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, player.getLocation().add(0, 1.0, 0), 30);
-        player.playEffect(DEATH_PROTECTION_EFFECT);
+        player.playEffect(this.resolveEffect());
     }
 
 

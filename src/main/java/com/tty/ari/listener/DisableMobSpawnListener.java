@@ -17,11 +17,6 @@ public class DisableMobSpawnListener implements Listener {
     private boolean isDisabled;
     private List<EntityType> disableList = new ArrayList<>();
 
-    public DisableMobSpawnListener() {
-        this.isDisabled = this.loadDisabled();
-        this.disableList = this.loadDisableList();
-    }
-
     @EventHandler
     public void disableSpawn(EntitySpawnEvent event) {
         if (this.isDisabled) return;
@@ -35,6 +30,7 @@ public class DisableMobSpawnListener implements Listener {
 
     @EventHandler
     public void reload(WhenPluginConfigReloadCompleteEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
         this.isDisabled = this.loadDisabled();
         this.disableList = this.loadDisableList();
     }

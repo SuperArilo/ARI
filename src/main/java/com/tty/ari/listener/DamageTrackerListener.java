@@ -34,13 +34,6 @@ public class DamageTrackerListener implements Listener {
 
     private CancellableTask cleanTask;
 
-    public DamageTrackerListener() {
-        this.excludedEntities = this.loadExcludedEntities();
-        this.clear_last_attack_record = this.loadClearLastAttackRecord();
-        this.tick_clear_dealy = this.loadTickClearDealy();
-        this.cleanTask = this.createCleanTask();
-    }
-
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntity(EntityDamageEvent event) {
         Entity entity = event.getEntity();
@@ -60,6 +53,7 @@ public class DamageTrackerListener implements Listener {
 
     @EventHandler
     public void onPluginReload(WhenPluginConfigReloadCompleteEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
         DAMAGE_TRACKER.removeAll();
         if (this.cleanTask != null) {
             this.cleanTask.cancel();

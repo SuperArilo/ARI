@@ -36,11 +36,6 @@ public class PlayerTabManager implements Listener {
     private static final String DEFAULT_GROUP = "_default_";
     private static final JoinConfiguration NEW_LINE = JoinConfiguration.separator(Component.newline());
 
-    public PlayerTabManager() {
-        this.reloadConfig();
-        this.start();
-    }
-
     private void start() {
         this.stop();
         if (!this.enable) {
@@ -164,6 +159,7 @@ public class PlayerTabManager implements Listener {
 
     @EventHandler
     public void onReload(WhenPluginConfigReloadCompleteEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
         this.reloadConfig();
         this.start();
     }

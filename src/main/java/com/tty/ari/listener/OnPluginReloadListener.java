@@ -7,19 +7,18 @@ import com.tty.ari.Ari;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 public class OnPluginReloadListener implements Listener {
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void pluginReload(WhenPluginExecuteReloadCommandEvent event) {
         if (!event.getPlugin().equals(Ari.instance)) return;
         Ari.instance.doReloadAllFiles(event.getSender());
     }
 
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onConfigReloaded(WhenPluginConfigReloadCompleteEvent event) {
         if (!event.getPlugin().equals(Ari.instance)) return;
         CommandSender sender = event.getSender();

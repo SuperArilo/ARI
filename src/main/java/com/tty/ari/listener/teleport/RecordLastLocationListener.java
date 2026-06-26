@@ -1,29 +1,55 @@
 package com.tty.ari.listener.teleport;
 
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
+import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.dto.event.CustomPlayerRespawnEvent;
 import com.tty.api.ServerPlatform;
+import com.tty.ari.enumType.FilePath;
 import net.kyori.adventure.text.event.ClickEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.tty.ari.listener.PlayerListener.getRespawnLocation;
 
 public class RecordLastLocationListener implements Listener {
 
     //保存的玩家上一个传送位置
     public static final Map<UUID, Location> TELEPORT_LAST_LOCATION = new ConcurrentHashMap<>();
+
+    private SpawnLocation spawnLocation;
+
+    @EventHandler
+    public void onRespawnOnFolia(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        if (event.getInventory().getType() != InventoryType.CRAFTING || !player.isDead() || !player.isConnected() || player.getHealth() > 0) return;
+        // do stuff
+        if (!ServerPlatform.isFolia()) return;
+        Ari.instance.getScheduler().runAtRegion(Ari.instance, player.getLocation(), i -> {
+            Location respawnLocation = player.getRespawnLocation();
+            if (respawnLocation == null) {
+                Location location = getRespawnLocation(player.getWorld());
+                player.setRespawnLocation(location);
+                respawnLocation = location;
+            }
+            Bukkit.getPluginManager().callEvent(new CustomPlayerRespawnEvent(player, respawnLocation, player.getLocation()));
+        });
+    }
 
     @EventHandler
     public void lastLocation(PlayerTeleportEvent event) {
@@ -70,9 +96,31 @@ public class RecordLastLocationListener implements Listener {
         TELEPORT_LAST_LOCATION.remove(event.getPlayer().getUniqueId());
     }
 
+    @EventHandler
+    public void onReload(WhenPluginConfigReloadCompleteEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
+        this.spawnLocation = this.getSpawnLocation();
+    }
+
     private void setPlayerLastLocation(Player player) {
         Ari.PLACEHOLDER.render("teleport.tips-back", player).thenAccept(i ->
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, t ->
                         player.sendMessage(Ari.instance.getComponentTool().setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/" + Ari.instance.getName() + " back")), null));
     }
+
+    public Location getRespawnLocation(@NotNull World world) {
+        Location location;
+        if (spawnLocation != null) {
+            location = new Location(Bukkit.getServer().getWorld(spawnLocation.getWorldName()), spawnLocation.getX(), spawnLocation.getY(), spawnLocation.getZ(), spawnLocation.getYaw(), spawnLocation.getPitch());
+        } else {
+            Ari.instance.getLog().debug("not setting spawn location.fallback server spawn location.");
+            location = world.getSpawnLocation();
+        }
+        return location;
+    }
+
+    private SpawnLocation getSpawnLocation() {
+        return Ari.instance.getConfigInstance().getValue("spawn.location", FilePath.FUNCTION_CONFIG, SpawnLocation.class, null);
+    }
+
 }
