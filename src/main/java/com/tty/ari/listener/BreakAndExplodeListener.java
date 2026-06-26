@@ -30,13 +30,6 @@ public class BreakAndExplodeListener implements Listener {
     private boolean antiTrampleFarmland;
     private boolean antiFireSpread;
 
-    public BreakAndExplodeListener() {
-        this.antiExplosion = this.loadAntiExplosion();
-        this.passExplosionList = this.loadPassExplosionList();
-        this.antiTrampleFarmland = this.loadAntiTrampleFarmland();
-        this.antiFireSpread = this.loadAntiFireSpread();
-    }
-
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
         if (!this.antiExplosion) return;
@@ -121,6 +114,7 @@ public class BreakAndExplodeListener implements Listener {
 
     @EventHandler
     public void onReload(WhenPluginConfigReloadCompleteEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
         this.passExplosionList = this.loadPassExplosionList();
         this.antiExplosion = this.loadAntiExplosion();
         this.antiTrampleFarmland = this.loadAntiTrampleFarmland();
