@@ -62,6 +62,8 @@ public class Ari extends AbstractJavaPlugin {
     public static Placeholder PLACEHOLDER;
     public static BungeeCache BUNGEECACHE;
 
+    public static Metrics METRICS;
+
     @Override
     protected void loading() {
         instance = this;
@@ -184,7 +186,7 @@ public class Ari extends AbstractJavaPlugin {
 
     private void initMetrics() {
         try {
-            new Metrics(this, PLUGIN_ID);
+            METRICS = new Metrics(this, PLUGIN_ID);
             this.getLog().debug("loaded metrics.");
         } catch (Exception e) {
             this.getLog().warn(e, "unable to load metrics");
