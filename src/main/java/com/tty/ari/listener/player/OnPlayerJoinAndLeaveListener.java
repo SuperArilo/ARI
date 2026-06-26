@@ -9,7 +9,6 @@ import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
 import com.tty.ari.commands.maintenance;
 import com.tty.ari.dto.SpawnLocation;
-import com.tty.ari.dto.event.OnZakoSavedEvent;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.dto.state.player.PlayerSaveState;
@@ -218,17 +217,6 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         for (GuiState state : Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getStates(player)) {
             state.setOver(true);
         }
-    }
-
-    @EventHandler
-    public void onSave(OnZakoSavedEvent event) {
-        Player player = event.getPlayer();
-        PlayerSaveStateService service = Ari.STATE_MACHINE_MANAGER.get(PlayerSaveStateService.class);
-        if (!service.isNotHaveState(player)) return;
-
-        Ari.STATE_MACHINE_MANAGER
-                .get(PlayerSaveStateService.class)
-                .addState(new PlayerSaveState(player, System.currentTimeMillis()));
     }
 
     @EventHandler

@@ -3,7 +3,6 @@ package com.tty.ari.states;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.ari.Ari;
 import com.tty.api.repository.PartitionKey;
-import com.tty.ari.dto.event.OnZakoSavedEvent;
 import com.tty.ari.dto.state.player.PlayerSaveState;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.api.repository.EntityRepository;
@@ -99,7 +98,7 @@ public class PlayerSaveStateService extends StateService<PlayerSaveState> {
                     Ari.instance.getLog().error(ex, "Error saving player data for {}", player.getName());
                 }
                 if (this.repository.isAsync() && player.isOnline()) {
-                    Ari.instance.getScheduler().run(Ari.instance, i -> Bukkit.getPluginManager().callEvent(new OnZakoSavedEvent(player)));
+                    Ari.instance.getScheduler().runLater(Ari.instance, i -> this.addState(new PlayerSaveState(player, System.currentTimeMillis())), 20L);
                 } else {
                     Ari.instance.getLog().debug("skip player {} save event.", player.getName());
                 }
