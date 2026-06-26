@@ -34,7 +34,7 @@ public class WarpEditor extends BaseConfigInventory {
 
     @Override
     protected @NotNull BaseMenu config() {
-        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.WARP_EDIT_GUI.name()).saveToString(), BaseMenu.class);
+        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.WARP_EDIT_GUI).saveToString(), BaseMenu.class);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.tty.ari.listener.player;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.google.common.reflect.TypeToken;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
 import com.tty.api.enumType.Operator;
@@ -308,7 +309,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     }
 
     private SpawnLocation getSpawnLocation() {
-        return Ari.instance.getConfigInstance().getValue("spawn.location", FilePath.FUNCTION_CONFIG, SpawnLocation.class, null);
+        return Ari.instance.getConfigInstance().getValue("spawn.location", FilePath.FUNCTION_CONFIG, new TypeToken<SpawnLocation>(){}.getType(), null);
     }
 
 }

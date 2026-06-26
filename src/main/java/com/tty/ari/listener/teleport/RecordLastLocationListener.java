@@ -1,5 +1,6 @@
 package com.tty.ari.listener.teleport;
 
+import com.google.common.reflect.TypeToken;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.SpawnLocation;
@@ -120,7 +121,7 @@ public class RecordLastLocationListener implements Listener {
     }
 
     private SpawnLocation getSpawnLocation() {
-        return Ari.instance.getConfigInstance().getValue("spawn.location", FilePath.FUNCTION_CONFIG, SpawnLocation.class, null);
+        return Ari.instance.getConfigInstance().getValue("spawn.location", FilePath.FUNCTION_CONFIG, new TypeToken<SpawnLocation>(){}.getType(), null);
     }
 
 }

@@ -66,7 +66,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
     @Override
     protected @NotNull BaseMenu config() {
-        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.INV_GUI_CONFIG.name()).saveToString(), PlayerInventoryCheckMenu.class);
+        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.INV_GUI_CONFIG).saveToString(), PlayerInventoryCheckMenu.class);
     }
 
     @Override

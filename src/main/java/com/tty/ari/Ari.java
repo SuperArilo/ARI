@@ -76,7 +76,7 @@ public class Ari extends AbstractJavaPlugin {
         STATE_MACHINE_MANAGER = new StateMachineManager();
 
         this.registerBungeeListener();
-        CommandRegister.register(this, "com.tty.ari.commands", Ari.instance.getConfigInstance().yamlConvertToObj(this.getConfigInstance().getObject(FilePath.COMMAND_ALIAS.name()).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
+        CommandRegister.register(this, "com.tty.ari.commands", Ari.instance.getConfigInstance().yamlConvertToObj(this.getConfigInstance().getObject(FilePath.COMMAND_ALIAS).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
 
         PLACEHOLDER = new Placeholder(this);
         BUNGEECACHE = new BungeeCache(this);

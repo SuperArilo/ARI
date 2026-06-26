@@ -1,5 +1,6 @@
 package com.tty.ari.commands;
 
+import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.Command;
 import com.tty.ari.Ari;
 import com.tty.ari.command.LiteralArgumentCommand;
@@ -23,6 +24,8 @@ import java.util.List;
 @LiteralCommand(directExecute = true)
 public class spawn extends LiteralArgumentCommand {
 
+    private final TypeToken<SpawnLocation> typeToken = new TypeToken<>(){};
+
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
@@ -33,7 +36,7 @@ public class spawn extends LiteralArgumentCommand {
 
         Player player = (Player) sender;
 
-        SpawnLocation value = Ari.instance.getConfigInstance().getValue("spawn.location", FilePath.FUNCTION_CONFIG, SpawnLocation.class, null);
+        SpawnLocation value = Ari.instance.getConfigInstance().getValue("spawn.location", FilePath.FUNCTION_CONFIG, typeToken.getType(), null);
         if(value == null) {
             ConfigUtils.t("function.spawn.no-spawn", player).thenAccept(player::sendMessage);
             return 0;
