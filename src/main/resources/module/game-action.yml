@@ -1,7 +1,0 @@
-action:
-  sit:
-    enable: false
-    disable-block:
-      - 'example'
-  player-sit-player:
-    enable: false

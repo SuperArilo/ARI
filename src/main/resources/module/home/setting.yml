@@ -1,8 +1,0 @@
-main:
-  enable: true
-  name-length: 12
-  teleport:
-    delay: 3
-    cooldown: 10
-  name-check:
-    - 'fuck'
