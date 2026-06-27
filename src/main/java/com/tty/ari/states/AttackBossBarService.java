@@ -63,13 +63,9 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
 
     @Override
     protected void passAddState(AttackBossBarState state) {
-        state.setBar(BossBar.bossBar(buildTitle(state.getTarget()), this.getTargetCurrentHealthProgress(state.getTarget()), this.getMobBarColor(state.getTarget()), BossBar.Overlay.NOTCHED_10));
-        BossBar bar = state.getBar();
-        if (bar == null) {
-            state.setOver(true);
-            return;
-        }
-        state.getOwner().showBossBar(bar);
+        BossBar bossBar = BossBar.bossBar(buildTitle(state.getTarget()), this.getTargetCurrentHealthProgress(state.getTarget()), this.getMobBarColor(state.getTarget()), BossBar.Overlay.NOTCHED_10);
+        state.setBar(bossBar);
+        state.getOwner().showBossBar(bossBar);
     }
 
     @Override
