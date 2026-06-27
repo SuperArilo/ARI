@@ -62,7 +62,7 @@ public class MobBossBarListener implements Listener {
         if (barState != null) {
             barState.setDamage((float) event.getFinalDamage());
         } else {
-            service.addState(new AttackBossBarState(player, victim, Integer.MAX_VALUE));
+            service.addState(new AttackBossBarState(player, victim));
         }
     }
 
@@ -87,7 +87,7 @@ public class MobBossBarListener implements Listener {
         if (barState != null) {
             barState.setDamage((float) -event.getAmount());
         } else {
-            service.addState(new AttackBossBarState(player, victim, Integer.MAX_VALUE));
+            service.addState(new AttackBossBarState(player, victim));
         }
     }
 

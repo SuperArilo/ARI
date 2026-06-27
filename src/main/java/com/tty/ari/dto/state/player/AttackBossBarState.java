@@ -33,8 +33,8 @@ public class AttackBossBarState extends AsyncState {
     @Getter
     private volatile CancellableTask task;
 
-    public AttackBossBarState(Entity owner, @NotNull Damageable target, int max_count) {
-        super(owner, max_count);
+    public AttackBossBarState(Entity owner, @NotNull Damageable target) {
+        super(owner, Integer.MAX_VALUE);
         this.target = target;
         this.saveHealth = target.getHealth();
         this.task = this.createTask();

@@ -32,7 +32,7 @@ public class StateMachineManager {
         this.registerStateMachine(new PlayerCommandPreprocessService(20L, 1L, true));
         this.registerStateMachine(new PlayerChatService(20L, 1L, true));
         this.registerStateMachine(new MaintenanceBossBarService(20L, 1L, true));
-        this.registerStateMachine(new AttackBossBarService(2L, 1L, true));
+        this.registerStateMachine(new AttackBossBarService(5L, 1L, true));
     }
 
     @SuppressWarnings("unchecked")
