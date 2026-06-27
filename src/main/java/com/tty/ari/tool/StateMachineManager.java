@@ -29,9 +29,10 @@ public class StateMachineManager {
         this.registerStateMachine(new GuiEditStateService(20L,1L, false));
         this.registerStateMachine(new PlayerSaveStateService(20L, 20L, true));
         this.registerStateMachine(new GuiManagerStateService(10L, 1L, false));
-        this.registerStateMachine(new PlayerCommandPreprocessService(20L, 0L, true));
-        this.registerStateMachine(new PlayerChatService(20L, 0L, true));
-        this.registerStateMachine(new MaintenanceBossBarService(20L, 0L, true));
+        this.registerStateMachine(new PlayerCommandPreprocessService(20L, 1L, true));
+        this.registerStateMachine(new PlayerChatService(20L, 1L, true));
+        this.registerStateMachine(new MaintenanceBossBarService(20L, 1L, true));
+        this.registerStateMachine(new AttackBossBarService(2L, 1L, true));
     }
 
     @SuppressWarnings("unchecked")
