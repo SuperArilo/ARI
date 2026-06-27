@@ -2,11 +2,13 @@ package com.tty.ari.listener.teleport;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
+import com.tty.api.event.WhenPluginConfigUpdateEvent;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.dto.event.CustomPlayerRespawnEvent;
 import com.tty.api.ServerPlatform;
 import com.tty.ari.enumType.FilePath;
+import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -41,15 +43,15 @@ public class RecordLastLocationListener implements Listener {
         if (event.getInventory().getType() != InventoryType.CRAFTING || !player.isDead() || !player.isConnected() || player.getHealth() > 0) return;
         // do stuff
         if (!ServerPlatform.isFolia()) return;
-        Ari.instance.getScheduler().runAtRegion(Ari.instance, player.getLocation(), i -> {
+        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> {
             Location respawnLocation = player.getRespawnLocation();
             if (respawnLocation == null) {
-                Location location = getRespawnLocation(player.getWorld());
+                Location location = this.getRespawnLocation(player.getWorld());
                 player.setRespawnLocation(location);
                 respawnLocation = location;
             }
             Bukkit.getPluginManager().callEvent(new CustomPlayerRespawnEvent(player, respawnLocation, player.getLocation()));
-        });
+        }, null);
     }
 
     @EventHandler
@@ -103,16 +105,22 @@ public class RecordLastLocationListener implements Listener {
         this.spawnLocation = this.getSpawnLocation();
     }
 
+    @EventHandler
+    public void onConfigIUpdate(WhenPluginConfigUpdateEvent event) {
+        if (!event.getPlugin().equals(Ari.instance)) return;
+        this.spawnLocation = this.getSpawnLocation();
+    }
+
     private void setPlayerLastLocation(Player player) {
-        Ari.PLACEHOLDER.render("teleport.tips-back", player).thenAccept(i ->
+        ConfigUtils.t("teleport.tips-back", player).thenAccept(i ->
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, t ->
                         player.sendMessage(Ari.instance.getComponentTool().setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/" + Ari.instance.getName() + " back")), null));
     }
 
     public Location getRespawnLocation(@NotNull World world) {
         Location location;
-        if (spawnLocation != null) {
-            location = new Location(Bukkit.getServer().getWorld(spawnLocation.getWorldName()), spawnLocation.getX(), spawnLocation.getY(), spawnLocation.getZ(), spawnLocation.getYaw(), spawnLocation.getPitch());
+        if (this.spawnLocation != null) {
+            location = new Location(Bukkit.getServer().getWorld(this.spawnLocation.getWorldName()), this.spawnLocation.getX(), this.spawnLocation.getY(), this.spawnLocation.getZ(), this.spawnLocation.getYaw(), this.spawnLocation.getPitch());
         } else {
             Ari.instance.getLog().debug("not setting spawn location.fallback server spawn location.");
             location = world.getSpawnLocation();

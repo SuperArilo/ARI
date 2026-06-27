@@ -1,6 +1,9 @@
 package com.tty.ari.states.teleport;
 
 import com.google.gson.reflect.TypeToken;
+import com.tty.api.state.StateService;
+import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.api.utils.SearchSafeLocation;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.rtp.RtpConfig;
 import com.tty.ari.dto.state.teleport.EntityToLocationState;
@@ -8,9 +11,6 @@ import com.tty.ari.dto.state.teleport.RandomTpState;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.LangFile;
 import com.tty.ari.enumType.TeleportType;
-import com.tty.api.state.StateService;
-import com.tty.api.utils.PublicFunctionUtils;
-import com.tty.api.utils.SearchSafeLocation;
 import com.tty.ari.states.CoolDownStateService;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.StateMachineManager;
@@ -20,7 +20,6 @@ import org.bukkit.WorldBorder;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -240,12 +239,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 value.put(world.getName(), new RtpConfig());
             }
         }
-        try {
-            Ari.instance.getConfigInstance().setValue("rtp.worlds", FilePath.FUNCTION_CONFIG, value);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        Ari.instance.getConfigInstance().setValue("rtp.worlds", FilePath.FUNCTION_CONFIG, value);
         return value;
     }
 
