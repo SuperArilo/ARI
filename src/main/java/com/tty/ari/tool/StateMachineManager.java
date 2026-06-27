@@ -31,7 +31,7 @@ public class StateMachineManager {
         this.registerStateMachine(new GuiManagerStateService(10L, 1L, false));
         this.registerStateMachine(new PlayerCommandPreprocessService(20L, 0L, true));
         this.registerStateMachine(new PlayerChatService(20L, 0L, true));
-        this.registerStateMachine(new BossBarService(20L, 0L, true));
+        this.registerStateMachine(new MaintenanceBossBarService(20L, 0L, true));
     }
 
     @SuppressWarnings("unchecked")

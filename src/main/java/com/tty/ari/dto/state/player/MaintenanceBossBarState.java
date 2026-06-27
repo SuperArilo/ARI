@@ -7,7 +7,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
-public class ShowBossBarState extends State {
+public class MaintenanceBossBarState extends State {
 
     @Getter
     private final Component title;
@@ -19,7 +19,7 @@ public class ShowBossBarState extends State {
     @NotNull
     private final BossBar bossBar;
 
-    public ShowBossBarState(Entity owner, @NotNull Component title, float progress, @NotNull BossBar.Color color, int max_count) {
+    public MaintenanceBossBarState(Entity owner, @NotNull Component title, float progress, @NotNull BossBar.Color color, int max_count) {
         super(owner, max_count);
         this.title = title;
         this.progress = progress;

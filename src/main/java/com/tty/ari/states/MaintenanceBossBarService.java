@@ -2,22 +2,22 @@ package com.tty.ari.states;
 
 import com.tty.api.state.StateService;
 import com.tty.ari.Ari;
-import com.tty.ari.dto.state.player.ShowBossBarState;
+import com.tty.ari.dto.state.player.MaintenanceBossBarState;
 import org.bukkit.entity.Player;
 
-public class BossBarService extends StateService<ShowBossBarState> {
+public class MaintenanceBossBarService extends StateService<MaintenanceBossBarState> {
 
-    public BossBarService(long rate, long c, boolean isAsync) {
+    public MaintenanceBossBarService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance);
     }
 
     @Override
-    protected boolean canAddState(ShowBossBarState state) {
+    protected boolean canAddState(MaintenanceBossBarState state) {
         return true;
     }
 
     @Override
-    protected void loopExecution(ShowBossBarState state) {
+    protected void loopExecution(MaintenanceBossBarState state) {
         if (!(state.getOwner() instanceof Player player)) {
             state.setPending(true);
             return;
@@ -26,17 +26,17 @@ public class BossBarService extends StateService<ShowBossBarState> {
     }
 
     @Override
-    protected void abortAddState(ShowBossBarState state) {
+    protected void abortAddState(MaintenanceBossBarState state) {
 
     }
 
     @Override
-    protected void passAddState(ShowBossBarState state) {
+    protected void passAddState(MaintenanceBossBarState state) {
         Ari.instance.getLog().debug("add boss bar to player {}.", state.getOwner().getName());
     }
 
     @Override
-    protected void onEarlyExit(ShowBossBarState state) {
+    protected void onEarlyExit(MaintenanceBossBarState state) {
         if (!((state.getOwner()) instanceof Player player)) return;
         Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> {
             if (player.isOnline()) {
@@ -46,17 +46,17 @@ public class BossBarService extends StateService<ShowBossBarState> {
     }
 
     @Override
-    protected void onFinished(ShowBossBarState state) {}
+    protected void onFinished(MaintenanceBossBarState state) {}
 
     @Override
-    protected void onServiceAbort(ShowBossBarState state) {
+    protected void onServiceAbort(MaintenanceBossBarState state) {
         if (!(state.getOwner() instanceof Player player)) return;
         player.hideBossBar(state.getBossBar());
     }
 
     @Override
     public void onReload() {
-        for (ShowBossBarState state : this.getAllStates()) {
+        for (MaintenanceBossBarState state : this.getAllStates()) {
             state.setOver(true);
         }
     }

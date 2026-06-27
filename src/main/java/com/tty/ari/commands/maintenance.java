@@ -6,8 +6,8 @@ import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.ari.command.LiteralArgumentCommand;
-import com.tty.ari.dto.state.player.ShowBossBarState;
-import com.tty.ari.states.BossBarService;
+import com.tty.ari.dto.state.player.MaintenanceBossBarState;
+import com.tty.ari.states.MaintenanceBossBarService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -32,14 +32,14 @@ public class maintenance extends LiteralArgumentCommand {
     @Override
     public int execute(CommandSender sender, String[] args) {
         MAINTENANCE_MODE = !MAINTENANCE_MODE;
-        BossBarService service = Ari.STATE_MACHINE_MANAGER.get(BossBarService.class);
+        MaintenanceBossBarService service = Ari.STATE_MACHINE_MANAGER.get(MaintenanceBossBarService.class);
 
         Component component = ConfigUtils.tAfter("server.maintenance." + (MAINTENANCE_MODE ? "on-enable" : "on-disable"));
         for (Player player : new ArrayList<>(Bukkit.getServer().getOnlinePlayers())) {
             if (player.isOp()) {
                 player.sendMessage(component);
                 if (MAINTENANCE_MODE) {
-                    service.addState(new ShowBossBarState(player, component, 1.0f, BossBar.Color.BLUE, Integer.MAX_VALUE));
+                    service.addState(new MaintenanceBossBarState(player, component, 1.0f, BossBar.Color.BLUE, Integer.MAX_VALUE));
                 } else {
                     service.stopStateByOwner(player);
                 }
