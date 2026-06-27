@@ -55,7 +55,7 @@ public class ZakoInfoArgs extends RequiredArgumentCommand<String> {
                CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.zako-check-not-exist", player):ConfigUtils.t("function.zako.zako-check-not-exist");
                return future.thenAccept(sender::sendMessage).thenApply(t -> null);
            }
-           return Ari.PLACEHOLDER.renderList("server.player.info", Bukkit.getServer().getOfflinePlayer(uuid));
+           return ConfigUtils.tList("server.player.info", Bukkit.getServer().getOfflinePlayer(uuid));
         }).thenAccept(message -> {
             if (message != null) {
                 sender.sendMessage(message);

@@ -3,6 +3,7 @@ package com.tty.ari.dto;
 import com.tty.ari.Ari;
 import com.tty.ari.function.TimeManager;
 import com.tty.api.enumType.TimePeriod;
+import com.tty.ari.tool.ConfigUtils;
 import lombok.Getter;
 import org.bukkit.GameRule;
 import org.bukkit.World;
@@ -36,7 +37,7 @@ public class SleepingWorld {
             this.timeManager.timeAutomaticallyPasses(10, i -> {
                 for (Player player : this.world.getPlayers()) {
                     if (this.playerCondition(player.getWorld()) || !player.isSleeping() || !player.isDeeplySleeping()) continue;
-                    Ari.PLACEHOLDER.render("server.time.skip-to-night", player).thenAccept(result ->
+                    ConfigUtils.t("server.time.skip-to-night", player).thenAccept(result ->
                             Ari.instance.getScheduler().runAtEntity(Ari.instance, player, b ->
                                     player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
                                         timeManager.tickToTime(i),
@@ -53,7 +54,7 @@ public class SleepingWorld {
     private void sendTipsActionBar() {
         for (Player player : this.world.getPlayers()) {
             if (!player.isSleeping()) {
-                Ari.PLACEHOLDER.render("server.time.report-status", player).thenAccept(result ->
+                ConfigUtils.t("server.time.report-status", player).thenAccept(result ->
                         Ari.instance.getScheduler().runAtEntity(Ari.instance, player, t ->
                                 player.sendActionBar(result), null));
             }

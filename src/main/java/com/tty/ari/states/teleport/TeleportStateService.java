@@ -53,7 +53,7 @@ public class TeleportStateService extends StateService<State> {
         }
 
         if (state.isOver() || state.isDone()) return;
-        Ari.PLACEHOLDER.render("teleport.title.sub-title", player).thenAccept(result ->
+        ConfigUtils.t("teleport.title.sub-title", player).thenAccept(result ->
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, task -> {
                     player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
                             Ari.instance.getConfigInstance().getValue("teleport.title.main", LangFile.LANG),

@@ -171,7 +171,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 if (e.getCause() instanceof TimeoutException && owner instanceof Player player) {
                     state.setRunning(false);
                     state.setPending(false);
-                    Ari.PLACEHOLDER.render("function.rtp.abort-search", player).thenAccept(player::sendMessage);
+                    ConfigUtils.t("function.rtp.abort-search", player).thenAccept(player::sendMessage);
                 } else {
                     state.setOver(true);
                     if (owner instanceof Player player) {
@@ -210,7 +210,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     private void sendCountTitle(Player player) {
         if (!player.isOnline()) return;
-        Ari.PLACEHOLDER.render("function.rtp.title-search-count", player).thenAccept(result ->
+        ConfigUtils.t("function.rtp.title-search-count", player).thenAccept(result ->
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, task -> player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
                         Ari.instance.getConfigInstance().getValue("function.rtp.title-searching", LangFile.LANG, String.class, "null"),
                         result,

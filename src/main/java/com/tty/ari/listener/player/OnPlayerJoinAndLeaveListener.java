@@ -206,7 +206,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         Player player = event.getPlayer();
         if(this.messageOnLeave) {
             event.quitMessage(null);
-            Ari.PLACEHOLDER.render("server.message.on-leave", player).thenAccept(i -> Ari.instance.getScheduler().run(Ari.instance, t -> Bukkit.broadcast(i)));
+            ConfigUtils.t("server.message.on-leave", player).thenAccept(i -> Ari.instance.getScheduler().run(Ari.instance, t -> Bukkit.broadcast(i)));
         }
         List<PlayerSaveState> states = Ari.STATE_MACHINE_MANAGER
                 .get(PlayerSaveStateService.class)

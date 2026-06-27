@@ -76,8 +76,8 @@ public class ZakoList extends LiteralArgumentCommand {
             for (WhitelistInstance instance : records) {
                 String uuid = instance.getPlayerUUID();
                 OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(uuid));
-                lineFutures.add(Ari.PLACEHOLDER.renderList("server.player.zako.list-show", offlinePlayer)
-                    .thenCombineAsync(Ari.PLACEHOLDER.render("server.player.zako.unable-record", offlinePlayer),
+                lineFutures.add(ConfigUtils.t("server.player.zako.list-show", offlinePlayer)
+                    .thenCombineAsync(ConfigUtils.t("server.player.zako.unable-record", offlinePlayer),
                         (e, i) -> {
                             Component t = e;
                             if (offlinePlayer.getName() == null) {
