@@ -1,15 +1,14 @@
 package com.tty.ari.commands;
 
 import com.mojang.brigadier.Command;
-import com.tty.ari.Ari;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.ari.Ari;
 import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.dto.state.player.MaintenanceBossBarState;
 import com.tty.ari.states.MaintenanceBossBarService;
 import com.tty.ari.tool.ConfigUtils;
-import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -22,8 +21,6 @@ import java.util.List;
 @LiteralCommand(directExecute = true)
 public class maintenance extends LiteralArgumentCommand {
 
-    public static boolean MAINTENANCE_MODE = false;
-
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
         return List.of();
@@ -31,21 +28,21 @@ public class maintenance extends LiteralArgumentCommand {
 
     @Override
     public int execute(CommandSender sender, String[] args) {
-        MAINTENANCE_MODE = !MAINTENANCE_MODE;
         MaintenanceBossBarService service = Ari.STATE_MACHINE_MANAGER.get(MaintenanceBossBarService.class);
+        service.setMaintenance(!service.isMaintenance());
 
-        Component component = ConfigUtils.tAfter("server.maintenance." + (MAINTENANCE_MODE ? "on-enable" : "on-disable"));
+        Component component = ConfigUtils.tAfter("server.maintenance." + (service.isMaintenance() ? "on-enable" : "on-disable"));
         for (Player player : new ArrayList<>(Bukkit.getServer().getOnlinePlayers())) {
             if (player.isOp()) {
                 player.sendMessage(component);
-                if (MAINTENANCE_MODE) {
-                    service.addState(new MaintenanceBossBarState(player, component, 1.0f, BossBar.Color.BLUE, Integer.MAX_VALUE));
+                if (service.isMaintenance()) {
+                    service.addState(new MaintenanceBossBarState(player));
                 } else {
                     service.stopStateByOwner(player);
                 }
                 continue;
             }
-            if (MAINTENANCE_MODE) {
+            if (service.isMaintenance()) {
                 ConfigUtils.t("server.maintenance.to-player", player).thenAccept(player::sendMessage);
                 Ari.instance.getScheduler().runAtEntityLater(
                         Ari.instance,

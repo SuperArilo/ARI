@@ -3,9 +3,15 @@ package com.tty.ari.states;
 import com.tty.api.state.StateService;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.player.MaintenanceBossBarState;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 
 public class MaintenanceBossBarService extends StateService<MaintenanceBossBarState> {
+
+    @Getter
+    @Setter
+    private boolean maintenance;
 
     public MaintenanceBossBarService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance);

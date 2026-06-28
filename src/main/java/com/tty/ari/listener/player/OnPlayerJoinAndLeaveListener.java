@@ -2,22 +2,23 @@ package com.tty.ari.listener.player;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.reflect.TypeToken;
-import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
-import com.tty.ari.Ari;
 import com.tty.api.enumType.Operator;
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
-import com.tty.ari.commands.maintenance;
+import com.tty.ari.Ari;
 import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.dto.state.GuiState;
+import com.tty.ari.dto.state.player.MaintenanceBossBarState;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.dto.state.player.PlayerSaveState;
 import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.enumType.FilePath;
-import com.tty.ari.states.gui.GuiManagerStateService;
+import com.tty.ari.states.MaintenanceBossBarService;
 import com.tty.ari.states.PlayerSaveStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerNameCache;
 import org.bukkit.Bukkit;
@@ -79,8 +80,9 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     public void maintenance(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
         UUID uuid = event.getUniqueId();
+        MaintenanceBossBarService service = Ari.STATE_MACHINE_MANAGER.get(MaintenanceBossBarService.class);
         OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
-        if (maintenance.MAINTENANCE_MODE && !offlinePlayer.isOp()) {
+        if (service.isMaintenance() && !offlinePlayer.isOp()) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join").join());
             return;
         }
@@ -137,68 +139,75 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         long nowLoginTime = System.currentTimeMillis();
         LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, player.getUniqueId().toString());
         repository.get(wrapper, PartitionKey.global()).thenCompose(i -> {
-                //玩家第一次登录服务器，创建资料
-                if(i == null) {
-                    ServerPlayer serverPlayer = new ServerPlayer();
-                    serverPlayer.setPlayerName(playerName);
-                    serverPlayer.setPlayerUUID(player.getUniqueId().toString());
-                    serverPlayer.setFirstLoginTime(System.currentTimeMillis());
-                    return repository.create(serverPlayer, PartitionKey.global());
-                } else {
-                    //玩家已经登录过服务器，更新上次登录服务器的时间，再判断是否更改过名称
-                    i.setLastLoginOffTime(nowLoginTime);
-                    if (!i.getPlayerName().equals(playerName)) {
-                        i.setPlayerName(playerName);
-                        Ari.instance.getLog().debug("player changed name. old: {}, new: {}", i.getPlayerName(), playerName);
-                    }
-                    try {
-                        repository.update(i, wrapper, PartitionKey.global());
-                    } catch (Exception e) {
-                        Ari.instance.getLog().warn(e, "update player {} profiles error", playerName);
-                    }
-                    return CompletableFuture.completedFuture(i);
+            //玩家第一次登录服务器，创建资料
+            if(i == null) {
+                ServerPlayer serverPlayer = new ServerPlayer();
+                serverPlayer.setPlayerName(playerName);
+                serverPlayer.setPlayerUUID(player.getUniqueId().toString());
+                serverPlayer.setFirstLoginTime(System.currentTimeMillis());
+                return repository.create(serverPlayer, PartitionKey.global());
+            } else {
+                //玩家已经登录过服务器，更新上次登录服务器的时间，再判断是否更改过名称
+                i.setLastLoginOffTime(nowLoginTime);
+                if (!i.getPlayerName().equals(playerName)) {
+                    i.setPlayerName(playerName);
+                    Ari.instance.getLog().debug("player changed name. old: {}, new: {}", i.getPlayerName(), playerName);
                 }
-            }).whenComplete((i, ex) -> {
-                if (ex != null) {
-                    Ari.instance.getLog().error("player {} login in server error.", player.getName());
-                    player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
+                try {
+                    repository.update(i, wrapper, PartitionKey.global());
+                } catch (Exception e) {
+                    Ari.instance.getLog().warn(e, "update player {} profiles error", playerName);
+                }
+                return CompletableFuture.completedFuture(i);
+            }
+        }).whenComplete((i, ex) -> {
+            if (ex != null) {
+                Ari.instance.getLog().error("player {} login in server error.", player.getName());
+                player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
+                return;
+            }
+            //所有检查通过，添加玩家的名称到缓存里
+            PlayerNameCache.update(player.getUniqueId(), playerName);
+
+            if(!player.hasPlayedBefore()) {
+                if (this.spawnFirstJoin && this.spawnEnable) {
+                    if (this.spawnLocation != null) {
+                        Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), new Location(
+                                Bukkit.getServer().getWorld(this.spawnLocation.getWorldName()),
+                                this.spawnLocation.getX(),
+                                this.spawnLocation.getY(),
+                                this.spawnLocation.getZ(),
+                                this.spawnLocation.getYaw(),
+                                this.spawnLocation.getPitch()
+                        ));
+                    } else {
+                        Ari.instance.getLog().info("server not set spawn location.");
+                    }
+                }
+                if(this.messageFirstJoin) {
+                    ConfigUtils.t("server.message.on-first-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
                     return;
                 }
-                //所有检查通过，添加玩家的名称到缓存里
-                PlayerNameCache.update(player.getUniqueId(), playerName);
-                //添加玩家登录的状态
-                Ari.STATE_MACHINE_MANAGER.get(PlayerSaveStateService.class).addState(new PlayerSaveState(player, nowLoginTime));
-                if(!player.hasPlayedBefore()) {
-                    if (this.spawnFirstJoin && this.spawnEnable) {
-                        if (this.spawnLocation != null) {
-                            Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), new Location(
-                                    Bukkit.getServer().getWorld(this.spawnLocation.getWorldName()),
-                                    this.spawnLocation.getX(),
-                                    this.spawnLocation.getY(),
-                                    this.spawnLocation.getZ(),
-                                    this.spawnLocation.getYaw(),
-                                    this.spawnLocation.getPitch()
-                            ));
-                        } else {
-                            Ari.instance.getLog().info("server not set spawn location.");
-                        }
-                    }
-                    if(this.messageFirstJoin) {
-                        ConfigUtils.t("server.message.on-first-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
-                        return;
-                    }
+            }
+            if(this.messageOnLogin) {
+                ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
+            }
+            //添加玩家登录的状态
+            Ari.STATE_MACHINE_MANAGER.get(PlayerSaveStateService.class).addState(new PlayerSaveState(player, nowLoginTime));
+            Ari.instance.getScheduler().runAtEntity(Ari.instance, player, o -> {
+                if(this.isPlayerInsideBlock(player)) {
+                    Ari.instance.getLog().debug("player {} inside block, teleport safe location.", player.getName());
+                    Location safeLocation = this.findSafeLocationAbove(player.getLocation());
+                    Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.not-safe-location"), player)));
                 }
-                if(this.messageOnLogin) {
-                    ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
-                }
-                Ari.instance.getScheduler().runAtEntity(Ari.instance, player, o -> {
-                    if(this.isPlayerInsideBlock(player)) {
-                        Ari.instance.getLog().debug("player {} inside block, teleport safe location.", player.getName());
-                        Location safeLocation = this.findSafeLocationAbove(player.getLocation());
-                        Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.not-safe-location"), player)));
-                    }
-                }, () -> Ari.instance.getLog().error("error on player join server."));
-            });
+            }, () -> Ari.instance.getLog().error("error on player join server."));
+
+            //如果处于维护模式，为 op 添加 bar
+            MaintenanceBossBarService service = Ari.STATE_MACHINE_MANAGER.get(MaintenanceBossBarService.class);
+            if (service.isMaintenance() && player.isOp()) {
+                service.addState(new MaintenanceBossBarState(player));
+            }
+        });
     }
 
     @EventHandler
