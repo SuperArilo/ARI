@@ -11,7 +11,7 @@ public class MaintenanceBossBarService extends StateService<MaintenanceBossBarSt
 
     @Getter
     @Setter
-    private boolean maintenance;
+    private boolean maintenance = false;
 
     public MaintenanceBossBarService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance);
