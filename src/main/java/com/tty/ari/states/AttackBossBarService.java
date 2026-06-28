@@ -46,7 +46,7 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
         }
         Damageable target = state.getTarget();
         state.setRunning(true);
-        Ari.instance.getScheduler().runAtRegion(Ari.instance, player.getLocation(), i -> {
+        Ari.instance.getScheduler().runAtRegion(Ari.instance, target.getLocation(), i -> {
             double currentHealth = target.getHealth();
             state.updateSaveHealth(currentHealth);
             bar.color(this.getMobBarColor(target));
