@@ -25,7 +25,11 @@ public class MaintenanceBossBarService extends StateService<MaintenanceBossBarSt
     @Override
     protected void loopExecution(MaintenanceBossBarState state) {
         if (!(state.getOwner() instanceof Player player)) {
-            state.setPending(true);
+            state.setOver(true);
+            return;
+        }
+        if (!player.isOnline()) {
+            state.setOver(true);
             return;
         }
         player.showBossBar(state.getBossBar());
