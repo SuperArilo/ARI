@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
+import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -180,14 +181,15 @@ public class LastDamageTracker {
         Entity directEntity = damageSource.getDirectEntity();
 
         Entity resolvedAttacker = causingEntity;
-        //喷溅药水
+
+        // 喷溅药水
         if (directEntity instanceof ThrownPotion || causingEntity instanceof ThrownPotion) {
             ThrownPotion potion = (ThrownPotion) (directEntity instanceof ThrownPotion ? directEntity : causingEntity);
             if (potion.getShooter() instanceof Entity shooter) {
                 resolvedAttacker = shooter;
             }
         }
-        //药水效果云
+        // 药水效果云
         if (directEntity instanceof AreaEffectCloud cloud) {
             if (cloud.getSource() instanceof Entity source) {
                 resolvedAttacker = source;
@@ -196,7 +198,7 @@ public class LastDamageTracker {
                 if (!records.isEmpty()) {
                     DamageRecord lastRecord = records.getLast();
                     long timeDiff = System.currentTimeMillis() - lastRecord.timestamp();
-                    if (timeDiff < 2000) { //回溯2秒前的攻击者
+                    if (timeDiff < 2000) {
                         resolvedAttacker = lastRecord.damager();
                     }
                 }
@@ -208,6 +210,17 @@ public class LastDamageTracker {
                 resolvedAttacker = shooter;
             }
         }
+
+        if (directEntity instanceof TNTPrimed tnt) {
+            resolvedAttacker = (tnt.getSource() instanceof Entity source) ? source : tnt;
+        } else if (causingEntity instanceof TNTPrimed tnt) {
+            resolvedAttacker = (tnt.getSource() instanceof Entity source) ? source : tnt;
+        } else if (directEntity instanceof ExplosiveMinecart minecart) {
+            resolvedAttacker = minecart;
+        } else if (causingEntity instanceof ExplosiveMinecart minecart) {
+            resolvedAttacker = minecart;
+        }
+
         if (resolvedAttacker instanceof Projectile projectile) {
             if (projectile.getShooter() instanceof Entity shooter) {
                 resolvedAttacker = shooter;
@@ -217,12 +230,16 @@ public class LastDamageTracker {
         }
 
         boolean isIndirectDamage = this.isIndirectDamage(event.getCause());
-        if (isIndirectDamage && !(resolvedAttacker instanceof LivingEntity)) {
+
+        if (isIndirectDamage
+                && !(resolvedAttacker instanceof LivingEntity)
+                && !(resolvedAttacker instanceof TNTPrimed)
+                && !(resolvedAttacker instanceof ExplosiveMinecart)) {
+
             List<DamageRecord> records = this.getRecords(victim);
             if (!records.isEmpty()) {
                 DamageRecord lastRecord = records.getLast();
                 long timeDiff = System.currentTimeMillis() - lastRecord.timestamp();
-                // 间接伤害
                 long threshold = switch (cause) {
                     case MAGIC, POISON, WITHER -> 1500L;
                     case THORNS, LIGHTNING, SONIC_BOOM, CUSTOM -> 1000L;
@@ -230,7 +247,6 @@ public class LastDamageTracker {
                     case BLOCK_EXPLOSION, ENTITY_EXPLOSION -> 3000L;
                     default -> 2000L;
                 };
-
                 if (timeDiff < threshold) {
                     resolvedAttacker = lastRecord.damager();
                     this.log(victim, cause, timeDiff, threshold, resolvedAttacker);
@@ -240,10 +256,11 @@ public class LastDamageTracker {
             this.log(victim, cause, null, null, resolvedAttacker);
         }
 
-        //检查是否涉及玩家
         if (!this.checkInvolvesPlayer(victim, resolvedAttacker, directEntity)) return;
 
-        this.records.computeIfAbsent(victim, k -> new CopyOnWriteArrayList<>()).add(new DamageRecord(System.currentTimeMillis(), resolvedAttacker, event.getFinalDamage(), victim.getLocation(), this.getWeapon(resolvedAttacker, directEntity, causingEntity)));
+        this.records.computeIfAbsent(victim, k -> new CopyOnWriteArrayList<>())
+                .add(new DamageRecord(System.currentTimeMillis(), resolvedAttacker, event.getFinalDamage(), victim.getLocation(),
+                        this.getWeapon(resolvedAttacker, directEntity, causingEntity)));
     }
 
     private void log(Entity victim, EntityDamageEvent.DamageCause cause, Long timeDiff, Long threshold, Entity attacker) {
