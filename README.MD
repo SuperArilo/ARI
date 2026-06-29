@@ -78,7 +78,6 @@
 | `ari.keep-experience`         | 玩家死亡时保留经验值和等级     |
 | `ari.cooldown.<传送类型>`         | 指定某种传送类型没有CD时间    |
 | `ari.totem.inventory-trigger` | 可将不死图腾放在背包里直接使用   |
-| `ari.totem.inventory-trigger` | 可将不死图腾放在背包里直接使用   |
 | `ari.skip-command-cooldown`   | 可跳过指令冷却时间限制       |
 | `ari.pass-spam`               | 为指定玩家跳过滥发消息被踢出服务器 |
 ## 🛠️ 安装指南
