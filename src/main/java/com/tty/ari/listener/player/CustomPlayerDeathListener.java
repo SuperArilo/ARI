@@ -19,7 +19,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 public class CustomPlayerDeathListener implements Listener {
 
@@ -33,36 +32,46 @@ public class CustomPlayerDeathListener implements Listener {
         Ari.instance.getLog().debug(info.toString());
 
         ComponentTool tool = Ari.instance.getComponentTool();
+        boolean isSuicide = (info.victim.equals(info.killer) && info.killer instanceof Player);
 
-        CompletableFuture<Component> killerFuture = tool.setEntityHoverText(info.killer)
-            .thenComposeAsync(killerComp -> {
-                if (info.killer == null) return CompletableFuture.completedFuture(Component.empty());
+        CompletableFuture<Component> victimFuture = CompletableFuture.supplyAsync(() -> info.victim).thenComposeAsync(victim -> {
+            if (victim == null) return CompletableFuture.completedFuture(Component.empty());
+            return tool.setEntityHoverText(victim);
+        }, Ari.instance.getExecutorAsync()).exceptionally(e -> {
+            Ari.instance.getLog().error(e);
+            return null;
+        });
 
-                if (info.killer.equals(info.victim) && info.killer instanceof Player) return CompletableFuture.completedFuture(tool.text(Ari.DATA_SERVICE.getValue("base.on-player.self")));
-
-                return CompletableFuture.completedFuture(killerComp);
+        CompletableFuture<Component> killerFuture;
+        if (isSuicide) {
+            killerFuture = CompletableFuture.completedFuture(tool.text(Ari.DATA_SERVICE.getValue("base.on-player.self")));
+        } else {
+            killerFuture = CompletableFuture.supplyAsync(() -> info.killer).thenComposeAsync(killer -> {
+                if (killer == null) return CompletableFuture.completedFuture(Component.empty());
+                return tool.setEntityHoverText(killer);
             }, Ari.instance.getExecutorAsync()).exceptionally(e -> {
                 Ari.instance.getLog().error(e);
                 return null;
-            }).orTimeout(1, TimeUnit.SECONDS);
+            });
+        }
 
-        CompletableFuture<Component> victimFuture = tool.setEntityHoverText(info.victim).orTimeout(1, TimeUnit.SECONDS);
-        CompletableFuture<Component> weaponFuture = tool.setHoverItemText(info.weapon).orTimeout(1, TimeUnit.SECONDS);
-        CompletableFuture<String> messageFuture = this.getDeathMessage(info, event).orTimeout(1, TimeUnit.SECONDS);
+        CompletableFuture<Component> weaponFuture = tool.setHoverItemText(info.weapon);
+        CompletableFuture<String> messageFuture = this.getDeathMessage(info, event);
 
         CompletableFuture.allOf(killerFuture, victimFuture, weaponFuture, messageFuture).thenRunAsync(() -> {
-                Component killComp = killerFuture.join();
-                Component victimComp = victimFuture.join();
-                Component weaponComp = weaponFuture.join();
-                String message = messageFuture.join();
+            Component killComp = killerFuture.join();
+            Component victimComp = victimFuture.join();
+            Component weaponComp = weaponFuture.join();
+            String message = messageFuture.join();
 
-                Component deathMsg = tool.text(message, Map.of(
-                        PlaceholderPlayerDeath.VICTIM_UNRESOLVED.getType(), victimComp,
-                        PlaceholderPlayerDeath.KILLER_UNRESOLVED.getType(), killComp,
-                        PlaceholderPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), weaponComp));
-                Bukkit.getServer().broadcast(deathMsg);
+            Component deathMsg = tool.text(message, Map.of(
+                    PlaceholderPlayerDeath.KILLER_UNRESOLVED.getType(), killComp,
+                    PlaceholderPlayerDeath.VICTIM_UNRESOLVED.getType(), victimComp,
+                    PlaceholderPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), weaponComp
+            ));
 
-        }, Ari.instance.getExecutorSync()).exceptionally(e -> {
+            Bukkit.getServer().broadcast(deathMsg);
+        }, Ari.instance.getExecutorAsync()).exceptionally(e -> {
             Ari.instance.getLog().error(e);
             return null;
         });
