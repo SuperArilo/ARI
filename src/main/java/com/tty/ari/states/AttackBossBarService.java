@@ -11,10 +11,12 @@ import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -44,16 +46,27 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
             state.setOver(true);
             return;
         }
-        Damageable target = state.getTarget();
         state.setRunning(true);
-        Ari.instance.getScheduler().runAtRegion(Ari.instance, target.getLocation(), i -> {
-            double currentHealth = target.getHealth();
-            state.updateSaveHealth(currentHealth);
-            bar.color(this.getMobBarColor(target));
-            bar.progress(this.getTargetCurrentHealthProgress(target));
-            bar.name(this.buildTitle(target));
-            state.setRunning(false);
+        Ari.instance.getScheduler().run(Ari.instance, i -> {
+            Entity entity = Bukkit.getServer().getEntity(state.getTarget().getUniqueId());
+            if (entity == null) {
+                state.setOver(true);
+                return;
+            }
+            Ari.instance.getScheduler().runAtRegion(Ari.instance, entity.getLocation(), t -> {
+                if(!(entity instanceof Damageable damageable)) {
+                    state.setOver(true);
+                    return;
+                }
+                double currentHealth = damageable.getHealth();
+                state.updateSaveHealth(currentHealth);
+                bar.color(this.getMobBarColor(damageable));
+                bar.progress(this.getTargetCurrentHealthProgress(damageable));
+                bar.name(this.buildTitle(damageable));
+                state.setRunning(false);
+            });
         });
+
     }
 
     @Override
