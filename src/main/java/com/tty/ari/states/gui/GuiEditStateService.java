@@ -73,5 +73,8 @@ public class GuiEditStateService extends StateService<EditGuiState> {
 
     @Override
     public void onReload() {
+        for (EditGuiState state : this.getAllStates()) {
+            state.setOver(true);
+        }
     }
 }

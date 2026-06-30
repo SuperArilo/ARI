@@ -52,6 +52,9 @@ public class GuiManagerStateService extends StateService<GuiState> {
 
     @Override
     public void onReload() {
-
+        for (GuiState state : this.getAllStates()) {
+            state.setOver(true);
+        }
     }
+
 }
