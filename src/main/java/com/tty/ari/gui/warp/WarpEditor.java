@@ -50,10 +50,10 @@ public class WarpEditor extends BaseConfigInventory {
                     case RENAME -> item.setName(this.warp.getWarpName());
                     case LOCATION -> {
                         Location location = FormatUtils.parseLocation(this.warp.getLocation());
-                        Map<String, String> m = new HashMap<>();
-                        m.put(IconKeyType.X.getKey(), FormatUtils.formatTwoDecimalPlaces(location.getX()));
-                        m.put(IconKeyType.Y.getKey(), FormatUtils.formatTwoDecimalPlaces(location.getY()));
-                        m.put(IconKeyType.Z.getKey(), FormatUtils.formatTwoDecimalPlaces(location.getZ()));
+                        Map<IconKeyType, String> m = new HashMap<>();
+                        m.put(IconKeyType.X, FormatUtils.formatTwoDecimalPlaces(location.getX()));
+                        m.put(IconKeyType.Y, FormatUtils.formatTwoDecimalPlaces(location.getY()));
+                        m.put(IconKeyType.Z, FormatUtils.formatTwoDecimalPlaces(location.getZ()));
                         item.setName(this.replaceKey(item.getName(), m));
                     }
                     case PERMISSION -> {
@@ -69,7 +69,7 @@ public class WarpEditor extends BaseConfigInventory {
                             item.setName(cost == null ? "":cost.toString());
                         }
                     }
-                    case TOP_SLOT -> item.setLore(item.getLore().stream().map(lore -> this.replaceKey(lore, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.DATA_SERVICE.getValue(this.warp.isTopSlot() ? "base.yes_re":"base.no_re")))).toList());
+                    case TOP_SLOT -> item.setLore(item.getLore().stream().map(lore -> this.replaceKey(lore, Map.of(IconKeyType.TOP_SLOT, Ari.DATA_SERVICE.getValue(this.warp.isTopSlot() ? "base.yes_re":"base.no_re")))).toList());
                 }
             }
         }
