@@ -9,7 +9,7 @@ import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.state.EditGuiState;
+import com.tty.api.state.GuiEditFunctionState;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.GuiState;
@@ -19,7 +19,7 @@ import com.tty.ari.enumType.GuiType;
 import com.tty.ari.gui.home.HomeEditor;
 import com.tty.ari.gui.home.HomeList;
 import com.tty.ari.listener.OnGuiEditListener;
-import com.tty.ari.states.gui.GuiEditStateService;
+import com.tty.ari.states.gui.GuiEditFunctionStateService;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.TextComponent;
@@ -47,7 +47,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
     }
 
     @Override
-    public boolean onTitleEditStatus(String message, EditGuiState<ServerHome> state) {
+    public boolean onTitleEditStatus(String message, GuiEditFunctionState<ServerHome> state) {
         Player player = (Player) state.getOwner();
         if(!this.isContentValid(message) || this.banNameList.contains(message)) {
             player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
@@ -99,8 +99,8 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
         registry.add(FunctionType.RENAME, (event, homeEditor, player) -> {
             event.getInventory().close();
             Ari.STATE_MACHINE_MANAGER
-                    .get(GuiEditStateService.class)
-                    .addState(new EditGuiState<>(
+                    .get(GuiEditFunctionStateService.class)
+                    .addState(new GuiEditFunctionState<>(
                             player,
                             Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new TypeToken<Integer>(){}.getType()),
                             homeEditor.getHome(),

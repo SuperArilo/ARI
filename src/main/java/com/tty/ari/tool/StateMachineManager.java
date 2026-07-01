@@ -3,7 +3,7 @@ package com.tty.ari.tool;
 import com.tty.api.state.State;
 import com.tty.api.state.StateService;
 import com.tty.ari.states.*;
-import com.tty.ari.states.gui.GuiEditStateService;
+import com.tty.ari.states.gui.GuiEditFunctionStateService;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.states.action.PlayerRideActionStateService;
 import com.tty.ari.states.action.PlayerSitActionStateService;
@@ -26,7 +26,7 @@ public class StateMachineManager {
         this.registerStateMachine(new PlayerSitActionStateService(20L, 1L, false));
         this.registerStateMachine(new PlayerRideActionStateService(20L, 1L, false));
         this.registerStateMachine(new RandomTpStateService(20L, 1L, true));
-        this.registerStateMachine(new GuiEditStateService(20L,1L, false));
+        this.registerStateMachine(new GuiEditFunctionStateService(20L,1L, false));
         this.registerStateMachine(new PlayerOnlineStateService(20L, 20L, true));
         this.registerStateMachine(new GuiManagerStateService(10L, 1L, false));
         this.registerStateMachine(new PlayerCommandPreprocessService(20L, 1L, true));

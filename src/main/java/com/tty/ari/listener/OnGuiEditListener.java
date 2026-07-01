@@ -4,9 +4,9 @@ import com.tty.ari.Ari;
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.gui.BaseInventory;
 import com.tty.api.listener.BaseEditFunctionGuiListener;
-import com.tty.api.state.EditGuiState;
+import com.tty.api.state.GuiEditFunctionState;
 import com.tty.ari.enumType.GuiType;
-import com.tty.ari.states.gui.GuiEditStateService;
+import com.tty.ari.states.gui.GuiEditFunctionStateService;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -23,11 +23,11 @@ public abstract class OnGuiEditListener<T extends BaseInventory, D> extends Base
     }
 
     @Override
-    public EditGuiState<D> isHaveState(Player player) {
-        GuiEditStateService stateService = Ari.STATE_MACHINE_MANAGER.get(GuiEditStateService.class);
+    public GuiEditFunctionState<D> isHaveState(Player player) {
+        GuiEditFunctionStateService stateService = Ari.STATE_MACHINE_MANAGER.get(GuiEditFunctionStateService.class);
         if (stateService.stateIsEmpty()) return null;
         if (stateService.isNotHaveState(player)) return null;
-        List<EditGuiState> states = stateService.getStates(player);
+        List<GuiEditFunctionState> states = stateService.getStates(player);
         if (states.isEmpty()) {
             Ari.instance.getLog().error("player {} on edit status error, states is empty", player.getName());
             return null;

@@ -2,23 +2,23 @@ package com.tty.ari.states.gui;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.ari.Ari;
-import com.tty.api.state.EditGuiState;
+import com.tty.api.state.GuiEditFunctionState;
 import com.tty.api.state.StateService;
 import org.bukkit.entity.Player;
 
-public class GuiEditStateService extends StateService<EditGuiState> {
+public class GuiEditFunctionStateService extends StateService<GuiEditFunctionState> {
 
-    public GuiEditStateService(long rate, long c, boolean isAsync) {
+    public GuiEditFunctionStateService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance);
     }
 
     @Override
-    protected boolean canAddState(EditGuiState state) {
+    protected boolean canAddState(GuiEditFunctionState state) {
         return this.isNotHaveState(state.getOwner());
     }
 
     @Override
-    protected void loopExecution(EditGuiState state) {
+    protected void loopExecution(GuiEditFunctionState state) {
 
         Player owner = (Player) state.getOwner();
         if (!owner.isOnline() || owner.isDead()) {
@@ -34,12 +34,12 @@ public class GuiEditStateService extends StateService<EditGuiState> {
     }
 
     @Override
-    protected void abortAddState(EditGuiState state) {
+    protected void abortAddState(GuiEditFunctionState state) {
 
     }
 
     @Override
-    protected void passAddState(EditGuiState state) {
+    protected void passAddState(GuiEditFunctionState state) {
         Player owner = (Player) state.getOwner();
         int i = Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new TypeToken<Integer>(){}.getType());
         owner.showTitle(
@@ -52,13 +52,13 @@ public class GuiEditStateService extends StateService<EditGuiState> {
     }
 
     @Override
-    protected void onEarlyExit(EditGuiState state) {
+    protected void onEarlyExit(GuiEditFunctionState state) {
         Player owner = (Player) state.getOwner();
         Ari.instance.getLog().debug("player {} edit status finish.", owner.getName());
     }
 
     @Override
-    protected void onFinished(EditGuiState state) {
+    protected void onFinished(GuiEditFunctionState state) {
         Player owner = (Player) state.getOwner();
         owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.timeout-cancel")));
         owner.clearTitle();
@@ -66,13 +66,13 @@ public class GuiEditStateService extends StateService<EditGuiState> {
     }
 
     @Override
-    protected void onServiceAbort(EditGuiState state) {
+    protected void onServiceAbort(GuiEditFunctionState state) {
 
     }
 
     @Override
     public void onReload() {
-        for (EditGuiState state : this.getAllStates()) {
+        for (GuiEditFunctionState state : this.getAllStates()) {
             state.setOver(true);
         }
     }

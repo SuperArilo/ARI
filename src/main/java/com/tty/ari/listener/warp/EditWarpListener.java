@@ -9,7 +9,7 @@ import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.state.EditGuiState;
+import com.tty.api.state.GuiEditFunctionState;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.GuiState;
@@ -19,7 +19,7 @@ import com.tty.ari.enumType.GuiType;
 import com.tty.ari.gui.warp.WarpEditor;
 import com.tty.ari.gui.warp.WarpList;
 import com.tty.ari.listener.OnGuiEditListener;
-import com.tty.ari.states.gui.GuiEditStateService;
+import com.tty.ari.states.gui.GuiEditFunctionStateService;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.TextComponent;
@@ -48,7 +48,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
     }
 
     @Override
-    public boolean onTitleEditStatus(String message, EditGuiState<ServerWarp> state) {
+    public boolean onTitleEditStatus(String message, GuiEditFunctionState<ServerWarp> state) {
         FunctionType type = state.getFunctionType();
         Player player = (Player) state.getOwner();
 
@@ -239,8 +239,8 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
             return;
         }
         event.getInventory().close();
-        Ari.STATE_MACHINE_MANAGER.get(GuiEditStateService.class).addState(
-                new EditGuiState<>(
+        Ari.STATE_MACHINE_MANAGER.get(GuiEditFunctionStateService.class).addState(
+                new GuiEditFunctionState<>(
                         player,
                         Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new TypeToken<Integer>() {}.getType()),
                         currentEditWarp,
