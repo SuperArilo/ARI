@@ -11,13 +11,13 @@ import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.player.MaintenanceBossBarState;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
-import com.tty.ari.dto.state.player.PlayerSaveState;
+import com.tty.ari.dto.state.player.PlayerOnlineState;
 import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.enumType.FilePath;
 import com.tty.ari.states.MaintenanceBossBarService;
-import com.tty.ari.states.PlayerSaveStateService;
+import com.tty.ari.states.PlayerOnlineStateService;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerNameCache;
@@ -193,7 +193,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
             }
             //添加玩家登录的状态
-            Ari.STATE_MACHINE_MANAGER.get(PlayerSaveStateService.class).addState(new PlayerSaveState(player, nowLoginTime));
+            Ari.STATE_MACHINE_MANAGER.get(PlayerOnlineStateService.class).addState(new PlayerOnlineState(player, nowLoginTime));
             Ari.instance.getScheduler().runAtEntity(Ari.instance, player, o -> {
                 if(this.isPlayerInsideBlock(player)) {
                     Ari.instance.getLog().debug("player {} inside block, teleport safe location.", player.getName());
@@ -217,8 +217,8 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             event.quitMessage(null);
             ConfigUtils.t("server.message.on-leave", player).thenAccept(i -> Ari.instance.getScheduler().run(Ari.instance, t -> Bukkit.broadcast(i)));
         }
-        List<PlayerSaveState> states = Ari.STATE_MACHINE_MANAGER
-                .get(PlayerSaveStateService.class)
+        List<PlayerOnlineState> states = Ari.STATE_MACHINE_MANAGER
+                .get(PlayerOnlineStateService.class)
                 .getStates(player);
         if (!states.isEmpty()) {
             states.getFirst().setCount(new AtomicInteger(Integer.MAX_VALUE));

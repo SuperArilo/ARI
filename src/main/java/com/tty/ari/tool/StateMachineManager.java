@@ -27,7 +27,7 @@ public class StateMachineManager {
         this.registerStateMachine(new PlayerRideActionStateService(20L, 1L, false));
         this.registerStateMachine(new RandomTpStateService(20L, 1L, true));
         this.registerStateMachine(new GuiEditStateService(20L,1L, false));
-        this.registerStateMachine(new PlayerSaveStateService(20L, 20L, true));
+        this.registerStateMachine(new PlayerOnlineStateService(20L, 20L, true));
         this.registerStateMachine(new GuiManagerStateService(10L, 1L, false));
         this.registerStateMachine(new PlayerCommandPreprocessService(20L, 1L, true));
         this.registerStateMachine(new PlayerChatService(20L, 1L, true));
