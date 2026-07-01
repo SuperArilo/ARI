@@ -18,7 +18,6 @@ public class GuiManagerStateService extends StateService<GuiState> {
 
     @Override
     protected void loopExecution(GuiState state) {
-        state.setPending(false);
     }
 
     @Override

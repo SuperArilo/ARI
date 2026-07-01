@@ -25,7 +25,6 @@ public class GuiEditStateService extends StateService<EditGuiState> {
             state.setOver(true);
             return;
         }
-        state.setPending(false);
         Ari.instance.getLog().debug("checking player {} edit gui {}. count = {} max_count = {}",
                 owner.getName(),
                 state.getFunctionType(),

@@ -62,7 +62,6 @@ public class TeleportStateService extends StateService<State> {
                             1000,
                             200
                     ));
-                    state.setPending(false);
                     Ari.instance.getLog().debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
                 }, null));
     }

@@ -30,7 +30,6 @@ public class PlayerChatService extends StateService<PlayerChatState> {
             state.setOver(true);
             Ari.instance.getLog().debug("player {} is offline，over.", owner.getName());
         } else {
-            state.setPending(false);
             Ari.instance.getLog().debug("player {} cooldown count: {}.", owner.getName(), state.getRemain());
         }
 

@@ -43,7 +43,6 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
             state.setOver(true);
             return;
         }
-        state.setPending(false);
         Ari.instance.getLog().debug("checking player {} -> {} request. count {}, max_count {}", owner.getName(), target.getName(), state.getCount(), state.getMax_count());
     }
 

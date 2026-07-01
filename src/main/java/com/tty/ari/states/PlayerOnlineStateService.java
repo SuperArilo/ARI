@@ -29,7 +29,7 @@ public class PlayerOnlineStateService extends StateService<PlayerOnlineState> {
 
     @Override
     protected void loopExecution(PlayerOnlineState state) {
-        state.setPending(false);
+
     }
 
     @Override

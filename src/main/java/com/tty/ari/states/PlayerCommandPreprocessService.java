@@ -32,7 +32,6 @@ public class PlayerCommandPreprocessService extends StateService<PlayerPreComman
             state.setOver(true);
             Ari.instance.getLog().debug("player {} is offline, over now.", owner.getName());
         } else  {
-            state.setPending(false);
             Ari.instance.getLog().debug("player {} input command {} cooldown count {}.", owner, state.getMainCommand(), state.getCount().get());
         }
     }

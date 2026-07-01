@@ -36,6 +36,8 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
         Player beRidePlayer = state.getBeRidePlayer();
         Player owner = (Player) state.getOwner();
         Entity toolEntity = state.getTool_entity();
+
+        state.setRunning(true);
         Ari.instance.getScheduler().runAtEntity(Ari.instance, toolEntity, i -> {
             boolean b = toolEntity.getPassengers().isEmpty() ||
                     !toolEntity.isInsideVehicle() ||
@@ -48,9 +50,8 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
                     beRidePlayer.isSwimming();
             if (b) {
                 state.setOver(true);
-            } else {
-                state.setPending(false);
             }
+            state.setRunning(false);
         }, null);
     }
 

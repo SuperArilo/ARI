@@ -90,18 +90,19 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
             return;
         }
 
-        boolean b = !owner.isDead() &&
-                !owner.isFlying() &&
-                !owner.isSleeping() &&
-                !owner.isDeeplySleeping() &&
-                owner.isOnline() &&
-                owner.isInsideVehicle();
-        if (b) {
-            state.setPending(false);
-        } else {
-            state.setOver(true);
-        }
-        state.setPending(false);
+        state.setRunning(true);
+        Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> {
+            boolean b = !owner.isDead() &&
+                    !owner.isFlying() &&
+                    !owner.isSleeping() &&
+                    !owner.isDeeplySleeping() &&
+                    owner.isOnline() &&
+                    owner.isInsideVehicle();
+            if (!b) {
+                state.setOver(true);
+            }
+            state.setRunning(false);
+        }, null);
     }
 
     @Override

@@ -1,8 +1,8 @@
 package com.tty.ari.dto.state.action;
 
+import com.tty.api.state.AsyncState;
 import com.tty.ari.Ari;
 import com.tty.api.utils.FormatUtils;
-import com.tty.api.state.State;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.*;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public class PlayerActionState extends State {
+public class PlayerActionState extends AsyncState {
 
     @Getter
     @Setter

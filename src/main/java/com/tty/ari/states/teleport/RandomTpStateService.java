@@ -161,7 +161,6 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
         this.searchSafeLocation.search(world, randomXZ[0], randomXZ[1])
             .thenAcceptAsync(location -> {
-                state.setPending(false);
                 state.setRunning(false);
                 if (location == null) return;
                 state.setTrueLocation(location);
@@ -170,7 +169,6 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             .exceptionallyAsync(e -> {
                 if (e.getCause() instanceof TimeoutException && owner instanceof Player player) {
                     state.setRunning(false);
-                    state.setPending(false);
                     ConfigUtils.t("function.rtp.abort-search", player).thenAccept(player::sendMessage);
                 } else {
                     state.setOver(true);
