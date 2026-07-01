@@ -70,39 +70,41 @@ public class PlayerOnlineStateService extends StateService<PlayerOnlineState> {
     public void savePlayerData(PlayerOnlineState state) {
 
         Player player = (Player) state.getOwner();
-        this.repository.setExecutionMode(!Bukkit.getServer().isStopping());
+        boolean stopping = Bukkit.getServer().isStopping();
+        this.repository.setExecutionMode(!stopping);
         String uuid = player.getUniqueId().toString();
 
-        long onlineDuration = System.currentTimeMillis() -  state.getLoginTime();
+        long nowTime = System.currentTimeMillis();
+        long onlineDuration = nowTime - state.getLoginTime();
 
         LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
 
-        this.repository.get(wrapper, PartitionKey.global())
-            .thenCompose(serverPlayer -> {
-                if (serverPlayer == null) {
-                    Ari.instance.getLog().error("Player data not found: {}", uuid);
-                    return CompletableFuture.completedFuture(false);
-                }
-                serverPlayer.setTotalOnlineTime(serverPlayer.getTotalOnlineTime() + onlineDuration);
-                return this.repository.update(serverPlayer, wrapper, PartitionKey.global());
-            })
-            .thenAccept(success -> {
-                if (success) {
-                    Ari.instance.getLog().debug("Saved player data: {}", player.getName());
-                } else {
-                    Ari.instance.getLog().error("Failed to save player data: {}", player.getName());
-                }
-            })
-            .whenComplete((result, ex) -> {
-                if (ex != null) {
-                    Ari.instance.getLog().error(ex, "Error saving player data for {}", player.getName());
-                }
-                if (this.repository.isAsync() && player.isOnline()) {
-                    Ari.instance.getScheduler().runLater(Ari.instance, i -> this.addState(new PlayerOnlineState(player, System.currentTimeMillis())), 20L);
-                } else {
-                    Ari.instance.getLog().debug("skip player {} save event.", player.getName());
-                }
-            });
+        this.repository.get(wrapper, PartitionKey.global()).thenCompose(serverPlayer -> {
+            if (serverPlayer == null) {
+                Ari.instance.getLog().error("Player data not found: {}", uuid);
+                return CompletableFuture.completedFuture(false);
+            }
+            serverPlayer.setTotalOnlineTime(serverPlayer.getTotalOnlineTime() + onlineDuration);
+            if (!player.isOnline() || stopping) {
+                serverPlayer.setLastLoginOffTime(nowTime);
+            }
+            return this.repository.update(serverPlayer, wrapper, PartitionKey.global());
+        }).thenAccept(success -> {
+            if (success) {
+                Ari.instance.getLog().debug("Saved player data: {}", player.getName());
+            } else {
+                Ari.instance.getLog().error("Failed to save player data: {}", player.getName());
+            }
+        }).whenComplete((result, ex) -> {
+            if (ex != null) {
+                Ari.instance.getLog().error(ex, "Error saving player data for {}", player.getName());
+            }
+            if (this.repository.isAsync() && player.isOnline()) {
+                Ari.instance.getScheduler().runLater(Ari.instance, i -> this.addState(new PlayerOnlineState(player, System.currentTimeMillis())), 20L);
+            } else {
+                Ari.instance.getLog().debug("skip player {} save event.", player.getName());
+            }
+        });
     }
 
 }
