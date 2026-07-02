@@ -11,8 +11,8 @@ import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.CheckInventoryLayoutConfig;
 import com.tty.ari.dto.gui.PlayerInventoryCheckMenu;
-import com.tty.ari.enumType.FilePath;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.NBTFileHandle;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
@@ -70,7 +70,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
     @Override
     protected @NotNull BaseMenu config() {
-        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.INV_GUI_CONFIG).saveToString(), PlayerInventoryCheckMenu.class);
+        return Ari.instance.getConfigurationManager().get(CheckInventoryLayoutConfig.class).getMenuConfig(PlayerInventoryCheckMenu.class);
     }
 
     @Override

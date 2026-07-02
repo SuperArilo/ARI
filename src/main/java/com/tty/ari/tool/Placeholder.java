@@ -14,13 +14,13 @@ import com.tty.api.state.State;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.TimeFormatUtils;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.lang.LangConfig;
 import com.tty.ari.dto.SleepingWorld;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
 import com.tty.ari.dto.state.teleport.RandomTpState;
 import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
-import com.tty.ari.enumType.LangFile;
 import com.tty.ari.enumType.lang.*;
 import com.tty.ari.listener.player.PlayerSkipNight;
 import com.tty.ari.states.teleport.PreTeleportStateService;
@@ -40,10 +40,10 @@ import java.util.UUID;
 import static com.tty.ari.listener.teleport.RecordLastLocationListener.TELEPORT_LAST_LOCATION;
 
 @SuppressWarnings("deprecation")
-public class Placeholder extends BasePlaceholder<LangFile> {
+public class Placeholder extends BasePlaceholder {
 
     public Placeholder(AbstractJavaPlugin plugin) {
-        super(plugin, LangFile.LANG);
+        super(plugin, Ari.instance.getConfigurationManager().get(LangConfig.class));
         this.init();
     }
 

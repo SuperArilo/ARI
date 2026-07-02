@@ -1,9 +1,8 @@
 package com.tty.ari.listener.player;
 
-import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.AttackBarConfig;
 import com.tty.ari.dto.state.player.AttackBossBarState;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.states.AttackBossBarService;
 import com.tty.ari.tool.LastDamageTracker;
 import org.bukkit.entity.Boss;
@@ -22,15 +21,13 @@ import static com.tty.ari.listener.DamageTrackerListener.DAMAGE_TRACKER;
 
 public class MobBossBarListener implements Listener {
 
-    private boolean isEnable = false;
-
     private boolean isBoss(Damageable damageable) {
         return (damageable instanceof Boss);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (!this.isEnable) return;
+        if (!Ari.instance.getConfigurationManager().get(AttackBarConfig.class).isEnable()) return;
         Entity entity = event.getEntity();
         if (!(entity instanceof Damageable victim)) return;
 
@@ -68,7 +65,7 @@ public class MobBossBarListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void regainHealth(EntityRegainHealthEvent event) {
-        if (!this.isEnable) return;
+        if (!Ari.instance.getConfigurationManager().get(AttackBarConfig.class).isEnable()) return;
         Entity entity = event.getEntity();
         if (!(entity instanceof Damageable victim) || entity instanceof Player) return;
         List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
@@ -89,15 +86,6 @@ public class MobBossBarListener implements Listener {
         } else {
             service.addState(new AttackBossBarState(player, victim));
         }
-    }
-
-    @EventHandler
-    public void onReload(WhenPluginConfigReloadCompleteEvent event) {
-        this.isEnable = this.isEnable();
-    }
-
-    private boolean isEnable() {
-        return Ari.instance.getConfigInstance().getValue("attack-bar.enable", FilePath.ATTACK_BAR_CONFIG, Boolean.class, false);
     }
 
 }

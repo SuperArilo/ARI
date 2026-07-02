@@ -1,7 +1,7 @@
 package com.tty.ari.tool;
 
 import com.tty.ari.Ari;
-import com.tty.ari.enumType.LangFile;
+import com.tty.ari.configuration.lang.LangConfig;
 import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -32,11 +32,11 @@ public class ConfigUtils {
     }
 
     public static Component tAfter(String key, Map<String, Component> map) {
-        return Ari.instance.getComponentTool().text(Ari.instance.getConfigInstance().getValue(key, LangFile.LANG), map);
+        return Ari.instance.getComponentTool().text(Ari.instance.getConfigurationManager().get(LangConfig.class).getString(key), map);
     }
 
     public static Component tAfter(String key) {
-        return Ari.instance.getComponentTool().text(Ari.instance.getConfigInstance().getValue(key, LangFile.LANG));
+        return Ari.instance.getComponentTool().text(Ari.instance.getConfigurationManager().get(LangConfig.class).getString(key));
     }
 
 }

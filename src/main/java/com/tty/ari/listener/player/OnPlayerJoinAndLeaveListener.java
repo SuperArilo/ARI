@@ -1,12 +1,12 @@
 package com.tty.ari.listener.player;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.google.common.reflect.TypeToken;
 import com.tty.api.enumType.Operator;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.player.MaintenanceBossBarState;
@@ -15,7 +15,7 @@ import com.tty.ari.dto.state.player.PlayerOnlineState;
 import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
-import com.tty.ari.enumType.FilePath;
+import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.states.MaintenanceBossBarService;
 import com.tty.ari.states.PlayerOnlineStateService;
 import com.tty.ari.states.gui.GuiManagerStateService;
@@ -47,11 +47,6 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     private boolean messageFirstJoin;
     private boolean messageOnLogin;
     private boolean messageOnLeave;
-
-    private boolean spawnFirstJoin;
-    private boolean spawnEnable;
-
-    private SpawnLocation spawnLocation;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void banCheck(AsyncPlayerPreLoginEvent event) {
@@ -169,20 +164,21 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             //所有检查通过，添加玩家的名称到缓存里
             PlayerNameCache.update(player.getUniqueId(), playerName);
 
-            if(!player.hasPlayedBefore()) {
-                if (this.spawnFirstJoin && this.spawnEnable) {
-                    if (this.spawnLocation != null) {
-                        Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), new Location(
-                                Bukkit.getServer().getWorld(this.spawnLocation.getWorldName()),
-                                this.spawnLocation.getX(),
-                                this.spawnLocation.getY(),
-                                this.spawnLocation.getZ(),
-                                this.spawnLocation.getYaw(),
-                                this.spawnLocation.getPitch()
-                        ));
-                    } else {
-                        Ari.instance.getLog().info("server not set spawn location.");
-                    }
+            FunctionConfig config = Ari.instance.getConfigurationManager().get(FunctionConfig.class);
+
+            if(!player.hasPlayedBefore() && (config.getSpawnFirstJoin() && config.isEnable(TeleportType.SPAWN))) {
+                SpawnLocation spawnLocation = config.getSpawnLocation();
+                if (config.getSpawnLocation() != null) {
+                    Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), new Location(
+                            Bukkit.getServer().getWorld(spawnLocation.getWorldName()),
+                            spawnLocation.getX(),
+                            spawnLocation.getY(),
+                            spawnLocation.getZ(),
+                            spawnLocation.getYaw(),
+                            spawnLocation.getPitch()
+                    ));
+                } else {
+                    Ari.instance.getLog().info("server not set spawn location.");
                 }
                 if(this.messageFirstJoin) {
                     ConfigUtils.t("server.message.on-first-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
@@ -235,9 +231,6 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         this.messageFirstJoin = this.getMessageFirstJoin();
         this.messageOnLogin = this.getMessageOnLogin();
         this.messageOnLeave = this.getMessageOnLeave();
-        this.spawnFirstJoin = this.getSpawnFirstJoin();
-        this.spawnEnable = this.getSpawnEnable();
-        this.spawnLocation = this.getSpawnLocation();
     }
 
     private boolean isPlayerInsideBlock(Player player) {
@@ -295,18 +288,6 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
     private boolean getMessageOnLeave() {
         return Ari.instance.getConfig().getBoolean("server.message.on-leave", false);
-    }
-
-    private boolean getSpawnFirstJoin() {
-        return Ari.instance.getConfigInstance().getValue("spawn.first-join", FilePath.FUNCTION_CONFIG, Boolean.class, false);
-    }
-
-    private boolean getSpawnEnable() {
-        return Ari.instance.getConfigInstance().getValue("spawn.enable", FilePath.FUNCTION_CONFIG, Boolean.class, false);
-    }
-
-    private SpawnLocation getSpawnLocation() {
-        return Ari.instance.getConfigInstance().getValue("spawn.location", FilePath.FUNCTION_CONFIG, new TypeToken<SpawnLocation>(){}.getType(), null);
     }
 
 }

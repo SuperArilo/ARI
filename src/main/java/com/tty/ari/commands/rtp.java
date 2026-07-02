@@ -1,14 +1,15 @@
 package com.tty.ari.commands;
 
 import com.mojang.brigadier.Command;
-import com.tty.ari.Ari;
-import com.tty.ari.command.LiteralArgumentCommand;
-import com.tty.ari.commands.sub.RtpCancel;
-import com.tty.ari.dto.state.teleport.RandomTpState;
-import com.tty.ari.enumType.FilePath;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.ari.Ari;
+import com.tty.ari.command.LiteralArgumentCommand;
+import com.tty.ari.commands.sub.RtpCancel;
+import com.tty.ari.configuration.FunctionConfig;
+import com.tty.ari.dto.state.teleport.RandomTpState;
+import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.states.teleport.RandomTpStateService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,13 +32,13 @@ public class rtp extends LiteralArgumentCommand {
                 .get(RandomTpStateService.class)
                 .addState(new RandomTpState(
                         player,
-                        Ari.instance.getConfigInstance().getValue("rtp.search-count", FilePath.FUNCTION_CONFIG, Integer.class, 10),
+                        Ari.instance.getConfigurationManager().get(FunctionConfig.class).getRtpSearchCount(),
                         player.getWorld()));
         return Command.SINGLE_SUCCESS;
     }
 
     @Override
     protected boolean isEnableInGame() {
-        return Ari.instance.getConfigInstance().getValue("rtp.enable", FilePath.FUNCTION_CONFIG, Boolean.class, true);
+        return Ari.instance.getConfigurationManager().get(FunctionConfig.class).isEnable(TeleportType.RTP);
     }
 }

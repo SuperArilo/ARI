@@ -1,13 +1,14 @@
 package com.tty.ari.commands.args.tpa;
 
-import com.tty.ari.Ari;
-import com.tty.ari.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
-import com.tty.ari.dto.state.teleport.PlayerToPlayerState;
-import com.tty.ari.enumType.FilePath;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.ari.Ari;
+import com.tty.ari.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
+import com.tty.ari.configuration.FunctionConfig;
+import com.tty.ari.dto.state.teleport.PlayerToPlayerState;
+import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.states.teleport.TeleportStateService;
 import com.tty.ari.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;
@@ -41,7 +42,7 @@ public class TpaAcceptArgs extends TpaBaseLiteralLiteralArgument {
         Player target = Ari.instance.getServer().getPlayerExact(args[1]);
         return this.checkAfterResponse(player, target, s -> {
 
-            int value = Ari.instance.getConfigInstance().getValue("tpa.teleport.delay", FilePath.FUNCTION_CONFIG, Integer.class, 3);
+            int value = Ari.instance.getConfigurationManager().get(FunctionConfig.class).getTeleportDelay(TeleportType.TPA);
             PlayerToPlayerState state;
             if (s.getType().getKey().equals("tpa")) {
                 state = new PlayerToPlayerState(target, player, value, "tpa");

@@ -4,9 +4,9 @@ import com.google.gson.reflect.TypeToken;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.task.CancellableTask;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.TabListConfig;
 import com.tty.ari.dto.tab.TabGroup;
 import com.tty.ari.dto.tab.TabGroupLine;
-import com.tty.ari.enumType.FilePath;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import org.bukkit.Bukkit;
@@ -136,8 +136,11 @@ public class PlayerTabManager implements Listener {
     }
 
     private void reloadConfig() {
-        this.enable = Ari.instance.getConfigInstance().getValue("tab.enable", FilePath.TAB_LIST_CONFIG, Boolean.class, false);
-        this.updateInterval = Ari.instance.getConfigInstance().getValue("tab.update-interval", FilePath.TAB_LIST_CONFIG, Integer.class, 20);
+
+        TabListConfig tabListConfig = Ari.instance.getConfigurationManager().get(TabListConfig.class);
+
+        this.enable = tabListConfig.isEnable();
+        this.updateInterval = tabListConfig.updateInterval();
 
         this.headers.clear();
         this.footers.clear();
@@ -146,11 +149,11 @@ public class PlayerTabManager implements Listener {
 
         TypeToken<List<String>> listType = new TypeToken<>() {};
 
-        this.headers.addAll(Ari.instance.getConfigInstance().getValue("tab.layout.header", FilePath.TAB_LIST_CONFIG, listType.getType(), List.of()));
-        this.footers.addAll(Ari.instance.getConfigInstance().getValue("tab.layout.footer", FilePath.TAB_LIST_CONFIG, listType.getType(), List.of()));
+        this.headers.addAll(tabListConfig.getLayoutHeader());
+        this.footers.addAll(tabListConfig.getLayoutFooter());
 
-        this.groupLines.putAll(Ari.instance.getConfigInstance().getValue("tab.groups", FilePath.TAB_LIST_CONFIG, new TypeToken<Map<String, TabGroupLine>>() {}.getType(), Map.of()));
-        this.groupOrder.addAll(Ari.instance.getConfigInstance().getValue("tab.slot", FilePath.TAB_LIST_CONFIG, listType.getType(), List.of()));
+        this.groupLines.putAll(tabListConfig.getGroups());
+        this.groupOrder.addAll(tabListConfig.getSlot());
 
         if (!this.groupOrder.contains(DEFAULT_GROUP)) {
             this.groupOrder.add(DEFAULT_GROUP);

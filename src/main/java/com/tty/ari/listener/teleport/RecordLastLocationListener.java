@@ -1,13 +1,10 @@
 package com.tty.ari.listener.teleport;
 
-import com.google.common.reflect.TypeToken;
-import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
-import com.tty.api.event.WhenPluginConfigUpdateEvent;
+import com.tty.api.ServerPlatform;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.dto.event.CustomPlayerRespawnEvent;
-import com.tty.api.ServerPlatform;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
@@ -34,8 +31,6 @@ public class RecordLastLocationListener implements Listener {
 
     //保存的玩家上一个传送位置
     public static final Map<UUID, Location> TELEPORT_LAST_LOCATION = new ConcurrentHashMap<>();
-
-    private SpawnLocation spawnLocation;
 
     @EventHandler
     public void onRespawnOnFolia(InventoryCloseEvent event) {
@@ -86,7 +81,7 @@ public class RecordLastLocationListener implements Listener {
         if (ServerPlatform.isFolia()) return;
         Player player = event.getPlayer();
         if (!event.isBedSpawn() && !event.isAnchorSpawn()) {
-            event.setRespawnLocation(getRespawnLocation(player.getWorld()));
+            event.setRespawnLocation(this.getRespawnLocation(player.getWorld()));
         }
 
         if (TELEPORT_LAST_LOCATION.containsKey(player.getUniqueId())) {
@@ -99,18 +94,6 @@ public class RecordLastLocationListener implements Listener {
         TELEPORT_LAST_LOCATION.remove(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler
-    public void onReload(WhenPluginConfigReloadCompleteEvent event) {
-        if (!event.getPlugin().equals(Ari.instance)) return;
-        this.spawnLocation = this.getSpawnLocation();
-    }
-
-    @EventHandler
-    public void onConfigIUpdate(WhenPluginConfigUpdateEvent event) {
-        if (!event.getPlugin().equals(Ari.instance)) return;
-        this.spawnLocation = this.getSpawnLocation();
-    }
-
     private void setPlayerLastLocation(Player player) {
         ConfigUtils.t("teleport.tips-back", player).thenAccept(i ->
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, t ->
@@ -119,17 +102,14 @@ public class RecordLastLocationListener implements Listener {
 
     public Location getRespawnLocation(@NotNull World world) {
         Location location;
-        if (this.spawnLocation != null) {
-            location = new Location(Bukkit.getServer().getWorld(this.spawnLocation.getWorldName()), this.spawnLocation.getX(), this.spawnLocation.getY(), this.spawnLocation.getZ(), this.spawnLocation.getYaw(), this.spawnLocation.getPitch());
+        SpawnLocation spawnLocation = Ari.instance.getConfigurationManager().get(FunctionConfig.class).getSpawnLocation();
+        if (spawnLocation != null) {
+            location = new Location(Bukkit.getServer().getWorld(spawnLocation.getWorldName()), spawnLocation.getX(), spawnLocation.getY(), spawnLocation.getZ(), spawnLocation.getYaw(), spawnLocation.getPitch());
         } else {
             Ari.instance.getLog().debug("not setting spawn location.fallback server spawn location.");
             location = world.getSpawnLocation();
         }
         return location;
-    }
-
-    private SpawnLocation getSpawnLocation() {
-        return Ari.instance.getConfigInstance().getValue("spawn.location", FilePath.FUNCTION_CONFIG, new TypeToken<SpawnLocation>(){}.getType(), null);
     }
 
 }

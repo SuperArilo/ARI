@@ -8,8 +8,8 @@ import com.tty.api.enumType.IconKeyType;
 import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.home.HomeEditConfig;
 import com.tty.ari.entity.ServerHome;
-import com.tty.ari.enumType.FilePath;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -33,7 +33,7 @@ public class HomeEditor extends BaseConfigInventory {
 
     @Override
     protected @NotNull BaseMenu config() {
-        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.HOME_EDIT_GUI).saveToString(), BaseMenu.class);
+        return Ari.instance.getConfigurationManager().get(HomeEditConfig.class).getMenuConfig(BaseMenu.class);
     }
 
     @Override

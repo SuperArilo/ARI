@@ -14,8 +14,8 @@ import com.tty.api.gui.BaseDataItemConfigInventory;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.warp.WarpGuiConfig;
 import com.tty.ari.entity.ServerWarp;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.tool.PlayerNameCache;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -110,7 +110,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     @Override
     protected @NotNull BaseMenu config() {
-        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.WARP_LIST_GUI).saveToString(), BaseDataMenu.class);
+        return Ari.instance.getConfigurationManager().get(WarpGuiConfig.class).getMenuConfig(BaseDataMenu.class);
     }
 
     @Override

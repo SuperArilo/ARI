@@ -1,5 +1,6 @@
 package com.tty.ari.listener.unsupported;
 
+import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,15 +20,9 @@ import org.bukkit.util.Vector;
 
 public class SandDupeListener implements Listener {
 
-    private final boolean enable;
-    private final String overworld;
-    private final String endWorld;
-
-    public SandDupeListener() {
-        this.enable = this.getEnable();
-        this.overworld = this.getOverworld();
-        this.endWorld = this.getEndWorld();
-    }
+    private boolean enable;
+    private String overworld;
+    private String endWorld;
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityPortalEnterEvent(EntityPortalEnterEvent event) {
@@ -77,6 +72,13 @@ public class SandDupeListener implements Listener {
                     task ->
                             endWorld.spawn(location, FallingBlock.class, CreatureSpawnEvent.SpawnReason.CUSTOM, i -> i.setBlockData(blockData)).setVelocity(velocity));
         }
+    }
+
+    @EventHandler
+    public void onReload(WhenPluginConfigReloadCompleteEvent event) {
+        this.enable = this.getEnable();
+        this.overworld = this.getOverworld();
+        this.endWorld = this.getEndWorld();
     }
 
     private Location findSafeLocation(World world) {

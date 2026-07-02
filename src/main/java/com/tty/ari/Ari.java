@@ -2,17 +2,25 @@ package com.tty.ari;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.api.AbstractJavaPlugin;
+import com.tty.api.ConfigurationManager;
 import com.tty.api.ServerPlatform;
 import com.tty.api.dto.AliasItem;
 import com.tty.api.dto.TempRegisterService;
-import com.tty.api.enumType.FilePathEnum;
+import com.tty.api.configuration.BaseConfiguration;
 import com.tty.api.service.*;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.CommandRegister;
+import com.tty.ari.configuration.*;
+import com.tty.ari.configuration.home.HomeConfig;
+import com.tty.ari.configuration.home.HomeEditConfig;
+import com.tty.ari.configuration.home.HomeGuiConfig;
+import com.tty.ari.configuration.lang.DeathMessageLang;
+import com.tty.ari.configuration.lang.LangConfig;
+import com.tty.ari.configuration.warp.WarpConfig;
+import com.tty.ari.configuration.warp.WarpEditGuiConfig;
+import com.tty.ari.configuration.warp.WarpGuiConfig;
 import com.tty.ari.dto.BungeeCache;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.GuiType;
-import com.tty.ari.enumType.LangFile;
 import com.tty.ari.function.PlayerTabManager;
 import com.tty.ari.listener.*;
 import com.tty.ari.listener.bungee.GetServerListListener;
@@ -78,7 +86,9 @@ public class Ari extends AbstractJavaPlugin {
         STATE_MACHINE_MANAGER = new StateMachineManager();
 
         this.registerBungeeListener();
-        CommandRegister.register(this, "com.tty.ari.commands", Ari.instance.getConfigInstance().yamlConvertToObj(this.getConfigInstance().getObject(FilePath.COMMAND_ALIAS).saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
+
+        ConfigurationManager manager = this.getConfigurationManager();
+        CommandRegister.register(this, "com.tty.ari.commands",manager.yamlConvertToObj(manager.get(CommandAliasConfig.class).getConfiguration().saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
 
         PLACEHOLDER = new Placeholder(this);
         BUNGEECACHE = new BungeeCache(this);
@@ -149,13 +159,24 @@ public class Ari extends AbstractJavaPlugin {
     }
 
     @Override
-    protected @NotNull FilePathEnum @NotNull [] fileList() {
-        return FilePath.values();
-    }
-
-    @Override
-    protected @Nullable FilePathEnum @Nullable [] langFiles() {
-        return LangFile.values();
+    protected @Nullable List<BaseConfiguration> configurations() {
+        return List.of(
+                new LangConfig(),
+                new DeathMessageLang(),
+                new HomeConfig(),
+                new HomeGuiConfig(),
+                new HomeEditConfig(),
+                new WarpConfig(),
+                new WarpGuiConfig(),
+                new WarpEditGuiConfig(),
+                new AttackBarConfig(),
+                new ChatConfig(),
+                new CheckInventoryLayoutConfig(),
+                new CommandAliasConfig(),
+                new FunctionConfig(),
+                new GameActionConfig(),
+                new TabListConfig()
+        );
     }
 
     private void registerBungeeListener() {

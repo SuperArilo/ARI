@@ -5,8 +5,8 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
+import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.states.teleport.PreTeleportStateService;
 import com.tty.ari.tool.ConfigUtils;
@@ -92,7 +92,7 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
 
     @Override
     protected boolean isEnableInGame() {
-        return Ari.instance.getConfigInstance().getValue("tpa.enable", FilePath.FUNCTION_CONFIG, Boolean.class, true);
+        return Ari.instance.getConfigurationManager().get(FunctionConfig.class).isEnable(TeleportType.TPA);
     }
 
 }

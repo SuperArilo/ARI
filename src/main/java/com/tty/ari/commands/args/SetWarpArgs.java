@@ -4,17 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.tty.ari.Ari;
-import com.tty.api.repository.PartitionKey;
-import com.tty.ari.command.RequiredArgumentCommand;
-import com.tty.ari.entity.ServerWarp;
-import com.tty.ari.entity.cache.ServerWarpRepository;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.EntityRepository;
+import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.PublicFunctionUtils;
-import com.tty.ari.enumType.FilePath;
+import com.tty.ari.Ari;
+import com.tty.ari.command.RequiredArgumentCommand;
+import com.tty.ari.configuration.warp.WarpConfig;
+import com.tty.ari.entity.ServerWarp;
+import com.tty.ari.entity.cache.ServerWarpRepository;
 import com.tty.ari.tool.ConfigUtils;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
@@ -124,6 +124,6 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
 
     @Override
     protected boolean isEnableInGame() {
-        return Ari.instance.getConfigInstance().getValue("main.enable", FilePath.WARP_CONFIG, Boolean.class, true);
+        return Ari.instance.getConfigurationManager().get(WarpConfig.class).isEnable();
     }
 }

@@ -6,15 +6,14 @@ import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.enumType.NbtGuiValue;
-import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.state.GuiEditFunctionState;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.home.HomeConfig;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.entity.ServerHome;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.GuiType;
 import com.tty.ari.gui.home.HomeEditor;
 import com.tty.ari.gui.home.HomeList;
@@ -26,7 +25,6 @@ import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -39,9 +37,6 @@ import java.util.Map;
 
 public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> {
 
-    private List<String> banNameList;
-    private int maxNameLength;
-
     public EditHomeListener(GuiType guiType) {
         super(Ari.instance, guiType);
     }
@@ -49,11 +44,14 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
     @Override
     public boolean onTitleEditStatus(String message, GuiEditFunctionState<ServerHome> state) {
         Player player = (Player) state.getOwner();
-        if(!this.isContentValid(message) || this.banNameList.contains(message)) {
+
+        HomeConfig homeConfig = Ari.instance.getConfigurationManager().get(HomeConfig.class);
+
+        if(!this.isContentValid(message) || homeConfig.getCheckHomeName().contains(message)) {
             player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
             return false;
         }
-        if(message.length() > this.maxNameLength) {
+        if(message.length() > homeConfig.getHomeNameLength()) {
             player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
             return false;
         }
@@ -200,21 +198,6 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
     @Override
     protected void whenDrag(InventoryDragEvent event, HomeEditor holder) {
         event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onReload(WhenPluginConfigReloadCompleteEvent event) {
-        if (!event.getPlugin().equals(Ari.instance)) return;
-        this.maxNameLength = this.getMaxNameLength();
-        this.banNameList = this.getBanNameList();
-    }
-
-    private List<String> getBanNameList() {
-        return Ari.instance.getConfigInstance().getValue("main.name-check", FilePath.HOME_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
-    }
-
-    private int getMaxNameLength() {
-        return Ari.instance.getConfigInstance().getValue("main.name-length", FilePath.HOME_CONFIG, new TypeToken<Integer>(){}.getType(), 15);
     }
 
 }

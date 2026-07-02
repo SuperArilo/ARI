@@ -1,12 +1,14 @@
 package com.tty.ari.states.action;
 
-import com.google.gson.reflect.TypeToken;
-import com.tty.ari.Ari;
-import com.tty.ari.dto.state.action.PlayerSitActionState;
-import com.tty.ari.enumType.FilePath;
 import com.tty.api.state.StateService;
+import com.tty.ari.Ari;
+import com.tty.ari.configuration.GameActionConfig;
+import com.tty.ari.dto.state.action.PlayerSitActionState;
 import com.tty.ari.tool.ConfigUtils;
-import org.bukkit.*;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
@@ -236,7 +238,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
     }
 
     private List<String> getDisableList() {
-        List<String> value = Ari.instance.getConfigInstance().getValue("action.sit.disable-block", FilePath.GAME_ACTION_CONFIG, new TypeToken<List<String>>() {}.getType(), List.of());
+        List<String> value = Ari.instance.getConfigurationManager().get(GameActionConfig.class).getSitDisableBlock();
         return value.stream().map(String::toUpperCase).toList();
     }
 

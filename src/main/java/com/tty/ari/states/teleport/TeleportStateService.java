@@ -1,16 +1,19 @@
 package com.tty.ari.states.teleport;
 
-import com.tty.ari.Ari;
-import com.tty.ari.dto.TeleportState;
-import com.tty.ari.dto.state.teleport.PlayerToPlayerState;
-import com.tty.ari.enumType.LangFile;
-import com.tty.ari.enumType.TeleportType;
+import com.tty.api.ConfigurationManager;
 import com.tty.api.state.State;
+import com.tty.api.state.StateService;
+import com.tty.ari.Ari;
+import com.tty.ari.configuration.FunctionConfig;
+import com.tty.ari.configuration.home.HomeConfig;
+import com.tty.ari.configuration.lang.LangConfig;
+import com.tty.ari.configuration.warp.WarpConfig;
+import com.tty.ari.dto.TeleportState;
 import com.tty.ari.dto.state.CooldownState;
 import com.tty.ari.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.ari.dto.state.teleport.EntityToLocationState;
-import com.tty.ari.enumType.FilePath;
-import com.tty.api.state.StateService;
+import com.tty.ari.dto.state.teleport.PlayerToPlayerState;
+import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.states.CoolDownStateService;
 import com.tty.ari.tool.ConfigUtils;
 import org.bukkit.Location;
@@ -18,7 +21,9 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class TeleportStateService extends StateService<State> {
 
@@ -56,7 +61,7 @@ public class TeleportStateService extends StateService<State> {
         ConfigUtils.t("teleport.title.sub-title", player).thenAccept(result ->
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, task -> {
                     player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
-                            Ari.instance.getConfigInstance().getValue("teleport.title.main", LangFile.LANG),
+                            Ari.instance.getConfigurationManager().get(LangConfig.class).getString("teleport.title.main"),
                             result,
                             200,
                             1000,
@@ -184,13 +189,12 @@ public class TeleportStateService extends StateService<State> {
     }
 
     private int getCooldownTime(TeleportType type) {
+        ConfigurationManager manager = Ari.instance.getConfigurationManager();
+        FunctionConfig functionConfig = manager.get(FunctionConfig.class);
         return switch (type) {
-            case RTP -> Ari.instance.getConfigInstance().getValue("rtp.teleport.cooldown", FilePath.FUNCTION_CONFIG, Integer.class, 10);
-            case TPA, TPAHERE -> Ari.instance.getConfigInstance().getValue("tpa.teleport.cooldown", FilePath.FUNCTION_CONFIG, Integer.class, 10);
-            case BACK -> Ari.instance.getConfigInstance().getValue("back.teleport.cooldown", FilePath.FUNCTION_CONFIG, Integer.class, 10);
-            case WARP -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.WARP_CONFIG, Integer.class, 10);
-            case HOME -> Ari.instance.getConfigInstance().getValue("main.teleport.cooldown", FilePath.HOME_CONFIG, Integer.class, 10);
-            case SPAWN -> Ari.instance.getConfigInstance().getValue("spawn.teleport.cooldown", FilePath.FUNCTION_CONFIG, Integer.class, 10);
+            case RTP, TPA, TPAHERE, BACK, SPAWN -> functionConfig.getTeleportCooldown(type);
+            case WARP -> manager.get(WarpConfig.class).getCooldown();
+            case HOME -> manager.get(HomeConfig.class).getCooldown();
         };
     }
 

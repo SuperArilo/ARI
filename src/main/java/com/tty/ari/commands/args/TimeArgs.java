@@ -3,16 +3,16 @@ package com.tty.ari.commands.args;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.tty.api.utils.PublicFunctionUtils;
-import com.tty.ari.Ari;
-import com.tty.ari.command.RequiredArgumentCommand;
-import com.tty.ari.enumType.LangFile;
-import com.tty.ari.enumType.lang.PlaceholderTime;
-import com.tty.ari.function.TimeManager;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.enumType.TimePeriod;
+import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.ari.Ari;
+import com.tty.ari.command.RequiredArgumentCommand;
+import com.tty.ari.configuration.lang.LangConfig;
+import com.tty.ari.enumType.lang.PlaceholderTime;
+import com.tty.ari.function.TimeManager;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.World;
@@ -20,7 +20,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import static com.tty.ari.listener.player.PlayerSkipNight.isBedWorksRe;
@@ -66,7 +69,7 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
             return 0;
         }
         TimeManager.build(world).timeSet(period.getStart());
-        String value = Ari.instance.getConfigInstance().getValue("server.time.tips", LangFile.LANG);
+        String value = Ari.instance.getConfigurationManager().get(LangConfig.class).getString("server.time.tips");
         if (value == null) {
             player.sendMessage("no content " + timePeriod + "in lang");
             return 0;

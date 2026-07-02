@@ -6,15 +6,14 @@ import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.enumType.NbtGuiValue;
-import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.state.GuiEditFunctionState;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.warp.WarpConfig;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.entity.ServerWarp;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.GuiType;
 import com.tty.ari.gui.warp.WarpEditor;
 import com.tty.ari.gui.warp.WarpList;
@@ -26,7 +25,6 @@ import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -40,9 +38,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> {
 
-    private List<String> banNameList;
-    private int maxNameLength;
-
     public EditWarpListener(GuiType guiType) {
         super(Ari.instance, guiType);
     }
@@ -51,15 +46,16 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
     public boolean onTitleEditStatus(String message, GuiEditFunctionState<ServerWarp> state) {
         FunctionType type = state.getFunctionType();
         Player player = (Player) state.getOwner();
+        WarpConfig warpConfig = Ari.instance.getConfigurationManager().get(WarpConfig.class);
 
         ServerWarp data = state.getData();
         switch (type) {
             case RENAME -> {
-                if(!this.isContentValid(message) || this.banNameList.contains(message)) {
+                if(!this.isContentValid(message) || warpConfig.checkWarpNickName().contains(message)) {
                     player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
                     return false;
                 }
-                if(message.length() > this.maxNameLength) {
+                if(message.length() > warpConfig.getWarpNameLength()) {
                     player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
                     return false;
                 }
@@ -215,13 +211,6 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
         event.setCancelled(true);
     }
 
-    @EventHandler
-    public void onReload(WhenPluginConfigReloadCompleteEvent event) {
-        if (!event.getPlugin().equals(Ari.instance)) return;
-        this.maxNameLength = this.getMaxNameLength();
-        this.banNameList = this.getBanNameList();
-    }
-
     private void onPublic(FunctionType type, InventoryClickEvent event, WarpEditor holder, Player player) {
 
         ItemStack clickItem = event.getCurrentItem();
@@ -248,14 +237,6 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
                         GuiType.WARP_EDIT
                 )
         );
-    }
-
-    private List<String> getBanNameList() {
-        return Ari.instance.getConfigInstance().getValue("main.name-check", FilePath.WARP_CONFIG, new TypeToken<List<String>>(){}.getType(), List.of());
-    }
-
-    private int getMaxNameLength() {
-        return Ari.instance.getConfigInstance().getValue("main.name-length", FilePath.WARP_CONFIG, new TypeToken<Integer>(){}.getType(), 15);
     }
 
 }

@@ -8,9 +8,9 @@ import com.tty.api.enumType.IconKeyType;
 import com.tty.api.gui.BaseConfigInventory;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.lang.LangConfig;
+import com.tty.ari.configuration.warp.WarpEditGuiConfig;
 import com.tty.ari.entity.ServerWarp;
-import com.tty.ari.enumType.FilePath;
-import com.tty.ari.enumType.LangFile;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -34,7 +34,7 @@ public class WarpEditor extends BaseConfigInventory {
 
     @Override
     protected @NotNull BaseMenu config() {
-        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.WARP_EDIT_GUI).saveToString(), BaseMenu.class);
+        return Ari.instance.getConfigurationManager().get(WarpEditGuiConfig.class).getMenuConfig(BaseMenu.class);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class WarpEditor extends BaseConfigInventory {
                     }
                     case COST -> {
                         if (Ari.ECONOMY_SERVICE.isNull()) {
-                            item.setName(Ari.instance.getConfigInstance().getValue("server.message.no-economy", LangFile.LANG));
+                            item.setName(Ari.instance.getConfigurationManager().get(LangConfig.class).getString("server.message.no-economy"));
                             item.setMaterial("barrier");
                         } else {
                             Double cost = this.warp.getCost();

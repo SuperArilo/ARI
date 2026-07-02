@@ -13,8 +13,8 @@ import com.tty.api.gui.BaseDataItemConfigInventory;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.home.HomeGuiConfig;
 import com.tty.ari.entity.ServerHome;
-import com.tty.ari.enumType.FilePath;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
@@ -100,7 +100,7 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     @Override
     protected @NotNull BaseDataMenu config() {
-        return Ari.instance.getConfigInstance().yamlConvertToObj(Ari.instance.getConfigInstance().getObject(FilePath.HOME_LIST_GUI).saveToString(), BaseDataMenu.class);
+        return Ari.instance.getConfigurationManager().get(HomeGuiConfig.class).getMenuConfig(BaseDataMenu.class);
     }
 
     @Override

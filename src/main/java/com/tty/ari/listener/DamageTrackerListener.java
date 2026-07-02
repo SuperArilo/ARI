@@ -1,15 +1,12 @@
 package com.tty.ari.listener;
 
-import com.google.common.reflect.TypeToken;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.task.CancellableTask;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
-import com.tty.ari.enumType.FilePath;
+import com.tty.ari.configuration.AttackBarConfig;
 import com.tty.ari.tool.LastDamageTracker;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -17,27 +14,17 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class DamageTrackerListener implements Listener {
 
     public static final LastDamageTracker DAMAGE_TRACKER = new LastDamageTracker();
 
-    //用于清理超过20秒后的被攻击的实体记录
-    private int clear_last_attack_record;
-    //用于定时清理受害者的记录周期
-    private int tick_clear_dealy;
-
-    private List<EntityType> excludedEntities = new ArrayList<>();
-
     private CancellableTask cleanTask;
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntity(EntityDamageEvent event) {
-        Entity entity = event.getEntity();
-        if (this.excludedEntities.contains(entity.getType())) return;
+        if (Ari.instance.getConfigurationManager().get(AttackBarConfig.class).getExcludedEntities().stream().anyMatch(i -> i.equalsIgnoreCase(event.getEntity().getType().name()))) return;
         DAMAGE_TRACKER.addRecord(event);
     }
 
@@ -59,9 +46,6 @@ public class DamageTrackerListener implements Listener {
             this.cleanTask.cancel();
             this.cleanTask = null;
         }
-        this.tick_clear_dealy = this.loadTickClearDealy();
-        this.clear_last_attack_record = this.loadClearLastAttackRecord();
-        this.excludedEntities = this.loadExcludedEntities();
         this.cleanTask = this.createCleanTask();
     }
 
@@ -70,13 +54,14 @@ public class DamageTrackerListener implements Listener {
             this.cleanTask.cancel();
             this.cleanTask = null;
         }
+        AttackBarConfig attackBarConfig = Ari.instance.getConfigurationManager().get(AttackBarConfig.class);
         return Ari.instance.getScheduler().runAtFixedRate(Ari.instance, i -> {
             long now = System.currentTimeMillis();
             Set<Entity> victims = DAMAGE_TRACKER.getVictimsSnapshot();
             for (Entity e : victims) {
                 if (!(e instanceof Damageable damageable)) continue;
                 long lastTs = DAMAGE_TRACKER.getLastTimestamp(damageable);
-                if (lastTs == 0L || (now - lastTs) > this.clear_last_attack_record * 1000L) {
+                if (lastTs == 0L || (now - lastTs) > attackBarConfig.getClearLastAttackRecord() * 1000L) {
                     DAMAGE_TRACKER.clearRecords(damageable);
                     Ari.instance.getScheduler().runAtEntity(
                             Ari.instance,
@@ -86,24 +71,8 @@ public class DamageTrackerListener implements Listener {
                     );
                 }
             }
-        }, 1L, this.tick_clear_dealy * 20L);
+        }, 1L, attackBarConfig.getTickClearDealy() * 20L);
     }
 
-    private List<EntityType> loadExcludedEntities() {
-        List<String> value = Ari.instance.getConfigInstance().getValue(
-                "attack-bar.damage-tracker.excluded-entities",
-                FilePath.ATTACK_BAR_CONFIG,
-                new TypeToken<List<String>>() {}.getType(),
-                List.of());
-        return PublicFunctionUtils.convertStringListToEnumList(value, EntityType.class, false);
-    }
-
-    private int loadTickClearDealy() {
-        return Ari.instance.getConfigInstance().getValue("attack-bar.damage-tracker.tick_clear_dealy", FilePath.ATTACK_BAR_CONFIG, Integer.class, 30);
-    }
-
-    private int loadClearLastAttackRecord() {
-        return Ari.instance.getConfigInstance().getValue("attack-bar.damage-tracker.clear_last_attack_record", FilePath.ATTACK_BAR_CONFIG, Integer.class, 30);
-    }
 
 }

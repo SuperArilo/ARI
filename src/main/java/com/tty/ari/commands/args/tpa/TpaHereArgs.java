@@ -1,13 +1,13 @@
 package com.tty.ari.commands.args.tpa;
 
 import com.mojang.brigadier.Command;
-import com.tty.ari.Ari;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.ari.Ari;
 import com.tty.ari.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
+import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.states.teleport.PreTeleportStateService;
 import org.bukkit.command.CommandSender;
@@ -49,7 +49,7 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
                         owner,
                         player,
                         TeleportType.TPAHERE,
-                        Ari.instance.getConfigInstance().getValue("tpa.teleport.request-expired-time", FilePath.FUNCTION_CONFIG, Integer.class, 10)
+                        Ari.instance.getConfigurationManager().get(FunctionConfig.class).getTpaRequestExpiredTime()
                 ));
         return Command.SINGLE_SUCCESS;
     }

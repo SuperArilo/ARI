@@ -6,8 +6,9 @@ import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.ari.Ari;
 import com.tty.ari.command.LiteralArgumentCommand;
+import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.dto.SpawnLocation;
-import com.tty.ari.enumType.FilePath;
+import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.tool.ConfigUtils;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -37,14 +38,14 @@ public class setspawn extends LiteralArgumentCommand {
         spawnLocation.setPitch(location.getPitch());
         spawnLocation.setYaw(location.getYaw());
 
-        Ari.instance.getConfigInstance().setValue("spawn.location", FilePath.FUNCTION_CONFIG, spawnLocation.toMap());
+        Ari.instance.getConfigurationManager().get(FunctionConfig.class).setValue("spawn.location", spawnLocation.toMap());
         ConfigUtils.t("function.spawn.create-success", player).thenAccept(player::sendMessage);
         return Command.SINGLE_SUCCESS;
     }
 
     @Override
     protected boolean isEnableInGame() {
-        return Ari.instance.getConfigInstance().getValue("spawn.enable", FilePath.FUNCTION_CONFIG, Boolean.class, true);
+        return Ari.instance.getConfigurationManager().get(FunctionConfig.class).isEnable(TeleportType.SPAWN);
     }
 
 }

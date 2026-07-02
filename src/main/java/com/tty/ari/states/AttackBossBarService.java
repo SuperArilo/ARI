@@ -4,8 +4,8 @@ import com.tty.api.state.StateService;
 import com.tty.api.task.CancellableTask;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.AttackBarConfig;
 import com.tty.ari.dto.state.player.AttackBossBarState;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.lang.PlaceholderPlayerDamageBar;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.bossbar.BossBar;
@@ -23,16 +23,13 @@ import java.util.Map;
 
 public class AttackBossBarService extends StateService<AttackBossBarState> {
 
-    private int maxBar = 0;
-
     public AttackBossBarService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance);
-        this.maxBar = this.getMaxBar();
     }
 
     @Override
     protected boolean canAddState(AttackBossBarState state) {
-        return this.getAllStates().size() <= this.maxBar - 1;
+        return this.getAllStates().size() <= Ari.instance.getConfigurationManager().get(AttackBarConfig.class).getMaxBar() - 1;
     }
 
     @Override
@@ -97,7 +94,6 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
 
     @Override
     public void onReload() {
-        this.maxBar = this.getMaxBar();
         for (AttackBossBarState state : this.getAllStates()) {
             BossBar bar = state.getBar();
             if (bar != null) {
@@ -109,10 +105,6 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
             }
             state.setOver(true);
         }
-    }
-
-    private int getMaxBar() {
-        return Ari.instance.getConfigInstance().getValue("attack-bar.max-bar", FilePath.ATTACK_BAR_CONFIG, Integer.class, 1);
     }
 
     private double getTargetHealthRatio(Damageable damageable) {

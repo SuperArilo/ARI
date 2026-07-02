@@ -6,8 +6,8 @@ import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.ari.Ari;
 import com.tty.ari.command.LiteralArgumentCommand;
+import com.tty.ari.configuration.warp.WarpConfig;
 import com.tty.ari.dto.state.GuiState;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.gui.warp.WarpList;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import org.bukkit.command.CommandSender;
@@ -33,6 +33,6 @@ public class warp extends LiteralArgumentCommand {
 
     @Override
     protected boolean isEnableInGame() {
-        return Ari.instance.getConfigInstance().getValue("main.enable", FilePath.WARP_CONFIG, Boolean.class, true);
+        return Ari.instance.getConfigurationManager().get(WarpConfig.class).isEnable();
     }
 }

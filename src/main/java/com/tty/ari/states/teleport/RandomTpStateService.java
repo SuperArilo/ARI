@@ -1,15 +1,14 @@
 package com.tty.ari.states.teleport;
 
-import com.google.gson.reflect.TypeToken;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.api.utils.SearchSafeLocation;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.FunctionConfig;
+import com.tty.ari.configuration.lang.LangConfig;
 import com.tty.ari.dto.rtp.RtpConfig;
 import com.tty.ari.dto.state.teleport.EntityToLocationState;
 import com.tty.ari.dto.state.teleport.RandomTpState;
-import com.tty.ari.enumType.FilePath;
-import com.tty.ari.enumType.LangFile;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.states.CoolDownStateService;
 import com.tty.ari.tool.ConfigUtils;
@@ -110,7 +109,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             .get(TeleportStateService.class)
                 .addState(new EntityToLocationState(
                     owner,
-                    Ari.instance.getConfigInstance().getValue("rtp.teleport.delay", FilePath.FUNCTION_CONFIG, Integer.class, 3),
+                    Ari.instance.getConfigurationManager().get(FunctionConfig.class).getTeleportDelay(TeleportType.RTP),
                     state.getTrueLocation(),
                     TeleportType.RTP));
 
@@ -208,9 +207,10 @@ public class RandomTpStateService extends StateService<RandomTpState> {
 
     private void sendCountTitle(Player player) {
         if (!player.isOnline()) return;
+
         ConfigUtils.t("function.rtp.title-search-count", player).thenAccept(result ->
                 Ari.instance.getScheduler().runAtEntity(Ari.instance, player, task -> player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
-                        Ari.instance.getConfigInstance().getValue("function.rtp.title-searching", LangFile.LANG, String.class, "null"),
+                        Ari.instance.getConfigurationManager().get(LangConfig.class).getString("function.rtp.title-searching"),
                         result,
                         0,
                         1000L,
@@ -219,12 +219,9 @@ public class RandomTpStateService extends StateService<RandomTpState> {
     }
 
     private Map<String, RtpConfig> getRtpConfigWorlds() {
+        FunctionConfig config = Ari.instance.getConfigurationManager().get(FunctionConfig.class);
 
-        Map<String, RtpConfig> value = Ari.instance.getConfigInstance().getValue(
-                "rtp.worlds",
-                FilePath.FUNCTION_CONFIG,
-                new TypeToken<Map<String, RtpConfig>>(){}.getType(),
-                null);
+        Map<String, RtpConfig> value = config.getRtpWorlds();
 
         if (value == null) {
             value = new HashMap<>();
@@ -237,7 +234,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 value.put(world.getName(), new RtpConfig());
             }
         }
-        Ari.instance.getConfigInstance().setValue("rtp.worlds", FilePath.FUNCTION_CONFIG, value);
+        config.setValue("rtp.worlds", value);
         return value;
     }
 

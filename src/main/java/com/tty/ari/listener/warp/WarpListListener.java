@@ -1,17 +1,17 @@
 package com.tty.ari.listener.warp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.tty.api.enumType.NbtGuiValue;
-import com.tty.ari.Ari;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.enumType.FunctionType;
+import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.listener.BaseGuiListener;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.FormatUtils;
+import com.tty.ari.Ari;
+import com.tty.ari.configuration.warp.WarpConfig;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.teleport.EntityToLocationCallbackState;
 import com.tty.ari.entity.ServerWarp;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.GuiType;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.enumType.lang.PlaceholderVault;
@@ -57,9 +57,10 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
                 boolean isOwner = UUID.fromString(instance.getCreateBy()).equals(player.getUniqueId());
                 if (event.isLeftClick()) {
                     Location targetLocation = FormatUtils.parseLocation(instance.getLocation());
+                    WarpConfig warpConfig = Ari.instance.getConfigurationManager().get(WarpConfig.class);
                     Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).addState(new EntityToLocationCallbackState(
                             player,
-                            Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.WARP_CONFIG, Integer.class, 3),
+                            warpConfig.getDelay(),
                             targetLocation,
                             () -> {
                                 String permission = instance.getPermission();
@@ -70,7 +71,7 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
                                         return false;
                                     }
                                 }
-                                if(!Ari.ECONOMY_SERVICE.hasEnoughBalance(player, instance.getCost()) && !isOwner && Ari.instance.getConfigInstance().getValue("main.permission", FilePath.WARP_CONFIG, Boolean.class, true)) {
+                                if(!Ari.ECONOMY_SERVICE.hasEnoughBalance(player, instance.getCost()) && !isOwner && warpConfig.permission()) {
                                     ConfigUtils.t("function.warp.not-enough-money", player).thenAccept(player::sendMessage);
                                     return false;
                                 }
@@ -79,7 +80,7 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
                             () -> {
                                 //判断是否是地标拥有者或者是不是op，如果是则不扣
                                 if(!isOwner && !player.isOp() &&
-                                        Ari.instance.getConfigInstance().getValue("main.cost", FilePath.WARP_CONFIG, Boolean.class, false) &&
+                                        warpConfig.cost() &&
                                         !Ari.ECONOMY_SERVICE.isNull()) {
                                     Ari.ECONOMY_SERVICE.withdrawPlayer(player, instance.getCost());
                                     player.sendMessage(ConfigUtils.tAfter("teleport.costed", Map.of(PlaceholderVault.COSTED_UNRESOLVED.getType(), Component.text(instance.getCost().toString() + Ari.ECONOMY_SERVICE.getNamePlural()))));

@@ -1,19 +1,20 @@
 package com.tty.ari.listener.player;
 
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.GameActionConfig;
 import com.tty.ari.dto.state.action.PlayerRideActionState;
 import com.tty.ari.dto.state.action.PlayerSitActionState;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.states.action.PlayerRideActionStateService;
 import com.tty.ari.states.action.PlayerSitActionStateService;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.*;
-import org.bukkit.Material;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 
@@ -21,7 +22,7 @@ public class PlayerActionListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!this.isNotEnableSit()) return;
+        if (!Ari.instance.getConfigurationManager().get(GameActionConfig.class).isSitEnable()) return;
 
         Player player = event.getPlayer();
         // 只处理主手
@@ -37,16 +38,13 @@ public class PlayerActionListener implements Listener {
         if (clickedBlock == null) return;
         // 玩家已经骑乘实体
         if (player.getVehicle() != null) return;
-        Ari.STATE_MACHINE_MANAGER
-                .get(PlayerSitActionStateService.class)
-                .addState(new PlayerSitActionState(player, clickedBlock));
+        Ari.STATE_MACHINE_MANAGER.get(PlayerSitActionStateService.class).addState(new PlayerSitActionState(player, clickedBlock));
     }
 
     //玩家相互骑乘
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        // 未开启
-        if (!this.isNotEnablePlayerSitPlayer()) return;
+        if (!Ari.instance.getConfigurationManager().get(GameActionConfig.class).isPlayerSitPlayerEnable()) return;
         // 只处理主手
         if (event.getHand() != EquipmentSlot.HAND) return;
         Player player = event.getPlayer();
@@ -56,17 +54,7 @@ public class PlayerActionListener implements Listener {
         // 被点击的实体必须是玩家
         if (!(event.getRightClicked() instanceof Player clickedPlayer)) return;
 
-        Ari.STATE_MACHINE_MANAGER
-                .get(PlayerRideActionStateService.class)
-                .addState(new PlayerRideActionState(player, clickedPlayer));
-    }
-
-    private boolean isNotEnableSit() {
-        return Ari.instance.getConfigInstance().getValue("action.sit.enable", FilePath.GAME_ACTION_CONFIG, Boolean.class, false);
-    }
-
-    private boolean isNotEnablePlayerSitPlayer() {
-        return Ari.instance.getConfigInstance().getValue("action.player-sit-player.enable", FilePath.GAME_ACTION_CONFIG, Boolean.class, false);
+        Ari.STATE_MACHINE_MANAGER.get(PlayerRideActionStateService.class).addState(new PlayerRideActionState(player, clickedPlayer));
     }
 
 }

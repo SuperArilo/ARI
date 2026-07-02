@@ -1,17 +1,17 @@
 package com.tty.ari.listener.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.tty.api.enumType.NbtGuiValue;
-import com.tty.ari.Ari;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.enumType.FunctionType;
+import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.listener.BaseGuiListener;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.FormatUtils;
+import com.tty.ari.Ari;
+import com.tty.ari.configuration.home.HomeConfig;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.teleport.EntityToLocationState;
 import com.tty.ari.entity.ServerHome;
-import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.GuiType;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.gui.home.HomeEditor;
@@ -56,9 +56,10 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
                         }
                         Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> {
                             if (event.isLeftClick()) {
+                                HomeConfig homeConfig = Ari.instance.getConfigurationManager().get(HomeConfig.class);
                                 Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).addState(new EntityToLocationState(
                                         player,
-                                        Ari.instance.getConfigInstance().getValue("main.teleport.delay", FilePath.HOME_CONFIG, Integer.class, 3),
+                                        homeConfig.getDelay(),
                                         FormatUtils.parseLocation(home.getLocation()),
                                         TeleportType.HOME));
                             } else if (event.isRightClick()) {

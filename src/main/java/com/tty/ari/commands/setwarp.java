@@ -1,13 +1,13 @@
 package com.tty.ari.commands;
 
 import com.mojang.brigadier.Command;
-import com.tty.ari.Ari;
-import com.tty.ari.command.LiteralArgumentCommand;
-import com.tty.ari.commands.args.SetWarpArgs;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.ari.enumType.FilePath;
+import com.tty.ari.Ari;
+import com.tty.ari.command.LiteralArgumentCommand;
+import com.tty.ari.commands.args.SetWarpArgs;
+import com.tty.ari.configuration.warp.WarpConfig;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class setwarp extends LiteralArgumentCommand {
 
     @Override
     protected boolean isEnableInGame() {
-        return Ari.instance.getConfigInstance().getValue("main.enable", FilePath.WARP_CONFIG, Boolean.class, true);
+        return Ari.instance.getConfigurationManager().get(WarpConfig.class).isEnable();
     }
 
 }
