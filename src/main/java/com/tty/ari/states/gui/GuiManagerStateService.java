@@ -29,7 +29,7 @@ public class GuiManagerStateService extends StateService<GuiState> {
     protected void passAddState(GuiState state) {
         if (!(state.getOwner() instanceof HumanEntity entity)) return;
         Ari.instance.getLog().debug("add state to player {} open inventory. type: {}", entity.getName(), state.getMenu().getType());
-        entity.openInventory(state.getMenu().getInventory());
+        Ari.instance.getScheduler().run(Ari.instance, i -> entity.openInventory(state.getMenu().getInventory()));
     }
 
     @Override
