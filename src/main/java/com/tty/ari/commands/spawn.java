@@ -1,6 +1,5 @@
 package com.tty.ari.commands;
 
-import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
@@ -23,8 +22,6 @@ import java.util.List;
 @CommandMeta(displayName = "spawn", permission = "ari.command.spawn", tokenLength = 1)
 @LiteralCommand(directExecute = true)
 public class spawn extends LiteralArgumentCommand {
-
-    private final TypeToken<SpawnLocation> typeToken = new TypeToken<>(){};
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
