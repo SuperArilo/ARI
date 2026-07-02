@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-@CommandMeta(displayName = "name (string)", permission = "ari.command.sethome", tokenLength = 2)
+@CommandMeta(displayName = "name_id (string)", permission = "ari.command.sethome", tokenLength = 2)
 @ArgumentCommand
 public class SetHomeArgs extends RequiredArgumentCommand<String> {
 

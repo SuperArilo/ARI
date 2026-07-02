@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-@CommandMeta(displayName = "sethome_id", permission = "ari.command.sethome", tokenLength = 2)
+@CommandMeta(displayName = "sethome", permission = "ari.command.sethome", tokenLength = 2)
 @LiteralCommand
 public class sethome extends LiteralArgumentCommand {
 
