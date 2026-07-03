@@ -135,17 +135,17 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
     protected void onEarlyExit(PlayerSitActionState state) {
         String playerName = state.getOwner().getName();
         Ari.instance.getLog().debug("player {} sit check status fail, remove tool entity", playerName);
-        state.removeToolEntity(Ari.instance);
+        state.removeToolEntity();
     }
 
     @Override
     protected void onFinished(PlayerSitActionState state) {
-        state.removeToolEntity(Ari.instance);
+        state.removeToolEntity();
     }
 
     @Override
     protected void onServiceAbort(PlayerSitActionState state) {
-        state.removeToolEntity(Ari.instance);
+        state.removeToolEntity();
     }
 
     @Override
