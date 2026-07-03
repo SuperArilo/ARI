@@ -19,6 +19,7 @@ import org.bukkit.WorldBorder;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -211,9 +212,9 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 Ari.instance.getScheduler().runAtEntity(player, task -> player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
                         Ari.instance.getConfigurationManager().get(LangConfig.class).getString("function.rtp.title-searching"),
                         result,
-                        0,
-                        1000L,
-                        1000L
+                        Duration.ZERO,
+                        Duration.ofMillis(1000),
+                        Duration.ofMillis(1000)
                 )), null));
     }
 

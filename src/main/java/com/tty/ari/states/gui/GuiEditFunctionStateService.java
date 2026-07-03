@@ -6,6 +6,8 @@ import com.tty.api.state.GuiEditFunctionState;
 import com.tty.api.state.StateService;
 import org.bukkit.entity.Player;
 
+import java.time.Duration;
+
 public class GuiEditFunctionStateService extends StateService<GuiEditFunctionState> {
 
     public GuiEditFunctionStateService(long rate, long c, boolean isAsync) {
@@ -46,9 +48,9 @@ public class GuiEditFunctionStateService extends StateService<GuiEditFunctionSta
                 Ari.instance.getComponentTool().setPlayerTitle(
                         Ari.DATA_SERVICE.getValue("base.on-edit.title"),
                         Ari.DATA_SERVICE.getValue("base.on-edit.sub-title"),
-                        1000,
-                        i * 1000L,
-                        1000));
+                        Duration.ofMillis(1000),
+                        Duration.ofMillis(i * 1000L),
+                        Duration.ofMillis(1000)));
     }
 
     @Override

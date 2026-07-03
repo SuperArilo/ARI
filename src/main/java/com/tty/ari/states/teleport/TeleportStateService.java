@@ -21,6 +21,7 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -63,9 +64,9 @@ public class TeleportStateService extends StateService<State> {
                     player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
                             Ari.instance.getConfigurationManager().get(LangConfig.class).getString("teleport.title.main"),
                             result,
-                            200,
-                            1000,
-                            200
+                            Duration.ofMillis(200),
+                            Duration.ofMillis(1000),
+                            Duration.ofMillis(200)
                     ));
                     Ari.instance.getLog().debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
                 }, null));

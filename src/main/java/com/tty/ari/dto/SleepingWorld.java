@@ -11,6 +11,8 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
+
 
 public class SleepingWorld {
 
@@ -42,9 +44,9 @@ public class SleepingWorld {
                                     player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
                                         timeManager.tickToTime(i),
                                         result,
-                                        0L,
-                                        1000L,
-                                        500L
+                                        Duration.ZERO,
+                                        Duration.ofMillis(1000),
+                                        Duration.ofMillis(500)
                     )), null));
                 }
             });

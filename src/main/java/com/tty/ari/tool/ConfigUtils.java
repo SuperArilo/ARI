@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,6 +26,18 @@ public class ConfigUtils {
 
     public static CompletableFuture<Component> tList(String key) {
         return Ari.PLACEHOLDER.renderList(key, null);
+    }
+
+    public static CompletableFuture<List<Component>> tAsList(String key) {
+        return Ari.PLACEHOLDER.renderAsList(key, null);
+    }
+
+    public static CompletableFuture<List<Component>> tAsList(String key, Player player) {
+        return Ari.PLACEHOLDER.renderAsList(key, player);
+    }
+
+    public static CompletableFuture<List<Component>> tAsList(String key, OfflinePlayer offlinePlayer) {
+        return Ari.PLACEHOLDER.renderAsList(key, offlinePlayer);
     }
 
     public static CompletableFuture<Component> t(String key) {
