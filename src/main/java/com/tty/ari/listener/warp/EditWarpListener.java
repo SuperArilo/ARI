@@ -78,7 +78,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
                 }
             }
         }
-        Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new WarpEditor(player, data)));
+        Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new WarpEditor(player, data)));
         return true;
     }
 
@@ -93,7 +93,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
 
         registry.add(FunctionType.REBACK, (event, warpEditor, player) -> {
             event.getInventory().close();
-            Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
+            Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
         });
         registry.add(FunctionType.DELETE, (event, warpEditor, player) -> {
             EntityRepository<ServerWarp> repository = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
@@ -103,7 +103,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
                     return ConfigUtils.t("function.warp.delete-success", player).thenAccept(player::sendMessage)
                             .thenRun(() -> Ari.instance.getScheduler().run(Ari.instance, ab -> {
                                 event.getInventory().close();
-                                Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
+                                Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
                             }));
                 } else {
                     return ConfigUtils.t("function.warp.not-found").thenAccept(player::sendMessage);
@@ -228,7 +228,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
             return;
         }
         event.getInventory().close();
-        Ari.STATE_MACHINE_MANAGER.get(GuiEditFunctionStateService.class).addState(
+        Ari.instance.getStatusManager().get(GuiEditFunctionStateService.class).addState(
                 new GuiEditFunctionState<>(
                         player,
                         Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new TypeToken<Integer>() {}.getType()),

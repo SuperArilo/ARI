@@ -51,7 +51,7 @@ public class TpaAcceptArgs extends TpaBaseLiteralLiteralArgument {
             }
 
             //添加传送请求
-            Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).addState(state);
+            Ari.instance.getStatusManager().get(TeleportStateService.class).addState(state);
             ConfigUtils.t("function.tpa.agree", player).thenAccept(player::sendMessage);
         });
     }

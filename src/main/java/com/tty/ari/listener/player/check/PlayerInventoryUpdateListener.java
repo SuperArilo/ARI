@@ -91,7 +91,7 @@ public class PlayerInventoryUpdateListener implements Listener {
     }
 
     private void syncPlayerInventoryToEdit(Player player, Consumer<PlayerInventoryEdit> consumer) {
-        GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
+        GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
         Ari.instance.getScheduler().runLater(Ari.instance, i -> {
             for (GuiState guiState : service.getAllStates()) {
                 if (!(guiState.getMenu() instanceof PlayerInventoryEdit editInventory) || !(guiState instanceof OnCheckPlayerGuiState state)) continue;

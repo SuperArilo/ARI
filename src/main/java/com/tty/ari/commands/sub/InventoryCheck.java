@@ -59,13 +59,13 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
                     }
 
                     OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
-                    GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
+                    GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
 
                     if (service.getStates(player).stream().anyMatch(i -> (i instanceof OnCheckPlayerGuiState state && state.getOwner().equals(player)))) {
                         sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.task-occupied")));
                         return;
                     }
-                    Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new OnCheckPlayerGuiState(player, offlinePlayer, new PlayerInventoryEdit(Ari.instance, player, offlinePlayer)));
+                    service.addState(new OnCheckPlayerGuiState(player, offlinePlayer, new PlayerInventoryEdit(Ari.instance, player, offlinePlayer)));
                 }).exceptionally(e -> {
                     Ari.instance.getLog().error(e);
                     sender.sendMessage(this.getPlugin().getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));

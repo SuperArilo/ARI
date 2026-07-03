@@ -48,7 +48,7 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
      * @return 能够执行的列表
      */
     public Set<String> getResponseList(CommandSender sender) {
-        return Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class).getAllStates().stream()
+        return Ari.instance.getStatusManager().get(PreTeleportStateService.class).getAllStates().stream()
                 .filter(i -> i.getTarget().equals(sender))
                 .filter(i -> i.getType().equals(TeleportType.TPA))
                 .map(e -> e.getOwner().getName())
@@ -65,7 +65,7 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
             Ari.instance.getScheduler().runAtEntity(Ari.instance, sender, i -> sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), sender)), null);
             return 0;
         }
-        PreTeleportStateService machine = Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class);
+        PreTeleportStateService machine = Ari.instance.getStatusManager().get(PreTeleportStateService.class);
         //检查这个请求是否存在
         PreEntityToEntityState anElse = machine
                 .getStates(target)

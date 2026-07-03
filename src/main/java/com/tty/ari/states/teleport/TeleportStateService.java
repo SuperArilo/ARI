@@ -83,12 +83,12 @@ public class TeleportStateService extends StateService<State> {
         }
 
         //判断当前实体是否在传送冷却中
-        if (!Ari.STATE_MACHINE_MANAGER.get(CoolDownStateService.class).getStates(owner).isEmpty()) {
+        if (!Ari.instance.getStatusManager().get(CoolDownStateService.class).getStates(owner).isEmpty()) {
             ConfigUtils.t("teleport.cooling", player).thenAccept(owner::sendMessage);
             return false;
         }
 
-        if(!Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).getStates(owner).isEmpty()) {
+        if(!Ari.instance.getStatusManager().get(TeleportStateService.class).getStates(owner).isEmpty()) {
             Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), player)), null);
             return false;
         }
@@ -123,7 +123,7 @@ public class TeleportStateService extends StateService<State> {
     protected void onFinished(State state) {
         Entity owner = state.getOwner();
         owner.clearTitle();
-        CoolDownStateService machine = Ari.STATE_MACHINE_MANAGER.get(CoolDownStateService.class);
+        CoolDownStateService machine = Ari.instance.getStatusManager().get(CoolDownStateService.class);
 
         Location targetLocation;
         Runnable afterAction;

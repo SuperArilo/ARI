@@ -38,7 +38,7 @@ public class PlayerActionListener implements Listener {
         if (clickedBlock == null) return;
         // 玩家已经骑乘实体
         if (player.getVehicle() != null) return;
-        Ari.STATE_MACHINE_MANAGER.get(PlayerSitActionStateService.class).addState(new PlayerSitActionState(player, clickedBlock));
+        Ari.instance.getStatusManager().get(PlayerSitActionStateService.class).addState(new PlayerSitActionState(player, clickedBlock));
     }
 
     //玩家相互骑乘
@@ -54,7 +54,7 @@ public class PlayerActionListener implements Listener {
         // 被点击的实体必须是玩家
         if (!(event.getRightClicked() instanceof Player clickedPlayer)) return;
 
-        Ari.STATE_MACHINE_MANAGER.get(PlayerRideActionStateService.class).addState(new PlayerRideActionState(player, clickedPlayer));
+        Ari.instance.getStatusManager().get(PlayerRideActionStateService.class).addState(new PlayerRideActionState(player, clickedPlayer));
     }
 
 }

@@ -27,7 +27,7 @@ public class warp extends LiteralArgumentCommand {
     @Override
     public int execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
+        Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
         return Command.SINGLE_SUCCESS;
     }
 

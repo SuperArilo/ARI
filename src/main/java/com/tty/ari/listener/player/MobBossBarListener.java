@@ -47,7 +47,7 @@ public class MobBossBarListener implements Listener {
         // 如果是自己造成的伤害不显示
         if (victim.equals(player)) return;
 
-        AttackBossBarService service = Ari.STATE_MACHINE_MANAGER.get(AttackBossBarService.class);
+        AttackBossBarService service = Ari.instance.getStatusManager().get(AttackBossBarService.class);
 
         AttackBossBarState barState = null;
         for (AttackBossBarState state : service.getStates(player)) {
@@ -73,7 +73,7 @@ public class MobBossBarListener implements Listener {
         LastDamageTracker.DamageRecord last = records.getLast();
         if (!(last.damager() instanceof Player player)) return;
 
-        AttackBossBarService service = Ari.STATE_MACHINE_MANAGER.get(AttackBossBarService.class);
+        AttackBossBarService service = Ari.instance.getStatusManager().get(AttackBossBarService.class);
         AttackBossBarState barState = null;
         for (AttackBossBarState state : service.getStates(player)) {
             if (state.getTarget().getUniqueId().equals(victim.getUniqueId())) {

@@ -24,7 +24,7 @@ public abstract class OnGuiEditListener<T extends BaseInventory, D> extends Base
 
     @Override
     public GuiEditFunctionState<D> isHaveState(Player player) {
-        GuiEditFunctionStateService stateService = Ari.STATE_MACHINE_MANAGER.get(GuiEditFunctionStateService.class);
+        GuiEditFunctionStateService stateService = Ari.instance.getStatusManager().get(GuiEditFunctionStateService.class);
         if (stateService.stateIsEmpty()) return null;
         if (stateService.isNotHaveState(player)) return null;
         List<GuiEditFunctionState> states = stateService.getStates(player);

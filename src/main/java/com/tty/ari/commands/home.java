@@ -28,7 +28,7 @@ public class home extends LiteralArgumentCommand {
     @Override
     public int execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
+        Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
         return Command.SINGLE_SUCCESS;
     }
 

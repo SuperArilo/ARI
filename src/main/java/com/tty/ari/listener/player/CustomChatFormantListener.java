@@ -24,7 +24,7 @@ public class CustomChatFormantListener implements Listener {
         ChatConfig chatConfig = Ari.instance.getConfigurationManager().get(ChatConfig.class);
         if (!chatConfig.isEnable()) return;
         if (chatConfig.isCooldownEnable()) {
-            if(!Ari.STATE_MACHINE_MANAGER.get(PlayerChatService.class).addState(new PlayerChatState(player, event.message(), chatConfig.cooldownValue()))) {
+            if(!Ari.instance.getStatusManager().get(PlayerChatService.class).addState(new PlayerChatState(player, event.message(), chatConfig.cooldownValue()))) {
                 ConfigUtils.t("server.message.chat-cooldown", player).thenAccept(player::sendMessage);
                 event.setCancelled(true);
                 return;

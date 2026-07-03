@@ -39,13 +39,13 @@ public class spawn extends LiteralArgumentCommand {
             ConfigUtils.t("function.spawn.no-spawn", player).thenAccept(player::sendMessage);
             return 0;
         }
-        Ari.STATE_MACHINE_MANAGER
-            .get(TeleportStateService.class)
-            .addState(new EntityToLocationState(
+        Ari.instance.getStatusManager().get(TeleportStateService.class).addState(
+                new EntityToLocationState(
                     player,
                     config.getTeleportDelay(TeleportType.SPAWN),
                     new Location(Bukkit.getWorld(value.getWorldName()), value.getX(), value.getY(), value.getZ(), value.getYaw(), value.getPitch()),
-                    TeleportType.SPAWN));
+                    TeleportType.SPAWN)
+        );
 
         return Command.SINGLE_SUCCESS;
     }

@@ -38,9 +38,8 @@ public class back extends LiteralArgumentCommand {
             return 0;
         }
 
-        Ari.STATE_MACHINE_MANAGER
-                .get(TeleportStateService.class)
-                .addState(new EntityToLocationState(
+        Ari.instance.getStatusManager().get(TeleportStateService.class).addState(
+                new EntityToLocationState(
                         player,
                         Ari.instance.getConfigurationManager().get(FunctionConfig.class).getTeleportDelay(TeleportType.BACK),
                         beforeLocation,

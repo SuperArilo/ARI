@@ -28,7 +28,7 @@ public class maintenance extends LiteralArgumentCommand {
 
     @Override
     public int execute(CommandSender sender, String[] args) {
-        MaintenanceBossBarService service = Ari.STATE_MACHINE_MANAGER.get(MaintenanceBossBarService.class);
+        MaintenanceBossBarService service = Ari.instance.getStatusManager().get(MaintenanceBossBarService.class);
         service.setMaintenance(!service.isMaintenance());
 
         Component component = ConfigUtils.tAfter("server.maintenance." + (service.isMaintenance() ? "on-enable" : "on-disable"));

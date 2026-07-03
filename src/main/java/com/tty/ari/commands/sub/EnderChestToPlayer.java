@@ -52,7 +52,7 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
                     player.openInventory(p.getEnderChest());
                     return;
                 }
-                Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new OnCheckPlayerGuiState(player, offlinePlayer, new EnderChestEdit(player, offlinePlayer)));
+                Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new OnCheckPlayerGuiState(player, offlinePlayer, new EnderChestEdit(player, offlinePlayer)));
             });
         return Command.SINGLE_SUCCESS;
     }

@@ -1,5 +1,6 @@
 package com.tty.ari.states.teleport;
 
+import com.tty.api.StatusManager;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.api.utils.SearchSafeLocation;
@@ -12,7 +13,6 @@ import com.tty.ari.dto.state.teleport.RandomTpState;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.states.CoolDownStateService;
 import com.tty.ari.tool.ConfigUtils;
-import com.tty.ari.tool.StateMachineManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
@@ -48,7 +48,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
             }
         }
 
-        StateMachineManager manager = Ari.STATE_MACHINE_MANAGER;
+        StatusManager manager = Ari.instance.getStatusManager();
 
         //判断当前实体是否在传送冷却中
         if (!manager.get(CoolDownStateService.class).getStates(owner).isEmpty()) {
@@ -105,13 +105,13 @@ public class RandomTpStateService extends StateService<RandomTpState> {
         owner.clearTitle();
         ConfigUtils.t("function.rtp.location-found", owner).thenAccept(owner::sendMessage);
 
-        Ari.STATE_MACHINE_MANAGER
-            .get(TeleportStateService.class)
-                .addState(new EntityToLocationState(
+        Ari.instance.getStatusManager().get(TeleportStateService.class).addState(
+                new EntityToLocationState(
                     owner,
                     Ari.instance.getConfigurationManager().get(FunctionConfig.class).getTeleportDelay(TeleportType.RTP),
                     state.getTrueLocation(),
-                    TeleportType.RTP));
+                    TeleportType.RTP)
+        );
 
     }
 

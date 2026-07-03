@@ -75,13 +75,13 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     public void maintenance(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
         UUID uuid = event.getUniqueId();
-        MaintenanceBossBarService service = Ari.STATE_MACHINE_MANAGER.get(MaintenanceBossBarService.class);
+        MaintenanceBossBarService service = Ari.instance.getStatusManager().get(MaintenanceBossBarService.class);
         OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
         if (service.isMaintenance() && !offlinePlayer.isOp()) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join").join());
             return;
         }
-        if (Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getAllStates().stream().anyMatch(t -> (t instanceof OnCheckPlayerGuiState state && state.getMonitoree().getUniqueId().equals(offlinePlayer.getUniqueId())))) {
+        if (Ari.instance.getStatusManager().get(GuiManagerStateService.class).getAllStates().stream().anyMatch(t -> (t instanceof OnCheckPlayerGuiState state && state.getMonitoree().getUniqueId().equals(offlinePlayer.getUniqueId())))) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
         }
     }
@@ -189,7 +189,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
             }
             //添加玩家登录的状态
-            Ari.STATE_MACHINE_MANAGER.get(PlayerOnlineStateService.class).addState(new PlayerOnlineState(player, nowLoginTime));
+            Ari.instance.getStatusManager().get(PlayerOnlineStateService.class).addState(new PlayerOnlineState(player, nowLoginTime));
             Ari.instance.getScheduler().runAtEntity(Ari.instance, player, o -> {
                 if(this.isPlayerInsideBlock(player)) {
                     Ari.instance.getLog().debug("player {} inside block, teleport safe location.", player.getName());
@@ -199,7 +199,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             }, () -> Ari.instance.getLog().error("error on player join server."));
 
             //如果处于维护模式，为 op 添加 bar
-            MaintenanceBossBarService service = Ari.STATE_MACHINE_MANAGER.get(MaintenanceBossBarService.class);
+            MaintenanceBossBarService service = Ari.instance.getStatusManager().get(MaintenanceBossBarService.class);
             if (service.isMaintenance() && player.isOp()) {
                 service.addState(new MaintenanceBossBarState(player));
             }
@@ -213,13 +213,11 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             event.quitMessage(null);
             ConfigUtils.t("server.message.on-leave", player).thenAccept(i -> Ari.instance.getScheduler().run(Ari.instance, t -> Bukkit.broadcast(i)));
         }
-        List<PlayerOnlineState> states = Ari.STATE_MACHINE_MANAGER
-                .get(PlayerOnlineStateService.class)
-                .getStates(player);
+        List<PlayerOnlineState> states = Ari.instance.getStatusManager().get(PlayerOnlineStateService.class).getStates(player);
         if (!states.isEmpty()) {
             states.getFirst().setCount(new AtomicInteger(Integer.MAX_VALUE));
         }
-        for (GuiState state : Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getStates(player)) {
+        for (GuiState state : Ari.instance.getStatusManager().get(GuiManagerStateService.class).getStates(player)) {
             state.setOver(true);
         }
     }

@@ -80,7 +80,7 @@ public class Placeholder extends BasePlaceholder {
         registry.register(PlaceholderDefinition.of(
                 PlaceholderTpa.TPA_SENDER,
                 PlaceholderResolve.ofPlayer(player -> {
-                    List<PreEntityToEntityState> states = Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class).getStates(player);
+                    List<PreEntityToEntityState> states = Ari.instance.getStatusManager().get(PreTeleportStateService.class).getStates(player);
                     if (states.isEmpty()) return this.empty();
                     PreEntityToEntityState first = states.getFirst();
                     return this.set(first.getOwner().getName());
@@ -89,7 +89,7 @@ public class Placeholder extends BasePlaceholder {
         registry.register(PlaceholderDefinition.of(
                 PlaceholderTpa.TPA_BE_SENDER,
                 PlaceholderResolve.of(player -> {
-                    List<PreEntityToEntityState> states = Ari.STATE_MACHINE_MANAGER.get(PreTeleportStateService.class).getStates(player);
+                    List<PreEntityToEntityState> states = Ari.instance.getStatusManager().get(PreTeleportStateService.class).getStates(player);
                     if (states.isEmpty()) return this.empty();
                     PreEntityToEntityState first = states.getFirst();
                     return this.set(first.getTarget().getName());
@@ -127,7 +127,7 @@ public class Placeholder extends BasePlaceholder {
         registry.register(PlaceholderDefinition.of(
                 PlaceholderRTP.RTP_SEARCH_COUNT,
                 PlaceholderResolve.ofPlayer(player -> {
-                    List<RandomTpState> states = Ari.STATE_MACHINE_MANAGER.get(RandomTpStateService.class).getStates(player);
+                    List<RandomTpState> states = Ari.instance.getStatusManager().get(RandomTpStateService.class).getStates(player);
                     if (states.isEmpty()) return this.empty();
                     RandomTpState first = states.getFirst();
                     return this.set(String.valueOf(first.getMax_count() - first.getCount().get()));
@@ -136,7 +136,7 @@ public class Placeholder extends BasePlaceholder {
         registry.register(PlaceholderDefinition.of(
                 PlaceholderTeleport.TELEPORT_DELAY,
                 PlaceholderResolve.ofPlayer(player -> {
-                    List<State> states = Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).getStates(player);
+                    List<State> states = Ari.instance.getStatusManager().get(TeleportStateService.class).getStates(player);
                     if (states.isEmpty()) return this.empty();
                     State first = states.getFirst();
                     return this.set(String.valueOf(first.getMax_count() - first.getCount().get()));

@@ -28,12 +28,13 @@ public class rtp extends LiteralArgumentCommand {
     @Override
     public int execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        Ari.STATE_MACHINE_MANAGER
-                .get(RandomTpStateService.class)
-                .addState(new RandomTpState(
+        Ari.instance.getStatusManager().get(RandomTpStateService.class).addState(
+                new RandomTpState(
                         player,
                         Ari.instance.getConfigurationManager().get(FunctionConfig.class).getRtpSearchCount(),
-                        player.getWorld()));
+                        player.getWorld())
+        );
+
         return Command.SINGLE_SUCCESS;
     }
 

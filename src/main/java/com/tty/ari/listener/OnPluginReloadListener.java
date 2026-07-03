@@ -28,7 +28,7 @@ public class OnPluginReloadListener implements Listener {
                 Ari.SQL_INSTANCE.reconnect();
             }
             Ari.REPOSITORY_MANAGER.clearAllCache();
-            Ari.STATE_MACHINE_MANAGER.forEach(StateService::onReload);
+            Ari.instance.getStatusManager().reload();
             Ari.PLACEHOLDER.setInstance(Ari.instance.getConfigurationManager().get(LangConfig.class));
             Ari.BUNGEECACHE.shutdown();
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.reload.success")));

@@ -57,7 +57,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
         }
         ServerHome data = state.getData();
         data.setHomeName(message);
-        Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new HomeEditor(player, data)));
+        Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeEditor(player, data)));
         return true;
     }
 
@@ -72,7 +72,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
 
         registry.add(FunctionType.REBACK, (event, homeEditor, player) -> {
             event.getInventory().close();
-            Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
+            Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
         });
         registry.add(FunctionType.DELETE, (event, homeEditor, player) -> {
             LambdaQueryWrapper<ServerHome> wrapper = new LambdaQueryWrapper<>(ServerHome.class)
@@ -87,7 +87,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
                                     .thenAccept(player::sendMessage)
                                     .thenRun(() -> Ari.instance.getScheduler().run(Ari.instance, j -> {
                                         event.getInventory().close();
-                                        Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
+                                        Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
                                     }));
                         } else {
                             return ConfigUtils.t("function.home.not-found", player).thenAccept(player::sendMessage);
@@ -96,9 +96,8 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
         });
         registry.add(FunctionType.RENAME, (event, homeEditor, player) -> {
             event.getInventory().close();
-            Ari.STATE_MACHINE_MANAGER
-                    .get(GuiEditFunctionStateService.class)
-                    .addState(new GuiEditFunctionState<>(
+            Ari.instance.getStatusManager().get(GuiEditFunctionStateService.class).addState(
+                    new GuiEditFunctionState<>(
                             player,
                             Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new TypeToken<Integer>(){}.getType()),
                             homeEditor.getHome(),

@@ -27,7 +27,7 @@ public class RtpCancel extends LiteralArgumentCommand {
     @Override
     public int execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        RandomTpStateService machine = Ari.STATE_MACHINE_MANAGER.get(RandomTpStateService.class);
+        RandomTpStateService machine = Ari.instance.getStatusManager().get(RandomTpStateService.class);
         List<RandomTpState> states = machine.getStates((Entity) sender);
         if (states.isEmpty()) {
             ConfigUtils.t("function.rtp.no-rtp", player).thenAccept(player::sendMessage);

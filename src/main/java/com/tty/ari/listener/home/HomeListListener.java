@@ -57,13 +57,13 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
                         Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> {
                             if (event.isLeftClick()) {
                                 HomeConfig homeConfig = Ari.instance.getConfigurationManager().get(HomeConfig.class);
-                                Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).addState(new EntityToLocationState(
+                                Ari.instance.getStatusManager().get(TeleportStateService.class).addState(new EntityToLocationState(
                                         player,
                                         homeConfig.getDelay(),
                                         FormatUtils.parseLocation(home.getLocation()),
                                         TeleportType.HOME));
                             } else if (event.isRightClick()) {
-                                Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new HomeEditor(player, home)));
+                                Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeEditor(player, home)));
                             }
                         }, null);
                         return CompletableFuture.completedFuture(true);

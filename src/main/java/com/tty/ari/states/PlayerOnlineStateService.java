@@ -14,12 +14,9 @@ import org.bukkit.entity.Player;
 import java.util.concurrent.CompletableFuture;
 
 public class PlayerOnlineStateService extends StateService<PlayerOnlineState> {
-
-    private final EntityRepository<ServerPlayer> repository;
-
+    
     public PlayerOnlineStateService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance);
-        this.repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
     }
 
     @Override
@@ -71,7 +68,9 @@ public class PlayerOnlineStateService extends StateService<PlayerOnlineState> {
 
         Player player = (Player) state.getOwner();
         boolean stopping = Bukkit.getServer().isStopping();
-        this.repository.setExecutionMode(!stopping);
+        EntityRepository<ServerPlayer> repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
+
+        repository.setExecutionMode(!stopping);
         String uuid = player.getUniqueId().toString();
 
         long nowTime = System.currentTimeMillis();
@@ -79,7 +78,7 @@ public class PlayerOnlineStateService extends StateService<PlayerOnlineState> {
 
         LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
 
-        this.repository.get(wrapper, PartitionKey.global()).thenCompose(serverPlayer -> {
+        repository.get(wrapper, PartitionKey.global()).thenCompose(serverPlayer -> {
             if (serverPlayer == null) {
                 Ari.instance.getLog().error("Player data not found: {}", uuid);
                 return CompletableFuture.completedFuture(false);
@@ -88,7 +87,7 @@ public class PlayerOnlineStateService extends StateService<PlayerOnlineState> {
             if (!player.isOnline() || stopping) {
                 serverPlayer.setLastLoginOffTime(nowTime);
             }
-            return this.repository.update(serverPlayer, wrapper, PartitionKey.global());
+            return repository.update(serverPlayer, wrapper, PartitionKey.global());
         }).thenAccept(success -> {
             if (success) {
                 Ari.instance.getLog().debug("Saved player data: {}", player.getName());
@@ -99,7 +98,7 @@ public class PlayerOnlineStateService extends StateService<PlayerOnlineState> {
             if (ex != null) {
                 Ari.instance.getLog().error(ex, "Error saving player data for {}", player.getName());
             }
-            if (this.repository.isAsync() && player.isOnline()) {
+            if (repository.isAsync() && player.isOnline()) {
                 Ari.instance.getScheduler().runLater(Ari.instance, i -> this.addState(new PlayerOnlineState(player, System.currentTimeMillis())), 20L);
             } else {
                 Ari.instance.getLog().debug("skip player {} save event.", player.getName());

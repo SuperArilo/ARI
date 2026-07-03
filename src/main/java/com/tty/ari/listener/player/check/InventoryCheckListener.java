@@ -64,7 +64,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             if (this.isUpdating((Player) event.getWhoClicked(), player)) return;
         }
 
-        GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
+        GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
         PlayerInventoryCheckMenu menuConfig = (PlayerInventoryCheckMenu) holder.getBaseMenu();
         int slot = event.getSlot();
         event.setCancelled(true);
@@ -135,7 +135,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
 
         if (view.getTopInventory() != holder.getInventory()) return;
 
-        GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
+        GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
         PlayerInventoryCheckMenu menuConfig = (PlayerInventoryCheckMenu) holder.getBaseMenu();
 
         for (int guiSlot : draggedSlots) {
@@ -219,7 +219,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
                 this.setEquipmentToPlayer(player, value.getType(), finalPlayerItem);
             }
 
-            GuiManagerStateService service = Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class);
+            GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
             for (GuiState guiState : service.getAllStates()) {
                 if (!(guiState instanceof OnCheckPlayerGuiState state)) continue;
                 if (!state.getMonitoree().equals(monitoree)) continue;
@@ -265,7 +265,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
     }
 
     private boolean isUpdating(Player owner, Player monitoree) {
-        return Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).getStates(owner).stream().anyMatch(i -> i instanceof OnCheckPlayerGuiState state && state.getMonitoree().equals(monitoree) && state.isUpdating());
+        return Ari.instance.getStatusManager().get(GuiManagerStateService.class).getStates(owner).stream().anyMatch(i -> i instanceof OnCheckPlayerGuiState state && state.getMonitoree().equals(monitoree) && state.isUpdating());
     }
 
 }

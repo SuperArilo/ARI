@@ -58,7 +58,7 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
                 if (event.isLeftClick()) {
                     Location targetLocation = FormatUtils.parseLocation(instance.getLocation());
                     WarpConfig warpConfig = Ari.instance.getConfigurationManager().get(WarpConfig.class);
-                    Ari.STATE_MACHINE_MANAGER.get(TeleportStateService.class).addState(new EntityToLocationCallbackState(
+                    Ari.instance.getStatusManager().get(TeleportStateService.class).addState(new EntityToLocationCallbackState(
                             player,
                             warpConfig.getDelay(),
                             targetLocation,
@@ -87,7 +87,7 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
                                 }}, TeleportType.WARP));
                 } else if (event.isRightClick()) {
                     if(isOwner || player.isOp()) {
-                        Ari.STATE_MACHINE_MANAGER.get(GuiManagerStateService.class).addState(new GuiState(player, new WarpEditor(player, instance)));
+                        Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new WarpEditor(player, instance)));
                     } else {
                         ConfigUtils.t("function.warp.no-permission-edit", player).thenAccept(player::sendMessage);
                     }

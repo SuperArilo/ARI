@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.ConfigurationManager;
 import com.tty.api.ServerPlatform;
+import com.tty.api.StatusManager;
 import com.tty.api.dto.AliasItem;
 import com.tty.api.dto.TempRegisterService;
 import com.tty.api.configuration.BaseConfiguration;
@@ -33,10 +34,17 @@ import com.tty.ari.listener.teleport.RecordLastLocationListener;
 import com.tty.ari.listener.unsupported.SandDupeListener;
 import com.tty.ari.listener.warp.EditWarpListener;
 import com.tty.ari.listener.warp.WarpListListener;
+import com.tty.ari.states.*;
+import com.tty.ari.states.action.PlayerRideActionStateService;
+import com.tty.ari.states.action.PlayerSitActionStateService;
+import com.tty.ari.states.gui.GuiEditFunctionStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
+import com.tty.ari.states.teleport.PreTeleportStateService;
+import com.tty.ari.states.teleport.RandomTpStateService;
+import com.tty.ari.states.teleport.TeleportStateService;
 import com.tty.ari.tool.Placeholder;
 import com.tty.ari.tool.RepositoryManager;
 import com.tty.ari.tool.SQLInstance;
-import com.tty.ari.tool.StateMachineManager;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -66,7 +74,6 @@ public class Ari extends AbstractJavaPlugin {
     public static FireworkService FIREWORK_SERVICE;
     public static TeleportingService TELEPORTING_SERVICE;
     public static InteractService INTERACT_SERVICE;
-    public static StateMachineManager STATE_MACHINE_MANAGER;
     public static Placeholder PLACEHOLDER;
     public static BungeeCache BUNGEECACHE;
 
@@ -83,7 +90,6 @@ public class Ari extends AbstractJavaPlugin {
 
         SQL_INSTANCE = new SQLInstance();
         REPOSITORY_MANAGER = new RepositoryManager(this);
-        STATE_MACHINE_MANAGER = new StateMachineManager();
 
         this.registerBungeeListener();
 
@@ -97,8 +103,9 @@ public class Ari extends AbstractJavaPlugin {
 
     @Override
     protected void disabling() {
-        if (STATE_MACHINE_MANAGER != null) {
-            STATE_MACHINE_MANAGER.forEach(StateService::abort);
+        StatusManager statusManager = this.getStatusManager();
+        if (statusManager != null) {
+            statusManager.abort();
         }
 
         if (REPOSITORY_MANAGER != null) {
@@ -176,6 +183,26 @@ public class Ari extends AbstractJavaPlugin {
                 new FunctionConfig(),
                 new GameActionConfig(),
                 new TabListConfig()
+        );
+    }
+
+    @Override
+    protected @Nullable List<StateService<?>> services() {
+        return List.of(
+                new PreTeleportStateService(20L, 1L, false),
+                new TeleportStateService(20L, 1L, false),
+                new CoolDownStateService(20L, 1L, true),
+                new PlayerSitActionStateService(20L, 1L, false),
+                new PlayerRideActionStateService(20L, 1L, false),
+                new RandomTpStateService(20L, 1L, true),
+                new GuiEditFunctionStateService(20L,1L, false),
+                new PlayerOnlineStateService(20L, 20L, true),
+                new GuiManagerStateService(10L, 1L, false),
+                new PlayerCommandPreprocessService(20L, 1L, true),
+                new PlayerChatService(20L, 1L, true),
+                new MaintenanceBossBarService(20L, 1L, true),
+                new AttackBossBarService(5L, 1L, true)
+
         );
     }
 

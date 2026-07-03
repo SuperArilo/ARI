@@ -34,7 +34,7 @@ public class PlayerCommandCoolDownListener implements Listener {
         Player player = event.getPlayer();
         if (player.isOp() || Ari.PERMISSION_SERVICE.hasPermission(player, "ari.skip-command-cooldown")) return;
 
-        if (!Ari.STATE_MACHINE_MANAGER.get(PlayerCommandPreprocessService.class).addState(new PlayerPreCommandState(player, this.getMainSubCommand(event.getMessage()), this.commandCoolDown))) {
+        if (!Ari.instance.getStatusManager().get(PlayerCommandPreprocessService.class).addState(new PlayerPreCommandState(player, this.getMainSubCommand(event.getMessage()), this.commandCoolDown))) {
             event.setCancelled(true);
             ConfigUtils.t("server.message.command-cooldown", player).thenAccept(player::sendMessage);
         }

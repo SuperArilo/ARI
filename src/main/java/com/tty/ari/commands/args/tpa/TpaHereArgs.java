@@ -43,9 +43,8 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
             return 0;
         }
 
-        Ari.STATE_MACHINE_MANAGER
-                .get(PreTeleportStateService.class)
-                .addState(new PreEntityToEntityState(
+        Ari.instance.getStatusManager().get(PreTeleportStateService.class).addState(
+                new PreEntityToEntityState(
                         owner,
                         player,
                         TeleportType.TPAHERE,

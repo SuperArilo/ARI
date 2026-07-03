@@ -1,11 +1,11 @@
 package com.tty.ari.states.teleport;
 
+import com.tty.api.StatusManager;
 import com.tty.api.state.StateService;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
 import com.tty.ari.states.CoolDownStateService;
 import com.tty.ari.tool.ConfigUtils;
-import com.tty.ari.tool.StateMachineManager;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -95,7 +95,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
     protected boolean canAddState(PreEntityToEntityState state) {
         Player owner = (Player) state.getOwner();
         Player target = (Player) state.getTarget();
-        StateMachineManager manager = Ari.STATE_MACHINE_MANAGER;
+        StatusManager manager = Ari.instance.getStatusManager();
         //判断当前实体是否在传送冷却中
         if (!manager.get(CoolDownStateService.class).getStates(owner).isEmpty()) {
             ConfigUtils.t("teleport.cooling").thenAccept(owner::sendMessage);
