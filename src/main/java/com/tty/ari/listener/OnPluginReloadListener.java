@@ -2,7 +2,6 @@ package com.tty.ari.listener;
 
 import com.tty.api.event.WhenPluginExecuteReloadCommandEvent;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
-import com.tty.api.state.StateService;
 import com.tty.ari.Ari;
 
 import com.tty.ari.configuration.lang.LangConfig;
