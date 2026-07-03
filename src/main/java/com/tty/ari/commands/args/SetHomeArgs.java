@@ -77,7 +77,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
 
                     CompletableFuture<ServerHome> buildHomeFuture = new CompletableFuture<>();
 
-                    Ari.instance.getScheduler().runAtRegion(Ari.instance, player.getLocation(), task -> {
+                    Ari.instance.getScheduler().runAtRegion(player.getLocation(), task -> {
                         ServerHome serverHome = new ServerHome();
                         serverHome.setHomeId(homeId);
                         serverHome.setHomeName(homeId);

@@ -38,7 +38,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
         Entity toolEntity = state.getTool_entity();
 
         state.setRunning(true);
-        Ari.instance.getScheduler().runAtEntity(Ari.instance, toolEntity, i -> {
+        Ari.instance.getScheduler().runAtEntity(toolEntity, i -> {
             boolean b = toolEntity.getPassengers().isEmpty() ||
                     !toolEntity.isInsideVehicle() ||
                     beRidePlayer.isDead() ||

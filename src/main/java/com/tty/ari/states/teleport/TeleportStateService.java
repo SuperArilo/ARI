@@ -59,7 +59,7 @@ public class TeleportStateService extends StateService<State> {
 
         if (state.isOver() || state.isDone()) return;
         ConfigUtils.t("teleport.title.sub-title", player).thenAccept(result ->
-                Ari.instance.getScheduler().runAtEntity(Ari.instance, player, task -> {
+                Ari.instance.getScheduler().runAtEntity(player, task -> {
                     player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
                             Ari.instance.getConfigurationManager().get(LangConfig.class).getString("teleport.title.main"),
                             result,
@@ -89,7 +89,7 @@ public class TeleportStateService extends StateService<State> {
         }
 
         if(!Ari.instance.getStatusManager().get(TeleportStateService.class).getStates(owner).isEmpty()) {
-            Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), player)), null);
+            Ari.instance.getScheduler().runAtEntity(owner, i -> player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), player)), null);
             return false;
         }
 

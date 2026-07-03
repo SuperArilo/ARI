@@ -1,6 +1,6 @@
 package com.tty.ari.listener.teleport;
 
-import com.tty.api.ServerPlatform;
+import com.tty.api.Scheduler;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.dto.SpawnLocation;
@@ -37,8 +37,8 @@ public class RecordLastLocationListener implements Listener {
         Player player = (Player) event.getPlayer();
         if (event.getInventory().getType() != InventoryType.CRAFTING || !player.isDead() || !player.isConnected() || player.getHealth() > 0) return;
         // do stuff
-        if (!ServerPlatform.isFolia()) return;
-        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> {
+        if (!Scheduler.isFolia()) return;
+        Ari.instance.getScheduler().runAtEntity(player, i -> {
             Location respawnLocation = player.getRespawnLocation();
             if (respawnLocation == null) {
                 Location location = this.getRespawnLocation(player.getWorld());
@@ -63,10 +63,10 @@ public class RecordLastLocationListener implements Listener {
 
     @EventHandler
     public void onRespawnOnFolia(CustomPlayerRespawnEvent event) {
-        if (!ServerPlatform.isFolia()) return;
+        if (!Scheduler.isFolia()) return;
         Player player = event.getPlayer();
         Location respawnLocation = event.getRespawnLocation();
-        Ari.instance.getScheduler().runAtRegion(Ari.instance, respawnLocation, i -> player.teleportAsync(respawnLocation).thenAccept(t -> {
+        Ari.instance.getScheduler().runAtRegion(respawnLocation, i -> player.teleportAsync(respawnLocation).thenAccept(t -> {
             if(t && TELEPORT_LAST_LOCATION.containsKey(player.getUniqueId())) {
                 this.setPlayerLastLocation(player);
             } else {
@@ -78,7 +78,7 @@ public class RecordLastLocationListener implements Listener {
     @EventHandler
     public void onRespawnOnPaper(PlayerRespawnEvent event) {
         if (event.getRespawnReason().equals(PlayerRespawnEvent.RespawnReason.END_PORTAL)) return;
-        if (ServerPlatform.isFolia()) return;
+        if (Scheduler.isFolia()) return;
         Player player = event.getPlayer();
         if (!event.isBedSpawn() && !event.isAnchorSpawn()) {
             event.setRespawnLocation(this.getRespawnLocation(player.getWorld()));
@@ -96,7 +96,7 @@ public class RecordLastLocationListener implements Listener {
 
     private void setPlayerLastLocation(Player player) {
         ConfigUtils.t("teleport.tips-back", player).thenAccept(i ->
-                Ari.instance.getScheduler().runAtEntity(Ari.instance, player, t ->
+                Ari.instance.getScheduler().runAtEntity(player, t ->
                         player.sendMessage(Ari.instance.getComponentTool().setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/" + Ari.instance.getName() + " back")), null));
     }
 

@@ -45,7 +45,6 @@ public class maintenance extends LiteralArgumentCommand {
             if (service.isMaintenance()) {
                 ConfigUtils.t("server.maintenance.to-player", player).thenAccept(player::sendMessage);
                 Ari.instance.getScheduler().runAtEntityLater(
-                        Ari.instance,
                         player,
                         i -> {
                             if (!player.isOnline()) return;

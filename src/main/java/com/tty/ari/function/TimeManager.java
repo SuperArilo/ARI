@@ -36,8 +36,7 @@ public class TimeManager {
 
     public void timeSet(long tick, Consumer<Long> consumer) {
         this.task = Ari.instance.getScheduler().runAtFixedRate(
-            Ari.instance,
-            i -> {
+                i -> {
                 long currentTime = this.world.getTime();
                 long delta = (tick - currentTime + 24000) % 24000;
                 if (delta == 0) {
@@ -68,8 +67,7 @@ public class TimeManager {
 
     public void timeAutomaticallyPasses(long delayRate, Consumer<Long> consumer) {
         this.task = Ari.instance.getScheduler().runAtFixedRate(
-            Ari.instance,
-            t -> {
+                t -> {
                 long newTime = this.world.getTime() + this.addTick;
                 this.world.setFullTime(newTime);
                 if (consumer != null && counter[0]++ % delayRate == 0) {

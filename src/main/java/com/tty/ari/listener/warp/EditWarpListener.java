@@ -101,7 +101,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
             repository.delete(wrapper, PartitionKey.global()).thenCompose(i -> {
                 if (i) {
                     return ConfigUtils.t("function.warp.delete-success", player).thenAccept(player::sendMessage)
-                            .thenRun(() -> Ari.instance.getScheduler().run(Ari.instance, ab -> {
+                            .thenRun(() -> Ari.instance.getScheduler().run(ab -> {
                                 event.getInventory().close();
                                 Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
                             }));
@@ -163,7 +163,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
                 clickMeta.lore(List.of(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                 clickItem.setItemMeta(clickMeta);
                 if(status) {
-                    Ari.instance.getScheduler().runAsyncDelayed(Ari.instance, e ->{
+                    Ari.instance.getScheduler().runAsyncDelayed(e ->{
                         clickMeta.lore(List.of());
                         clickItem.setItemMeta(clickMeta);
                     }, 20L);

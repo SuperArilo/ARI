@@ -1,10 +1,7 @@
 package com.tty.ari;
 
 import com.google.gson.reflect.TypeToken;
-import com.tty.api.AbstractJavaPlugin;
-import com.tty.api.ConfigurationManager;
-import com.tty.api.ServerPlatform;
-import com.tty.api.StatusManager;
+import com.tty.api.*;
 import com.tty.api.dto.AliasItem;
 import com.tty.api.dto.TempRegisterService;
 import com.tty.api.configuration.BaseConfiguration;
@@ -196,7 +193,7 @@ public class Ari extends AbstractJavaPlugin {
                 new PlayerRideActionStateService(20L, 1L, false),
                 new RandomTpStateService(20L, 1L, true),
                 new GuiEditFunctionStateService(20L,1L, false),
-                new PlayerOnlineStateService(20L, 20L, true),
+                new PlayerSaveDataStateService(20L, 20L, true),
                 new GuiManagerStateService(10L, 1L, false),
                 new PlayerCommandPreprocessService(20L, 1L, true),
                 new PlayerChatService(20L, 1L, true),
@@ -214,7 +211,7 @@ public class Ari extends AbstractJavaPlugin {
 
     private void printLogo() {
         String pluginInfo;
-        if (ServerPlatform.isFolia()) {
+        if (Scheduler.isFolia()) {
             PluginMeta pluginMeta = Ari.instance.getPluginMeta();
             pluginInfo = pluginMeta.getName() + " " + pluginMeta.getVersion();
         } else {

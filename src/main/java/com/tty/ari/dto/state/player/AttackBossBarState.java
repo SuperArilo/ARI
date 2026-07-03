@@ -53,7 +53,7 @@ public class AttackBossBarState extends AsyncState {
     }
 
     private synchronized CancellableTask createTask() {
-        return Ari.instance.getScheduler().runAtRegionLater(Ari.instance, this.getOwner().getLocation(), i -> {
+        return Ari.instance.getScheduler().runAtRegionLater(this.getOwner().getLocation(), i -> {
             if (this.bar != null) {
                 this.getOwner().hideBossBar(Objects.requireNonNull(this.bar));
                 this.setBar(null);

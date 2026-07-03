@@ -30,7 +30,6 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
         if (target == null) {
             Ari.instance.getScheduler().runAtEntity(
-                    Ari.instance,
                     owner,
                     i -> owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner)),
                     null);
@@ -59,7 +58,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
 
         ConfigUtils.t("function.tpa." + (state.getType().getKey().equals("tpa") ? "to-message" : "here-message"), (OfflinePlayer) owner)
             .thenAccept(result ->
-                    Ari.instance.getScheduler().runAtEntity(Ari.instance, target, task -> target.sendMessage(
+                    Ari.instance.getScheduler().runAtEntity(target, task -> target.sendMessage(
                         result
                         .appendNewline()
                         .append(Ari.instance.getComponentTool().setClickEventText(
@@ -105,7 +104,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
         //检查是否已经发过请求了
         if (!this.getStates(owner).isEmpty()) {
             ConfigUtils.t("function.tpa.again", (OfflinePlayer) owner).thenAccept(i ->
-                    Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, t -> owner.sendMessage(i), null));
+                    Ari.instance.getScheduler().runAtEntity(owner, t -> owner.sendMessage(i), null));
             return false;
         }
 
@@ -114,7 +113,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                 !manager.get(RandomTpStateService.class).getStates(owner).isEmpty() ||
                 !manager.get(TeleportStateService.class).getStates(target).isEmpty() ||
                 !manager.get(RandomTpStateService.class).getStates(target).isEmpty()) {
-            Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), owner)), null);
+            Ari.instance.getScheduler().runAtEntity(owner, i -> owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.has-teleport"), owner)), null);
             return false;
         }
 

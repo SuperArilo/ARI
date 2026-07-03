@@ -54,7 +54,7 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
                             Ari.instance.getLog().error("can't find homeId: {}", homeId);
                             return ConfigUtils.t("function.home.not-found", player).thenAccept(player::sendMessage).thenApply(v -> false);
                         }
-                        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> {
+                        Ari.instance.getScheduler().runAtEntity(player, i -> {
                             if (event.isLeftClick()) {
                                 HomeConfig homeConfig = Ari.instance.getConfigurationManager().get(HomeConfig.class);
                                 Ari.instance.getStatusManager().get(TeleportStateService.class).addState(new EntityToLocationState(
@@ -71,7 +71,7 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
                         if (ex != null) {
                             Ari.instance.getLog().error(ex, "error on get player homes");
                         }
-                        Ari.instance.getScheduler().run(Ari.instance, o -> event.getInventory().close());
+                        Ari.instance.getScheduler().run(o -> event.getInventory().close());
                     });
         });
         registry.add(FunctionType.PREV_PAGE, (event, homeList, player) -> homeList.prev());

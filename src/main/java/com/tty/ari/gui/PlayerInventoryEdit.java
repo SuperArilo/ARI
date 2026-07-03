@@ -131,7 +131,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
                 }
                 case LOCATION -> {
                     if (this.monitoree instanceof Player player) {
-                        this.getPlugin().getScheduler().runAtEntity(this.getPlugin(), player, i -> {
+                        this.getPlugin().getScheduler().runAtEntity(player, i -> {
                             Location location = player.getLocation();
 
                             Map<IconKeyType, String> map = Map.of(

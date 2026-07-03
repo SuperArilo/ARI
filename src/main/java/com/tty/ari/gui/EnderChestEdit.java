@@ -45,7 +45,7 @@ public class EnderChestEdit extends BaseInventory {
 
     @Override
     protected void afterCreatedInventory(@NotNull Inventory inventory) {
-        this.getPlugin().getScheduler().runAsync(this.getPlugin(), i -> {
+        this.getPlugin().getScheduler().runAsync(i -> {
             NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.monitoree.getUniqueId().toString());
             if (data == null) {
                 this.surveillant.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
@@ -57,7 +57,7 @@ public class EnderChestEdit extends BaseInventory {
             for (ReadWriteNBT enderItem : enderItems) {
                 int slot = enderItem.getByte("Slot") & 0xFF;
                 ItemStack itemStack = NBT.itemStackFromNBT(enderItem);
-                this.getPlugin().getScheduler().run(this.getPlugin(), t -> inventory.setItem(slot, itemStack));
+                this.getPlugin().getScheduler().run(t -> inventory.setItem(slot, itemStack));
             }
         });
     }

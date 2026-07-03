@@ -44,7 +44,6 @@ public class PlayerTabManager implements Listener {
         }
 
         this.task = Ari.instance.getScheduler().runAtFixedRate(
-                Ari.instance,
                 i -> this.updateTab(new ArrayList<>(Bukkit.getServer().getOnlinePlayers())),
                 1L,
                 this.updateInterval

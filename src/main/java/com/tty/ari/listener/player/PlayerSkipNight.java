@@ -25,7 +25,7 @@ public class PlayerSkipNight implements Listener {
             Ari.instance.getLog().error("cannot found world {} to sleep skipping.", world.getName());
             return;
         }
-        Ari.instance.getScheduler().run(Ari.instance, i -> sleepingWorld.update());
+        Ari.instance.getScheduler().run(i -> sleepingWorld.update());
     }
 
     @EventHandler

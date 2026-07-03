@@ -44,13 +44,13 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
             return;
         }
         state.setRunning(true);
-        Ari.instance.getScheduler().run(Ari.instance, i -> {
+        Ari.instance.getScheduler().run(i -> {
             Entity entity = Bukkit.getServer().getEntity(state.getTarget().getUniqueId());
             if (entity == null) {
                 state.setOver(true);
                 return;
             }
-            Ari.instance.getScheduler().runAtRegion(Ari.instance, entity.getLocation(), t -> {
+            Ari.instance.getScheduler().runAtRegion(entity.getLocation(), t -> {
                 if(!(entity instanceof Damageable damageable)) {
                     state.setOver(true);
                     return;

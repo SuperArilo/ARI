@@ -93,7 +93,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         }
 
         state.setRunning(true);
-        Ari.instance.getScheduler().runAtEntity(Ari.instance, owner, i -> {
+        Ari.instance.getScheduler().runAtEntity(owner, i -> {
             boolean b = !owner.isDead() &&
                     !owner.isFlying() &&
                     !owner.isSleeping() &&
@@ -124,7 +124,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                 i.addPassenger(player);
                 player.setRotation(location.getYaw(), 0);
                 ConfigUtils.t("function.sit.tips", player).thenAccept(t ->
-                    Ari.instance.getScheduler().runAtEntity(Ari.instance, player, p -> player.sendActionBar(t), null));
+                    Ari.instance.getScheduler().runAtEntity(player, p -> player.sendActionBar(t), null));
             }
         );
 

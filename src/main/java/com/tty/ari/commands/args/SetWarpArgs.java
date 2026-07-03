@@ -84,7 +84,6 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
                                 CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
 
                                 Ari.instance.getScheduler().runAtRegion(
-                                        Ari.instance,
                                         player.getLocation(),
                                         task -> {
                                             ServerWarp serverWarp = new ServerWarp();

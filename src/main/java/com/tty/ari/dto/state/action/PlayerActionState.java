@@ -54,7 +54,7 @@ public class PlayerActionState extends AsyncState {
     public void removeToolEntity(JavaPlugin plugin) {
         if (this.tool_entity == null) return;
         if (!Bukkit.getServer().isStopping()) {
-            Ari.instance.getScheduler().runAtEntity(plugin,
+            Ari.instance.getScheduler().runAtEntity(
                     this.tool_entity,
                     i-> this.cancelTaskEntity(),
                     () -> Ari.instance.getLog().error("remove tool_entity error."));

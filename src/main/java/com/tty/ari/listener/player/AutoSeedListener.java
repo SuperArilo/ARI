@@ -51,7 +51,7 @@ public class AutoSeedListener implements Listener {
         if (damageable.getDamage() >= mainHand.getType().getMaxDurability()) return;
 
 
-        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> {
+        Ari.instance.getScheduler().runAtEntity(player, i -> {
 
             // 随机消耗耐久
             if(PublicFunctionUtils.randomGenerator(0, 1) == 0 && !player.getGameMode().equals(GameMode.CREATIVE)) {

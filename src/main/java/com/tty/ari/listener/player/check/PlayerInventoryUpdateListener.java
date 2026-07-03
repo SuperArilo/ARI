@@ -50,7 +50,7 @@ public class PlayerInventoryUpdateListener implements Listener {
         ItemStack before;
         if (event.getItem() == null) return;
         before = event.getItem().clone();
-        Ari.instance.getScheduler().runLater(Ari.instance, i -> {
+        Ari.instance.getScheduler().runLater(i -> {
             ItemStack current = player.getInventory().getItemInMainHand();
             if (!before.equals(current)) {
                 this.syncPlayerInventoryToEdit(event.getPlayer(), inventoryEdit -> this.updateInventory(event.getPlayer(), inventoryEdit));
@@ -92,7 +92,7 @@ public class PlayerInventoryUpdateListener implements Listener {
 
     private void syncPlayerInventoryToEdit(Player player, Consumer<PlayerInventoryEdit> consumer) {
         GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
-        Ari.instance.getScheduler().runLater(Ari.instance, i -> {
+        Ari.instance.getScheduler().runLater(i -> {
             for (GuiState guiState : service.getAllStates()) {
                 if (!(guiState.getMenu() instanceof PlayerInventoryEdit editInventory) || !(guiState instanceof OnCheckPlayerGuiState state)) continue;
                 if (state.isUpdating()) continue;

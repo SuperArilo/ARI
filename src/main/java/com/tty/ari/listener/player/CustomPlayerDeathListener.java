@@ -86,7 +86,7 @@ public class CustomPlayerDeathListener implements Listener {
         switch (info.deathCause) {
             case ENTITY_EXPLOSION, BLOCK_EXPLOSION -> future.complete(info.getRandomOfList(baseKey + (info.killer instanceof Explosive ? "player.explosion" : "mob.explosion"), info.isDestine));
             case ENTITY_ATTACK, ENTITY_SWEEP_ATTACK, PROJECTILE, POISON ->
-                    Ari.instance.getScheduler().runAtEntity(Ari.instance, entity, i -> {
+                    Ari.instance.getScheduler().runAtEntity(entity, i -> {
                         String weaponKey = this.getWeaponKey(info);
                         String targetKey = info.killer instanceof Player ? "player" : "mob";
                         String message = info.getRandomOfList(baseKey + targetKey + "." + weaponKey, info.isDestine);
@@ -97,7 +97,7 @@ public class CustomPlayerDeathListener implements Listener {
                         future.complete(message);
                     }, null);
             case CONTACT, LAVA, HOT_FLOOR ->
-                    Ari.instance.getScheduler().runAtEntity(Ari.instance, entity, i -> {
+                    Ari.instance.getScheduler().runAtEntity(entity, i -> {
                         if (event.getEntity().getLastDamageCause() instanceof EntityDamageByBlockEvent blockEvent) {
                             Block block = blockEvent.getDamager();
                             if (block == null) {
@@ -109,7 +109,7 @@ public class CustomPlayerDeathListener implements Listener {
                         }
                     }, null);
             case FALLING_BLOCK ->
-                    Ari.instance.getScheduler().runAtEntity(Ari.instance, entity, i -> {
+                    Ari.instance.getScheduler().runAtEntity(entity, i -> {
                         Material material = null;
                         String key = "";
                         if (event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent entityEvent) {

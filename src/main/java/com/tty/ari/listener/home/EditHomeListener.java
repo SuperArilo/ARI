@@ -85,7 +85,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
                         if (success) {
                             return ConfigUtils.t("function.home.delete-success", player)
                                     .thenAccept(player::sendMessage)
-                                    .thenRun(() -> Ari.instance.getScheduler().run(Ari.instance, j -> {
+                                    .thenRun(() -> Ari.instance.getScheduler().run(j -> {
                                         event.getInventory().close();
                                         Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
                                     }));
@@ -168,7 +168,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
             repository.update(homeEditor.getHome(), wrapper, PartitionKey.of(player.getUniqueId().toString())).thenAccept(status -> {
                 clickMeta.lore(List.of(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue(status ? "base.save.done":"base.save.error"))));
                 clickItem.setItemMeta(clickMeta);
-                Ari.instance.getScheduler().runAsyncDelayed(Ari.instance, e -> {
+                Ari.instance.getScheduler().runAsyncDelayed(e -> {
                     clickMeta.lore(List.of());
                     clickItem.setItemMeta(clickMeta);
                 }, 20);

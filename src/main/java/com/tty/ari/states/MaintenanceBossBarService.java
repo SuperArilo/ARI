@@ -48,7 +48,7 @@ public class MaintenanceBossBarService extends StateService<MaintenanceBossBarSt
     @Override
     protected void onEarlyExit(MaintenanceBossBarState state) {
         if (!((state.getOwner()) instanceof Player player)) return;
-        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> {
+        Ari.instance.getScheduler().runAtEntity(player, i -> {
             if (player.isOnline()) {
                 player.hideBossBar(state.getBossBar());
             }

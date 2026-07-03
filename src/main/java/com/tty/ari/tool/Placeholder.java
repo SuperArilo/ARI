@@ -2,7 +2,7 @@ package com.tty.ari.tool;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.api.AbstractJavaPlugin;
-import com.tty.api.ServerPlatform;
+import com.tty.api.Scheduler;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.service.impl.PlaceholderRegistryImpl;
@@ -63,7 +63,7 @@ public class Placeholder extends BasePlaceholder {
                 PlaceholderServer.ARI_VERSION,
                 PlaceholderResolve.ofWhenNull(() -> {
                     String pluginInfo;
-                    if (ServerPlatform.isFolia()) {
+                    if (Scheduler.isFolia()) {
                         PluginMeta pluginMeta = Ari.instance.getPluginMeta();
                         pluginInfo = pluginMeta.getName() + " " + pluginMeta.getVersion();
                     } else {

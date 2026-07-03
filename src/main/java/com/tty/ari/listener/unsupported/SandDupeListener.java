@@ -46,7 +46,7 @@ public class SandDupeListener implements Listener {
 
             int chunkX = 0;
             int chunkZ = 0;
-            Ari.instance.getScheduler().runAtRegion(Ari.instance, overworld, chunkX, chunkZ, task -> {
+            Ari.instance.getScheduler().runAtRegion(overworld, chunkX, chunkZ, task -> {
                 Location safeLocation = this.findSafeLocation(overworld);
                 if (safeLocation == null) {
                     Ari.instance.getLog().warn("No safe block found in overworld");
@@ -65,7 +65,7 @@ public class SandDupeListener implements Listener {
             int chunkX = location.getBlockX() >> 4;
             int chunkZ = location.getBlockZ() >> 4;
 
-            Ari.instance.getScheduler().runAtRegion(Ari.instance,
+            Ari.instance.getScheduler().runAtRegion(
                     endWorld,
                     chunkX,
                     chunkZ,

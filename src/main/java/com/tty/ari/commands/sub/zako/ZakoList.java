@@ -50,7 +50,7 @@ public class ZakoList extends LiteralArgumentCommand {
                 ? ConfigUtils.t("function.zako.list-requesting", player)
                 : ConfigUtils.t("function.zako.list-requesting");
 
-        requesting.thenAccept(component -> Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(component))).thenCompose(v -> {
+        requesting.thenAccept(component -> Ari.instance.getScheduler().run(i -> sender.sendMessage(component))).thenCompose(v -> {
 
             EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
             return repository.getList(pageNum, MAX_ZAKO_LIST_PAGE_SIZE, new LambdaQueryWrapper<>(WhitelistInstance.class), PartitionKey.global());
@@ -59,7 +59,7 @@ public class ZakoList extends LiteralArgumentCommand {
 
             List<WhitelistInstance> records = result.records();
             if (records.isEmpty()) {
-                Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.page-change.none-next"))));
+                Ari.instance.getScheduler().run(i -> sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.page-change.none-next"))));
                 return CompletableFuture.completedFuture(null);
             }
 
@@ -94,7 +94,7 @@ public class ZakoList extends LiteralArgumentCommand {
                     });
         }).thenAcceptAsync(dataPage -> {
             if (dataPage != null) {
-                Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(dataPage.build()));
+                Ari.instance.getScheduler().run(i -> sender.sendMessage(dataPage.build()));
             }
         }, Ari.instance.getExecutorAsync())
         .exceptionallyAsync(ex -> {
@@ -102,7 +102,7 @@ public class ZakoList extends LiteralArgumentCommand {
             CompletableFuture<Component> errorMsg = (sender instanceof Player player)
                     ? ConfigUtils.t("function.zako.list-request-error", player)
                     : ConfigUtils.t("function.zako.list-request-error");
-            errorMsg.thenAccept(msg -> Ari.instance.getScheduler().run(Ari.instance, i -> sender.sendMessage(msg)));
+            errorMsg.thenAccept(msg -> Ari.instance.getScheduler().run(i -> sender.sendMessage(msg)));
             return null;
         }, Ari.instance.getExecutorAsync());
         return Command.SINGLE_SUCCESS;

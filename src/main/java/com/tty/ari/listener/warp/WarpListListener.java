@@ -96,7 +96,7 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
                 if (ex != null) {
                     Ari.instance.getLog().error(ex, "get warp id {} error", warpId);
                 }
-                Ari.instance.getScheduler().runAtEntity(Ari.instance, player, i -> event.getInventory().close(), null);
+                Ari.instance.getScheduler().runAtEntity(player, i -> event.getInventory().close(), null);
             });
         });
         registry.add(FunctionType.PREV_PAGE, (event, warpList, player) -> warpList.prev());

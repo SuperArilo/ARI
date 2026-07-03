@@ -55,7 +55,7 @@ public class DamageTrackerListener implements Listener {
             this.cleanTask = null;
         }
         AttackBarConfig attackBarConfig = Ari.instance.getConfigurationManager().get(AttackBarConfig.class);
-        return Ari.instance.getScheduler().runAtFixedRate(Ari.instance, i -> {
+        return Ari.instance.getScheduler().runAtFixedRate(i -> {
             long now = System.currentTimeMillis();
             Set<Entity> victims = DAMAGE_TRACKER.getVictimsSnapshot();
             for (Entity e : victims) {
@@ -64,7 +64,6 @@ public class DamageTrackerListener implements Listener {
                 if (lastTs == 0L || (now - lastTs) > attackBarConfig.getClearLastAttackRecord() * 1000L) {
                     DAMAGE_TRACKER.clearRecords(damageable);
                     Ari.instance.getScheduler().runAtEntity(
-                            Ari.instance,
                             e,
                             t -> Ari.instance.getLog().debug("damage_tracker: remove victim entity {} record.", e.getName()),
                             null

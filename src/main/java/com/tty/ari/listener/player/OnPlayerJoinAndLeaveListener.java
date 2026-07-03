@@ -11,13 +11,13 @@ import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.player.MaintenanceBossBarState;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
-import com.tty.ari.dto.state.player.PlayerOnlineState;
+import com.tty.ari.dto.state.player.PlayerSaveState;
 import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.states.MaintenanceBossBarService;
-import com.tty.ari.states.PlayerOnlineStateService;
+import com.tty.ari.states.PlayerSaveDataStateService;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerNameCache;
@@ -181,16 +181,16 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                     Ari.instance.getLog().info("server not set spawn location.");
                 }
                 if(this.messageFirstJoin) {
-                    ConfigUtils.t("server.message.on-first-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
+                    ConfigUtils.t("server.message.on-first-login", player).thenAccept(t -> Ari.instance.getScheduler().run(task -> Bukkit.broadcast(t)));
                     return;
                 }
             }
             if(this.messageOnLogin) {
-                ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.instance.getScheduler().run(Ari.instance, task -> Bukkit.broadcast(t)));
+                ConfigUtils.t("server.message.on-login", player).thenAccept(t -> Ari.instance.getScheduler().run(task -> Bukkit.broadcast(t)));
             }
             //添加玩家登录的状态
-            Ari.instance.getStatusManager().get(PlayerOnlineStateService.class).addState(new PlayerOnlineState(player, nowLoginTime));
-            Ari.instance.getScheduler().runAtEntity(Ari.instance, player, o -> {
+            Ari.instance.getStatusManager().get(PlayerSaveDataStateService.class).addState(new PlayerSaveState(player, nowLoginTime));
+            Ari.instance.getScheduler().runAtEntity(player, o -> {
                 if(this.isPlayerInsideBlock(player)) {
                     Ari.instance.getLog().debug("player {} inside block, teleport safe location.", player.getName());
                     Location safeLocation = this.findSafeLocationAbove(player.getLocation());
@@ -211,9 +211,9 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         Player player = event.getPlayer();
         if(this.messageOnLeave) {
             event.quitMessage(null);
-            ConfigUtils.t("server.message.on-leave", player).thenAccept(i -> Ari.instance.getScheduler().run(Ari.instance, t -> Bukkit.broadcast(i)));
+            ConfigUtils.t("server.message.on-leave", player).thenAccept(i -> Ari.instance.getScheduler().run(t -> Bukkit.broadcast(i)));
         }
-        List<PlayerOnlineState> states = Ari.instance.getStatusManager().get(PlayerOnlineStateService.class).getStates(player);
+        List<PlayerSaveState> states = Ari.instance.getStatusManager().get(PlayerSaveDataStateService.class).getStates(player);
         if (!states.isEmpty()) {
             states.getFirst().setCount(new AtomicInteger(Integer.MAX_VALUE));
         }

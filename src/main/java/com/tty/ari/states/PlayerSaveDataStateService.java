@@ -3,7 +3,7 @@ package com.tty.ari.states;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.ari.Ari;
 import com.tty.api.repository.PartitionKey;
-import com.tty.ari.dto.state.player.PlayerOnlineState;
+import com.tty.ari.dto.state.player.PlayerSaveState;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.state.StateService;
@@ -13,45 +13,43 @@ import org.bukkit.entity.Player;
 
 import java.util.concurrent.CompletableFuture;
 
-public class PlayerOnlineStateService extends StateService<PlayerOnlineState> {
+public class PlayerSaveDataStateService extends StateService<PlayerSaveState> {
     
-    public PlayerOnlineStateService(long rate, long c, boolean isAsync) {
+    public PlayerSaveDataStateService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance);
     }
 
     @Override
-    protected boolean canAddState(PlayerOnlineState state) {
+    protected boolean canAddState(PlayerSaveState state) {
         return this.isNotHaveState(state.getOwner());
     }
 
     @Override
-    protected void loopExecution(PlayerOnlineState state) {
+    protected void loopExecution(PlayerSaveState state) {}
+
+    @Override
+    protected void abortAddState(PlayerSaveState state) {
 
     }
 
     @Override
-    protected void abortAddState(PlayerOnlineState state) {
-
-    }
-
-    @Override
-    protected void passAddState(PlayerOnlineState state) {
+    protected void passAddState(PlayerSaveState state) {
         Ari.instance.getLog().debug("added player {} state to save.", state.getOwner().getName());
     }
 
     @Override
-    protected void onEarlyExit(PlayerOnlineState state) {
+    protected void onEarlyExit(PlayerSaveState state) {
         Ari.instance.getLog().debug("stop save player {} data", state.getOwner().getName());
     }
 
     @Override
-    protected void onFinished(PlayerOnlineState state) {
+    protected void onFinished(PlayerSaveState state) {
         Ari.instance.getLog().debug("start save player data {}.", state.getOwner().getName());
         this.savePlayerData(state);
     }
 
     @Override
-    protected void onServiceAbort(PlayerOnlineState state) {
+    protected void onServiceAbort(PlayerSaveState state) {
         Ari.instance.getLog().debug("player save service abort. saving {}.", state.getOwner().getName());
         this.savePlayerData(state);
     }
@@ -64,7 +62,7 @@ public class PlayerOnlineStateService extends StateService<PlayerOnlineState> {
      * 保存玩家在线时长数据数据
      * @param state 玩家的状态服务
      */
-    public void savePlayerData(PlayerOnlineState state) {
+    public void savePlayerData(PlayerSaveState state) {
 
         Player player = (Player) state.getOwner();
         boolean stopping = Bukkit.getServer().isStopping();
@@ -99,7 +97,7 @@ public class PlayerOnlineStateService extends StateService<PlayerOnlineState> {
                 Ari.instance.getLog().error(ex, "Error saving player data for {}", player.getName());
             }
             if (repository.isAsync() && player.isOnline()) {
-                Ari.instance.getScheduler().runLater(Ari.instance, i -> this.addState(new PlayerOnlineState(player, System.currentTimeMillis())), 20L);
+                Ari.instance.getScheduler().runLater(i -> this.addState(new PlayerSaveState(player, System.currentTimeMillis())), 20L);
             } else {
                 Ari.instance.getLog().debug("skip player {} save event.", player.getName());
             }

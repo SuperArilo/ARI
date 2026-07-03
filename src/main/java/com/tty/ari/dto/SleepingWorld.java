@@ -38,7 +38,7 @@ public class SleepingWorld {
                 for (Player player : this.world.getPlayers()) {
                     if (this.playerCondition(player.getWorld()) || !player.isSleeping() || !player.isDeeplySleeping()) continue;
                     ConfigUtils.t("server.time.skip-to-night", player).thenAccept(result ->
-                            Ari.instance.getScheduler().runAtEntity(Ari.instance, player, b ->
+                            Ari.instance.getScheduler().runAtEntity(player, b ->
                                     player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
                                         timeManager.tickToTime(i),
                                         result,
@@ -55,7 +55,7 @@ public class SleepingWorld {
         for (Player player : this.world.getPlayers()) {
             if (!player.isSleeping()) {
                 ConfigUtils.t("server.time.report-status", player).thenAccept(result ->
-                        Ari.instance.getScheduler().runAtEntity(Ari.instance, player, t ->
+                        Ari.instance.getScheduler().runAtEntity(player, t ->
                                 player.sendActionBar(result), null));
             }
         }
@@ -81,7 +81,7 @@ public class SleepingWorld {
                     (worldTime > 0 && worldTime < TimePeriod.SUNRISE.getEnd())) ||
                     (world.isThundering() || world.hasStorm()) &&
                             !this.skipNightOver) {
-                Ari.instance.getScheduler().run(Ari.instance, i-> {
+                Ari.instance.getScheduler().run(i-> {
                     world.setStorm(false);
                     world.setThundering(false);
                 });
