@@ -158,7 +158,8 @@ public class Ari extends AbstractJavaPlugin {
                 new DisableMobSpawnListener(),
                 new CustomTotemCostListener(),
                 new SandDupeListener(),
-                new PlayerCommandCoolDownListener()
+                new PlayerCommandCoolDownListener(),
+                new PlayerAFKStatusListener()
         );
     }
 
@@ -193,13 +194,13 @@ public class Ari extends AbstractJavaPlugin {
                 new PlayerRideActionStateService(20L, 1L, false),
                 new RandomTpStateService(20L, 1L, true),
                 new GuiEditFunctionStateService(20L,1L, false),
+                new PlayerOnlineService(20L, 1L, true),
                 new PlayerSaveDataStateService(20L, 20L, true),
                 new GuiManagerStateService(10L, 1L, false),
                 new PlayerCommandPreprocessService(20L, 1L, true),
                 new PlayerChatService(20L, 1L, true),
                 new MaintenanceBossBarService(20L, 1L, true),
                 new AttackBossBarService(5L, 1L, true)
-
         );
     }
 
