@@ -11,14 +11,14 @@ import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.player.MaintenanceBossBarState;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
-import com.tty.ari.dto.state.player.PlayerOnlineState;
+import com.tty.ari.dto.state.player.PlayerAFKState;
 import com.tty.ari.dto.state.player.PlayerSaveState;
 import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.states.MaintenanceBossBarService;
-import com.tty.ari.states.PlayerOnlineService;
+import com.tty.ari.states.PlayerAFKService;
 import com.tty.ari.states.PlayerSaveDataStateService;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.tool.ConfigUtils;
@@ -191,7 +191,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             }
             //添加玩家登录的状态
             Ari.instance.getStatusManager().get(PlayerSaveDataStateService.class).addState(new PlayerSaveState(player, nowLoginTime));
-            Ari.instance.getStatusManager().get(PlayerOnlineService.class).addState(new PlayerOnlineState(player));
+            Ari.instance.getStatusManager().get(PlayerAFKService.class).addState(new PlayerAFKState(player));
             Ari.instance.getScheduler().runAtEntity(player, o -> {
                 if(this.isPlayerInsideBlock(player)) {
                     Ari.instance.getLog().debug("player {} inside block, teleport safe location.", player.getName());

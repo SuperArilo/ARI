@@ -1,58 +1,134 @@
 package com.tty.ari.listener.player;
 
 import com.tty.ari.Ari;
-import com.tty.ari.dto.state.player.PlayerOnlineState;
-import com.tty.ari.states.PlayerOnlineService;
+import com.tty.ari.dto.state.player.PlayerAFKState;
+import com.tty.ari.states.PlayerAFKService;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.player.*;
 
 public class PlayerAFKStatusListener implements Listener {
 
-    @EventHandler
-    public void onHurt(EntityDamageEvent event) {
-        if (!((event.getEntity()) instanceof Player player)) return;
-        this.check(player, event);
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+
+        Location from = event.getFrom();
+        Location to = event.getTo();
+
+        boolean lookChanged = from.getYaw() != to.getYaw() || from.getPitch() != to.getPitch();
+        boolean posChanged = from.getX() != to.getX() || from.getY() != to.getY() || from.getZ() != to.getZ();
+
+        if (this.isAFK(player)) {
+            if (lookChanged) {
+                this.reset(player);
+                if (posChanged) {
+                    event.setTo(new Location(from.getWorld(), from.getX(), from.getY(), from.getZ(), to.getYaw(), to.getPitch()));
+                }
+            } else if (posChanged) {
+                event.setCancelled(true);
+                event.setTo(from);
+            }
+        } else {
+            if (posChanged || lookChanged) {
+                this.reset(player);
+            }
+        }
+
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onChat(AsyncChatEvent event) {
+        if (isAFK(event.getPlayer())) {
+            this.reset(event.getPlayer());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        if (this.isAFK(event.getPlayer())) {
+            this.reset(event.getPlayer());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
-        this.check(event.getPlayer(), event);
+        if (this.isAFK(event.getPlayer())) {
+            this.reset(event.getPlayer());
+        }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInteractEntity(PlayerInteractEntityEvent event) {
-        this.check(event.getPlayer(), event);
+        if (this.isAFK(event.getPlayer())) {
+            this.reset(event.getPlayer());
+        }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent event) {
-        this.check(event.getPlayer(), event);
+        if (this.isAFK(event.getPlayer())) {
+            this.reset(event.getPlayer());
+        }
     }
 
-    @EventHandler
-    public void onBucketOne(PlayerBucketEmptyEvent event) {
-        this.check(event.getPlayer(), event);
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
+        if (this.isAFK(event.getPlayer())) this.reset(event.getPlayer());
     }
 
-    @EventHandler
-    public void onBucketTwo(PlayerBucketFillEvent event) {
-        this.check(event.getPlayer(), event);
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBucketFill(PlayerBucketFillEvent event) {
+        if (this.isAFK(event.getPlayer())) this.reset(event.getPlayer());
     }
 
-    @EventHandler
-    public void onBed(PlayerBedEnterEvent event) {
-        this.check(event.getPlayer(), event);
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBedEnter(PlayerBedEnterEvent event) {
+        if (this.isAFK(event.getPlayer())) this.reset(event.getPlayer());
     }
 
-    private void check(Player player, Cancellable cancellable) {
-        for (PlayerOnlineState state : Ari.instance.getStatusManager().get(PlayerOnlineService.class).getStates(player)) {
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onConsume(PlayerItemConsumeEvent event) {
+        if (this.isAFK(event.getPlayer())) this.reset(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onHurt(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player player && this.isAFK(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPotionEffect(EntityPotionEffectEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (event.getAction() != EntityPotionEffectEvent.Action.ADDED && event.getAction() != EntityPotionEffectEvent.Action.CHANGED) return;
+        if (this.isAFK(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean isAFK(Player player) {
+        for (PlayerAFKState state : Ari.instance.getStatusManager().get(PlayerAFKService.class).getStates(player)) {
             if (state.getOwner().equals(player) && state.isAFK()) {
-                cancellable.setCancelled(true);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void reset(Player player) {
+        for (PlayerAFKState state : Ari.instance.getStatusManager().get(PlayerAFKService.class).getStates(player)) {
+            if (state.getOwner().equals(player)) {
+                state.resetStandCount();
             }
         }
     }
+
 }
