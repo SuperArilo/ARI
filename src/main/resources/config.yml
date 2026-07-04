@@ -67,7 +67,7 @@ server:
   # 开启服务器 AFK 功能
   afk:
     enable: false
-    delay: 30
+    delay: 120
   # 开启用于被官方修复后的特性（嗯？
   unsupported-settings:
     sand-dupe:
