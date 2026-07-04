@@ -52,7 +52,8 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
                 !guiManagerStateService.isNotHaveState(player) ||
                 !randomTpStateService.isNotHaveState(player) ||
                 !preTeleportStateService.isNotHaveState(player) ||
-                !teleportStateService.isNotHaveState(player)) {
+                !teleportStateService.isNotHaveState(player) ||
+                Ari.PERMISSION_SERVICE.hasPermission(player, "ari.pass-afk")) {
             state.resetStandCount();
             state.setRunning(false);
             return;
