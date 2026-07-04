@@ -21,6 +21,7 @@ public class zako extends LiteralArgumentCommand {
                 new ZakoList(),
                 new ZakoInfo(),
                 new ZakoBan(),
+                new ZakoBanList(),
                 new ZakoUnBan(),
                 new ZakoRemove());
     }
