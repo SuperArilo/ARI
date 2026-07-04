@@ -46,7 +46,7 @@ public class ZakoBanList extends LiteralArgumentCommand {
         String baseCommand = "/" + Ari.instance.getName() + " zako banlist ";
 
         ConfigUtils.t("function.zako.list-requesting").thenAccept(component -> Ari.instance.getScheduler().run(i -> sender.sendMessage(component)))
-                .thenCompose(e -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class).getList(pageNum, 10, new LambdaQueryWrapper<>(BanPlayer.class), PartitionKey.global()))
+                .thenCompose(e -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class).getList(pageNum, 10, new LambdaQueryWrapper<>(BanPlayer.class).orderByDesc(BanPlayer::getId), PartitionKey.global()))
                 .thenCompose(result -> {
                     List<BanPlayer> records = result.records();
                     if (records.isEmpty()) {

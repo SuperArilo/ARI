@@ -44,7 +44,7 @@ public class ZakoList extends LiteralArgumentCommand {
         String suggestCommand = "/" + Ari.instance.getName() +" zako info ";
 
         ConfigUtils.t("function.zako.list-requesting").thenAccept(component -> Ari.instance.getScheduler().run(i -> sender.sendMessage(component)))
-                .thenCompose(v -> Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class).getList(pageNum, 10, new LambdaQueryWrapper<>(WhitelistInstance.class), PartitionKey.global())).thenCompose(result -> {
+                .thenCompose(v -> Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class).getList(pageNum, 10, new LambdaQueryWrapper<>(WhitelistInstance.class).orderByDesc(WhitelistInstance::getAddTime), PartitionKey.global())).thenCompose(result -> {
                     List<WhitelistInstance> records = result.records();
                     if (records.isEmpty()) {
                         Ari.instance.getScheduler().run(i -> sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.page-change.none-next"))));
