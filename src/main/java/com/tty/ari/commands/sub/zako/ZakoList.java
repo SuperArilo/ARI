@@ -64,7 +64,7 @@ public class ZakoList extends LiteralArgumentCommand {
             }
 
             ComponentListPage dataPage = Ari.DATA_SERVICE.createComponentDataPage(
-                    ConfigUtils.tAfter("function.zako.list-title"),
+                    ConfigUtils.tAfter("function.zako.page-title.whitelist"),
                     baseCommand + (pageNum == 1 ? pageNum : pageNum - 1),
                     baseCommand + (pageNum + 1),
                     (int) result.currentPage(),
@@ -76,17 +76,13 @@ public class ZakoList extends LiteralArgumentCommand {
             for (WhitelistInstance instance : records) {
                 String uuid = instance.getPlayerUUID();
                 OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(uuid));
-                lineFutures.add(ConfigUtils.t("server.player.zako.list-show", offlinePlayer)
-                    .thenCombineAsync(ConfigUtils.t("server.player.zako.unable-record", offlinePlayer),
-                        (e, i) -> {
-                            Component t = e;
-                            if (offlinePlayer.getName() == null) {
-                                t = t.appendNewline().append(i);
-                            }
-                            return t.clickEvent(ClickEvent.runCommand(suggestCommand + uuid));
-                        }, Ari.instance.getExecutorAsync()
-                    )
-                );
+                lineFutures.add(ConfigUtils.tList("server.player.zako.list-show.whitelist", offlinePlayer).thenCombineAsync(ConfigUtils.t("server.player.zako.unable-record", offlinePlayer), (e, i) -> {
+                    Component t = e;
+                    if (offlinePlayer.getName() == null) {
+                        t = t.appendNewline().append(i);
+                    }
+                    return t.clickEvent(ClickEvent.runCommand(suggestCommand + uuid));
+                }, Ari.instance.getExecutorAsync()));
             }
             return CompletableFuture.allOf(lineFutures.toArray(new CompletableFuture[0])).thenApply(v -> {
                         lineFutures.stream().map(CompletableFuture::join).forEach(dataPage::addLine);

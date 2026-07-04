@@ -148,7 +148,7 @@ public class Placeholder extends BasePlaceholder {
                         player -> this.set(player.getName()),
                         offlinePlayer -> {
                             String name = offlinePlayer.getName();
-                            return this.set(name == null ? "null":name);
+                            return this.set(name == null ? offlinePlayer.getUniqueId().toString():name);
                         })
         ));
         registry.register(PlaceholderDefinition.of(
@@ -238,10 +238,6 @@ public class Placeholder extends BasePlaceholder {
         registry.register(PlaceholderDefinition.of(
                 PlaceholderMaintenance.MAINTENANCE_KICK_DEALY,
                 PlaceholderResolve.ofPlayer(player -> this.set(String.valueOf(Ari.instance.getConfig().getInt("server.maintenance.kick_delay", 10))))
-        ));
-        registry.register(PlaceholderDefinition.of(
-                PlaceholderBanPlayerType.BAN_PLAYER_NAME,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> this.set(offlinePlayer.getName()))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderBanPlayerType.BAN_T0TAL_TIME,
