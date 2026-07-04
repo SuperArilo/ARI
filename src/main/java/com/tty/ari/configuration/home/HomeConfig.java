@@ -1,5 +1,6 @@
 package com.tty.ari.configuration.home;
 
+import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.configuration.AllowEnableConfiguration;
 import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
@@ -12,6 +13,10 @@ public class HomeConfig extends AllowDownloadConfiguration implements TeleportCo
 
     public HomeConfig() {
         super(Ari.instance, FilePath.HOME_CONFIG.getPath());
+    }
+
+    public HomeConfig(AbstractJavaPlugin plugin) {
+        super(plugin);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.tty.ari.configuration;
 
+import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.configuration.AllowEnableConfiguration;
 import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
@@ -11,6 +12,10 @@ public class AttackBarConfig extends AllowDownloadConfiguration implements Allow
 
     public AttackBarConfig() {
         super(Ari.instance, FilePath.ATTACK_BAR_CONFIG.getPath());
+    }
+
+    public AttackBarConfig(AbstractJavaPlugin plugin) {
+        super(plugin);
     }
 
     @Override

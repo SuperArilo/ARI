@@ -1,6 +1,7 @@
 package com.tty.ari.configuration;
 
 import com.google.common.reflect.TypeToken;
+import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.configuration.AllowEnableConfiguration;
 import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
@@ -14,6 +15,10 @@ public class TabListConfig extends AllowDownloadConfiguration implements AllowEn
 
     public TabListConfig() {
         super(Ari.instance, FilePath.TAB_LIST_CONFIG.getPath());
+    }
+
+    public TabListConfig(AbstractJavaPlugin plugin) {
+        super(plugin);
     }
 
     @Override

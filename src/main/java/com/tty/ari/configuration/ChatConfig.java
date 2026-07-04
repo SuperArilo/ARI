@@ -1,6 +1,7 @@
 package com.tty.ari.configuration;
 
 import com.google.common.reflect.TypeToken;
+import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.configuration.AllowEnableConfiguration;
 import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
@@ -12,6 +13,10 @@ public class ChatConfig extends AllowDownloadConfiguration implements AllowEnabl
 
     public ChatConfig() {
         super(Ari.instance, FilePath.CHAT_CONFIG.getPath());
+    }
+
+    public ChatConfig(AbstractJavaPlugin plugin) {
+        super(plugin);
     }
 
     @Override

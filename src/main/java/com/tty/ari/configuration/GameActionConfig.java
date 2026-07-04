@@ -1,5 +1,6 @@
 package com.tty.ari.configuration;
 
+import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
 import com.tty.ari.enumType.FilePath;
@@ -10,6 +11,10 @@ public class GameActionConfig extends AllowDownloadConfiguration {
 
     public GameActionConfig() {
         super(Ari.instance, FilePath.GAME_ACTION_CONFIG.getPath());
+    }
+
+    public GameActionConfig(AbstractJavaPlugin plugin) {
+        super(plugin);
     }
 
     public boolean isSitEnable() {

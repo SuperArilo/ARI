@@ -1,6 +1,7 @@
 package com.tty.ari.configuration;
 
 import com.google.common.reflect.TypeToken;
+import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.SpawnLocation;
@@ -15,6 +16,10 @@ public class FunctionConfig extends AllowDownloadConfiguration {
 
     public FunctionConfig() {
         super(Ari.instance, FilePath.FUNCTION_CONFIG.getPath());
+    }
+
+    public FunctionConfig(AbstractJavaPlugin plugin) {
+        super(plugin);
     }
 
     public boolean isEnable(@NotNull TeleportType type) {

@@ -1,5 +1,6 @@
 package com.tty.ari.configuration.warp;
 
+import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.configuration.AllowEnableConfiguration;
 import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
@@ -12,6 +13,10 @@ public class WarpConfig extends AllowDownloadConfiguration implements TeleportCo
 
     public WarpConfig() {
         super(Ari.instance, FilePath.WARP_CONFIG.getPath());
+    }
+
+    public WarpConfig(AbstractJavaPlugin plugin) {
+        super(plugin);
     }
 
     @Override
