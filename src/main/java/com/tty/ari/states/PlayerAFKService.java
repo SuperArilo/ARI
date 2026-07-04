@@ -1,9 +1,15 @@
 package com.tty.ari.states;
 
+import com.tty.api.StatusManager;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.state.player.PlayerAFKState;
+import com.tty.ari.states.gui.GuiEditFunctionStateService;
+import com.tty.ari.states.gui.GuiManagerStateService;
+import com.tty.ari.states.teleport.PreTeleportStateService;
+import com.tty.ari.states.teleport.RandomTpStateService;
+import com.tty.ari.states.teleport.TeleportStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -35,6 +41,23 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
             state.setRunning(false);
             return;
         }
+        StatusManager manager = Ari.instance.getStatusManager();
+        GuiEditFunctionStateService guiEditFunctionStateService = manager.get(GuiEditFunctionStateService.class);
+        GuiManagerStateService guiManagerStateService = manager.get(GuiManagerStateService.class);
+        RandomTpStateService randomTpStateService = manager.get(RandomTpStateService.class);
+        PreTeleportStateService preTeleportStateService = manager.get(PreTeleportStateService.class);
+        TeleportStateService teleportStateService = manager.get(TeleportStateService.class);
+
+        if (!guiEditFunctionStateService.isNotHaveState(player) ||
+                !guiManagerStateService.isNotHaveState(player) ||
+                !randomTpStateService.isNotHaveState(player) ||
+                !preTeleportStateService.isNotHaveState(player) ||
+                !teleportStateService.isNotHaveState(player)) {
+            state.resetStandCount();
+            state.setRunning(false);
+            return;
+        }
+
         state.addStandCount();
         if (state.isAFK()) {
             if (!state.isSent()) {
