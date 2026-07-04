@@ -42,6 +42,7 @@ public class ari extends LiteralArgumentCommand {
             new enchant(),
             new Server(),
             new About(),
+            new afk(),
             new Reload()
         );
     }

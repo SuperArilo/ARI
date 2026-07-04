@@ -34,4 +34,8 @@ public class PlayerAFKState extends AsyncState {
         return this.standCount.get() >= this.AFKCount;
     }
 
+    public void afkNow() {
+        this.standCount.set(this.AFKCount);
+    }
+
 }
