@@ -27,7 +27,11 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
 
     @Override
     protected boolean canAddState(PlayerAFKState state) {
-        return this.getStates(state.getOwner()).isEmpty();
+        boolean empty = this.getStates(state.getOwner()).isEmpty();
+        if (!empty) {
+            Ari.instance.getLog().warn("try add same player {}, break.", state.getOwner().getName());
+        }
+        return empty;
     }
 
     @Override
