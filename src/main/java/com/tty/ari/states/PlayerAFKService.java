@@ -43,6 +43,9 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
         }
         if (!Ari.instance.getConfig().getBoolean("server.afk.enable")) {
             state.setRunning(false);
+            if (state.isSent()) {
+                player.clearTitle();
+            }
             return;
         }
         StatusManager manager = Ari.instance.getStatusManager();
@@ -58,6 +61,9 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
                 !preTeleportStateService.isNotHaveState(player) ||
                 !teleportStateService.isNotHaveState(player) ||
                 Ari.PERMISSION_SERVICE.hasPermission(player, "ari.pass-afk")) {
+            if (state.isSent()) {
+                player.clearTitle();
+            }
             state.resetStandCount();
             state.setRunning(false);
             return;
