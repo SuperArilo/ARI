@@ -16,7 +16,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,12 +45,7 @@ public class ZakoBanList extends LiteralArgumentCommand {
     public static void Build_Zako_Ban_List(CommandSender sender, Integer pageNum) {
         String baseCommand = "/" + Ari.instance.getName() + " zako banlist ";
 
-        CompletableFuture<Component> requesting = (sender instanceof Player player)
-                ? ConfigUtils.t("function.zako.list-requesting", player)
-                : ConfigUtils.t("function.zako.list-requesting");
-
-        requesting.thenAccept(component ->
-                Ari.instance.getScheduler().run(i -> sender.sendMessage(component)))
+        ConfigUtils.t("function.zako.list-requesting").thenAccept(component -> Ari.instance.getScheduler().run(i -> sender.sendMessage(component)))
                 .thenCompose(e -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class).getList(pageNum, 10, new LambdaQueryWrapper<>(BanPlayer.class), PartitionKey.global()))
                 .thenCompose(result -> {
                     List<BanPlayer> records = result.records();
@@ -91,10 +85,7 @@ public class ZakoBanList extends LiteralArgumentCommand {
                     }
                 }).exceptionally(ex -> {
                     Ari.instance.getLog().error(ex, "query zako list error.");
-                    CompletableFuture<Component> errorMsg = (sender instanceof Player player)
-                            ? ConfigUtils.t("function.zako.list-request-error", player)
-                            : ConfigUtils.t("function.zako.list-request-error");
-                    errorMsg.thenAccept(msg -> Ari.instance.getScheduler().run(i -> sender.sendMessage(msg)));
+                    ConfigUtils.t("function.zako.list-request-error").thenAccept(msg -> Ari.instance.getScheduler().run(i -> sender.sendMessage(msg)));
                     return null;
                 });
     }
