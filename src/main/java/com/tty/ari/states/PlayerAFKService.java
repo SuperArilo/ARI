@@ -48,6 +48,7 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
             }
             return;
         }
+
         StatusManager manager = Ari.instance.getStatusManager();
         GuiEditFunctionStateService guiEditFunctionStateService = manager.get(GuiEditFunctionStateService.class);
         GuiManagerStateService guiManagerStateService = manager.get(GuiManagerStateService.class);
@@ -55,18 +56,22 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
         PreTeleportStateService preTeleportStateService = manager.get(PreTeleportStateService.class);
         TeleportStateService teleportStateService = manager.get(TeleportStateService.class);
 
+        boolean aboutOp = !player.isOp() && Ari.PERMISSION_SERVICE.hasPermission(player, "ari.pass-afk");
+
         if (!guiEditFunctionStateService.isNotHaveState(player) ||
                 !guiManagerStateService.isNotHaveState(player) ||
                 !randomTpStateService.isNotHaveState(player) ||
                 !preTeleportStateService.isNotHaveState(player) ||
                 !teleportStateService.isNotHaveState(player) ||
-                Ari.PERMISSION_SERVICE.hasPermission(player, "ari.pass-afk")) {
+                aboutOp) {
+
             if (state.isSent()) {
                 player.clearTitle();
             }
             state.resetStandCount();
             state.setRunning(false);
             return;
+
         }
 
         state.addStandCount();
