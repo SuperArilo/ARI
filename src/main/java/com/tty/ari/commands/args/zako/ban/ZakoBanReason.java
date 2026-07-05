@@ -79,9 +79,14 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
                 long total = 0;
                 for (int i = 0; i < TIME_UNITS.length; i++) {
                     int index = 3 + i;
-                    int value = Integer.parseInt(args[index]);
-                    if (value < 0) return CompletableFuture.completedFuture(false);
-                    total += TIME_UNITS[i].toMillis(value);
+                    try {
+                        int value = Integer.parseInt(args[index]);
+                        if (value < 0) return CompletableFuture.completedFuture(false);
+                        total = Math.addExact(total, TIME_UNITS[i].toMillis(value));
+                    } catch (Exception e) {
+                        Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error"));
+                        return CompletableFuture.completedFuture(false);
+                    }
                 }
 
                 BanPlayer banPlayer = new BanPlayer();

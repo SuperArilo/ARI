@@ -73,7 +73,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
                     Double i = Double.parseDouble(message);
                     data.setCost(i);
                 } catch (NumberFormatException e) {
-                    player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.cost.format-error")));
+                    player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error")));
                     return false;
                 }
             }
