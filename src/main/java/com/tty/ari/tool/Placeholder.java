@@ -267,6 +267,21 @@ public class Placeholder extends BasePlaceholder {
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
+                PlaceholderBanPlayerType.BAN_OPERATOR,
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
+                        .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
+                        .thenApply(i -> {
+                            if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
+                            String operator;
+                            if(i.getOperator().equals(Operator.CONSOLE.getUuid())) {
+                                operator = "CONSOLE";
+                            } else {
+                                operator = PlayerCache.getPlayer(UUID.fromString(i.getOperator())).getName();
+                            }
+                            return Ari.instance.getComponentTool().text(operator);
+                        }))
+        ));
+        registry.register(PlaceholderDefinition.of(
                 PlaceholderShowItem.SHOW_ITEM,
                 PlaceholderResolve.ofPlayer(player -> Ari.instance.getComponentTool().setHoverItemText(player.getInventory().getItemInMainHand()))
         ));
