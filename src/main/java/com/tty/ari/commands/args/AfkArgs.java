@@ -56,6 +56,8 @@ public class AfkArgs extends RequiredArgumentCommand<PlayerSelectorArgumentResol
             }
         }
 
+        sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.command.execute-success")));
+
         return Command.SINGLE_SUCCESS;
     }
 
