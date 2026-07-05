@@ -4,7 +4,6 @@ import com.google.common.reflect.TypeToken;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.lang.DeathMessageLang;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
@@ -269,7 +268,9 @@ public class PlayerDeathInfoCollector {
         if (damager instanceof Projectile projectile) {
             if (projectile.getShooter() instanceof Entity shooter) return shooter;
             UUID owner = projectile.getOwnerUniqueId();
-            if (owner != null) return Bukkit.getPlayer(owner);
+            if (owner != null && PlayerCache.getPlayer(owner) instanceof Entity entity) {
+                return entity;
+            }
         }
         return damager;
     }

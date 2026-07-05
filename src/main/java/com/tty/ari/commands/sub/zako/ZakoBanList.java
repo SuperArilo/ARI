@@ -12,8 +12,8 @@ import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.commands.args.zako.ZakoBanListArgs;
 import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.tool.ConfigUtils;
+import com.tty.ari.tool.PlayerCache;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
@@ -66,7 +66,7 @@ public class ZakoBanList extends LiteralArgumentCommand {
 
                     for (BanPlayer banPlayer : records) {
                         String uuid = banPlayer.getPlayerUUID();
-                        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(uuid));
+                        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(UUID.fromString(uuid));
                         lineFutures.add(ConfigUtils.tList("server.player.zako.list-show.ban", offlinePlayer).thenCombine(ConfigUtils.t("server.player.zako.unable-record", offlinePlayer), (e, i) -> {
                             Component t = e;
                             if (offlinePlayer.getName() == null) {

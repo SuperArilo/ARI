@@ -10,9 +10,10 @@ import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.dto.state.player.PlayerAFKState;
 import com.tty.ari.states.PlayerAFKService;
+import com.tty.ari.tool.PlayerCache;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
-import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -40,9 +41,8 @@ public class AfkArgs extends RequiredArgumentCommand<PlayerSelectorArgumentResol
     public int execute(CommandSender sender, String[] args) {
 
         UUID uuid = PublicFunctionUtils.parseUUID(args[1]);
-        Player player = Bukkit.getServer().getPlayer(uuid);
-
-        if (player == null) {
+        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(uuid);
+        if (!(offlinePlayer instanceof Player player)) {
             String value = Ari.DATA_SERVICE.getValue("base.on-player.unable-player");
             sender.sendMessage(Ari.instance.getComponentTool().text(value));
             return 0;

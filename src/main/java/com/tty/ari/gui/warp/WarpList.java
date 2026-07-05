@@ -16,7 +16,7 @@ import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.warp.WarpGuiConfig;
 import com.tty.ari.entity.ServerWarp;
-import com.tty.ari.tool.PlayerNameCache;
+import com.tty.ari.tool.PlayerCache;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
@@ -81,7 +81,8 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             types.put(IconKeyType.Y.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getY())));
             types.put(IconKeyType.Z.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
             types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
-            types.put(IconKeyType.PLAYER_NAME.getKey(), Ari.instance.getComponentTool().text(PlayerNameCache.getName(UUID.fromString(serverWarp.getCreateBy()))));
+
+            types.put(IconKeyType.PLAYER_NAME.getKey(), Ari.instance.getComponentTool().text(PlayerCache.getPlayer(UUID.fromString(serverWarp.getCreateBy())).getName()));
             Double cost = serverWarp.getCost();
             types.put(IconKeyType.COST.getKey(), Ari.instance.getComponentTool().text(cost == null || cost == 0 || Ari.ECONOMY_SERVICE.isNull() ? baseFree : cost + Ari.ECONOMY_SERVICE.getNamePlural()));
             types.put(IconKeyType.TOP_SLOT.getKey(), Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));

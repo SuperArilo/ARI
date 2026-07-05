@@ -13,6 +13,7 @@ import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.tool.ConfigUtils;
+import com.tty.ari.tool.PlayerCache;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -55,7 +56,7 @@ public class ZakoInfoArgs extends RequiredArgumentCommand<String> {
                CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.zako-check-not-exist", player):ConfigUtils.t("function.zako.zako-check-not-exist");
                return future.thenAccept(sender::sendMessage).thenApply(t -> null);
            }
-           return ConfigUtils.tList("server.player.info", Bukkit.getServer().getOfflinePlayer(uuid));
+           return ConfigUtils.tList("server.player.info", PlayerCache.getPlayer(uuid));
         }).thenAccept(message -> {
             if (message != null) {
                 sender.sendMessage(message);

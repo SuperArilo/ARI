@@ -16,6 +16,7 @@ import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.tool.ConfigUtils;
+import com.tty.ari.tool.PlayerCache;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -102,7 +103,7 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
                 });
             }).thenAccept(status -> {
                 if (status) {
-                    OfflinePlayer kickPlayer = Bukkit.getServer().getOfflinePlayer(uuid);
+                    OfflinePlayer kickPlayer = PlayerCache.getPlayer(uuid);
                     if (kickPlayer instanceof Player player) {
                         Ari.instance.getScheduler().runAtEntity(player, i -> player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"), player)),  null);
                     }

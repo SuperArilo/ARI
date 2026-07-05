@@ -4,17 +4,18 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.tty.ari.Ari;
-import com.tty.api.repository.PartitionKey;
-import com.tty.ari.command.RequiredArgumentCommand;
-import com.tty.ari.entity.WhitelistInstance;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.EntityRepository;
+import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.ari.Ari;
+import com.tty.ari.command.RequiredArgumentCommand;
+import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.tool.ConfigUtils;
-import org.bukkit.Bukkit;
+import com.tty.ari.tool.PlayerCache;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -51,11 +52,9 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
         EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
         repository.delete(wrapper, PartitionKey.global()).thenAccept(status -> {
-            Player player = Bukkit.getPlayer(uuid);
-            if(player != null) {
-                Ari.instance.getScheduler().runAtEntity(
-                        player, i->
-                                player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
+            OfflinePlayer offlinePlayer = PlayerCache.getPlayer(uuid);
+            if (offlinePlayer instanceof Player player) {
+                Ari.instance.getScheduler().runAtEntity(player, i-> player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
             }
             String key = "function.zako.whitelist-remove-" + (status ? "success":"failure");
             if (sender instanceof Player p) {

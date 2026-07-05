@@ -15,13 +15,15 @@ import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.gui.EnderChestEdit;
 import com.tty.ari.states.gui.GuiManagerStateService;
-import org.bukkit.Bukkit;
+import com.tty.ari.tool.PlayerCache;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "name or uuid (string)", permission = "ari.command.enderchest.player", tokenLength = 2)
@@ -47,7 +49,7 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
                     sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                     return;
                 }
-                OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
+                OfflinePlayer offlinePlayer = PlayerCache.getPlayer(uuid);
                 if (offlinePlayer instanceof Player p) {
                     player.openInventory(p.getEnderChest());
                     return;

@@ -5,6 +5,7 @@ import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
 
 import com.tty.ari.configuration.lang.LangConfig;
+import com.tty.ari.tool.PlayerCache;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,6 +31,7 @@ public class OnPluginReloadListener implements Listener {
             Ari.instance.getStatusManager().reload();
             Ari.PLACEHOLDER.setInstance(Ari.instance.getConfigurationManager().get(LangConfig.class));
             Ari.BUNGEECACHE.shutdown();
+            PlayerCache.clean();
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.reload.success")));
         }
     }

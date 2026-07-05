@@ -12,9 +12,9 @@ import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.commands.args.zako.ZakoListArgs;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.tool.ConfigUtils;
+import com.tty.ari.tool.PlayerCache;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -63,7 +63,7 @@ public class ZakoList extends LiteralArgumentCommand {
 
                     for (WhitelistInstance instance : records) {
                         String uuid = instance.getPlayerUUID();
-                        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(uuid));
+                        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(UUID.fromString(uuid));
                         lineFutures.add(ConfigUtils.tList("server.player.zako.list-show.whitelist", offlinePlayer).thenCombine(ConfigUtils.t("server.player.zako.unable-record", offlinePlayer), (e, i) -> {
                             Component t = e;
                             if (offlinePlayer.getName() == null) {

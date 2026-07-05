@@ -22,7 +22,7 @@ import com.tty.ari.states.PlayerAFKService;
 import com.tty.ari.states.PlayerSaveDataStateService;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.tool.ConfigUtils;
-import com.tty.ari.tool.PlayerNameCache;
+import com.tty.ari.tool.PlayerCache;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -69,7 +69,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             Ari.instance.getLog().debug("free player uuid {}.", banPlayer.getPlayerUUID());
         } else {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ConfigUtils.tList("server.player.banned", Bukkit.getOfflinePlayer(uuid)).join());
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ConfigUtils.tList("server.player.banned", PlayerCache.getPlayer(uuid)).join());
         }
     }
 
@@ -78,7 +78,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
         UUID uuid = event.getUniqueId();
         MaintenanceBossBarService service = Ari.instance.getStatusManager().get(MaintenanceBossBarService.class);
-        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
+        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(uuid);
         if (service.isMaintenance() && !offlinePlayer.isOp()) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ConfigUtils.t("server.maintenance.when-player-join").join());
             return;
@@ -163,8 +163,6 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
                 return;
             }
-            //所有检查通过，添加玩家的名称到缓存里
-            PlayerNameCache.update(player.getUniqueId(), playerName);
 
             FunctionConfig config = Ari.instance.getConfigurationManager().get(FunctionConfig.class);
             if(!player.hasPlayedBefore() && (config.getSpawnFirstJoin() && config.isEnable(TeleportType.SPAWN))) {
@@ -205,6 +203,10 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             if (service.isMaintenance() && player.isOp()) {
                 service.addState(new MaintenanceBossBarState(player));
             }
+
+            //将玩家添加进缓存
+            PlayerCache.addPlayer(player);
+
         });
     }
 
@@ -222,6 +224,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         for (GuiState state : Ari.instance.getStatusManager().get(GuiManagerStateService.class).getStates(player)) {
             state.setOver(true);
         }
+        PlayerCache.removePlayer(player.getUniqueId());
     }
 
     @EventHandler

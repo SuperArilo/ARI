@@ -200,7 +200,7 @@ public class Placeholder extends BasePlaceholder {
                             if(whitelistInstance.getOperator().equals(Operator.CONSOLE.getUuid())) {
                                 operator = "CONSOLE";
                             } else {
-                                operator = Bukkit.getOfflinePlayer(UUID.fromString(whitelistInstance.getOperator())).getName();
+                                operator = PlayerCache.getPlayer(UUID.fromString(whitelistInstance.getOperator())).getName();
                             }
                             return Ari.instance.getComponentTool().text(operator == null ? Ari.DATA_SERVICE.getValue("base.none"):operator);
                         }))

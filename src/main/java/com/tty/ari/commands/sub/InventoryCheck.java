@@ -15,13 +15,15 @@ import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.gui.PlayerInventoryEdit;
 import com.tty.ari.states.gui.GuiManagerStateService;
-import org.bukkit.Bukkit;
+import com.tty.ari.tool.PlayerCache;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "name or uuid (string)", permission = "ari.command.inv", tokenLength = 2)
@@ -58,7 +60,7 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
                         return;
                     }
 
-                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
+                    OfflinePlayer offlinePlayer = PlayerCache.getPlayer(uuid);
                     GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
 
                     if (service.getStates(player).stream().anyMatch(i -> (i instanceof OnCheckPlayerGuiState state && state.getOwner().equals(player)))) {
