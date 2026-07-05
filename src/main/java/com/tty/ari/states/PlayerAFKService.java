@@ -63,6 +63,7 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
                 !randomTpStateService.isNotHaveState(player) ||
                 !preTeleportStateService.isNotHaveState(player) ||
                 !teleportStateService.isNotHaveState(player) ||
+                player.isDead() ||
                 aboutOp) {
 
             if (state.isSent()) {
