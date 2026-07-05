@@ -45,7 +45,7 @@ public class PlayerAFKStatusListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChat(AsyncChatEvent event) {
-        if (isAFK(event.getPlayer())) {
+        if (this.isAFK(event.getPlayer())) {
             this.reset(event.getPlayer());
         }
     }
