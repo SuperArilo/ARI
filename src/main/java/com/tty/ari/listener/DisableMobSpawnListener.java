@@ -1,7 +1,6 @@
 package com.tty.ari.listener;
 
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -41,7 +40,21 @@ public class DisableMobSpawnListener implements Listener {
 
     private List<EntityType> loadDisableList() {
         List<String> list = Ari.instance.getConfig().getStringList("server.anti-entity-spawn.list");
-        return PublicFunctionUtils.convertStringListToEnumList(list, EntityType.class, false);
+        return this.convertStringListToEnumList(list, EntityType.class, false);
+    }
+
+    public <T extends Enum<T>> List<T> convertStringListToEnumList(List<String> stringList, Class<T> enumClass, boolean caseSensitive) throws IllegalArgumentException {
+        List<T> result = new ArrayList<>();
+        for (String item : stringList) {
+            if (item == null || item.trim().isEmpty()) {
+                continue;
+            }
+            String cleanName = item.trim();
+            String enumName = caseSensitive ? cleanName.toLowerCase() : cleanName.toUpperCase();
+            T enumValue = Enum.valueOf(enumClass, enumName);
+            result.add(enumValue);
+        }
+        return result;
     }
 
 }

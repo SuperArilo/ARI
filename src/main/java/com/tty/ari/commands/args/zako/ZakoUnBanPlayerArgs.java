@@ -12,8 +12,8 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.EntityRepository;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.tool.ConfigUtils;
+import com.tty.ari.tool.PlayerCache;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +43,7 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
 
     @Override
     public int execute(CommandSender sender, String[] args) {
-        UUID uuid = PublicFunctionUtils.parseUUID(args[2]);
+        UUID uuid = PlayerCache.getPlayer(args[2]).getUniqueId();
         EntityRepository<BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         LambdaQueryWrapper<BanPlayer> wrapper = new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString());
 

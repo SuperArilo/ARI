@@ -19,7 +19,6 @@ import com.tty.ari.configuration.warp.WarpEditGuiConfig;
 import com.tty.ari.configuration.warp.WarpGuiConfig;
 import com.tty.ari.dto.BungeeCache;
 import com.tty.ari.enumType.GuiType;
-import com.tty.ari.function.PlayerTabManager;
 import com.tty.ari.listener.*;
 import com.tty.ari.listener.bungee.GetServerListListener;
 import com.tty.ari.listener.home.EditHomeListener;
@@ -147,7 +146,7 @@ public class Ari extends AbstractJavaPlugin {
                 new OnPlayerJoinAndLeaveListener(),
                 new PlayerSkipNight(),
                 new OnPluginReloadListener(),
-                new PlayerTabManager(),
+                new PlayerTabListener(),
                 new CustomChatFormantListener(),
                 new PlayerActionListener(),
                 new KeepInventoryAndExperience(),

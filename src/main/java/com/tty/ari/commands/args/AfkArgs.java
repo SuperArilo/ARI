@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.dto.state.player.PlayerAFKState;
@@ -20,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "player_name or uuid (string)", permission = "ari.command.afk.player", tokenLength = 2)
@@ -40,11 +38,9 @@ public class AfkArgs extends RequiredArgumentCommand<PlayerSelectorArgumentResol
     @Override
     public int execute(CommandSender sender, String[] args) {
 
-        UUID uuid = PublicFunctionUtils.parseUUID(args[1]);
-        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(uuid);
+        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
         if (!(offlinePlayer instanceof Player player)) {
-            String value = Ari.DATA_SERVICE.getValue("base.on-player.unable-player");
-            sender.sendMessage(Ari.instance.getComponentTool().text(value));
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.unable-player")));
             return 0;
         }
 

@@ -6,10 +6,10 @@ import com.tty.ari.Ari;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.tool.ConfigUtils;
+import com.tty.ari.tool.PlayerCache;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,7 +25,7 @@ public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
             ConfigUtils.t("function.zako.zako-add-name-invalid").thenAccept(sender::sendMessage);
             return 0;
         }
-        UUID uuid = PublicFunctionUtils.parseUUID(value);
+        UUID uuid = PlayerCache.getPlayer(value).getUniqueId();
 
         EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         repository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()), PartitionKey.global())

@@ -15,7 +15,7 @@ public class PlayerCache {
             Caffeine.newBuilder()
                     .maximumSize(2000)
                     .expireAfterWrite(300, TimeUnit.MINUTES)
-                    .build();
+                    .build(Bukkit::getOfflinePlayer);
 
 
     public static @NotNull OfflinePlayer getPlayer(UUID uuid) {
@@ -26,6 +26,18 @@ public class PlayerCache {
         OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(uuid);
         CACHE.put(uuid, offlinePlayer);
         return offlinePlayer;
+    }
+
+    public static @NotNull OfflinePlayer getPlayer(String value) {
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(value);
+            return getPlayer(uuid);
+        } catch (Exception ignored) {
+            OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(value);
+            CACHE.put(offlinePlayer.getUniqueId(), offlinePlayer);
+            return offlinePlayer;
+        }
     }
 
     public static void removePlayer(UUID uuid) {

@@ -10,7 +10,6 @@ import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.BanPlayer;
@@ -59,7 +58,7 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
     public int execute(CommandSender sender, String[] args) {
         if (args.length != 8) return 0;
 
-        UUID uuid = PublicFunctionUtils.parseUUID(args[2]);
+        UUID uuid = PlayerCache.getPlayer(args[2]).getUniqueId();
 
         EntityRepository<BanPlayer> banRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         EntityRepository<WhitelistInstance> whitelistRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);

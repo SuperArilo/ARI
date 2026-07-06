@@ -48,9 +48,8 @@ public class ZakoInfoArgs extends RequiredArgumentCommand<String> {
 
     @Override
     public int execute(CommandSender sender, String[] args) {
-        String value = args[2];
-        UUID uuid = PublicFunctionUtils.parseUUID(value);
 
+        UUID uuid = PlayerCache.getPlayer(args[2]).getUniqueId();
         Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global()).thenCompose(i -> {
            if (i == null) {
                CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.zako-check-not-exist", player):ConfigUtils.t("function.zako.zako-check-not-exist");

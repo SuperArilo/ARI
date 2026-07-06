@@ -8,7 +8,6 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
@@ -44,7 +43,7 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
     public int execute(CommandSender sender, String[] args) {
         if (args.length < 2 || !(sender instanceof Player player)) return 0;
 
-        UUID uuid = PublicFunctionUtils.parseUUID(args[1]);
+        UUID uuid = PlayerCache.getPlayer(args[1]).getUniqueId();
 
         if (player.getUniqueId().equals(uuid)) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.command.self-not-allowed")));

@@ -8,7 +8,6 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
@@ -39,7 +38,8 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
     public int execute(CommandSender sender, String[] args) {
         if (args.length < 2) return 0;
         Player player = (Player) sender;
-        UUID uuid = PublicFunctionUtils.parseUUID(args[1]);
+
+        UUID uuid = PlayerCache.getPlayer(args[1]).getUniqueId();
 
         Ari.REPOSITORY_MANAGER.get(ServerPlayer.class)
             .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global())

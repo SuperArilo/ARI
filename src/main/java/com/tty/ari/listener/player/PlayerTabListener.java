@@ -1,4 +1,4 @@
-package com.tty.ari.function;
+package com.tty.ari.listener.player;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
@@ -17,9 +17,9 @@ import org.bukkit.event.Listener;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PlayerTabManager implements Listener {
+public class PlayerTabListener implements Listener {
 
-    private boolean isWarninged = false;
+    private boolean isWarning = false;
 
     private CancellableTask task;
 
@@ -86,8 +86,8 @@ public class PlayerTabManager implements Listener {
         try {
             player.setPlayerListOrder(order);
         } catch (Exception e) {
-            if (!this.isWarninged) {
-                this.isWarninged = true;
+            if (!this.isWarning) {
+                this.isWarning = true;
                 Ari.instance.getLog().warn("setPlayerListOrder() requires Minecraft 1.21.3+, current version is lower. Feature disabled.");
             }
         }
