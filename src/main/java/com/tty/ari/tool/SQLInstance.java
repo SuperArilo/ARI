@@ -25,14 +25,16 @@ import java.sql.Statement;
 public class SQLInstance {
 
     @Getter
-    public SQLType sqlType;
-    public static SqlSessionFactory SESSION_FACTORY;
+    private SQLType sqlType;
+
+    @Getter
+    private SqlSessionFactory factory;
 
     public SQLInstance() {
         this.start();
     }
 
-    public void start() {
+    private void start() {
         Ari.instance.getLog().debug("initializing database connection");
 
         String storageType = Ari.instance.getConfig().getString("data.storage-type");
@@ -69,8 +71,13 @@ public class SQLInstance {
         this.ensureSchemaVersionTable();
 
         try {
-            MigrationManager manager = new MigrationManager(this.sqlType, this.getTablePrefix(), SESSION_FACTORY.getConfiguration().getEnvironment().getDataSource());
-            manager.migrate();
+            MigrationManager manager = null;
+            if (factory != null) {
+                manager = new MigrationManager(this.sqlType, this.getTablePrefix(), factory.getConfiguration().getEnvironment().getDataSource());
+            }
+            if (manager != null) {
+                manager.migrate();
+            }
         } catch (SQLException e) {
             Ari.instance.getLog().error(e, "Failed to apply database migrations");
         }
@@ -82,7 +89,7 @@ public class SQLInstance {
         this.start();
     }
 
-    protected void createMysql() {
+    private void createMysql() {
         FileConfiguration config = Ari.instance.getConfig();
         HikariDataSource hikariDataSource = new HikariDataSource();
         hikariDataSource.setDriverClassName(sqlType.getDriver());
@@ -96,7 +103,7 @@ public class SQLInstance {
         this.setLiteFactory(hikariDataSource);
     }
 
-    protected void createSQLite() {
+    private void createSQLite() {
         HikariDataSource hikariDataSource = new HikariDataSource();
         hikariDataSource.setDriverClassName(sqlType.getDriver());
         hikariDataSource.setJdbcUrl("jdbc:sqlite:" + Ari.instance.getDataFolder().getAbsolutePath() + "/" + "AriDB.db");
@@ -104,7 +111,7 @@ public class SQLInstance {
     }
 
     @SneakyThrows
-    protected void setLiteFactory(HikariDataSource dataSource) {
+    private void setLiteFactory(HikariDataSource dataSource) {
 
         MybatisConfiguration configuration = new MybatisConfiguration();
         configuration.setEnvironment(new Environment(Ari.instance.isDebug() ? "dev":"prod", new JdbcTransactionFactory(), dataSource));
@@ -122,16 +129,16 @@ public class SQLInstance {
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
         configuration.addInterceptor(interceptor);
 
-        SESSION_FACTORY = new SqlSessionFactoryBuilder().build(configuration);
+        factory = new SqlSessionFactoryBuilder().build(configuration);
     }
 
-    public String getTablePrefix() {
+    private String getTablePrefix() {
         return Ari.instance.getConfig().getString("data.table-prefix", "ari");
     }
 
     private void ensureSchemaVersionTable() {
         String sql = SqlTable.SCHEMA_VERSION.getSql(this.getTablePrefix(), sqlType);
-        try (Connection conn = SESSION_FACTORY.getConfiguration().getEnvironment().getDataSource().getConnection(); Statement stmt = conn.createStatement()) {
+        try (Connection conn = factory.getConfiguration().getEnvironment().getDataSource().getConnection(); Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
             Ari.instance.getLog().error(e, "Failed to create schema_version table");
@@ -139,11 +146,11 @@ public class SQLInstance {
     }
 
     public void close() {
-        if (SQLInstance.SESSION_FACTORY != null) {
-            SQLInstance.SESSION_FACTORY = null;
+        if (this.factory != null) {
+            this.factory = null;
             Ari.instance.getLog().debug("Connection closed successfully");
         }
-        SQLInstance.SESSION_FACTORY = null;
+        this.factory= null;
     }
 
 }

@@ -1,19 +1,18 @@
 package com.tty.ari.function;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tty.ari.Ari;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.api.dto.PageResult;
 import com.tty.api.utils.BaseDataManager;
 import com.tty.ari.mapper.PlayersMapper;
-import com.tty.ari.tool.SQLInstance;
-import org.apache.ibatis.session.SqlSession;
 
 import java.util.concurrent.CompletableFuture;
 
 public class PlayerManager extends BaseDataManager<ServerPlayer> {
 
     public PlayerManager(boolean isAsync) {
-        super(isAsync);
+        super(Ari.SQL_INSTANCE.getFactory(), isAsync);
     }
 
     @Override
@@ -23,47 +22,27 @@ public class PlayerManager extends BaseDataManager<ServerPlayer> {
 
     @Override
     public CompletableFuture<ServerPlayer> get(LambdaQueryWrapper<ServerPlayer> key) {
-        return this.executeTask(() -> {
-            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession()) {
-                return session.getMapper(PlayersMapper.class).selectOne(key);
-            }
-        });
+        return this.executeTask(session -> session.getMapper(PlayersMapper.class).selectOne(key));
     }
 
     @Override
     public CompletableFuture<ServerPlayer> create(ServerPlayer instance) {
-        return this.executeTask(() -> {
-            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                return session.getMapper(PlayersMapper.class).insert(instance) == 1 ? instance:null;
-            }
-        });
+        return this.executeTask(session -> session.getMapper(PlayersMapper.class).insert(instance) == 1 ? instance:null);
     }
 
     @Override
     public CompletableFuture<Boolean> delete(ServerPlayer entity) {
-        return this.executeTask(() -> {
-            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                return session.getMapper(PlayersMapper.class).deleteById(entity) == 1;
-            }
-        });
+        return this.executeTransaction(session -> session.getMapper(PlayersMapper.class).deleteById(entity) == 1);
     }
 
     @Override
     public CompletableFuture<Integer> delete(LambdaQueryWrapper<ServerPlayer> key) {
-        return this.executeTask(() -> {
-            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                return session.getMapper(PlayersMapper.class).delete(key);
-            }
-        });
+        return this.executeTransaction(session -> session.getMapper(PlayersMapper.class).delete(key));
     }
 
     @Override
     public CompletableFuture<Boolean> update(ServerPlayer instance, LambdaQueryWrapper<ServerPlayer> key) {
-        return this.executeTask(() -> {
-            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                return session.getMapper(PlayersMapper.class).update(instance, key) == 1;
-            }
-        });
+        return this.executeTransaction(session -> session.getMapper(PlayersMapper.class).update(instance, key) == 1);
     }
 
 }
