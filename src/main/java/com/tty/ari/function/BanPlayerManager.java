@@ -60,10 +60,10 @@ public class BanPlayerManager extends BaseDataManager<BanPlayer> {
     }
 
     @Override
-    public CompletableFuture<Boolean> delete(LambdaQueryWrapper<BanPlayer> key) {
+    public CompletableFuture<Integer> delete(LambdaQueryWrapper<BanPlayer> key) {
         return this.executeTask(() -> {
            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-               return session.getMapper(BanPlayerMapper.class).delete(key) == 1;
+               return session.getMapper(BanPlayerMapper.class).delete(key);
            }
         });
     }

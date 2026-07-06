@@ -50,8 +50,8 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
         repository.get(wrapper, PartitionKey.global()).thenCompose(banPlayer -> {
             if (banPlayer == null) CompletableFuture.completedFuture(false);
             return repository.delete(wrapper, PartitionKey.global());
-        }).thenAccept(status -> {
-            if (status) {
+        }).thenAccept(count -> {
+            if (count > 0) {
                 ConfigUtils.t("function.zako.ban-remove-success").thenAccept(sender::sendMessage);
             } else {
                 ConfigUtils.t("function.zako.ban-remove-failure").thenAccept(sender::sendMessage);

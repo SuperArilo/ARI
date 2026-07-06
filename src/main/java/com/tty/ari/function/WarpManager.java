@@ -55,10 +55,10 @@ public class WarpManager extends BaseDataManager<ServerWarp> {
     }
 
     @Override
-    public CompletableFuture<Boolean> delete(LambdaQueryWrapper<ServerWarp> key) {
+    public CompletableFuture<Integer> delete(LambdaQueryWrapper<ServerWarp> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                return session.getMapper(WarpMapper.class).delete(key) == 1;
+                return session.getMapper(WarpMapper.class).delete(key);
             }
         });
     }

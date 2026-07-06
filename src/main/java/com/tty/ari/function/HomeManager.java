@@ -59,10 +59,10 @@ public class HomeManager extends BaseDataManager<ServerHome> {
     }
 
     @Override
-    public CompletableFuture<Boolean> delete(LambdaQueryWrapper<ServerHome> key) {
+    public CompletableFuture<Integer> delete(LambdaQueryWrapper<ServerHome> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                return session.getMapper(HomeMapper.class).delete(key) == 1;
+                return session.getMapper(HomeMapper.class).delete(key);
             }
         });
     }

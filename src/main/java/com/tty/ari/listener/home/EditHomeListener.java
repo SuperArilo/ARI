@@ -81,8 +81,8 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
 
             EntityRepository<ServerHome> repository = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
             repository.delete(wrapper, PartitionKey.of(player.getUniqueId().toString()))
-                    .thenCompose(success -> {
-                        if (success) {
+                    .thenCompose(count -> {
+                        if (count == 1) {
                             return ConfigUtils.t("function.home.delete-success", player)
                                     .thenAccept(player::sendMessage)
                                     .thenRun(() -> Ari.instance.getScheduler().run(j -> {

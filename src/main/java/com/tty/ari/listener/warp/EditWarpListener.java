@@ -98,8 +98,8 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
         registry.add(FunctionType.DELETE, (event, warpEditor, player) -> {
             EntityRepository<ServerWarp> repository = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
             LambdaQueryWrapper<ServerWarp> wrapper = new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpEditor.getWarp().getWarpId());
-            repository.delete(wrapper, PartitionKey.global()).thenCompose(i -> {
-                if (i) {
+            repository.delete(wrapper, PartitionKey.global()).thenCompose(count -> {
+                if (count == 1) {
                     return ConfigUtils.t("function.warp.delete-success", player).thenAccept(player::sendMessage)
                             .thenRun(() -> Ari.instance.getScheduler().run(ab -> {
                                 event.getInventory().close();

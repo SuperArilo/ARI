@@ -41,12 +41,20 @@ public class PlayerManager extends BaseDataManager<ServerPlayer> {
 
     @Override
     public CompletableFuture<Boolean> delete(ServerPlayer entity) {
-        return null;
+        return this.executeTask(() -> {
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
+                return session.getMapper(PlayersMapper.class).deleteById(entity) == 1;
+            }
+        });
     }
 
     @Override
-    public CompletableFuture<Boolean> delete(LambdaQueryWrapper<ServerPlayer> key) {
-        return null;
+    public CompletableFuture<Integer> delete(LambdaQueryWrapper<ServerPlayer> key) {
+        return this.executeTask(() -> {
+            try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
+                return session.getMapper(PlayersMapper.class).delete(key);
+            }
+        });
     }
 
     @Override

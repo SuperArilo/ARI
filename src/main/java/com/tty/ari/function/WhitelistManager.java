@@ -59,10 +59,10 @@ public class WhitelistManager extends BaseDataManager<WhitelistInstance> {
     }
 
     @Override
-    public CompletableFuture<Boolean> delete(LambdaQueryWrapper<WhitelistInstance> key) {
+    public CompletableFuture<Integer> delete(LambdaQueryWrapper<WhitelistInstance> key) {
         return this.executeTask(() -> {
             try (SqlSession session = SQLInstance.SESSION_FACTORY.openSession(true)) {
-                return session.getMapper(WhitelistMapper.class).delete(key) == 1;
+                return session.getMapper(WhitelistMapper.class).delete(key);
             }
         });
     }
