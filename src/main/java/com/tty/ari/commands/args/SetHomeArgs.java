@@ -49,7 +49,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
 
         String homeId = args[1];
         Player player = (Player) sender;
-        if (!this.isEntityIdValid(homeId)) {
+        if (!PublicFunctionUtils.isEntityIdValid(homeId)) {
             ConfigUtils.t("function.home.id-error", player).thenAccept(sender::sendMessage);
             return 0;
         }

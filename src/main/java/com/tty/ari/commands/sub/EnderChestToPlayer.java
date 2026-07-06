@@ -39,7 +39,14 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
         if (args.length < 2) return 0;
         Player player = (Player) sender;
 
-        UUID uuid = PlayerCache.getPlayer(args[1]).getUniqueId();
+        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
+
+        if (offlinePlayer == null) {
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            return 0;
+        }
+
+        UUID uuid = offlinePlayer.getUniqueId();
 
         Ari.REPOSITORY_MANAGER.get(ServerPlayer.class)
             .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global())
@@ -49,7 +56,6 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
                     sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                     return;
                 }
-                OfflinePlayer offlinePlayer = PlayerCache.getPlayer(uuid);
                 if (offlinePlayer instanceof Player p) {
                     player.openInventory(p.getEnderChest());
                     return;

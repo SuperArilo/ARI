@@ -58,7 +58,14 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
     public int execute(CommandSender sender, String[] args) {
         if (args.length != 8) return 0;
 
-        UUID uuid = PlayerCache.getPlayer(args[2]).getUniqueId();
+        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
+
+        if (offlinePlayer == null) {
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            return 0;
+        }
+
+        UUID uuid = offlinePlayer.getUniqueId();
 
         EntityRepository<BanPlayer> banRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         EntityRepository<WhitelistInstance> whitelistRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);

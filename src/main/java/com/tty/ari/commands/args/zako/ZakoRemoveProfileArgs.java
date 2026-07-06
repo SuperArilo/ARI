@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "name | uuid (string)", permission = "ari.command.zako.removeprofile", tokenLength = 3, allowConsole = true)
@@ -41,11 +42,18 @@ public class ZakoRemoveProfileArgs extends RequiredArgumentCommand<String> {
     public int execute(CommandSender sender, String[] args) {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
 
+        if (offlinePlayer == null) {
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            return 0;
+        }
+
+        UUID uuid = offlinePlayer.getUniqueId();
+
         if (offlinePlayer instanceof Player player && player.isOnline()) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.fail-by-player-online")));
             return 0;
         }
-        String uuid = PlayerCache.getPlayer(args[2]).getUniqueId().toString();
+
         PartitionKey partitionKey = PartitionKey.of(uuid);
 
         CompletableFuture<Integer> f1 = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).delete(new LambdaQueryWrapper<ServerPlayer>().eq(ServerPlayer::getPlayerUUID, uuid), partitionKey);

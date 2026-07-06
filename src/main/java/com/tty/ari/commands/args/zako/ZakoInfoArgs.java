@@ -16,6 +16,7 @@ import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerCache;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +50,15 @@ public class ZakoInfoArgs extends RequiredArgumentCommand<String> {
     @Override
     public int execute(CommandSender sender, String[] args) {
 
-        UUID uuid = PlayerCache.getPlayer(args[2]).getUniqueId();
+        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
+
+        if (offlinePlayer == null) {
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            return 0;
+        }
+
+        UUID uuid = offlinePlayer.getUniqueId();
+
         Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global()).thenCompose(i -> {
            if (i == null) {
                CompletableFuture<Component> future = (sender instanceof Player player) ? ConfigUtils.t("function.zako.zako-check-not-exist", player):ConfigUtils.t("function.zako.zako-check-not-exist");

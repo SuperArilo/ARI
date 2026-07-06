@@ -57,13 +57,4 @@ public abstract class RequiredArgumentCommand<T> extends BaseRequiredArgumentCom
         return PublicFunctionUtils.tabList(args[1], otherPlayers);
     }
 
-    /**
-     * 检查创建实体的 id 字符串是否合法
-     * @param id 待检查字符串
-     * @return 空值或不符合格式返回 false
-     */
-    protected boolean isEntityIdValid(String id) {
-        return id != null && ENTITY_ID_PATTERN.matcher(id).matches();
-    }
-
 }

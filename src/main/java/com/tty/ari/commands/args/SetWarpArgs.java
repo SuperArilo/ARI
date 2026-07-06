@@ -50,7 +50,7 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
         String warpId = args[1];
         Player player = (Player) sender;
 
-        if(!this.isEntityIdValid(warpId)) {
+        if(!PublicFunctionUtils.isEntityIdValid(warpId)) {
             ConfigUtils.t("function.warp.id-error", player).thenAccept(player::sendMessage);
             return 0;
         }

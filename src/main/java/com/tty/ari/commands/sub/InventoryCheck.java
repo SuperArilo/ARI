@@ -43,7 +43,14 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
     public int execute(CommandSender sender, String[] args) {
         if (args.length < 2 || !(sender instanceof Player player)) return 0;
 
-        UUID uuid = PlayerCache.getPlayer(args[1]).getUniqueId();
+        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
+
+        if (offlinePlayer == null) {
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            return 0;
+        }
+
+        UUID uuid = offlinePlayer.getUniqueId();
 
         if (player.getUniqueId().equals(uuid)) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.command.self-not-allowed")));
@@ -59,7 +66,6 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
                         return;
                     }
 
-                    OfflinePlayer offlinePlayer = PlayerCache.getPlayer(uuid);
                     GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
 
                     if (service.getStates(player).stream().anyMatch(i -> (i instanceof OnCheckPlayerGuiState state && state.getOwner().equals(player)))) {

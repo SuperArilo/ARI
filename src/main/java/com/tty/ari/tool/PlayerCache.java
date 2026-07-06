@@ -2,9 +2,11 @@ package com.tty.ari.tool;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.tty.api.utils.PublicFunctionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +30,8 @@ public class PlayerCache {
         return offlinePlayer;
     }
 
-    public static @NotNull OfflinePlayer getPlayer(String value) {
+    public static @Nullable OfflinePlayer getPlayer(String value) {
+        if (!PublicFunctionUtils.isEntityIdValid(value)) return null;
         UUID uuid;
         try {
             uuid = UUID.fromString(value);

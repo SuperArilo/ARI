@@ -11,6 +11,7 @@ import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerCache;
 import net.kyori.adventure.text.Component;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -25,7 +26,14 @@ public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
             ConfigUtils.t("function.zako.zako-add-name-invalid").thenAccept(sender::sendMessage);
             return 0;
         }
-        UUID uuid = PlayerCache.getPlayer(value).getUniqueId();
+        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
+
+        if (offlinePlayer == null) {
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            return 0;
+        }
+
+        UUID uuid = offlinePlayer.getUniqueId();
 
         EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         repository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()), PartitionKey.global())
