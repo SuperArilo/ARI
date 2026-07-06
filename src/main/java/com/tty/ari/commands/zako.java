@@ -23,7 +23,9 @@ public class zako extends LiteralArgumentCommand {
                 new ZakoBan(),
                 new ZakoBanList(),
                 new ZakoUnBan(),
-                new ZakoRemove());
+                new ZakoRemoveProfile(),
+                new ZakoRemove()
+        );
     }
 
     @Override
