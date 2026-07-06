@@ -28,7 +28,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-@CommandMeta(displayName = "reason (string)", permission = "ari.command.zako.ban",  tokenLength = 8)
+@CommandMeta(displayName = "reason (string)", permission = "ari.command.zako.ban",  tokenLength = 8, allowConsole = true)
 @ArgumentCommand
 public class ZakoBanReason extends RequiredArgumentCommand<String> {
 
