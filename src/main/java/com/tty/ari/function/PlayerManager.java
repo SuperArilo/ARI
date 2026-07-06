@@ -1,6 +1,7 @@
 package com.tty.ari.function;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tty.ari.Ari;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.api.dto.PageResult;
@@ -17,7 +18,14 @@ public class PlayerManager extends BaseDataManager<ServerPlayer> {
 
     @Override
     public CompletableFuture<PageResult<ServerPlayer>> getList(int pageNum, int pageSize, LambdaQueryWrapper<ServerPlayer> key) {
-        return null;
+        return this.executeTask(session -> {
+            Page<ServerPlayer> resultPage = session.getMapper(PlayersMapper.class).selectPage(new Page<>(pageNum, pageSize), key);
+            return PageResult.build(
+                    resultPage.getRecords(),
+                    resultPage.getTotal(),
+                    resultPage.getPages(),
+                    resultPage.getCurrent());
+        });
     }
 
     @Override
