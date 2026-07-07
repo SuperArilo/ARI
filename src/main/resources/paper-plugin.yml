@@ -12,3 +12,5 @@ dependencies:
       load: BEFORE
     PlaceholderAPI:
       required: false
+    ProtocolLib:
+      required: false
