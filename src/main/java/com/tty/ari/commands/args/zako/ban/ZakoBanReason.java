@@ -118,7 +118,12 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
                     if (kickPlayer instanceof Player player) {
                         Ari.instance.getScheduler().runAtEntity(player, i -> player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"), player)),  null);
                     }
-                    ConfigUtils.t("function.zako.banned", kickPlayer).thenAccept(m -> Bukkit.getServer().getOnlinePlayers().stream().filter(i -> !i.equals(kickPlayer)).forEach(i -> i.sendMessage(m)));
+                    ConfigUtils.t("function.zako.banned", kickPlayer).thenAccept(m -> {
+                        Bukkit.getServer().getOnlinePlayers().stream().filter(i -> !i.equals(kickPlayer)).forEach(i -> i.sendMessage(m));
+                        if (!(sender instanceof Player)) {
+                            sender.sendMessage(m);
+                        }
+                    });
                 }
             }).exceptionally(e -> {
                 ConfigUtils.t("function.zako.add-failure").thenAccept(sender::sendMessage);
