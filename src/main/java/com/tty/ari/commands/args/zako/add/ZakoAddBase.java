@@ -29,7 +29,7 @@ public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
 
         if (offlinePlayer == null) {
-            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.input-error")));
             return 0;
         }
 
