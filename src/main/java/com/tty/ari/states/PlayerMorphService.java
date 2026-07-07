@@ -29,7 +29,12 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
 
     @Override
     protected boolean canAddState(PlayerMorphState state) {
-        return this.isNotHaveState(state.getOwner());
+        if (!(state.getOwner() instanceof Player player)) return false;
+        if (Ari.PROTOCOL_MANAGER == null) {
+            Ari.instance.getScheduler().runAtEntity(player, i -> player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.require-pre-plugin"), player)), null);
+            return false;
+        }
+        return this.isNotHaveState(player);
     }
 
     @Override
