@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public abstract class OnGuiEditListener<T extends BaseInventory, D> extends BaseEditFunctionGuiListener<T, D> {
 
-    private static final Pattern CONTENT_MESSAGE_PATTERN = Pattern.compile("^[a-zA-Z0-9\\\\u4e00-\\\\9fa5 ]+$");
+    private static final Pattern CONTENT_MESSAGE_PATTERN = Pattern.compile("^[a-zA-Z0-9\\u4e00-\\u9fa5 ]+$");
 
     private static final Pattern PERMISSION_NODE_PATTERN = Pattern.compile("^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$");
 
