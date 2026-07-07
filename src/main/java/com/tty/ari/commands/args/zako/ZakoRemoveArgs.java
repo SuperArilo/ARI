@@ -61,7 +61,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
             if (offlinePlayer instanceof Player player) {
                 Ari.instance.getScheduler().runAtEntity(player, i-> player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
             }
-            String key = "function.zako.whitelist-remove-" + (count == 0 ? "success":"failure");
+            String key = "function.zako.whitelist-remove-" + (count == 1 ? "success":"failure");
             if (sender instanceof Player p) {
                 ConfigUtils.t(key, p).thenAccept(sender::sendMessage);
             } else {

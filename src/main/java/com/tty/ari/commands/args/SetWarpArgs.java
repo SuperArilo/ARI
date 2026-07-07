@@ -50,7 +50,7 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
         String warpId = args[1];
         Player player = (Player) sender;
 
-        if(!PublicFunctionUtils.isEntityIdValid(warpId)) {
+        if(!this.checkEntityId(warpId)) {
             ConfigUtils.t("function.warp.id-error", player).thenAccept(player::sendMessage);
             return 0;
         }
@@ -58,66 +58,51 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
         EntityRepository<ServerWarp> repo = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
         ServerWarpRepository repository = (ServerWarpRepository) repo;
 
-        repository.queryCount(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getCreateBy, player.getUniqueId().toString()))
-                .thenCompose(result -> {
-                    int max = Ari.PERMISSION_SERVICE.getMaxCountInPermission(player, "warp");
-                    if (result.total() + 1 > max) {
-                        return ConfigUtils.t("function.warp.exceeds", player)
-                                .thenAccept(player::sendMessage)
-                                .thenApply(v -> false);
-                    }
-                    return CompletableFuture.completedFuture(true);
-                })
-                .thenCompose(shouldProceed -> {
-                    if (!shouldProceed) {
-                        return CompletableFuture.completedFuture(null);
-                    }
+        repository.queryCount(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getCreateBy, player.getUniqueId().toString())).thenCompose(result -> {
+            int max = Ari.PERMISSION_SERVICE.getMaxCountInPermission(player, "warp");
+            if (result.total() + 1 > max) {
+                return ConfigUtils.t("function.warp.exceeds", player)
+                        .thenAccept(player::sendMessage)
+                        .thenApply(v -> false);
+            }
+            return CompletableFuture.completedFuture(true);
+        }).thenCompose(shouldProceed -> {
+            if (!shouldProceed) {
+                return CompletableFuture.completedFuture(null);
+            }
 
-                    return repository.get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId), PartitionKey.global())
-                            .thenCompose(existing -> {
-                                if (existing != null) {
-                                    return ConfigUtils.t("function.warp.exist", player)
-                                            .thenAccept(player::sendMessage)
-                                            .thenApply(v -> null);
-                                }
+            return repository.get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId), PartitionKey.global()).thenCompose(existing -> {
+                if (existing != null) {
+                    return ConfigUtils.t("function.warp.exist", player).thenAccept(player::sendMessage).thenApply(v -> null);
+                }
 
-                                CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
+                CompletableFuture<ServerWarp> futureWarp = new CompletableFuture<>();
 
-                                Ari.instance.getScheduler().runAtRegion(
-                                        player.getLocation(),
-                                        task -> {
-                                            ServerWarp serverWarp = new ServerWarp();
-                                            serverWarp.setWarpId(warpId);
-                                            serverWarp.setWarpName(warpId);
-                                            serverWarp.setCreateBy(player.getUniqueId().toString());
-                                            serverWarp.setLocation(player.getLocation().toString());
-                                            serverWarp.setShowMaterial(
-                                                    PublicFunctionUtils
-                                                            .checkIsItem(
-                                                                    player.getLocation()
-                                                                            .getBlock()
-                                                                            .getRelative(BlockFace.DOWN)
-                                                                            .getType()
-                                                            ).name()
-                                            );
-                                            futureWarp.complete(serverWarp);
-                                        }
-                                );
+                Ari.instance.getScheduler().runAtRegion(
+                        player.getLocation(),
+                        task -> {
+                            ServerWarp serverWarp = new ServerWarp();
+                            serverWarp.setWarpId(warpId);
+                            serverWarp.setWarpName(warpId);
+                            serverWarp.setCreateBy(player.getUniqueId().toString());
+                            serverWarp.setLocation(player.getLocation().toString());
+                            serverWarp.setShowMaterial(PublicFunctionUtils.checkIsItem(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()).name());
+                            futureWarp.complete(serverWarp);
+                        }
+                );
 
-                                return futureWarp.thenCompose(i -> repository.create(i, PartitionKey.global()));
-                            });
-                })
-                .thenCompose(created -> {
-                    if (created == null) {
-                        return CompletableFuture.completedFuture(null);
-                    }
-                    return ConfigUtils.t("function.warp.create-success", player).thenAccept(player::sendMessage);
-                })
-                .exceptionally(e -> {
-                    Ari.instance.getLog().error(e);
-                    ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
-                    return null;
-                });
+                return futureWarp.thenCompose(i -> repository.create(i, PartitionKey.global()));
+            });
+        }).thenCompose(created -> {
+            if (created == null) {
+                return CompletableFuture.completedFuture(null);
+            }
+            return ConfigUtils.t("function.warp.create-success", player).thenAccept(player::sendMessage);
+        }).exceptionally(e -> {
+            Ari.instance.getLog().error(e);
+            ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
+            return null;
+        });
         return Command.SINGLE_SUCCESS;
     }
 

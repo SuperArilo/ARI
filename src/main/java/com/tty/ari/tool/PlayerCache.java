@@ -2,7 +2,6 @@ package com.tty.ari.tool;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.tty.api.utils.PublicFunctionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -10,8 +9,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class PlayerCache {
+
+    private static final Pattern PLAYER_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{3,16}$");
 
     private static final Cache<@NotNull UUID, OfflinePlayer> CACHE =
             Caffeine.newBuilder()
@@ -31,7 +33,7 @@ public class PlayerCache {
     }
 
     public static @Nullable OfflinePlayer getPlayer(String value) {
-        if (!PublicFunctionUtils.isEntityIdValid(value)) return null;
+        if (!PLAYER_ID_PATTERN.matcher(value).matches()) return null;
         UUID uuid;
         try {
             uuid = UUID.fromString(value);

@@ -49,7 +49,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
 
         String homeId = args[1];
         Player player = (Player) sender;
-        if (!PublicFunctionUtils.isEntityIdValid(homeId)) {
+        if (!this.checkEntityId(homeId)) {
             ConfigUtils.t("function.home.id-error", player).thenAccept(sender::sendMessage);
             return 0;
         }
@@ -57,56 +57,39 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
         EntityRepository<ServerHome> repo = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
         PlayerHomeRepository repository = (PlayerHomeRepository) repo;
 
-        repository.queryCount(new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, player.getUniqueId().toString()))
-                .thenCompose(result -> {
-                    List<ServerHome> list = result.records();
+        repository.queryCount(new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, player.getUniqueId().toString())).thenCompose(result -> {
+            List<ServerHome> list = result.records();
+            if (list.size() + 1 > Ari.PERMISSION_SERVICE.getMaxCountInPermission(player, "home")) {
+                return ConfigUtils.t("function.home.exceeds", player).thenAccept(sender::sendMessage).thenApply(v -> null);
+            }
+            boolean exists = list.stream().anyMatch(i -> i.getHomeId().equals(homeId));
+            if (exists) {
+                return ConfigUtils.t("function.home.exist", player).thenAccept(sender::sendMessage).thenApply(v -> null);
+            }
 
-                    if (list.size() + 1 > Ari.PERMISSION_SERVICE.getMaxCountInPermission(player, "home")) {
-                        return ConfigUtils.t("function.home.exceeds", player)
-                                .thenAccept(sender::sendMessage)
-                                .thenApply(v -> null);
-                    }
+            CompletableFuture<ServerHome> buildHomeFuture = new CompletableFuture<>();
 
-                    boolean exists = list.stream().anyMatch(i -> i.getHomeId().equals(homeId));
+            Ari.instance.getScheduler().runAtRegion(player.getLocation(), task -> {
+                ServerHome serverHome = new ServerHome();
+                serverHome.setHomeId(homeId);
+                serverHome.setHomeName(homeId);
+                serverHome.setPlayerUUID(player.getUniqueId().toString());
+                serverHome.setLocation(player.getLocation().toString());
+                serverHome.setShowMaterial(PublicFunctionUtils.checkIsItem(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()).name());
+                buildHomeFuture.complete(serverHome);
+            });
 
-                    if (exists) {
-                        return ConfigUtils.t("function.home.exist", player)
-                                .thenAccept(sender::sendMessage)
-                                .thenApply(v -> null);
-                    }
-
-                    CompletableFuture<ServerHome> buildHomeFuture = new CompletableFuture<>();
-
-                    Ari.instance.getScheduler().runAtRegion(player.getLocation(), task -> {
-                        ServerHome serverHome = new ServerHome();
-                        serverHome.setHomeId(homeId);
-                        serverHome.setHomeName(homeId);
-                        serverHome.setPlayerUUID(player.getUniqueId().toString());
-                        serverHome.setLocation(player.getLocation().toString());
-                        serverHome.setShowMaterial(
-                                PublicFunctionUtils
-                                        .checkIsItem(player.getLocation()
-                                                .getBlock()
-                                                .getRelative(BlockFace.DOWN)
-                                                .getType())
-                                        .name()
-                        );
-                        buildHomeFuture.complete(serverHome);
-                    });
-
-                    return buildHomeFuture.thenCompose(i -> repository.create(i, PartitionKey.of(player.getUniqueId().toString())));
-                })
-                .thenCompose(status -> {
-                    if (status == null) {
-                        return CompletableFuture.completedFuture(null);
-                    }
-                    return ConfigUtils.t("function.home.create-success", player).thenAccept(sender::sendMessage);
-                })
-                .exceptionally(ex -> {
-                    Ari.instance.getLog().error(ex, "create home error");
-                    ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
-                    return null;
-                });
+            return buildHomeFuture.thenCompose(i -> repository.create(i, PartitionKey.of(player.getUniqueId().toString())));
+        }).thenCompose(status -> {
+            if (status == null) {
+                return CompletableFuture.completedFuture(null);
+            }
+            return ConfigUtils.t("function.home.create-success", player).thenAccept(sender::sendMessage);
+        }).exceptionally(ex -> {
+            Ari.instance.getLog().error(ex, "create home error");
+            ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
+            return null;
+        });
         return Command.SINGLE_SUCCESS;
     }
 
