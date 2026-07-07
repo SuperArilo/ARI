@@ -1,5 +1,7 @@
 package com.tty.ari;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.google.gson.reflect.TypeToken;
 import com.tty.api.*;
 import com.tty.api.dto.AliasItem;
@@ -72,6 +74,7 @@ public class Ari extends AbstractJavaPlugin {
     public static InteractService INTERACT_SERVICE;
     public static Placeholder PLACEHOLDER;
     public static BungeeCache BUNGEECACHE;
+    public static ProtocolManager PROTOCOL_MANAGER;
 
     public static Metrics METRICS;
 
@@ -83,6 +86,9 @@ public class Ari extends AbstractJavaPlugin {
     @Override
     protected void enabling() {
         this.printLogo();
+        if (this.getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+            PROTOCOL_MANAGER = ProtocolLibrary.getProtocolManager();
+        }
 
         SQL_INSTANCE = new SQLInstance();
         REPOSITORY_MANAGER = new RepositoryManager(this);
@@ -199,7 +205,8 @@ public class Ari extends AbstractJavaPlugin {
                 new PlayerCommandPreprocessService(20L, 1L, true),
                 new PlayerChatService(20L, 1L, true),
                 new MaintenanceBossBarService(20L, 1L, true),
-                new AttackBossBarService(5L, 1L, true)
+                new AttackBossBarService(5L, 1L, true),
+                new PlayerMorphService(20L, 1L, true)
         );
     }
 
