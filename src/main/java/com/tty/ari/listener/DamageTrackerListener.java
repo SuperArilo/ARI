@@ -7,6 +7,7 @@ import com.tty.ari.configuration.AttackBarConfig;
 import com.tty.ari.tool.LastDamageTracker;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,20 +23,22 @@ public class DamageTrackerListener implements Listener {
 
     private CancellableTask cleanTask;
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntity(EntityDamageEvent event) {
         if (Ari.instance.getConfigurationManager().get(AttackBarConfig.class).getExcludedEntities().stream().anyMatch(i -> i.equalsIgnoreCase(event.getEntity().getType().name()))) return;
         DAMAGE_TRACKER.addRecord(event);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onQuit(PlayerQuitEvent event) {
-        DAMAGE_TRACKER.clearRecords(event.getPlayer());
+        Player player = event.getPlayer();
+        DAMAGE_TRACKER.clearRecords(player);
+        DAMAGE_TRACKER.removeRecentKiller(player);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
-        DAMAGE_TRACKER.clearRecords(event.getEntity());
+        DAMAGE_TRACKER.onEntityDeath(event);
     }
 
     @EventHandler
@@ -63,15 +66,10 @@ public class DamageTrackerListener implements Listener {
                 long lastTs = DAMAGE_TRACKER.getLastTimestamp(damageable);
                 if (lastTs == 0L || (now - lastTs) > attackBarConfig.getClearLastAttackRecord() * 1000L) {
                     DAMAGE_TRACKER.clearRecords(damageable);
-                    Ari.instance.getScheduler().runAtEntity(
-                            e,
-                            t -> Ari.instance.getLog().debug("damage_tracker: remove victim entity {} record.", e.getName()),
-                            null
-                    );
+                    Ari.instance.getScheduler().runAtEntity(e, t -> Ari.instance.getLog().debug("damage_tracker: remove victim entity {} record.", e.getName()), null);
                 }
             }
+            DAMAGE_TRACKER.cleanInvalidRecentKills();
         }, 1L, attackBarConfig.getTickClearDealy() * 20L);
     }
-
-
 }
