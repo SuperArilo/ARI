@@ -8,6 +8,7 @@ import com.tty.ari.Ari;
 import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.dto.state.player.PlayerMorphState;
 import com.tty.ari.states.PlayerMorphService;
+import com.tty.ari.tool.ConfigUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -23,6 +24,7 @@ public class demorph extends LiteralArgumentCommand {
         for (PlayerMorphState state : Ari.instance.getStatusManager().get(PlayerMorphService.class).getStates(player)) {
             state.setOver(true);
         }
+        ConfigUtils.t("function.morph.restore", player).thenAccept(sender::sendMessage);
         return Command.SINGLE_SUCCESS;
     }
 

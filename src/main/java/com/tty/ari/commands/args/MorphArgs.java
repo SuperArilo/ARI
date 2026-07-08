@@ -11,6 +11,8 @@ import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.dto.state.player.PlayerMorphState;
 import com.tty.ari.states.PlayerMorphService;
+import com.tty.ari.tool.ConfigUtils;
+import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -33,7 +35,9 @@ public class MorphArgs extends RequiredArgumentCommand<String> {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        Set<String> collect = Arrays.stream(EntityType.values()).filter(i -> i.isSpawnable() && i.isAlive()).map(i -> i.name().toLowerCase()).collect(Collectors.toSet());
+        if (!(sender instanceof Player player)) return CompletableFuture.completedFuture(Set.of());
+
+        Set<String> collect = Arrays.stream(EntityType.values()).filter(i -> i.isSpawnable() && i.isAlive() && player.getStatistic(Statistic.KILL_ENTITY, i) >= 1).map(i -> i.name().toLowerCase()).collect(Collectors.toSet());
         if (args.length == 1) return CompletableFuture.completedFuture(collect);
         return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[1], collect));
     }
@@ -48,7 +52,18 @@ public class MorphArgs extends RequiredArgumentCommand<String> {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.input-error"), player));
             return 0;
         }
-        Ari.instance.getStatusManager().get(PlayerMorphService.class).addState(new PlayerMorphState(player, type));
+        PlayerMorphService service = Ari.instance.getStatusManager().get(PlayerMorphService.class);
+        List<PlayerMorphState> states = service.getStates(player);
+        if (states.isEmpty()) {
+            service.addState(new PlayerMorphState(player, type));
+        } else {
+            PlayerMorphState first = states.getFirst();
+            if (first.getType().equals(type)) {
+                ConfigUtils.t("function.morph.not-change", player).thenAccept(sender::sendMessage);
+            } else {
+                first.change(type);
+            }
+        }
         return Command.SINGLE_SUCCESS;
     }
 
