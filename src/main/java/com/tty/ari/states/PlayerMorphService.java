@@ -239,7 +239,7 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
         meta.getIntegers().write(0, target.getEntityId());
 
         List<WrappedDataValue> values = new ArrayList<>();
-        values.add(new WrappedDataValue(2, WrappedDataWatcher.Registry.getChatComponentSerializer(true), Optional.of(AdventureComponentConverter.fromComponent(target.displayName()).getHandle())));
+        values.add(new WrappedDataValue(2, WrappedDataWatcher.Registry.getChatComponentSerializer(true), Optional.of(AdventureComponentConverter.fromComponent(target.playerListName()).getHandle())));
         values.add(new WrappedDataValue(3, WrappedDataWatcher.Registry.get(new TypeToken<Boolean>(){}.getType()), true));
         meta.getDataValueCollectionModifier().write(0, values);
         Ari.PROTOCOL_MANAGER.sendServerPacket(viewer, meta, false);
