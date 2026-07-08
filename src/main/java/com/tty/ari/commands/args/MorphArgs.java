@@ -12,6 +12,7 @@ import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.dto.state.player.PlayerMorphState;
 import com.tty.ari.states.PlayerMorphService;
 import com.tty.ari.tool.ConfigUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -45,6 +46,10 @@ public class MorphArgs extends RequiredArgumentCommand<String> {
     @Override
     public int execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) return 0;
+        if (!Bukkit.getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.require-pre-plugin"), player));
+            return 0;
+        }
         EntityType type;
         try {
             type = EntityType.valueOf(args[1].toUpperCase());

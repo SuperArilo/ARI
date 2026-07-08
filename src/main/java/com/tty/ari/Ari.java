@@ -52,6 +52,7 @@ import org.bukkit.plugin.messaging.Messenger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -191,23 +192,25 @@ public class Ari extends AbstractJavaPlugin {
 
     @Override
     protected @Nullable List<StateService<?>> services() {
-        return List.of(
-                new PreTeleportStateService(20L, 1L, false),
-                new TeleportStateService(20L, 1L, false),
-                new CoolDownStateService(20L, 1L, true),
-                new PlayerSitActionStateService(20L, 1L, false),
-                new PlayerRideActionStateService(20L, 1L, false),
-                new RandomTpStateService(20L, 1L, true),
-                new GuiEditFunctionStateService(20L,1L, false),
-                new PlayerAFKService(20L, 1L, true),
-                new PlayerSaveDataStateService(20L, 20L, true),
-                new GuiManagerStateService(10L, 1L, false),
-                new PlayerCommandPreprocessService(20L, 1L, true),
-                new PlayerChatService(20L, 1L, true),
-                new MaintenanceBossBarService(20L, 1L, true),
-                new AttackBossBarService(5L, 1L, true),
-                new PlayerMorphService(20L, 1L, true)
-        );
+        ArrayList<StateService<?>> list = new ArrayList<>();
+        list.add(new PreTeleportStateService(20L, 1L, false));
+        list.add(new TeleportStateService(20L, 1L, false));
+        list.add(new CoolDownStateService(20L, 1L, true));
+        list.add(new PlayerSitActionStateService(20L, 1L, false));
+        list.add(new PlayerRideActionStateService(20L, 1L, false));
+        list.add(new RandomTpStateService(20L, 1L, true));
+        list.add(new GuiEditFunctionStateService(20L,1L, false));
+        list.add(new PlayerAFKService(20L, 1L, true));
+        list.add(new PlayerSaveDataStateService(20L, 20L, true));
+        list.add(new GuiManagerStateService(10L, 1L, false));
+        list.add(new PlayerCommandPreprocessService(20L, 1L, true));
+        list.add(new PlayerChatService(20L, 1L, true));
+        list.add(new MaintenanceBossBarService(20L, 1L, true));
+        list.add(new AttackBossBarService(5L, 1L, true));
+        if (PROTOCOL_MANAGER != null) {
+            list.add(new PlayerMorphService(20L, 1L, true));
+        }
+        return list;
     }
 
     private void registerBungeeListener() {
