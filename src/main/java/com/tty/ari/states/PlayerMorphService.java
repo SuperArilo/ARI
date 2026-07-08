@@ -209,7 +209,10 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
         if (killer.getStatistic(Statistic.KILL_ENTITY, type) != 0) return;
         Entity entity = DamageTrackerListener.DAMAGE_TRACKER.getLastBeKillEntity(killer);
         if (entity == null) return;
-        ConfigUtils.t("function.morph.kill-entity", killer).thenAccept(killer::sendMessage);
+        ConfigUtils.t("function.morph.kill-entity", killer).thenAccept(i -> Ari.instance.getScheduler().runAtRegion(victim.getLocation(), t -> {
+            Ari.FIREWORK_SERVICE.spawnFireworks(victim.getLocation(), 1);
+            killer.sendMessage(i);
+        }));
     }
 
     private void morphPlayer(Player player, EntityType type) {
