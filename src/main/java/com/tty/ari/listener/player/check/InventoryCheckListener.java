@@ -19,16 +19,16 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit> {
@@ -116,46 +116,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
 
     @Override
     protected void whenDrag(InventoryDragEvent event, PlayerInventoryEdit holder) {
-        OfflinePlayer monitoree = holder.getMonitoree();
-
-        if (monitoree instanceof Player player) {
-            event.setCancelled(true);
-            if (this.isUpdating((Player) event.getWhoClicked(), player)) return;
-        }
-
-        List<Integer> bindingSlots = holder.getCombineInventory();
-        Set<Integer> draggedSlots = event.getInventorySlots();
-
-        if (!new HashSet<>(bindingSlots).containsAll(draggedSlots)) {
-            event.setCancelled(true);
-            return;
-        }
-
-        InventoryView view = event.getView();
-
-        if (view.getTopInventory() != holder.getInventory()) return;
-
-        GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
-        PlayerInventoryCheckMenu menuConfig = (PlayerInventoryCheckMenu) holder.getBaseMenu();
-
-        for (int guiSlot : draggedSlots) {
-            int playerSlot = bindingSlots.indexOf(guiSlot);
-            if (playerSlot == -1) continue;
-
-            ItemStack guiItem = view.getItem(guiSlot);
-            ItemStack newItem = guiItem != null ? guiItem.clone() : null;
-
-            if (holder.getMonitoree() instanceof Player monitored && monitored.isOnline()) {
-                monitored.getInventory().setItem(playerSlot, newItem);
-            }
-
-            for (GuiState guiState : service.getAllStates()) {
-                if (!(guiState instanceof OnCheckPlayerGuiState state)) continue;
-                if (!state.getMonitoree().equals(holder.getMonitoree())) continue;
-                if (menuConfig.getShortcutBar().contains(guiSlot) && menuConfig.getPlayerInventory().contains(guiSlot)) continue;
-                state.getMenu().getInventory().setItem(guiSlot, newItem != null ? newItem.clone() : null);
-            }
-        }
+        event.setCancelled(true);
     }
 
     @Override
