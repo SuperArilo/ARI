@@ -43,7 +43,7 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
     public int execute(CommandSender sender, String[] args) {
         if (args.length < 2 || !(sender instanceof Player player)) return 0;
 
-        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
+        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
 
         if (offlinePlayer == null) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
