@@ -4,6 +4,7 @@ import com.tty.ari.Ari;
 import com.tty.ari.dto.state.player.PlayerAFKState;
 import com.tty.ari.states.PlayerAFKService;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import io.papermc.paper.event.player.PlayerPickItemEvent;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -120,6 +121,16 @@ public class PlayerAFKStatusListener implements Listener {
         if (this.isAFK(player)) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onDropItem(PlayerDropItemEvent event) {
+        if (this.isAFK(event.getPlayer())) this.reset(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPickUp(PlayerPickItemEvent event) {
+        if (this.isAFK(event.getPlayer())) this.reset(event.getPlayer());
     }
 
     private boolean isAFK(Player player) {
