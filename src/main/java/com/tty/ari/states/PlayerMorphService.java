@@ -45,36 +45,36 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
                 ListenerPriority.NORMAL,
                 PacketType.Play.Server.ENTITY_METADATA,
                 PacketType.Play.Server.ENTITY_EQUIPMENT,
-                PacketType.Play.Server.SPAWN_ENTITY) {
+                PacketType.Play.Server.SPAWN_ENTITY,
+                PacketType.Play.Server.ANIMATION) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 Player viewer = event.getPlayer();
                 PacketContainer packet = event.getPacket();
                 PacketType type = packet.getType();
+                PlayerMorphState state = Entity_ID_TO_State.get(packet.getIntegers().read(0));
 
-                if (type == PacketType.Play.Server.ENTITY_METADATA) {
-                    int entityId = packet.getIntegers().read(0);
-                    PlayerMorphState state = Entity_ID_TO_State.get(entityId);
+                if (type.equals(PacketType.Play.Server.ENTITY_METADATA)) {
                     if (state != null && state.getOwner() instanceof Player target && !target.equals(viewer)) {
                         event.setCancelled(true);
                     }
                 }
-                else if (type == PacketType.Play.Server.ENTITY_EQUIPMENT) {
-                    int entityId = packet.getIntegers().read(0);
-                    PlayerMorphState state = Entity_ID_TO_State.get(entityId);
+                else if (type.equals(PacketType.Play.Server.ENTITY_EQUIPMENT)) {
                     if (state != null && state.getOwner() instanceof Player target && !target.equals(viewer)) {
                         if (isEquipment(state.getType())) {
                             event.setCancelled(true);
                         }
                     }
                 }
-                else if (type == PacketType.Play.Server.SPAWN_ENTITY) {
-                    int entityId = packet.getIntegers().read(0);
-                    PlayerMorphState state = Entity_ID_TO_State.get(entityId);
+                else if (type.equals(PacketType.Play.Server.SPAWN_ENTITY)) {
                     if (state != null && state.getOwner() instanceof Player target && !target.equals(viewer)) {
                         event.setCancelled(true);
                         sendMorphToViewer(target, state.getType(), viewer);
                         sendInitialEquipment(target, viewer);
+                    }
+                } else if (type.equals(PacketType.Play.Server.ANIMATION)) {
+                    if (state != null && state.getOwner() instanceof Player target && !target.equals(viewer)) {
+                        event.setCancelled(true);
                     }
                 }
             }
