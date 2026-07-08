@@ -5,8 +5,8 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.Pair;
+import com.comphenix.protocol.wrappers.*;
+import com.google.common.reflect.TypeToken;
 import com.tty.api.state.StateService;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.event.CustomPlayerRespawnEvent;
@@ -29,9 +29,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerMorphService extends StateService<PlayerMorphState> implements Listener {
@@ -237,6 +235,14 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
         headRotation.getBytes().write(0, yawByte);
         Ari.PROTOCOL_MANAGER.sendServerPacket(viewer, headRotation, false);
 
+        PacketContainer meta = Ari.PROTOCOL_MANAGER.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+        meta.getIntegers().write(0, target.getEntityId());
+
+        List<WrappedDataValue> values = new ArrayList<>();
+        values.add(new WrappedDataValue(2, WrappedDataWatcher.Registry.getChatComponentSerializer(true), Optional.of(AdventureComponentConverter.fromComponent(target.displayName()).getHandle())));
+        values.add(new WrappedDataValue(3, WrappedDataWatcher.Registry.get(new TypeToken<Boolean>(){}.getType()), true));
+        meta.getDataValueCollectionModifier().write(0, values);
+        Ari.PROTOCOL_MANAGER.sendServerPacket(viewer, meta, false);
     }
 
     private void sendInitialEquipment(Player target, Player viewer) {
