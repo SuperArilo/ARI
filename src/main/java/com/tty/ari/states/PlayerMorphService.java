@@ -46,11 +46,6 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
                 ListenerPriority.NORMAL,
                 PacketType.Play.Server.ENTITY_METADATA,
                 PacketType.Play.Server.ENTITY_EQUIPMENT,
-                PacketType.Play.Server.ENTITY_HEAD_ROTATION,
-                PacketType.Play.Server.ENTITY_TELEPORT,
-                PacketType.Play.Server.REL_ENTITY_MOVE,
-                PacketType.Play.Server.REL_ENTITY_MOVE_LOOK,
-                PacketType.Play.Server.ANIMATION,
                 PacketType.Play.Server.SPAWN_ENTITY) {
             @Override
             public void onPacketSending(PacketEvent event) {
@@ -87,8 +82,8 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
     }
 
     private boolean isEquipment(EntityType type) {
-        Class<? extends org.bukkit.entity.Entity> entityClass = type.getEntityClass();
-        return entityClass == null || !LivingEntity.class.isAssignableFrom(entityClass);
+        Class<? extends Entity> entityClass = type.getEntityClass();
+        return (entityClass == null || !LivingEntity.class.isAssignableFrom(entityClass)) && type.isAlive();
     }
 
     @Override
@@ -205,7 +200,7 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
         if (victim instanceof Player) return;
         if (!(event.getDamageSource().getCausingEntity() instanceof Player killer)) return;
         EntityType type = victim.getType();
-        if (!type.isAlive() || !type.isSpawnable()) return;
+        if (!type.isAlive() || !type.isSpawnable() || type.equals(EntityType.ARMOR_STAND)) return;
         if (killer.getStatistic(Statistic.KILL_ENTITY, type) != 0) return;
         Entity entity = DamageTrackerListener.DAMAGE_TRACKER.getLastBeKillEntity(killer);
         if (entity == null) return;
