@@ -57,6 +57,12 @@ public class MorphArgs extends RequiredArgumentCommand<String> {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.input-error"), player));
             return 0;
         }
+
+        if (player.getStatistic(Statistic.KILL_ENTITY, type) < 1) {
+            ConfigUtils.t("function.morph.locked").thenAccept(sender::sendMessage);
+            return 0;
+        }
+
         PlayerMorphService service = Ari.instance.getStatusManager().get(PlayerMorphService.class);
         List<PlayerMorphState> states = service.getStates(player);
         if (states.isEmpty()) {
