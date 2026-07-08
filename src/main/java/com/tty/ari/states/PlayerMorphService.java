@@ -200,7 +200,7 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
         if (victim instanceof Player) return;
         if (!(event.getDamageSource().getCausingEntity() instanceof Player killer)) return;
         EntityType type = victim.getType();
-        if (!type.isAlive() || !type.isSpawnable() || type.equals(EntityType.ARMOR_STAND)) return;
+        if (!type.isAlive() || !type.isSpawnable()) return;
         if (killer.getStatistic(Statistic.KILL_ENTITY, type) != 0) return;
         Entity entity = DamageTrackerListener.DAMAGE_TRACKER.getLastBeKillEntity(killer);
         if (entity == null) return;
