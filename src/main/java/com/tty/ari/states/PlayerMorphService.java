@@ -25,12 +25,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerMorphService extends StateService<PlayerMorphState> implements Listener {
@@ -75,6 +76,7 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
                     if (state != null && state.getOwner() instanceof Player target && !target.equals(viewer)) {
                         event.setCancelled(true);
                         sendMorphToViewer(target, state.getType(), viewer);
+                        sendInitialEquipment(target, viewer);
                     }
                 }
             }
@@ -168,20 +170,6 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player newPlayer = event.getPlayer();
-        if (!newPlayer.isOnline()) return;
-        for (PlayerMorphState state : this.getAllStates()) {
-            if (state.getOwner() instanceof Player player && player.isOnline()) {
-                Ari.instance.getScheduler().runAtEntityLater(newPlayer, i -> {
-                    this.sendMorphToViewer(player, state.getType(), newPlayer);
-                    this.sendInitialEquipment(player, newPlayer); // 也发送初始装备
-                }, null, 20L);
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
         this.stopStateByOwner(event.getPlayer());
         this.Entity_ID_TO_State.remove(event.getPlayer().getEntityId());
@@ -211,16 +199,15 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
     }
 
     private void morphPlayer(Player player, EntityType type) {
-        for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
-            if (onlinePlayer.equals(player)) continue;
-            this.sendMorphToViewer(player, type, onlinePlayer);
-            this.sendInitialEquipment(player, onlinePlayer);
+        for(Player viewer : Bukkit.getOnlinePlayers()) {
+            if(viewer.equals(player)) continue;
+            this.sendMorphToViewer(player,type,viewer);
         }
     }
 
     private void sendMorphToViewer(Player target, EntityType type, Player viewer) {
         if (target.equals(viewer)) return;
-
+        if (!this.canSeeMorph(target, viewer)) return;
         Location loc = target.getLocation();
 
         PacketContainer destroy = Ari.PROTOCOL_MANAGER.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
@@ -274,6 +261,11 @@ public class PlayerMorphService extends StateService<PlayerMorphState> implement
         List<Pair<EnumWrappers.ItemSlot, ItemStack>> list = Collections.singletonList(new Pair<>(slot, item));
         packet.getSlotStackPairLists().write(0, list);
         Ari.PROTOCOL_MANAGER.sendServerPacket(viewer, packet, false);
+    }
+
+    private boolean canSeeMorph(Player target, Player viewer) {
+        int distance = Bukkit.getViewDistance() * 16;
+        return target.getWorld().equals(viewer.getWorld()) && target.getLocation().distanceSquared(viewer.getLocation()) <= distance * distance;
     }
 
     private void restorePlayer(Player player) {
