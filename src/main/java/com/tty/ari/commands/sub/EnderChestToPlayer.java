@@ -39,7 +39,7 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
         if (args.length < 2) return 0;
         Player player = (Player) sender;
 
-        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
+        OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
 
         if (offlinePlayer == null) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
