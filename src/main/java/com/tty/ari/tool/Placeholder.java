@@ -16,7 +16,6 @@ import com.tty.api.utils.TimeFormatUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.lang.LangConfig;
 import com.tty.ari.dto.SleepingWorld;
-import com.tty.ari.dto.state.player.PlayerMorphState;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
 import com.tty.ari.dto.state.teleport.RandomTpState;
 import com.tty.ari.entity.BanPlayer;
@@ -25,7 +24,6 @@ import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.enumType.lang.*;
 import com.tty.ari.listener.DamageTrackerListener;
 import com.tty.ari.listener.player.PlayerSkipNight;
-import com.tty.ari.states.PlayerMorphService;
 import com.tty.ari.states.teleport.PreTeleportStateService;
 import com.tty.ari.states.teleport.RandomTpStateService;
 import com.tty.ari.states.teleport.TeleportStateService;
@@ -297,13 +295,6 @@ public class Placeholder extends BasePlaceholder {
         registry.register(PlaceholderDefinition.of(
                 PlaceholderShowItem.SHOW_ITEM,
                 PlaceholderResolve.ofPlayer(player -> Ari.instance.getComponentTool().setHoverItemText(player.getInventory().getItemInMainHand()))
-        ));
-        registry.register(PlaceholderDefinition.of(
-                PlaceholderMorph.MORPH_ENTITY,
-                PlaceholderResolve.ofPlayer(player -> {
-                    List<PlayerMorphState> states = Ari.instance.getStatusManager().get(PlayerMorphService.class).getStates(player);
-                    return CompletableFuture.completedFuture(Component.translatable(states.getFirst().getType().translationKey()));
-                })
         ));
     }
 

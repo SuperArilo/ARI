@@ -1,12 +1,13 @@
 package com.tty.ari;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.google.gson.reflect.TypeToken;
-import com.tty.api.*;
+import com.tty.api.AbstractJavaPlugin;
+import com.tty.api.ConfigurationManager;
+import com.tty.api.Scheduler;
+import com.tty.api.StatusManager;
+import com.tty.api.configuration.BaseConfiguration;
 import com.tty.api.dto.AliasItem;
 import com.tty.api.dto.TempRegisterService;
-import com.tty.api.configuration.BaseConfiguration;
 import com.tty.api.service.*;
 import com.tty.api.state.StateService;
 import com.tty.api.utils.CommandRegister;
@@ -75,7 +76,6 @@ public class Ari extends AbstractJavaPlugin {
     public static InteractService INTERACT_SERVICE;
     public static Placeholder PLACEHOLDER;
     public static BungeeCache BUNGEECACHE;
-    public static ProtocolManager PROTOCOL_MANAGER;
 
     public static Metrics METRICS;
 
@@ -87,9 +87,6 @@ public class Ari extends AbstractJavaPlugin {
     @Override
     protected void enabling() {
         this.printLogo();
-        if (this.getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-            PROTOCOL_MANAGER = ProtocolLibrary.getProtocolManager();
-        }
 
         SQL_INSTANCE = new SQLInstance();
         REPOSITORY_MANAGER = new RepositoryManager(this);
@@ -207,9 +204,6 @@ public class Ari extends AbstractJavaPlugin {
         list.add(new PlayerChatService(20L, 1L, true));
         list.add(new MaintenanceBossBarService(20L, 1L, true));
         list.add(new AttackBossBarService(5L, 1L, true));
-        if (PROTOCOL_MANAGER != null) {
-            list.add(new PlayerMorphService(20L, 1L, true));
-        }
         return list;
     }
 
