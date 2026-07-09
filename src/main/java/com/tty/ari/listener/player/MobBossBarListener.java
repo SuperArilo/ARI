@@ -32,7 +32,7 @@ public class MobBossBarListener implements Listener {
         if (!(entity instanceof Damageable victim)) return;
 
         // 如果是boss，不显示bar
-        if (this.isBoss(victim)) return;
+        if (this.isBoss(victim) || victim.isInvisible()) return;
 
         // 获取伤害记录
         List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(victim);
