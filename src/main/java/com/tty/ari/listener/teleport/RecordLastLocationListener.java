@@ -5,6 +5,7 @@ import com.tty.ari.Ari;
 import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.dto.event.CustomPlayerRespawnEvent;
+import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
@@ -95,6 +96,7 @@ public class RecordLastLocationListener implements Listener {
     }
 
     private void setPlayerLastLocation(Player player) {
+        if (!Ari.instance.getConfigurationManager().get(FunctionConfig.class).isEnable(TeleportType.BACK)) return;
         ConfigUtils.t("teleport.tips-back", player).thenAccept(i ->
                 Ari.instance.getScheduler().runAtEntity(player, t ->
                         player.sendMessage(Ari.instance.getComponentTool().setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/" + Ari.instance.getName() + " back")), null));
