@@ -7,7 +7,6 @@ import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
 import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +18,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class LastDamageTracker {
 
     private final Map<Entity, List<DamageRecord>> records = new ConcurrentHashMap<>();
-    private final Map<Entity, Entity> recentKillVictim = new ConcurrentHashMap<>();
     /**
      * 实体之间的伤害记录（玩家 - 玩家，玩家 - 实体， 实体 - 玩家， 实体 x 实体）
      * @param timestamp 造成伤害的时间戳
@@ -57,7 +55,6 @@ public class LastDamageTracker {
 
     public void removeAll() {
         this.records.clear();
-        this.recentKillVictim.clear();
     }
 
     /**
@@ -259,41 +256,6 @@ public class LastDamageTracker {
         this.records.computeIfAbsent(victim, k -> new CopyOnWriteArrayList<>())
                 .add(new DamageRecord(System.currentTimeMillis(), resolvedAttacker, event.getFinalDamage(), victim.getLocation(),
                         this.getWeapon(resolvedAttacker, directEntity, causingEntity)));
-    }
-
-    public void onEntityDeath(EntityDeathEvent event) {
-        LivingEntity victim = event.getEntity();
-        List<DamageRecord> records = getRecords(victim);
-        if (records.isEmpty()) return;
-
-        DamageRecord lastHit = records.getLast();
-        Entity killer = lastHit.damager();
-        if (killer == null) return;
-        this.recentKillVictim.put(killer, victim);
-        this.clearRecords(victim);
-    }
-
-    public void removeRecentKiller(Entity killer) {
-        this.recentKillVictim.remove(killer);
-    }
-
-    /**
-     * 清除无效的 killer 记录
-     */
-    public void cleanInvalidRecentKills() {
-        Iterator<Map.Entry<Entity, Entity>> it = this.recentKillVictim.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Entity, Entity> entry = it.next();
-            Entity killer = entry.getKey();
-            if (killer == null || !killer.isValid() || killer.isDead()) {
-                it.remove();
-            }
-        }
-    }
-
-    @Nullable
-    public Entity getLastBeKillEntity(Entity killer) {
-        return this.recentKillVictim.get(killer);
     }
 
     private void log(Entity victim, EntityDamageEvent.DamageCause cause, Long timeDiff, Long threshold, Entity attacker) {

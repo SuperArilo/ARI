@@ -33,12 +33,11 @@ public class DamageTrackerListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         DAMAGE_TRACKER.clearRecords(player);
-        DAMAGE_TRACKER.removeRecentKiller(player);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
-        DAMAGE_TRACKER.onEntityDeath(event);
+        DAMAGE_TRACKER.clearRecords(event.getEntity());
     }
 
     @EventHandler
@@ -69,7 +68,6 @@ public class DamageTrackerListener implements Listener {
                     Ari.instance.getScheduler().runAtEntity(e, t -> Ari.instance.getLog().debug("damage_tracker: remove victim entity {} record.", e.getName()), null);
                 }
             }
-            DAMAGE_TRACKER.cleanInvalidRecentKills();
         }, 1L, attackBarConfig.getTickClearDealy() * 20L);
     }
 }

@@ -22,7 +22,6 @@ import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.enumType.lang.*;
-import com.tty.ari.listener.DamageTrackerListener;
 import com.tty.ari.listener.player.PlayerSkipNight;
 import com.tty.ari.states.teleport.PreTeleportStateService;
 import com.tty.ari.states.teleport.RandomTpStateService;
@@ -32,13 +31,11 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import static com.tty.ari.listener.teleport.RecordLastLocationListener.TELEPORT_LAST_LOCATION;
 
@@ -191,14 +188,6 @@ public class Placeholder extends BasePlaceholder {
         registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayer.PLAYER_LOCATION,
                 PlaceholderResolve.ofPlayer(player -> this.set(FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())))
-        ));
-        registry.register(PlaceholderDefinition.of(
-                PlaceholderPlayer.ENTITY_KILL_BY_PLAYER,
-                PlaceholderResolve.ofPlayer(player -> {
-                    Entity entity = DamageTrackerListener.DAMAGE_TRACKER.getLastBeKillEntity(player);
-                    if (entity == null) return this.empty();
-                    return CompletableFuture.completedFuture(entity.name());
-                })
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderZakoInfo.ZAKO_WHITELIST_OPERATOR,

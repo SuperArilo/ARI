@@ -7,7 +7,6 @@ public enum PlaceholderPlayer implements PlaceholderTypeEnum {
     PLAYER_NAME("player_name"),
     PLAYER_WORLD("player_world"),
     PLAYER_LOCATION("player_location"),
-    ENTITY_KILL_BY_PLAYER("entity_kill_by_player"),
     DEATH_LOCATION("death_location"),
     SPAWN_LOCATION("spawn_location");
 
