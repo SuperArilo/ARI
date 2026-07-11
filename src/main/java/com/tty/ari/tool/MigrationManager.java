@@ -1,14 +1,14 @@
 package com.tty.ari.tool;
 
-import com.tty.ari.Migration;
 import com.tty.api.enumType.SQLType;
+import com.tty.ari.Migration;
 import com.tty.ari.sql_version.V1Tables;
 import com.tty.ari.sql_version.V2UpdatePreSlot;
 import com.tty.ari.sql_version.V3UpdateZakoAddRemark;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.*;
+import java.util.List;
 
 public record MigrationManager(SQLType sqlType, String tablePrefix, DataSource dataSource) {
 
@@ -37,7 +37,7 @@ public record MigrationManager(SQLType sqlType, String tablePrefix, DataSource d
 
     public void migrate() throws SQLException {
         int currentVersion = this.getCurrentVersion();
-        List<Migration> migrations = getMigrations();
+        List<Migration> migrations = this.getMigrations();
         for (Migration migration : migrations) {
             if (migration.getVersion() > currentVersion) {
                 this.applyMigration(migration);
@@ -76,7 +76,7 @@ public record MigrationManager(SQLType sqlType, String tablePrefix, DataSource d
     }
 
     private List<Migration> getMigrations() {
-        return Arrays.asList(new V1Tables(), new V2UpdatePreSlot(), new V3UpdateZakoAddRemark());
+        return List.of(new V1Tables(), new V2UpdatePreSlot(), new V3UpdateZakoAddRemark());
     }
 
 }

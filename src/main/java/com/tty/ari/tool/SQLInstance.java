@@ -55,8 +55,8 @@ public class SQLInstance {
 
         try {
             switch (sqlType) {
-                case MYSQL -> createMysql();
-                case SQLITE -> createSQLite();
+                case MYSQL -> this.createMysql();
+                case SQLITE -> this.createSQLite();
                 default -> {
                     Ari.instance.getLog().error("unsupported SQL type: {}", sqlType);
                     return;
