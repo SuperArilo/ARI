@@ -23,7 +23,7 @@ public class V3UpdateZakoAddRemark implements Migration {
         String tableName = tablePrefix + "whitelist";
 
         if (this.tableExists(conn, tableName)) {
-            this.addColumnIfNotExists(conn, tableName, "remark", "NOT NULL DEFAULT ''", sqlType);
+            this.addColumnIfNotExists(conn, tableName, "remark", "TEXT", sqlType);
         }
     }
 

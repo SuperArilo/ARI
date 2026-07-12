@@ -159,8 +159,8 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             }
         }).whenComplete((i, ex) -> {
             if (ex != null) {
-                Ari.instance.getLog().error("player {} login in server error.", player.getName());
-                player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
+                Ari.instance.getLog().error(ex);
+                Ari.instance.getScheduler().run(r -> player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error"))));
                 return;
             }
 

@@ -21,7 +21,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-@SuppressWarnings("SqlSourceToSinkFlow")
 public class SQLInstance {
 
     @Getter
@@ -29,6 +28,8 @@ public class SQLInstance {
 
     @Getter
     private SqlSessionFactory factory;
+
+    private HikariDataSource dataSource;
 
     public SQLInstance() {
         this.start();
@@ -66,18 +67,17 @@ public class SQLInstance {
             Ari.instance.getLog().error(e, "failed to initialize database connection factory");
             return;
         }
-        Ari.instance.getLog().debug("initializing database schema");
 
+        if (factory == null) {
+            Ari.instance.getLog().error("SqlSessionFactory is null, aborting schema initialization");
+            return;
+        }
+
+        Ari.instance.getLog().debug("initializing database schema");
         this.ensureSchemaVersionTable();
 
         try {
-            MigrationManager manager = null;
-            if (factory != null) {
-                manager = new MigrationManager(this.sqlType, this.getTablePrefix(), factory.getConfiguration().getEnvironment().getDataSource());
-            }
-            if (manager != null) {
-                manager.migrate();
-            }
+            new MigrationManager(this.sqlType, this.getTablePrefix(), this.dataSource).migrate();
         } catch (SQLException e) {
             Ari.instance.getLog().error(e, "Failed to apply database migrations");
         }
@@ -91,27 +91,42 @@ public class SQLInstance {
 
     private void createMysql() {
         FileConfiguration config = Ari.instance.getConfig();
-        HikariDataSource hikariDataSource = new HikariDataSource();
-        hikariDataSource.setDriverClassName(sqlType.getDriver());
-        hikariDataSource.setJdbcUrl("jdbc:mysql://" + config.getString("data.address") + ":" + config.getString("data.port") +  "/" + config.getString("data.database") + "?useUnicode=true&character_set_server=utf8mb4");
-        hikariDataSource.setUsername(config.getString("data.username"));
-        hikariDataSource.setPassword(config.getString("data.password"));
-        hikariDataSource.setMaximumPoolSize(config.getInt("data.maximum-pool-size"));
-        hikariDataSource.setMinimumIdle(config.getInt("data.minimum-idle"));
-        hikariDataSource.setMaxLifetime(config.getInt("data.connection-timeout"));
-        hikariDataSource.setKeepaliveTime(config.getLong("data.keepalive-time"));
-        this.setLiteFactory(hikariDataSource);
+
+        String address = config.getString("data.address");
+        String port = config.getString("data.port");
+        String database = config.getString("data.database");
+        String username = config.getString("data.username");
+        String password = config.getString("data.password");
+
+        if (address == null || port == null || database == null || username == null) {
+            Ari.instance.getLog().error("MySQL connection configuration incomplete (address, port, database, username are required)");
+            return;
+        }
+
+        HikariDataSource source = new HikariDataSource();
+        source.setDriverClassName(sqlType.getDriver());
+        source.setJdbcUrl("jdbc:mysql://" + address + ":" + port + "/" + database + "?useUnicode=true&characterEncoding=UTF-8&connectionTimeZone=UTC&useSSL=false");
+        source.setUsername(username);
+        source.setPassword(password);
+        source.setMaximumPoolSize(config.getInt("data.maximum-pool-size", 10));
+        source.setMinimumIdle(config.getInt("data.minimum-idle", 2));
+        source.setMaxLifetime(config.getInt("data.maximum-lifetime", 1800000));
+        source.setConnectionTimeout(config.getInt("data.connection-timeout", 30000));
+        source.setKeepaliveTime(config.getLong("data.keepalive-time", 0));
+        this.setLiteFactory(source);
     }
 
     private void createSQLite() {
-        HikariDataSource hikariDataSource = new HikariDataSource();
-        hikariDataSource.setDriverClassName(sqlType.getDriver());
-        hikariDataSource.setJdbcUrl("jdbc:sqlite:" + Ari.instance.getDataFolder().getAbsolutePath() + "/" + "AriDB.db");
-        this.setLiteFactory(hikariDataSource);
+        HikariDataSource source = new HikariDataSource();
+        source.setDriverClassName(sqlType.getDriver());
+        source.setJdbcUrl("jdbc:sqlite:" + Ari.instance.getDataFolder().getAbsolutePath() + "/AriDB.db");
+        source.setMaximumPoolSize(1);
+        this.setLiteFactory(source);
     }
 
     @SneakyThrows
     private void setLiteFactory(HikariDataSource dataSource) {
+        this.dataSource = dataSource;
 
         MybatisConfiguration configuration = new MybatisConfiguration();
         configuration.setEnvironment(new Environment(Ari.instance.isDebug() ? "dev":"prod", new JdbcTransactionFactory(), dataSource));
@@ -123,9 +138,8 @@ public class SQLInstance {
         configuration.addMapper(BanPlayerMapper.class);
 
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        DynamicTableNameInnerInterceptor innerInterceptor = new DynamicTableNameInnerInterceptor((sql, original) -> Ari.instance.getConfig().getString("data.table-prefix", "ari_") + original);
+        DynamicTableNameInnerInterceptor innerInterceptor = new DynamicTableNameInnerInterceptor((sql, original) -> this.getTablePrefix() + original);
         interceptor.addInnerInterceptor(innerInterceptor);
-
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
         configuration.addInterceptor(interceptor);
 
@@ -133,12 +147,13 @@ public class SQLInstance {
     }
 
     private String getTablePrefix() {
-        return Ari.instance.getConfig().getString("data.table-prefix", "ari");
+        return Ari.instance.getConfig().getString("data.table-prefix", "ari_");
     }
 
     private void ensureSchemaVersionTable() {
         String sql = SqlTable.SCHEMA_VERSION.getSql(this.getTablePrefix(), sqlType);
-        try (Connection conn = factory.getConfiguration().getEnvironment().getDataSource().getConnection(); Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection();
+             Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
             Ari.instance.getLog().error(e, "Failed to create schema_version table");
@@ -146,11 +161,12 @@ public class SQLInstance {
     }
 
     public void close() {
-        if (this.factory != null) {
-            this.factory = null;
-            Ari.instance.getLog().debug("Connection closed successfully");
+        if (this.dataSource != null) {
+            this.dataSource.close();
+            this.dataSource = null;
+            Ari.instance.getLog().debug("Connection pool closed successfully");
         }
-        this.factory= null;
+        this.factory = null;
     }
 
 }
