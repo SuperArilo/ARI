@@ -1,6 +1,5 @@
 package com.tty.ari.commands.args.enchant;
 
-import com.mojang.brigadier.Command;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.enumType.lang.PlaceholderEnchant;
