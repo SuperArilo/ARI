@@ -99,7 +99,7 @@ public class RecordLastLocationListener implements Listener {
         if (!Ari.instance.getConfigurationManager().get(FunctionConfig.class).isEnable(TeleportType.BACK)) return;
         ConfigUtils.t("teleport.tips-back", player).thenAccept(i ->
                 Ari.instance.getScheduler().runAtEntity(player, t ->
-                        player.sendMessage(Ari.instance.getComponentTool().setClickEventText(i, ClickEvent.Action.RUN_COMMAND, "/" + Ari.instance.getName() + " back")), null));
+                        player.sendMessage(Ari.instance.getComponentTool().setClickEventText(i, ClickEvent.runCommand("/" + Ari.instance.getName() + " back"))), null));
     }
 
     public Location getRespawnLocation(@NotNull World world) {

@@ -63,13 +63,11 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
                         .appendNewline()
                         .append(Ari.instance.getComponentTool().setClickEventText(
                                 Ari.DATA_SERVICE.getValue("function.public.agree"),
-                                ClickEvent.Action.RUN_COMMAND,
-                                "/" + Ari.instance.getName() + " tpaaccept " + owner.getName()))
+                                ClickEvent.runCommand("/" + Ari.instance.getName() + " tpaaccept " + owner.getName())))
                         .append(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.public.center")))
                         .append(Ari.instance.getComponentTool().setClickEventText(
                                 Ari.DATA_SERVICE.getValue("function.public.refuse"),
-                                ClickEvent.Action.RUN_COMMAND,
-                                "/" + Ari.instance.getName() + " tparefuse " + owner.getName()))), null));
+                                ClickEvent.runCommand("/" + Ari.instance.getName() + " tparefuse " + owner.getName())))), null));
     }
 
     @Override
