@@ -1,6 +1,5 @@
 package com.tty.ari.commands.sub.zako;
 
-import com.mojang.brigadier.Command;
 import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.commands.args.zako.ZakoUnBanPlayerArgs;
 import com.tty.api.annotations.command.CommandMeta;
@@ -9,6 +8,7 @@ import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "unban", permission = "ari.command.zako.unban", allowConsole = true, tokenLength = 2)
 @LiteralCommand
@@ -20,8 +20,8 @@ public class ZakoUnBan extends LiteralArgumentCommand {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
-        return Command.SINGLE_SUCCESS;
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

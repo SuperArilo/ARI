@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 public class BanPlayerManager extends BaseDataManager<BanPlayer> {
 
     public BanPlayerManager(boolean isAsync) {
-        super(Ari.SQL_INSTANCE.getFactory(), isAsync);
+        super(() -> Ari.SQL_INSTANCE.getFactory(), isAsync);
     }
 
     @Override

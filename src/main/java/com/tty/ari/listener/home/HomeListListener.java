@@ -37,45 +37,42 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
     protected @NotNull FunctionHandler<HomeList> registry() {
         FunctionHandler<HomeList> registry = new FunctionHandler<>();
 
-        registry.add(FunctionType.BACK, ((event, homeList, player) -> event.getInventory().close()));
-        registry.add(FunctionType.DATA, (event, homeList, player) -> {
+        registry.addSync(FunctionType.BACK, ((event, homeList, player) -> event.getInventory().close()));
+        registry.addAsync(FunctionType.DATA, (event, homeList, player) -> {
 
             ItemStack currentItem = event.getCurrentItem();
-            if (currentItem == null) return;
+            if (currentItem == null) return CompletableFuture.completedFuture(null);
 
             String homeId = Ari.instance.getNbtManager().getNbt(NbtGuiValue.GUI_DATA_ID, currentItem, PersistentDataType.STRING);
+            LambdaQueryWrapper<ServerHome> wrapper = new LambdaQueryWrapper<>(ServerHome.class)
+                    .eq(ServerHome::getHomeId, homeId)
+                    .eq(ServerHome::getPlayerUUID, player.getUniqueId().toString());
 
-            Ari.REPOSITORY_MANAGER.get(ServerHome.class).get(new LambdaQueryWrapper<>(ServerHome.class)
-                                    .eq(ServerHome::getHomeId, homeId)
-                                    .eq(ServerHome::getPlayerUUID, player.getUniqueId().toString()),
-                            PartitionKey.of(player.getUniqueId().toString()))
-                    .thenCompose(home -> {
-                        if (home == null) {
-                            Ari.instance.getLog().error("can't find homeId: {}", homeId);
-                            return ConfigUtils.t("function.home.not-found", player).thenAccept(player::sendMessage).thenApply(v -> false);
+            return Ari.REPOSITORY_MANAGER.get(ServerHome.class).get(wrapper, PartitionKey.of(player.getUniqueId().toString())).thenAccept(home -> {
+                    if (home == null) {
+                        Ari.instance.getLog().error("can't find homeId: {}", homeId);
+                        ConfigUtils.t("function.home.not-found", player).thenAccept(player::sendMessage);
+                        return;
+                    }
+                    Ari.instance.getScheduler().runAtEntity(player, i -> {
+                        if (event.isLeftClick()) {
+                            HomeConfig homeConfig = Ari.instance.getConfigurationManager().get(HomeConfig.class);
+                            Ari.instance.getStatusManager().get(TeleportStateService.class).addState(new EntityToLocationState(
+                                    player,
+                                    homeConfig.getDelay(),
+                                    FormatUtils.parseLocation(home.getLocation()),
+                                    TeleportType.HOME));
+                        } else if (event.isRightClick()) {
+                            Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeEditor(player, home)));
                         }
-                        Ari.instance.getScheduler().runAtEntity(player, i -> {
-                            if (event.isLeftClick()) {
-                                HomeConfig homeConfig = Ari.instance.getConfigurationManager().get(HomeConfig.class);
-                                Ari.instance.getStatusManager().get(TeleportStateService.class).addState(new EntityToLocationState(
-                                        player,
-                                        homeConfig.getDelay(),
-                                        FormatUtils.parseLocation(home.getLocation()),
-                                        TeleportType.HOME));
-                            } else if (event.isRightClick()) {
-                                Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeEditor(player, home)));
-                            }
-                        }, null);
-                        return CompletableFuture.completedFuture(true);
-                    }).whenComplete((i, ex) -> {
-                        if (ex != null) {
-                            Ari.instance.getLog().error(ex, "error on get player homes");
-                        }
-                        Ari.instance.getScheduler().run(o -> event.getInventory().close());
-                    });
+                    }, null);
+                }).exceptionally(ex -> {
+                    Ari.instance.getLog().error(ex, "error on get player homes");
+                    return null;
+                }).whenComplete((i , ex) -> Ari.instance.getScheduler().run(o -> event.getInventory().close()));
         });
-        registry.add(FunctionType.PREV_PAGE, (event, homeList, player) -> homeList.prev());
-        registry.add(FunctionType.NEXT_PAGE, (event, homeList, player) -> homeList.next());
+        registry.addSync(FunctionType.PREV_PAGE, (event, homeList, player) -> homeList.prev());
+        registry.addSync(FunctionType.NEXT_PAGE, (event, homeList, player) -> homeList.next());
 
         return registry;
     }

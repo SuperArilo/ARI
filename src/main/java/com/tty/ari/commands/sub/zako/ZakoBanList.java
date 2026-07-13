@@ -1,7 +1,6 @@
 package com.tty.ari.commands.sub.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -27,9 +26,8 @@ import java.util.concurrent.CompletableFuture;
 public class ZakoBanList extends LiteralArgumentCommand {
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
-        Build_Zako_Ban_List(sender, 1);
-        return Command.SINGLE_SUCCESS;
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+        return Build_Zako_Ban_List(sender, 1);
     }
 
     @Override
@@ -42,10 +40,10 @@ public class ZakoBanList extends LiteralArgumentCommand {
         return true;
     }
 
-    public static void Build_Zako_Ban_List(CommandSender sender, Integer pageNum) {
+    public static CompletableFuture<Void> Build_Zako_Ban_List(CommandSender sender, Integer pageNum) {
         String baseCommand = "/" + Ari.instance.getName() + " zako banlist ";
 
-        ConfigUtils.t("function.zako.list-requesting").thenAccept(component -> Ari.instance.getScheduler().run(i -> sender.sendMessage(component)))
+        return ConfigUtils.t("function.zako.list-requesting").thenAccept(component -> Ari.instance.getScheduler().run(i -> sender.sendMessage(component)))
                 .thenCompose(e -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class).getList(pageNum, 10, new LambdaQueryWrapper<>(BanPlayer.class).orderByDesc(BanPlayer::getId), PartitionKey.global()))
                 .thenCompose(result -> {
                     List<BanPlayer> records = result.records();

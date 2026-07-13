@@ -1,7 +1,6 @@
 package com.tty.ari.commands.args;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
@@ -45,19 +44,19 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
 
         String homeId = args[1];
         Player player = (Player) sender;
         if (!this.checkEntityId(homeId)) {
             ConfigUtils.t("function.home.id-error", player).thenAccept(sender::sendMessage);
-            return 0;
+            return CompletableFuture.completedFuture(null);
         }
 
         EntityRepository<ServerHome> repo = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
         PlayerHomeRepository repository = (PlayerHomeRepository) repo;
 
-        repository.queryCount(new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, player.getUniqueId().toString())).thenCompose(result -> {
+        return repository.queryCount(new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, player.getUniqueId().toString())).thenCompose(result -> {
             List<ServerHome> list = result.records();
             if (list.size() + 1 > Ari.PERMISSION_SERVICE.getMaxCountInPermission(player, "home")) {
                 return ConfigUtils.t("function.home.exceeds", player).thenAccept(sender::sendMessage).thenApply(v -> null);
@@ -90,7 +89,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
             ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
             return null;
         });
-        return Command.SINGLE_SUCCESS;
+
     }
 
     @Override

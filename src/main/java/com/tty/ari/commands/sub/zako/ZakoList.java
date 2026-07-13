@@ -1,7 +1,6 @@
 package com.tty.ari.commands.sub.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -34,16 +33,16 @@ public class ZakoList extends LiteralArgumentCommand {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         return Build_Zako_List(sender, 1);
     }
 
-    public static int Build_Zako_List(CommandSender sender, Integer pageNum) {
+    public static CompletableFuture<Void> Build_Zako_List(CommandSender sender, Integer pageNum) {
 
         String baseCommand = "/" + Ari.instance.getName() + " zako list ";
         String suggestCommand = "/" + Ari.instance.getName() +" zako info ";
 
-        ConfigUtils.t("function.zako.list-requesting").thenAccept(component -> Ari.instance.getScheduler().run(i -> sender.sendMessage(component)))
+        return ConfigUtils.t("function.zako.list-requesting").thenAccept(component -> Ari.instance.getScheduler().run(i -> sender.sendMessage(component)))
                 .thenCompose(v -> Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class).getList(pageNum, 10, new LambdaQueryWrapper<>(WhitelistInstance.class).orderByDesc(WhitelistInstance::getAddTime), PartitionKey.global())).thenCompose(result -> {
                     List<WhitelistInstance> records = result.records();
                     if (records.isEmpty()) {
@@ -89,7 +88,6 @@ public class ZakoList extends LiteralArgumentCommand {
                     errorMsg.thenAccept(msg -> Ari.instance.getScheduler().run(i -> sender.sendMessage(msg)));
                     return null;
                 });
-        return Command.SINGLE_SUCCESS;
     }
 
     @Override

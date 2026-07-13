@@ -1,7 +1,6 @@
 package com.tty.ari.commands.args.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
@@ -39,19 +38,19 @@ public class ZakoRemoveProfileArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
 
         if (offlinePlayer == null) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-            return 0;
+            return CompletableFuture.completedFuture(null);
         }
 
         UUID uuid = offlinePlayer.getUniqueId();
 
         if (offlinePlayer instanceof Player player && player.isOnline()) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.fail-by-player-online")));
-            return 0;
+            return CompletableFuture.completedFuture(null);
         }
 
         PartitionKey partitionKey = PartitionKey.of(uuid);
@@ -68,7 +67,7 @@ public class ZakoRemoveProfileArgs extends RequiredArgumentCommand<String> {
             Ari.instance.getLog().error(e);
         }
 
-        return Command.SINGLE_SUCCESS;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

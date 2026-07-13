@@ -1,6 +1,5 @@
 package com.tty.ari.commands;
 
-import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -15,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "setspawn", permission = "ari.command.setspawn", tokenLength = 1)
 @LiteralCommand(directExecute = true)
@@ -26,7 +26,7 @@ public class setspawn extends LiteralArgumentCommand {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
 
         Player player = (Player) sender;
         Location location = player.getLocation();
@@ -39,8 +39,8 @@ public class setspawn extends LiteralArgumentCommand {
         spawnLocation.setYaw(location.getYaw());
 
         Ari.instance.getConfigurationManager().get(FunctionConfig.class).setValue("spawn.location", spawnLocation.toMap());
-        ConfigUtils.t("function.spawn.create-success", player).thenAccept(player::sendMessage);
-        return Command.SINGLE_SUCCESS;
+        return ConfigUtils.t("function.spawn.create-success", player).thenAccept(player::sendMessage);
+
     }
 
     @Override

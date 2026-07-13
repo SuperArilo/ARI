@@ -1,6 +1,5 @@
 package com.tty.ari.commands.sub;
 
-import com.mojang.brigadier.Command;
 import com.tty.ari.Ari;
 import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.dto.state.teleport.RandomTpState;
@@ -14,6 +13,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "cancel", permission = "ari.command.rtp.cancel", tokenLength = 2)
 @LiteralCommand(directExecute = true)
@@ -25,19 +25,17 @@ public class RtpCancel extends LiteralArgumentCommand {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         RandomTpStateService machine = Ari.instance.getStatusManager().get(RandomTpStateService.class);
         List<RandomTpState> states = machine.getStates((Entity) sender);
         if (states.isEmpty()) {
-            ConfigUtils.t("function.rtp.no-rtp", player).thenAccept(player::sendMessage);
-            return 0;
+            return ConfigUtils.t("function.rtp.no-rtp", player).thenAccept(player::sendMessage);
         }
         for (RandomTpState state : states) {
             machine.stopState(state);
         }
-        ConfigUtils.t("function.rtp.rtp-cancel", player).thenAccept(player::sendMessage);
-        return Command.SINGLE_SUCCESS;
+        return ConfigUtils.t("function.rtp.rtp-cancel", player).thenAccept(player::sendMessage);
     }
 
     @Override

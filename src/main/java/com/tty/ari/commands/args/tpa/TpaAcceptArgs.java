@@ -35,8 +35,8 @@ public class TpaAcceptArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
-        if(this.preCheckIsNotPass(sender, args)) return 0;
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+        if(this.preCheckIsNotPass(sender, args)) return CompletableFuture.completedFuture(null);
 
         Player player = (Player) sender;
         Player target = Ari.instance.getServer().getPlayerExact(args[1]);

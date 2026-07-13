@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 public class PlayerManager extends BaseDataManager<ServerPlayer> {
 
     public PlayerManager(boolean isAsync) {
-        super(Ari.SQL_INSTANCE.getFactory(), isAsync);
+        super(() -> Ari.SQL_INSTANCE.getFactory(), isAsync);
     }
 
     @Override

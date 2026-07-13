@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 public class WarpManager extends BaseDataManager<ServerWarp> {
 
     public WarpManager(boolean isAsync) {
-        super(Ari.SQL_INSTANCE.getFactory(), isAsync);
+        super(() -> Ari.SQL_INSTANCE.getFactory(), isAsync);
     }
 
     @Override

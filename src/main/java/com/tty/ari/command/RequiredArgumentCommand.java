@@ -45,6 +45,11 @@ public abstract class RequiredArgumentCommand<T> extends BaseRequiredArgumentCom
         return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.command.disabled"));
     }
 
+    @Override
+    protected @NotNull Component taskAlreadyExits() {
+        return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.task.already-exits"));
+    }
+
     protected Set<String> getExcludeMePlayerList(CommandSender sender, String[] args) {
         Collection<? extends Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
         if (onlinePlayers.isEmpty()) return Collections.emptySet();

@@ -1,6 +1,5 @@
 package com.tty.ari.commands.args.tpa;
 
-import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -27,8 +26,8 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
-        if (this.preCheckIsNotPass(sender, args)) return 0;
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+        if (this.preCheckIsNotPass(sender, args)) return CompletableFuture.completedFuture(null);
         Player owner = (Player) sender;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
         if (player != null) {
@@ -40,7 +39,7 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
                             Ari.instance.getConfigurationManager().get(FunctionConfig.class).getTpaRequestExpiredTime()
                     ));
         }
-        return Command.SINGLE_SUCCESS;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

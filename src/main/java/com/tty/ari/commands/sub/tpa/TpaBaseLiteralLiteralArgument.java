@@ -1,7 +1,6 @@
 package com.tty.ari.commands.sub.tpa;
 
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
@@ -19,10 +18,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("ALL")
+
 public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentCommand<PlayerSelectorArgumentResolver> {
 
     @Override
@@ -60,10 +60,10 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
      * @param sender 接收者
      * @param target 发起者
      */
-    public int checkAfterResponse(Player sender, Player target, Consumer<PreEntityToEntityState> consumer) {
+    public CompletableFuture<Void> checkAfterResponse(Player sender, Player target, Consumer<PreEntityToEntityState> consumer) {
         if (target == null) {
             Ari.instance.getScheduler().runAtEntity(sender, i -> sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), sender)), null);
-            return 0;
+            return CompletableFuture.completedFuture(null);
         }
         PreTeleportStateService machine = Ari.instance.getStatusManager().get(PreTeleportStateService.class);
         //检查这个请求是否存在
@@ -72,13 +72,12 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
                 .stream()
                 .filter(i -> i instanceof PreEntityToEntityState state && state.getTarget().equals(sender)).findFirst().orElse(null);
         if (anElse == null) {
-            ConfigUtils.t("function.tpa.been-done", sender).thenAccept(sender::sendMessage);
-            return 0;
+            return ConfigUtils.t("function.tpa.been-done", sender).thenAccept(sender::sendMessage);
         }
         consumer.accept(anElse);
         //移除发起者的请求
         machine.stopState(anElse);
-        return Command.SINGLE_SUCCESS;
+        return CompletableFuture.completedFuture(null);
     }
 
     public boolean preCheckIsNotPass(CommandSender sender, String[] args) {

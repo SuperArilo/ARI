@@ -1,6 +1,5 @@
 package com.tty.ari.commands.args.zako.ban;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
@@ -39,7 +38,7 @@ public class ZakoBanHour extends RequiredArgumentCommand<Integer> {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
-        return Command.SINGLE_SUCCESS;
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+        return CompletableFuture.completedFuture(null);
     }
 }

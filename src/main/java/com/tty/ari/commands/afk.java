@@ -1,6 +1,5 @@
 package com.tty.ari.commands;
 
-import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -13,18 +12,19 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "afk", permission = "ari.command.afk", tokenLength = 1)
 @LiteralCommand(directExecute = true)
 public class afk extends LiteralArgumentCommand {
     @Override
-    public int execute(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player player)) return 0;
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) return CompletableFuture.completedFuture(null);
         for (PlayerAFKState state : Ari.instance.getStatusManager().get(PlayerAFKService.class).getStates(player)) {
             if (state.isAFK()) continue;
             state.afkNow();
         }
-        return Command.SINGLE_SUCCESS;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

@@ -35,7 +35,7 @@ public class ZakoListArgs extends RequiredArgumentCommand<Integer> {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         return Build_Zako_List(sender, Integer.parseInt(args[2]));
     }
 

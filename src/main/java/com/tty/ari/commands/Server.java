@@ -9,14 +9,15 @@ import com.tty.ari.commands.args.ServerArgs;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "server", permission = "ari.command.server", tokenLength = 2)
 @LiteralCommand
 public class Server extends LiteralArgumentCommand {
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
-        return Command.SINGLE_SUCCESS;
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

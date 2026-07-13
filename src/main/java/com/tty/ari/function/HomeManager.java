@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 public class HomeManager extends BaseDataManager<ServerHome> {
 
     public HomeManager(boolean isAsync) {
-        super(Ari.SQL_INSTANCE.getFactory(), isAsync);
+        super(() -> Ari.SQL_INSTANCE.getFactory(), isAsync);
     }
 
     @Override

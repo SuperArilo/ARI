@@ -32,7 +32,7 @@ public class ZakoAddArgs extends ZakoAddBase<String> {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         return this.addPlayer(sender, args);
     }
 

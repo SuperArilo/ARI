@@ -32,4 +32,9 @@ public abstract class LiteralArgumentCommand extends BaseLiteralArgumentCommand 
         return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.command.disabled"));
     }
 
+    @Override
+    protected @NotNull Component taskAlreadyExits() {
+        return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.task.already-exits"));
+    }
+
 }

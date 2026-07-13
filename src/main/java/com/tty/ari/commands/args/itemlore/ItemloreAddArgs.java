@@ -1,6 +1,5 @@
 package com.tty.ari.commands.args.itemlore;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.ari.Ari;
@@ -40,12 +39,12 @@ public class ItemloreAddArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         if (mainHand.isEmpty()) {
             player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
-            return 0;
+            return CompletableFuture.completedFuture(null);
         }
         ItemMeta itemMeta = mainHand.getItemMeta();
         List<Component> lore = itemMeta.lore();
@@ -55,7 +54,7 @@ public class ItemloreAddArgs extends RequiredArgumentCommand<String> {
         lore.add(Ari.instance.getComponentTool().text(args[2]));
         itemMeta.lore(lore);
         mainHand.setItemMeta(itemMeta);
-        return Command.SINGLE_SUCCESS;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.tty.ari.commands;
 
-import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -16,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "maintenance", permission = "ari.command.maintenance", tokenLength = 1, allowConsole = true)
 @LiteralCommand(directExecute = true)
@@ -27,7 +27,7 @@ public class maintenance extends LiteralArgumentCommand {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         MaintenanceBossBarService service = Ari.instance.getStatusManager().get(MaintenanceBossBarService.class);
         service.setMaintenance(!service.isMaintenance());
 
@@ -57,7 +57,7 @@ public class maintenance extends LiteralArgumentCommand {
         if(!(sender instanceof Player)) {
             sender.sendMessage(component);
         }
-        return Command.SINGLE_SUCCESS;
+        return CompletableFuture.completedFuture(null);
     }
 
     private int getMaintenanceKickDelay() {

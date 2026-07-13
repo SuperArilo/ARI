@@ -34,7 +34,7 @@ public class EnchantForceLevel extends EnchantBaseArgs<Boolean> {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         EnchantBaseArgs.ResultArgs resultArgs = this.parseArgs(sender, args);
         Player player = (Player) sender;
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();

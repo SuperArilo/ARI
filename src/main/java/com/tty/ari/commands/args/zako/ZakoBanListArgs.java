@@ -1,6 +1,5 @@
 package com.tty.ari.commands.args.zako;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
@@ -36,9 +35,8 @@ public class ZakoBanListArgs extends RequiredArgumentCommand<Integer> {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
-        Build_Zako_Ban_List(sender, Integer.parseInt(args[2]));
-        return Command.SINGLE_SUCCESS;
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+        return Build_Zako_Ban_List(sender, Integer.parseInt(args[2]));
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.tty.ari.commands.args.zako.add;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.mojang.brigadier.Command;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
@@ -18,43 +17,42 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
 
-    protected int addPlayer(CommandSender sender, String[] args) {
+    protected CompletableFuture<Void> addPlayer(CommandSender sender, String[] args) {
 
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
         if (offlinePlayer == null) {
-            ConfigUtils.t("function.zako.zako-add-name-invalid").thenAccept(sender::sendMessage);
-            return 0;
+            return ConfigUtils.t("function.zako.zako-add-name-invalid").thenAccept(sender::sendMessage);
         }
 
         UUID uuid = offlinePlayer.getUniqueId();
 
         EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
-        repository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()), PartitionKey.global()).thenCompose(s -> {
-            if (s != null) {
-                return ConfigUtils.t("function.zako.zako-add-exist").thenAccept(sender::sendMessage).thenApply(v -> false);
-            }
-            return CompletableFuture.completedFuture(true);
-        }).thenCompose(i -> {
-            if (!i) return CompletableFuture.completedFuture(null);
+        return repository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()), PartitionKey.global()).thenCompose(s -> {
+                    if (s != null) {
+                        return ConfigUtils.t("function.zako.zako-add-exist").thenAccept(sender::sendMessage).thenApply(v -> false);
+                    }
+                    return CompletableFuture.completedFuture(true);
+                }).thenCompose(i -> {
+                    if (!i) return CompletableFuture.completedFuture(null);
 
-            WhitelistInstance instance = new WhitelistInstance();
-            instance.setPlayerUUID(uuid.toString());
-            instance.setAddTime(System.currentTimeMillis());
-            instance.setOperator(Operator.getOperator(sender).toString());
-            if(args.length == 4) {
-                instance.setRemark(args[3]);
-            }
-            return repository.create(instance, PartitionKey.global());
-        }).thenAccept(status -> {
-            if (status == null) return;
-            ConfigUtils.t("function.zako.zako-add-success").thenAccept(sender::sendMessage);
-        }).whenComplete((v, ex) -> {
-            if (ex != null) {
-                Ari.instance.getLog().error(ex);
-                sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
-            }
-        });
-        return Command.SINGLE_SUCCESS;
+                    WhitelistInstance instance = new WhitelistInstance();
+                    instance.setPlayerUUID(uuid.toString());
+                    instance.setAddTime(System.currentTimeMillis());
+                    instance.setOperator(Operator.getOperator(sender).toString());
+                    if(args.length == 4) {
+                        instance.setRemark(args[3]);
+                    }
+                    return repository.create(instance, PartitionKey.global());
+                }).thenAccept(status -> {
+                    if (status == null) return;
+                    ConfigUtils.t("function.zako.zako-add-success").thenAccept(sender::sendMessage);
+                }).whenComplete((v, ex) -> {
+                    if (ex != null) {
+                        Ari.instance.getLog().error(ex);
+                        sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
+                    }
+                });
+
     }
 
     @Override

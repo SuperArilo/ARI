@@ -2,7 +2,6 @@ package com.tty.ari.commands.args;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.ari.Ari;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-
 
 @CommandMeta(displayName = "server name (string)", permission = "ari.command.server", tokenLength = 2)
 @ArgumentCommand(isSuggests = true)
@@ -47,24 +45,22 @@ public class ServerArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
-        if(!(sender instanceof Player player)) return 0;
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+        if(!(sender instanceof Player player)) return CompletableFuture.completedFuture(null);
         String serverName = args[1];
 
-        Ari.BUNGEECACHE.waitForLoad(2, () -> this.request(player))
-            .thenCompose(list -> CompletableFuture.completedFuture(!list.isEmpty() && list.contains(serverName)))
-            .thenAccept(status -> {
-                if (!status) {
-                    ConfigUtils.t("server.message.bungee.can-not-connect", player).thenAccept(player::sendMessage);
-                } else {
-                    ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                    out.writeUTF("Connect");
-                    out.writeUTF(serverName);
-                    player.sendPluginMessage(Ari.instance, "BungeeCord", out.toByteArray());
-                }
-            });
-
-        return Command.SINGLE_SUCCESS;
+        return Ari.BUNGEECACHE.waitForLoad(2, () -> this.request(player))
+                .thenCompose(list -> CompletableFuture.completedFuture(!list.isEmpty() && list.contains(serverName)))
+                .thenAccept(status -> {
+                    if (!status) {
+                        ConfigUtils.t("server.message.bungee.can-not-connect", player).thenAccept(player::sendMessage);
+                    } else {
+                        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                        out.writeUTF("Connect");
+                        out.writeUTF(serverName);
+                        player.sendPluginMessage(Ari.instance, "BungeeCord", out.toByteArray());
+                    }
+                });
     }
 
     @Override

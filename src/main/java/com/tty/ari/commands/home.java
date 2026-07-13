@@ -1,6 +1,5 @@
 package com.tty.ari.commands;
 
-import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -15,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "home", permission = "ari.command.home", tokenLength = 1)
 @LiteralCommand(directExecute = true)
@@ -26,10 +26,10 @@ public class home extends LiteralArgumentCommand {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
-        return Command.SINGLE_SUCCESS;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

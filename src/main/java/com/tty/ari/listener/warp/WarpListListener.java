@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class WarpListListener extends BaseGuiListener<WarpList> {
 
@@ -41,14 +42,15 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
     protected @NotNull FunctionHandler<WarpList> registry() {
         FunctionHandler<WarpList> registry = new FunctionHandler<>();
 
-        registry.add(FunctionType.BACK, (event, warpList, player) -> event.getInventory().close());
-        registry.add(FunctionType.DATA, (event, warpList, player) -> {
+        registry.addSync(FunctionType.BACK, (event, warpList, player) -> event.getInventory().close());
+        registry.addAsync(FunctionType.DATA, (event, warpList, player) -> {
             ItemStack currentItem = event.getCurrentItem();
-            if (currentItem == null) return;
+            if (currentItem == null) return CompletableFuture.completedFuture(null);
 
             String warpId = Ari.instance.getNbtManager().getNbt(NbtGuiValue.GUI_DATA_ID, currentItem, PersistentDataType.STRING);
+
             //从数据库查询最新的
-            Ari.REPOSITORY_MANAGER.get(ServerWarp.class).get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId), PartitionKey.global()).thenAccept((instance) -> {
+            return Ari.REPOSITORY_MANAGER.get(ServerWarp.class).get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId), PartitionKey.global()).thenAccept((instance) -> {
                 if (instance == null) {
                     Ari.instance.getLog().error("can't find warpId: {}", warpId);
                     ConfigUtils.t("function.warp.not-found", player).thenAccept(player::sendMessage);
@@ -99,8 +101,8 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
                 Ari.instance.getScheduler().runAtEntity(player, i -> event.getInventory().close(), null);
             });
         });
-        registry.add(FunctionType.PREV_PAGE, (event, warpList, player) -> warpList.prev());
-        registry.add(FunctionType.NEXT_PAGE, (event, warpList, player) -> warpList.next());
+        registry.addSync(FunctionType.PREV_PAGE, (event, warpList, player) -> warpList.prev());
+        registry.addSync(FunctionType.NEXT_PAGE, (event, warpList, player) -> warpList.next());
 
         return registry;
     }

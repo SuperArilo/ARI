@@ -1,6 +1,5 @@
 package com.tty.ari.commands;
 
-import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -18,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "spawn", permission = "ari.command.spawn", tokenLength = 1)
 @LiteralCommand(directExecute = true)
@@ -29,15 +29,14 @@ public class spawn extends LiteralArgumentCommand {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
 
         Player player = (Player) sender;
         FunctionConfig config = Ari.instance.getConfigurationManager().get(FunctionConfig.class);
 
         SpawnLocation value = config.getSpawnLocation();
         if(value == null) {
-            ConfigUtils.t("function.spawn.no-spawn", player).thenAccept(player::sendMessage);
-            return 0;
+            return ConfigUtils.t("function.spawn.no-spawn", player).thenAccept(player::sendMessage);
         }
         Ari.instance.getStatusManager().get(TeleportStateService.class).addState(
                 new EntityToLocationState(
@@ -47,7 +46,7 @@ public class spawn extends LiteralArgumentCommand {
                     TeleportType.SPAWN)
         );
 
-        return Command.SINGLE_SUCCESS;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

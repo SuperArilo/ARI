@@ -1,7 +1,6 @@
 package com.tty.ari.commands.args.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.ari.Ari;
@@ -43,19 +42,19 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
 
         if (offlinePlayer == null) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-            return 0;
+            return CompletableFuture.completedFuture(null);
         }
 
         UUID uuid = offlinePlayer.getUniqueId();
         EntityRepository<BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         LambdaQueryWrapper<BanPlayer> wrapper = new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString());
 
-        repository.get(wrapper, PartitionKey.global()).thenCompose(banPlayer -> {
+        return repository.get(wrapper, PartitionKey.global()).thenCompose(banPlayer -> {
             if (banPlayer == null) CompletableFuture.completedFuture(false);
             return repository.delete(wrapper, PartitionKey.global());
         }).thenAccept(count -> {
@@ -68,7 +67,7 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
             Ari.instance.getLog().error("delete ban player uuid {} error.", uuid.toString(), e);
             return null;
         });
-        return Command.SINGLE_SUCCESS;
+
     }
 
     @Override

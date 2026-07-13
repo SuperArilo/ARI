@@ -1,6 +1,5 @@
 package com.tty.ari.commands;
 
-import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -11,6 +10,7 @@ import com.tty.ari.configuration.warp.WarpConfig;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "setwarp", permission = "ari.command.setwarp", tokenLength = 2)
 @LiteralCommand
@@ -22,8 +22,8 @@ public class setwarp extends LiteralArgumentCommand {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
-        return Command.SINGLE_SUCCESS;
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

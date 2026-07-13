@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 
 public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit> {
@@ -40,16 +41,17 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
     @Override
     protected @NotNull FunctionHandler<PlayerInventoryEdit> registry() {
         FunctionHandler<PlayerInventoryEdit> handler = new FunctionHandler<>();
-        handler.add(FunctionType.PLAYER_HELMET, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
-        handler.add(FunctionType.PLAYER_CHESTPLATE, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
-        handler.add(FunctionType.PLAYER_LEGGINGS, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
-        handler.add(FunctionType.PLAYER_BOOTS, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
-        handler.add(FunctionType.PLAYER_OFF_HAND, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
-        handler.add(FunctionType.LOCATION, ((event, inventoryEdit, player) -> {
+        handler.addAsync(FunctionType.PLAYER_HELMET, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
+        handler.addAsync(FunctionType.PLAYER_CHESTPLATE, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
+        handler.addAsync(FunctionType.PLAYER_LEGGINGS, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
+        handler.addAsync(FunctionType.PLAYER_BOOTS, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
+        handler.addAsync(FunctionType.PLAYER_OFF_HAND, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
+        handler.addAsync(FunctionType.LOCATION, ((event, inventoryEdit, player) -> {
             if (inventoryEdit.getMonitoree() instanceof Player monitoree) {
                 Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), monitoree.getLocation());
                 inventoryEdit.getInventory().close();
             }
+            return CompletableFuture.completedFuture(null);
         }));
         return handler;
     }
@@ -124,19 +126,19 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         event.setCancelled(true);
     }
 
-    private void changeEquipment(InventoryClickEvent event, PlayerInventoryEdit inventoryEdit) {
+    private CompletableFuture<Void> changeEquipment(InventoryClickEvent event, PlayerInventoryEdit inventoryEdit) {
         OfflinePlayer monitoree = inventoryEdit.getMonitoree();
 
         if (monitoree instanceof Player player) {
-            if (this.isUpdating((Player) event.getWhoClicked(), player)) return;
+            if (this.isUpdating((Player) event.getWhoClicked(), player)) return CompletableFuture.completedFuture(null);
         }
 
         ItemStack clickItem = event.getCurrentItem();
-        if (clickItem == null) return;
+        if (clickItem == null) return CompletableFuture.completedFuture(null);
         ItemStack cursor = event.getCursor();
 
         FunctionType type = this.ItemNBT_TypeCheck(Ari.instance.getNbtManager().getNbt(NbtGuiValue.GUI_FUNCTION_ICON, clickItem, PersistentDataType.STRING));
-        if (type == null) return;
+        if (type == null) return CompletableFuture.completedFuture(null);
 
         Map<String, FunctionItems> functionItems = inventoryEdit.getBaseMenu().getFunctionItems();
 
@@ -158,10 +160,10 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
                     Ari.instance.getNbtManager().removeNbt(NbtGuiValue.GUI_FUNCTION_ICON, clone);
                     finalCursor = clone;
                 }
-                if (finalCursor == null) return;
+                if (finalCursor == null) return CompletableFuture.completedFuture(null);
             } else {
                 FunctionType equipment = this.isEquipment(cursor, value);
-                if (equipment == null || !equipment.equals(value.getType())) return;
+                if (equipment == null || !equipment.equals(value.getType())) return CompletableFuture.completedFuture(null);
 
                 ItemStack cloneCursor = cursor.clone();
                 Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, cloneCursor, PersistentDataType.STRING, value.getType().getName());
@@ -187,8 +189,10 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
                 state.getMenu().getInventory().setItem(event.getSlot(), finalGuiItem.clone());
             }
             event.getView().setCursor(finalCursor);
-            return;
+            return CompletableFuture.completedFuture(null);
         }
+
+        return CompletableFuture.completedFuture(null);
     }
 
     private ItemStack createFunctionItem(FunctionItems item) {

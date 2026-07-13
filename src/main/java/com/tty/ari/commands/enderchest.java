@@ -1,6 +1,5 @@
 package com.tty.ari.commands;
 
-import com.mojang.brigadier.Command;
 import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.commands.sub.EnderChestToPlayer;
 import com.tty.api.annotations.command.CommandMeta;
@@ -10,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "enderchest", permission = "ari.command.enderchest", tokenLength = 1)
 @LiteralCommand(directExecute = true)
@@ -21,10 +21,10 @@ public class enderchest extends LiteralArgumentCommand {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         player.openInventory(player.getEnderChest());
-        return Command.SINGLE_SUCCESS;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

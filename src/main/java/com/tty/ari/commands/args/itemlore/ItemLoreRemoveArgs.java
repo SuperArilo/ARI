@@ -1,6 +1,5 @@
 package com.tty.ari.commands.args.itemlore;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.tty.ari.Ari;
@@ -40,13 +39,13 @@ public class ItemLoreRemoveArgs extends RequiredArgumentCommand<Integer> {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         String content = args[2];
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         if (mainHand.isEmpty()) {
             player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
-            return 0;
+            return CompletableFuture.completedFuture(null);
         }
         ItemMeta itemMeta = mainHand.getItemMeta();
         List<Component> lore = itemMeta.lore();
@@ -56,7 +55,7 @@ public class ItemLoreRemoveArgs extends RequiredArgumentCommand<Integer> {
         try {
             int index = Integer.parseInt(content) - 1;
             if (index < 0) {
-                return 0;
+                return CompletableFuture.completedFuture(null);
             }
             lore.remove(index);
         } catch (Exception e) {
@@ -64,7 +63,7 @@ public class ItemLoreRemoveArgs extends RequiredArgumentCommand<Integer> {
         }
         itemMeta.lore(lore);
         mainHand.setItemMeta(itemMeta);
-        return Command.SINGLE_SUCCESS;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

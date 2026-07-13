@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 public class WhitelistManager extends BaseDataManager<WhitelistInstance> {
 
     public WhitelistManager(boolean isAsync) {
-        super(Ari.SQL_INSTANCE.getFactory(), isAsync);
+        super(() -> Ari.SQL_INSTANCE.getFactory(), isAsync);
     }
 
     @Override

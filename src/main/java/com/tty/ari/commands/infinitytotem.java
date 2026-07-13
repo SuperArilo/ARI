@@ -1,6 +1,5 @@
 package com.tty.ari.commands;
 
-import com.mojang.brigadier.Command;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -11,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "infinitytotem", permission = "ari.command.infinitytotem", tokenLength = 1)
 @LiteralCommand(directExecute = true)
@@ -24,7 +24,7 @@ public class infinitytotem extends LiteralArgumentCommand {
     }
 
     @Override
-    public int execute(CommandSender sender, String[] args) {
+    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         if (INFINITY_TOTEM_PLAYER_LIST.remove(player)) {
             ConfigUtils.t("function.infinitytotem.disable", player).thenAccept(player::sendMessage);
@@ -32,7 +32,7 @@ public class infinitytotem extends LiteralArgumentCommand {
             INFINITY_TOTEM_PLAYER_LIST.add(player);
             ConfigUtils.t("function.infinitytotem.enable", player).thenAccept(player::sendMessage);
         }
-        return Command.SINGLE_SUCCESS;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
