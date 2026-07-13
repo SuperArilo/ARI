@@ -1,12 +1,11 @@
 package com.tty.ari;
 
-import com.google.gson.reflect.TypeToken;
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.ConfigurationManager;
 import com.tty.api.Scheduler;
 import com.tty.api.StatusManager;
 import com.tty.api.configuration.BaseConfiguration;
-import com.tty.api.dto.AliasItem;
+import com.tty.api.dto.CommandAlias;
 import com.tty.api.dto.TempRegisterService;
 import com.tty.api.service.*;
 import com.tty.api.state.StateService;
@@ -55,7 +54,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -94,7 +92,7 @@ public class Ari extends AbstractJavaPlugin {
         this.registerBungeeListener();
 
         ConfigurationManager manager = this.getConfigurationManager();
-        CommandRegister.register(this, "com.tty.ari.commands",manager.yamlConvertToObj(manager.get(CommandAliasConfig.class).getConfiguration().saveToString(), new TypeToken<Map<String, AliasItem>>() {}.getType()));
+        CommandRegister.register(this, "com.tty.ari.commands", manager.yamlConvertToObj(manager.get(CommandAliasConfig.class).getConfiguration().saveToString(), CommandAlias.class));
 
         PLACEHOLDER = new Placeholder(this);
         BUNGEECACHE = new BungeeCache(this);
