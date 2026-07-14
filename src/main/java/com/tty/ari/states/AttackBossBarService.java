@@ -11,15 +11,14 @@ import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class AttackBossBarService extends StateService<AttackBossBarState> {
 
@@ -44,26 +43,22 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
             return;
         }
         state.setRunning(true);
-        Ari.instance.getScheduler().run(i -> {
-            Entity entity = Bukkit.getServer().getEntity(state.getTarget().getUniqueId());
-            if (entity == null) {
-                state.setOver(true);
-                return;
-            }
-            Ari.instance.getScheduler().runAtRegion(entity.getLocation(), t -> {
-                if(!(entity instanceof Damageable damageable)) {
-                    state.setOver(true);
-                    return;
-                }
-                double currentHealth = damageable.getHealth();
+        Damageable target = state.getTarget();
+        Ari.instance.getScheduler().run(g -> {
+            Consumer<CancellableTask> consumer = task -> {
+                double currentHealth = target.getHealth();
                 state.updateSaveHealth(currentHealth);
-                bar.color(this.getMobBarColor(damageable));
-                bar.progress(this.getTargetCurrentHealthProgress(damageable));
-                bar.name(this.buildTitle(damageable));
+                bar.color(this.getMobBarColor(target));
+                bar.progress(this.getTargetCurrentHealthProgress(target));
+                bar.name(this.buildTitle(target));
                 state.setRunning(false);
-            });
+            };
+            if (!target.isDead() && target.isValid()) {
+                Ari.instance.getScheduler().runAtEntity(target, consumer, null);
+            } else {
+                Ari.instance.getScheduler().runAtRegion(target.getLocation(), consumer);
+            }
         });
-
     }
 
     @Override
