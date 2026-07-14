@@ -5,6 +5,7 @@ import com.tty.api.enumType.PlaceholderTypeEnum;
 public enum PlaceholderServer implements PlaceholderTypeEnum {
 
     SERVER_VERSION("server_version"),
+    PLUGIN_NAME("plugin_name"),
     PLUGIN_BRANCH("plugin_branch"),
     PLUGIN_BUILD_TIME("plugin_build_time"),
     PLUGIN_BUILD_VERSION("plugin_build_version"),

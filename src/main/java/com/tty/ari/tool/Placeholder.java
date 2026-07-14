@@ -71,6 +71,10 @@ public class Placeholder extends BasePlaceholder {
                 PlaceholderResolve.ofWhenNull((() -> this.set(Bukkit.getName() + " " + Bukkit.getServer().getVersion())))
         ));
         registry.register(PlaceholderDefinition.of(
+                PlaceholderServer.PLUGIN_NAME,
+                PlaceholderResolve.ofWhenNull((() -> this.set(Ari.instance.getName())))
+        ));
+        registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.PLUGIN_BRANCH,
                 PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.branch"))))
         ));
