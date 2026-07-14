@@ -33,12 +33,12 @@ public class PlayerCache {
     }
 
     public static @Nullable OfflinePlayer getPlayer(String value) {
-        if (!PLAYER_ID_PATTERN.matcher(value).matches()) return null;
         UUID uuid;
         try {
             uuid = UUID.fromString(value);
             return getPlayer(uuid);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            if (!PLAYER_ID_PATTERN.matcher(value).matches()) return null;
             OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(value);
             CACHE.put(offlinePlayer.getUniqueId(), offlinePlayer);
             return offlinePlayer;
