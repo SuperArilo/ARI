@@ -44,19 +44,19 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
 
         String homeId = args[1];
         Player player = (Player) sender;
         if (!this.checkEntityId(homeId)) {
             ConfigUtils.t("function.home.id-error", player).thenAccept(sender::sendMessage);
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
         EntityRepository<ServerHome> repo = Ari.REPOSITORY_MANAGER.get(ServerHome.class);
         PlayerHomeRepository repository = (PlayerHomeRepository) repo;
 
-        return repository.queryCount(new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, player.getUniqueId().toString())).thenCompose(result -> {
+        repository.queryCount(new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, player.getUniqueId().toString())).thenCompose(result -> {
             List<ServerHome> list = result.records();
             if (list.size() + 1 > Ari.PERMISSION_SERVICE.getMaxCountInPermission(player, "home")) {
                 return ConfigUtils.t("function.home.exceeds", player).thenAccept(sender::sendMessage).thenApply(v -> null);

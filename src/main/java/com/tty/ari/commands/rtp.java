@@ -14,7 +14,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "rtp", permission = "ari.command.rtp", tokenLength = 1)
 @LiteralCommand(directExecute = true)
@@ -26,7 +25,7 @@ public class rtp extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         Ari.instance.getStatusManager().get(RandomTpStateService.class).addState(
                 new RandomTpState(
@@ -34,8 +33,6 @@ public class rtp extends LiteralArgumentCommand {
                         Ari.instance.getConfigurationManager().get(FunctionConfig.class).getRtpSearchCount(),
                         player.getWorld())
         );
-
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

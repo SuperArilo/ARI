@@ -13,7 +13,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "cancel", permission = "ari.command.rtp.cancel", tokenLength = 2)
 @LiteralCommand(directExecute = true)
@@ -25,17 +24,18 @@ public class RtpCancel extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         RandomTpStateService machine = Ari.instance.getStatusManager().get(RandomTpStateService.class);
         List<RandomTpState> states = machine.getStates((Entity) sender);
         if (states.isEmpty()) {
-            return ConfigUtils.t("function.rtp.no-rtp", player).thenAccept(player::sendMessage);
+            ConfigUtils.t("function.rtp.no-rtp", player).thenAccept(player::sendMessage);
+            return;
         }
         for (RandomTpState state : states) {
             machine.stopState(state);
         }
-        return ConfigUtils.t("function.rtp.rtp-cancel", player).thenAccept(player::sendMessage);
+        ConfigUtils.t("function.rtp.rtp-cancel", player).thenAccept(player::sendMessage);
     }
 
     @Override

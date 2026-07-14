@@ -15,7 +15,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static com.tty.ari.listener.teleport.RecordLastLocationListener.TELEPORT_LAST_LOCATION;
 
@@ -29,12 +28,13 @@ public class back extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
 
         Player player = (Player) sender;
         Location beforeLocation = TELEPORT_LAST_LOCATION.get(player.getUniqueId());
         if(beforeLocation == null) {
-            return ConfigUtils.t("teleport.none-location", player).thenAccept(player::sendMessage);
+            ConfigUtils.t("teleport.none-location", player).thenAccept(player::sendMessage);
+            return;
         }
 
         Ari.instance.getStatusManager().get(TeleportStateService.class).addState(
@@ -43,8 +43,6 @@ public class back extends LiteralArgumentCommand {
                         Ari.instance.getConfigurationManager().get(FunctionConfig.class).getTeleportDelay(TeleportType.BACK),
                         beforeLocation,
                         TeleportType.BACK));
-
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

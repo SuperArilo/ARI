@@ -29,14 +29,15 @@ public class spawn extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
 
         Player player = (Player) sender;
         FunctionConfig config = Ari.instance.getConfigurationManager().get(FunctionConfig.class);
 
         SpawnLocation value = config.getSpawnLocation();
         if(value == null) {
-            return ConfigUtils.t("function.spawn.no-spawn", player).thenAccept(player::sendMessage);
+            ConfigUtils.t("function.spawn.no-spawn", player).thenAccept(player::sendMessage);
+            return;
         }
         Ari.instance.getStatusManager().get(TeleportStateService.class).addState(
                 new EntityToLocationState(
@@ -46,7 +47,6 @@ public class spawn extends LiteralArgumentCommand {
                     TeleportType.SPAWN)
         );
 
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

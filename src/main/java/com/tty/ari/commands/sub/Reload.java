@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "reload", permission = "ari.command.reload", tokenLength = 1, allowConsole = true)
 @LiteralCommand(directExecute = true)
@@ -22,10 +21,9 @@ public class Reload extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.reload.doing")));
         Bukkit.getPluginManager().callEvent(new WhenPluginExecuteReloadCommandEvent(Ari.instance, sender));
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

@@ -43,12 +43,12 @@ public class EnchantLevelArgs extends EnchantBaseArgs<Integer> {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         EnchantBaseArgs.ResultArgs resultArgs = this.parseArgs(sender, args);
-        if (resultArgs == null) return CompletableFuture.completedFuture(null);
+        if (resultArgs == null) return;
         Player player = (Player) sender;
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
-        return this.enchant(sender, itemInMainHand, resultArgs);
+        this.enchant(sender, itemInMainHand, resultArgs);
     }
 
     @Override

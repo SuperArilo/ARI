@@ -37,17 +37,16 @@ public class ItemNameArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         if (mainHand.isEmpty()) {
             player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.hand-no-item")));
-            return CompletableFuture.completedFuture(null);
+            return;
         }
         ItemMeta itemMeta = mainHand.getItemMeta();
         itemMeta.displayName(Ari.instance.getComponentTool().text(args[1]));
         mainHand.setItemMeta(itemMeta);
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

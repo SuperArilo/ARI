@@ -11,7 +11,6 @@ import com.tty.ari.enumType.TeleportType;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "tpa", permission = "ari.command.tpa", tokenLength = 2)
 @LiteralCommand
@@ -23,8 +22,7 @@ public class tpa extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-        return CompletableFuture.completedFuture(null);
+    public void execute(CommandSender sender, String[] args) {
     }
 
     @Override

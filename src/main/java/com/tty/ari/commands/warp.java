@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "warp", permission = "ari.command.warp", tokenLength = 1)
 @LiteralCommand(directExecute = true)
@@ -25,10 +24,9 @@ public class warp extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

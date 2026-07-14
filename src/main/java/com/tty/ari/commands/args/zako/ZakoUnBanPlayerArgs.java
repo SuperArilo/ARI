@@ -42,19 +42,19 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
 
         if (offlinePlayer == null) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
         UUID uuid = offlinePlayer.getUniqueId();
         EntityRepository<BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         LambdaQueryWrapper<BanPlayer> wrapper = new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString());
 
-        return repository.get(wrapper, PartitionKey.global()).thenCompose(banPlayer -> {
+        repository.get(wrapper, PartitionKey.global()).thenCompose(banPlayer -> {
             if (banPlayer == null) CompletableFuture.completedFuture(false);
             return repository.delete(wrapper, PartitionKey.global());
         }).thenAccept(count -> {

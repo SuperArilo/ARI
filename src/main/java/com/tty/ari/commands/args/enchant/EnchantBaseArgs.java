@@ -18,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
 
@@ -70,7 +69,7 @@ public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
         return RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(key);
     }
 
-    protected CompletableFuture<Void> enchant(CommandSender sender, @NotNull ItemStack itemStack, @NotNull ResultArgs args) {
+    protected void enchant(CommandSender sender, @NotNull ItemStack itemStack, @NotNull ResultArgs args) {
         Enchantment enchantment = args.getEnchantment();
         int level = args.getLevel();
         boolean forceEnchant = args.isForceEnchant();
@@ -78,11 +77,13 @@ public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
         Player player = (Player) sender;
 
         if (!enchantment.canEnchantItem(itemStack) && !forceEnchant) {
-            return ConfigUtils.t("function.enchant.can-not-apply-item", player).thenAccept(sender::sendMessage);
+            ConfigUtils.t("function.enchant.can-not-apply-item", player).thenAccept(sender::sendMessage);
+            return;
         }
 
         if (!forceLevel && level > enchantment.getMaxLevel()) {
-            return ConfigUtils.t("function.enchant.level-too-high", player).thenAccept(sender::sendMessage);
+            ConfigUtils.t("function.enchant.level-too-high", player).thenAccept(sender::sendMessage);
+            return;
         }
 
         ItemMeta itemMeta = itemStack.getItemMeta();
@@ -92,6 +93,5 @@ public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
         String value = Ari.DATA_SERVICE.getValue("enchantment." + enchantment.key().value());
         sender.sendMessage(ConfigUtils.tAfter("function.enchant.enchant-success",
                 Map.of(PlaceholderEnchant.ENCHANT_NAME_UNRESOLVED.getType(), Component.text(value), PlaceholderEnchant.ENCHANT_LEVEL_UNRESOLVED.getType(), Component.text(level))));
-        return CompletableFuture.completedFuture(null);
     }
 }

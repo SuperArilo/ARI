@@ -35,14 +35,12 @@ public class AfkArgs extends RequiredArgumentCommand<PlayerSelectorArgumentResol
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-
+    public void execute(CommandSender sender, String[] args) {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
         if (!(offlinePlayer instanceof Player player)) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.unable-player")));
-            return CompletableFuture.completedFuture(null);
+            return;
         }
-
         for (PlayerAFKState state : Ari.instance.getStatusManager().get(PlayerAFKService.class).getStates(player)) {
             if (state.isAFK()) {
                 state.resetStandCount();
@@ -50,10 +48,7 @@ public class AfkArgs extends RequiredArgumentCommand<PlayerSelectorArgumentResol
                 state.afkNow();
             }
         }
-
         sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.command.execute-success")));
-
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

@@ -18,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -60,10 +59,10 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
      * @param sender 接收者
      * @param target 发起者
      */
-    public CompletableFuture<Void> checkAfterResponse(Player sender, Player target, Consumer<PreEntityToEntityState> consumer) {
+    public void checkAfterResponse(Player sender, Player target, Consumer<PreEntityToEntityState> consumer) {
         if (target == null) {
             Ari.instance.getScheduler().runAtEntity(sender, i -> sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), sender)), null);
-            return CompletableFuture.completedFuture(null);
+            return;
         }
         PreTeleportStateService machine = Ari.instance.getStatusManager().get(PreTeleportStateService.class);
         //检查这个请求是否存在
@@ -72,12 +71,12 @@ public abstract class TpaBaseLiteralLiteralArgument extends RequiredArgumentComm
                 .stream()
                 .filter(i -> i instanceof PreEntityToEntityState state && state.getTarget().equals(sender)).findFirst().orElse(null);
         if (anElse == null) {
-            return ConfigUtils.t("function.tpa.been-done", sender).thenAccept(sender::sendMessage);
+            ConfigUtils.t("function.tpa.been-done", sender).thenAccept(sender::sendMessage);
+            return;
         }
         consumer.accept(anElse);
         //移除发起者的请求
         machine.stopState(anElse);
-        return CompletableFuture.completedFuture(null);
     }
 
     public boolean preCheckIsNotPass(CommandSender sender, String[] args) {

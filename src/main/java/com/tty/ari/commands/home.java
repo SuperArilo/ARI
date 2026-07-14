@@ -26,10 +26,9 @@ public class home extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

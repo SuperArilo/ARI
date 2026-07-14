@@ -12,19 +12,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "afk", permission = "ari.command.afk", tokenLength = 1)
 @LiteralCommand(directExecute = true)
 public class afk extends LiteralArgumentCommand {
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player player)) return CompletableFuture.completedFuture(null);
+    public void execute(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) return;
         for (PlayerAFKState state : Ari.instance.getStatusManager().get(PlayerAFKService.class).getStates(player)) {
             if (state.isAFK()) continue;
             state.afkNow();
         }
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

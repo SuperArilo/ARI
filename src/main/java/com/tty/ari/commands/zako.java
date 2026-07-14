@@ -8,7 +8,6 @@ import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "zako", permission = "ari.command.zako", tokenLength = 2)
 @LiteralCommand
@@ -29,8 +28,7 @@ public class zako extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-        return CompletableFuture.completedFuture(null);
+    public void execute(CommandSender sender, String[] args) {
     }
 
     @Override

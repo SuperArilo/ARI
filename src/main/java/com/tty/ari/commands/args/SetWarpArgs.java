@@ -44,20 +44,20 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
 
         String warpId = args[1];
         Player player = (Player) sender;
 
         if(!this.checkEntityId(warpId)) {
             ConfigUtils.t("function.warp.id-error", player).thenAccept(player::sendMessage);
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
         EntityRepository<ServerWarp> repo = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
         ServerWarpRepository repository = (ServerWarpRepository) repo;
 
-        return repository.queryCount(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getCreateBy, player.getUniqueId().toString())).thenCompose(result -> {
+        repository.queryCount(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getCreateBy, player.getUniqueId().toString())).thenCompose(result -> {
             int max = Ari.PERMISSION_SERVICE.getMaxCountInPermission(player, "warp");
             if (result.total() + 1 > max) {
                 return ConfigUtils.t("function.warp.exceeds", player)

@@ -31,15 +31,15 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-        if (this.preCheckIsNotPass(sender, args)) return CompletableFuture.completedFuture(null);
+    public void execute(CommandSender sender, String[] args) {
+        if (this.preCheckIsNotPass(sender, args)) return;
 
         Player owner = (Player) sender;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
 
         if (player == null) {
             owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner));
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
         Ari.instance.getStatusManager().get(PreTeleportStateService.class).addState(
@@ -49,6 +49,5 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
                         TeleportType.TPAHERE,
                         Ari.instance.getConfigurationManager().get(FunctionConfig.class).getTpaRequestExpiredTime()
                 ));
-        return CompletableFuture.completedFuture(null);
     }
 }

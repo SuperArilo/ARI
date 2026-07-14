@@ -32,13 +32,13 @@ public class TpaRefuseArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-        if (this.preCheckIsNotPass(sender, args)) return CompletableFuture.completedFuture(null);
+    public void execute(CommandSender sender, String[] args) {
+        if (this.preCheckIsNotPass(sender, args)) return;
 
         Player player = (Player) sender;
         Player target = Bukkit.getServer().getPlayerExact(args[1]);
-        if (target == null) return CompletableFuture.completedFuture(null);
-        return this.checkAfterResponse(player, target, state -> {
+        if (target == null) return;
+        this.checkAfterResponse(player, target, state -> {
             ConfigUtils.t("function.tpa.refuse-success", player).thenAccept(sender::sendMessage);
             ConfigUtils.t("function.tpa.refused", target).thenAccept(i -> Ari.instance.getScheduler().runAtEntity(target, task -> target.sendMessage(i), null));
         });

@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "itemshow", permission = "ari.command.itemshow", tokenLength = 1)
 @LiteralCommand(directExecute = true)
@@ -24,13 +23,14 @@ public class itemshow extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.isEmpty()) {
-            return ConfigUtils.t("function.itemshow.no-item-in-hand", player).thenAccept(t -> Ari.instance.getScheduler().run(i -> sender.sendMessage(t)));
+            ConfigUtils.t("function.itemshow.no-item-in-hand", player).thenAccept(t -> Ari.instance.getScheduler().run(i -> sender.sendMessage(t)));
+        } else {
+            ConfigUtils.t("function.itemshow.show-to-players", player).thenAccept(t -> Ari.instance.getScheduler().run(i -> Bukkit.getServer().broadcast(t)));
         }
-        return ConfigUtils.t("function.itemshow.show-to-players", player).thenAccept(t -> Ari.instance.getScheduler().run(i -> Bukkit.getServer().broadcast(t)));
     }
 
     @Override

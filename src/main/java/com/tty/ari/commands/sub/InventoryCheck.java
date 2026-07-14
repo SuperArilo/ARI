@@ -39,44 +39,43 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-        if (args.length < 2 || !(sender instanceof Player player)) return CompletableFuture.completedFuture(null);
+    public void execute(CommandSender sender, String[] args) {
+        if (args.length < 2 || !(sender instanceof Player player)) return;
 
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
 
         if (offlinePlayer == null) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
         UUID uuid = offlinePlayer.getUniqueId();
 
         if (player.getUniqueId().equals(uuid)) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.command.self-not-allowed")));
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
-       return Ari.REPOSITORY_MANAGER.get(ServerPlayer.class)
-                .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global())
-                .thenCompose(serverPlayer -> CompletableFuture.completedFuture(serverPlayer != null))
-                .thenAccept(status -> {
-                    if (!status) {
-                        sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-                        return;
-                    }
+        Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global())
+        .thenCompose(serverPlayer -> CompletableFuture.completedFuture(serverPlayer != null))
+        .thenAccept(status -> {
+            if (!status) {
+                sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                return;
+            }
 
-                    GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
+            GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
 
-                    if (service.getStates(player).stream().anyMatch(i -> (i instanceof OnCheckPlayerGuiState state && state.getOwner().equals(player)))) {
-                        sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.task.occupied")));
-                        return;
-                    }
-                    service.addState(new OnCheckPlayerGuiState(player, offlinePlayer, new PlayerInventoryEdit(Ari.instance, player, offlinePlayer)));
-                }).exceptionally(e -> {
-                    Ari.instance.getLog().error(e);
-                    sender.sendMessage(this.getPlugin().getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
-                   return null;
-                });
+            if (service.getStates(player).stream().anyMatch(i -> (i instanceof OnCheckPlayerGuiState state && state.getOwner().equals(player)))) {
+                sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.task.occupied")));
+                return;
+            }
+            service.addState(new OnCheckPlayerGuiState(player, offlinePlayer, new PlayerInventoryEdit(Ari.instance, player, offlinePlayer)));
+        }).exceptionally(e -> {
+            Ari.instance.getLog().error(e);
+            sender.sendMessage(this.getPlugin().getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
+           return null;
+        });
     }
 
     @Override

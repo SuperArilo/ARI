@@ -52,7 +52,7 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         String timePeriod = args[1];
         TimePeriod period;
@@ -60,20 +60,20 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
             period = TimePeriod.valueOf(timePeriod.toUpperCase());
         } catch (Exception e) {
             player.sendMessage(ConfigUtils.tAfter("server.time.not-exist-period", Map.of(PlaceholderTime.TIME_PERIOD_UNRESOLVED.getType(), Component.text(timePeriod))));
-            return CompletableFuture.completedFuture(null);
+            return;
         }
         World world = player.getWorld();
         if (!isBedWorksRe(world)) {
-            return ConfigUtils.t("server.time.not-allowed-world", player).thenAccept(player::sendMessage);
+            ConfigUtils.t("server.time.not-allowed-world", player).thenAccept(player::sendMessage);
+            return;
         }
         TimeManager.build(world).timeSet(period.getStart());
         String value = Ari.instance.getConfigurationManager().get(LangConfig.class).getString("server.time.tips");
         if (value == null) {
             player.sendMessage("no content " + timePeriod + "in lang");
-            return CompletableFuture.completedFuture(null);
+            return;
         }
         player.sendMessage(Ari.instance.getComponentTool().text(value, Map.of(PlaceholderTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.tAfter("server.time.name." + period.getDescription()))));
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

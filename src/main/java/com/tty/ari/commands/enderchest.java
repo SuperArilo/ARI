@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "enderchest", permission = "ari.command.enderchest", tokenLength = 1)
 @LiteralCommand(directExecute = true)
@@ -21,10 +20,9 @@ public class enderchest extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         player.openInventory(player.getEnderChest());
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

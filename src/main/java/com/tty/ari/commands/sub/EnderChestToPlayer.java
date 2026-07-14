@@ -34,33 +34,33 @@ public class EnderChestToPlayer extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-        if (args.length < 2) return CompletableFuture.completedFuture(null);
+    public void execute(CommandSender sender, String[] args) {
+        if (args.length < 2) return;
         Player player = (Player) sender;
 
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
 
         if (offlinePlayer == null) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
         UUID uuid = offlinePlayer.getUniqueId();
 
-        return Ari.REPOSITORY_MANAGER.get(ServerPlayer.class)
-                .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global())
-                .thenCompose(serverPlayer -> CompletableFuture.completedFuture(serverPlayer != null))
-                .thenAccept(status -> {
-                    if (!status) {
-                        sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-                        return;
-                    }
-                    if (offlinePlayer instanceof Player p) {
-                        player.openInventory(p.getEnderChest());
-                        return;
-                    }
-                    Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new OnCheckPlayerGuiState(player, offlinePlayer, new EnderChestEdit(player, offlinePlayer)));
-                });
+        Ari.REPOSITORY_MANAGER.get(ServerPlayer.class)
+        .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global())
+        .thenCompose(serverPlayer -> CompletableFuture.completedFuture(serverPlayer != null))
+        .thenAccept(status -> {
+            if (!status) {
+                sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                return;
+            }
+            if (offlinePlayer instanceof Player p) {
+                player.openInventory(p.getEnderChest());
+                return;
+            }
+            Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new OnCheckPlayerGuiState(player, offlinePlayer, new EnderChestEdit(player, offlinePlayer)));
+        });
     }
 
     @Override

@@ -43,20 +43,20 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
 
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
 
         if (offlinePlayer == null) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
         UUID uuid = offlinePlayer.getUniqueId();
 
         EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
         LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
-        return repository.delete(wrapper, PartitionKey.global()).thenAccept(count -> {
+        repository.delete(wrapper, PartitionKey.global()).thenAccept(count -> {
             if (offlinePlayer instanceof Player player) {
                 Ari.instance.getScheduler().runAtEntity(player, i-> player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
             }

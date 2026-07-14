@@ -38,19 +38,19 @@ public class ZakoRemoveProfileArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
 
         if (offlinePlayer == null) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
         UUID uuid = offlinePlayer.getUniqueId();
 
         if (offlinePlayer instanceof Player player && player.isOnline()) {
             sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.fail-by-player-online")));
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
         PartitionKey partitionKey = PartitionKey.of(uuid);
@@ -67,7 +67,6 @@ public class ZakoRemoveProfileArgs extends RequiredArgumentCommand<String> {
             Ari.instance.getLog().error(e);
         }
 
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

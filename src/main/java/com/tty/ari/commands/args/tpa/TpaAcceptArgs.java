@@ -35,12 +35,12 @@ public class TpaAcceptArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-        if(this.preCheckIsNotPass(sender, args)) return CompletableFuture.completedFuture(null);
+    public void execute(CommandSender sender, String[] args) {
+        if(this.preCheckIsNotPass(sender, args)) return;
 
         Player player = (Player) sender;
         Player target = Ari.instance.getServer().getPlayerExact(args[1]);
-        return this.checkAfterResponse(player, target, s -> {
+        this.checkAfterResponse(player, target, s -> {
 
             int value = Ari.instance.getConfigurationManager().get(FunctionConfig.class).getTeleportDelay(TeleportType.TPA);
             PlayerToPlayerState state;

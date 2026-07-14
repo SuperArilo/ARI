@@ -9,7 +9,6 @@ import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "ari", allowConsole = true, tokenLength = 1)
 @LiteralCommand
@@ -48,9 +47,7 @@ public class ari extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-        return CompletableFuture.completedFuture(null);
-    }
+    public void execute(CommandSender sender, String[] args) {}
 
     @Override
     protected boolean isEnableInGame() {

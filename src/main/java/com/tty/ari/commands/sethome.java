@@ -23,9 +23,7 @@ public class sethome extends LiteralArgumentCommand {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-        return CompletableFuture.completedFuture(null);
-    }
+    public void execute(CommandSender sender, String[] args) {}
 
     @Override
     protected boolean isEnableInGame() {

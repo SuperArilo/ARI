@@ -26,8 +26,8 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-        if (this.preCheckIsNotPass(sender, args)) return CompletableFuture.completedFuture(null);
+    public void execute(CommandSender sender, String[] args) {
+        if (this.preCheckIsNotPass(sender, args)) return;
         Player owner = (Player) sender;
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
         if (player != null) {
@@ -39,7 +39,6 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
                             Ari.instance.getConfigurationManager().get(FunctionConfig.class).getTpaRequestExpiredTime()
                     ));
         }
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

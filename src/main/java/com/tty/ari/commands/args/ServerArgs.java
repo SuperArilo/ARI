@@ -45,22 +45,22 @@ public class ServerArgs extends RequiredArgumentCommand<String> {
     }
 
     @Override
-    public CompletableFuture<Void> execute(CommandSender sender, String[] args) {
-        if(!(sender instanceof Player player)) return CompletableFuture.completedFuture(null);
+    public void execute(CommandSender sender, String[] args) {
+        if(!(sender instanceof Player player)) return;
         String serverName = args[1];
 
-        return Ari.BUNGEECACHE.waitForLoad(2, () -> this.request(player))
-                .thenCompose(list -> CompletableFuture.completedFuture(!list.isEmpty() && list.contains(serverName)))
-                .thenAccept(status -> {
-                    if (!status) {
-                        ConfigUtils.t("server.message.bungee.can-not-connect", player).thenAccept(player::sendMessage);
-                    } else {
-                        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                        out.writeUTF("Connect");
-                        out.writeUTF(serverName);
-                        player.sendPluginMessage(Ari.instance, "BungeeCord", out.toByteArray());
-                    }
-                });
+        Ari.BUNGEECACHE.waitForLoad(2, () -> this.request(player))
+        .thenCompose(list -> CompletableFuture.completedFuture(!list.isEmpty() && list.contains(serverName)))
+        .thenAccept(status -> {
+            if (!status) {
+                ConfigUtils.t("server.message.bungee.can-not-connect", player).thenAccept(player::sendMessage);
+            } else {
+                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                out.writeUTF("Connect");
+                out.writeUTF(serverName);
+                player.sendPluginMessage(Ari.instance, "BungeeCord", out.toByteArray());
+            }
+        });
     }
 
     @Override
