@@ -229,13 +229,14 @@ public class Placeholder extends BasePlaceholder {
                         .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(whitelistInstance -> {
                             if (whitelistInstance == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
-                            String operator;
-                            if(whitelistInstance.getOperator().equals(Operator.CONSOLE.getUuid())) {
-                                operator = "CONSOLE";
+                            String name;
+                            Operator operator = Operator.fromUuid(whitelistInstance.getOperator());
+                            if (operator == null) {
+                                name = PlayerCache.getPlayer(UUID.fromString(whitelistInstance.getOperator())).getName();
                             } else {
-                                operator = PlayerCache.getPlayer(UUID.fromString(whitelistInstance.getOperator())).getName();
+                                name = operator.name();
                             }
-                            return Ari.instance.getComponentTool().text(operator == null ? Ari.DATA_SERVICE.getValue("base.none"):operator);
+                            return Ari.instance.getComponentTool().text(operator == null ? Ari.DATA_SERVICE.getValue("base.none"):name);
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
@@ -305,13 +306,14 @@ public class Placeholder extends BasePlaceholder {
                         .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                         .thenApply(i -> {
                             if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
-                            String operator;
-                            if(i.getOperator().equals(Operator.CONSOLE.getUuid())) {
-                                operator = "CONSOLE";
+                            String name;
+                            Operator operator = Operator.fromUuid(i.getOperator());
+                            if(operator != null) {
+                                name = operator.name();
                             } else {
-                                operator = PlayerCache.getPlayer(UUID.fromString(i.getOperator())).getName();
+                                name = PlayerCache.getPlayer(UUID.fromString(i.getOperator())).getName();
                             }
-                            return Ari.instance.getComponentTool().text(operator);
+                            return Ari.instance.getComponentTool().text(name);
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
