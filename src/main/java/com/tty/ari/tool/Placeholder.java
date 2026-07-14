@@ -2,7 +2,6 @@ package com.tty.ari.tool;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.api.AbstractJavaPlugin;
-import com.tty.api.Scheduler;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.PartitionKey;
 import com.tty.api.service.impl.PlaceholderRegistryImpl;
@@ -26,24 +25,37 @@ import com.tty.ari.listener.player.PlayerSkipNight;
 import com.tty.ari.states.teleport.PreTeleportStateService;
 import com.tty.ari.states.teleport.RandomTpStateService;
 import com.tty.ari.states.teleport.TeleportStateService;
-import io.papermc.paper.plugin.configuration.PluginMeta;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginDescriptionFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+import java.util.Properties;
 
 import static com.tty.ari.listener.teleport.RecordLastLocationListener.TELEPORT_LAST_LOCATION;
 
-@SuppressWarnings("deprecation")
 public class Placeholder extends BasePlaceholder {
+
+    private final Properties pluginInfo = new Properties();
 
     public Placeholder(AbstractJavaPlugin plugin) {
         super(plugin, Ari.instance.getConfigurationManager().get(LangConfig.class));
+        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("git.properties")) {
+            if (inputStream == null) {
+                Ari.instance.getLog().debug("could not found file git.properties in jar.");
+                return;
+            }
+            this.pluginInfo.load(inputStream);
+        } catch (IOException e) {
+            Ari.instance.getLog().debug(e, "could not found file git.properties in jar.");
+        }
         this.init();
     }
 
@@ -53,28 +65,45 @@ public class Placeholder extends BasePlaceholder {
         this.addRegister(registry);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     private void register(PlaceholderRegistry registry) {
         registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.SERVER_VERSION,
                 PlaceholderResolve.ofWhenNull((() -> this.set(Bukkit.getName() + " " + Bukkit.getServer().getVersion())))
         ));
         registry.register(PlaceholderDefinition.of(
-                PlaceholderServer.ARI_VERSION,
-                PlaceholderResolve.ofWhenNull(() -> {
-                    String pluginInfo;
-                    if (Scheduler.isFolia()) {
-                        PluginMeta pluginMeta = Ari.instance.getPluginMeta();
-                        pluginInfo = pluginMeta.getName() + " " + pluginMeta.getVersion();
-                    } else {
-                        PluginDescriptionFile description = Ari.instance.getDescription();
-                        pluginInfo = description.getName() + " " + description.getVersion();
-                    }
-                    return this.set(pluginInfo);
-                })
+                PlaceholderServer.PLUGIN_BRANCH,
+                PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.branch"))))
         ));
         registry.register(PlaceholderDefinition.of(
-                PlaceholderServer.ARI_DEBUG_STATUS,
+                PlaceholderServer.PLUGIN_BUILD_TIME,
+                PlaceholderResolve.ofWhenNull((() -> this.set(OffsetDateTime.parse(this.pluginInfo.getProperty("git.build.time")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderServer.PLUGIN_BUILD_VERSION,
+                PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.build.version") + "-" + this.pluginInfo.getProperty("git.commit.id.abbrev"))))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderServer.PLUGIN_COMMIT_ID_ABBREV,
+                PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.commit.id.abbrev"))))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderServer.PLUGIN_COMMIT_MESSAGE,
+                PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.commit.message.full"))))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderServer.PLUGIN_COMMIT_TIME,
+                PlaceholderResolve.ofWhenNull((() -> this.set(OffsetDateTime.parse(this.pluginInfo.getProperty("git.commit.time")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderServer.PLUGIN_COMMIT_USER_NAME,
+                PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.commit.user.name"))))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderServer.PLUGIN_GIT_TAG,
+                PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.tag"))))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderServer.PLUGIN_DEBUG_STATUS,
                 PlaceholderResolve.ofWhenNull(()-> this.set(String.valueOf(Ari.instance.isDebug()))))
         );
         registry.register(PlaceholderDefinition.of(
