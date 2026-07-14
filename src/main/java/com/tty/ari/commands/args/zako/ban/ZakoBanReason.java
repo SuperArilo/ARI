@@ -82,14 +82,21 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
             long now = System.currentTimeMillis();
 
             long total = 0;
+
             for (int i = 0; i < TIME_UNITS.length; i++) {
                 int index = 3 + i;
+                String aCase = TIME_UNITS[index].name().toLowerCase();
                 try {
-                    int value = Integer.parseInt(args[index]);
+                    String arg = args[index];
+                    if (arg.length() > 4) {
+                        sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.number.exceed-limit") + " " + aCase));
+                        return CompletableFuture.completedFuture(false);
+                    }
+                    int value = Integer.parseInt(arg);
                     if (value < 0) return CompletableFuture.completedFuture(false);
                     total = Math.addExact(total, TIME_UNITS[i].toMillis(value));
                 } catch (Exception e) {
-                    Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error"));
+                    sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error") + " " + aCase));
                     return CompletableFuture.completedFuture(false);
                 }
             }
