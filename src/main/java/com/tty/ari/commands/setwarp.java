@@ -10,7 +10,6 @@ import com.tty.ari.configuration.warp.WarpConfig;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "setwarp", permission = "ari.command.setwarp", tokenLength = 2)
 @LiteralCommand

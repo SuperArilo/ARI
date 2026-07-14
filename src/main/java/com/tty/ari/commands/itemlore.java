@@ -9,7 +9,6 @@ import com.tty.api.command.SuperHandsomeCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "itemlore", permission = "ari.command.itemlore", tokenLength = 2)
 @LiteralCommand

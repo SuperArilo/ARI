@@ -11,7 +11,6 @@ import com.tty.ari.enumType.TeleportType;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "sethome", permission = "ari.command.sethome", tokenLength = 2)
 @LiteralCommand

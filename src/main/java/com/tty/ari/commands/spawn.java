@@ -17,7 +17,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CommandMeta(displayName = "spawn", permission = "ari.command.spawn", tokenLength = 1)
 @LiteralCommand(directExecute = true)
