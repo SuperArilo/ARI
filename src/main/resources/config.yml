@@ -1,3 +1,4 @@
+version: 1
 lang: cn
 data:
   # mysql, sqlite
