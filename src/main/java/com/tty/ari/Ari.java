@@ -230,6 +230,7 @@ public class Ari extends AbstractJavaPlugin {
             }
 
             Map<String, AliasItem> aliasItemMap = aliasConfig.getAliases();
+            if (aliasItemMap == null) return;
             aliasItemMap.forEach((k, v) -> {
                 if (!v.isEnable()) return;
                 Class<?> executorClass;
