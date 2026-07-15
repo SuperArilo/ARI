@@ -1,15 +1,17 @@
 package com.tty.ari;
 
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.ConfigurationManager;
 import com.tty.api.Scheduler;
 import com.tty.api.StatusManager;
+import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.configuration.BaseConfiguration;
+import com.tty.api.dto.AliasItem;
 import com.tty.api.dto.CommandAlias;
 import com.tty.api.dto.TempRegisterService;
 import com.tty.api.service.*;
 import com.tty.api.state.StateService;
-import com.tty.api.utils.CommandRegister;
 import com.tty.ari.configuration.*;
 import com.tty.ari.configuration.home.HomeConfig;
 import com.tty.ari.configuration.home.HomeEditConfig;
@@ -43,7 +45,10 @@ import com.tty.ari.states.teleport.TeleportStateService;
 import com.tty.ari.tool.Placeholder;
 import com.tty.ari.tool.RepositoryManager;
 import com.tty.ari.tool.SQLInstance;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.configuration.PluginMeta;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -54,6 +59,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -91,8 +97,7 @@ public class Ari extends AbstractJavaPlugin {
 
         this.registerBungeeListener();
 
-        ConfigurationManager manager = this.getConfigurationManager();
-        CommandRegister.register(this, "com.tty.ari.commands", manager.yamlConvertToObj(manager.get(CommandAliasConfig.class).getConfiguration().saveToString(), CommandAlias.class));
+        this.registerCommand();
 
         PLACEHOLDER = new Placeholder(this);
         BUNGEECACHE = new BungeeCache(this);
@@ -203,6 +208,55 @@ public class Ari extends AbstractJavaPlugin {
         list.add(new MaintenanceBossBarService(20L, 1L, true));
         list.add(new AttackBossBarService(5L, 1L, true));
         return list;
+    }
+
+    private void registerCommand() {
+        ConfigurationManager manager = this.getConfigurationManager();
+        CommandAlias aliasConfig = manager.yamlConvertToObj(manager.get(CommandAliasConfig.class).getConfiguration().saveToString(), CommandAlias.class);
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+            Commands commands = event.registrar();
+
+            if (aliasConfig == null) {
+                String pluginName = this.getName().toLowerCase();
+                try {
+                    Object instance = Class.forName("com.tty.ari.commands" + "." + pluginName, true, this.getClass().getClassLoader()).getDeclaredConstructor().newInstance();
+                    if (instance instanceof SuperHandsomeCommand cmd) {
+                        commands.register((LiteralCommandNode<CommandSourceStack>) cmd.toBrigadier());
+                    }
+                } catch (Exception e) {
+                    this.getLog().error(e, "Failed to register root command: {}", pluginName);
+                }
+                return;
+            }
+
+            Map<String, AliasItem> aliasItemMap = aliasConfig.getAliases();
+            aliasItemMap.forEach((k, v) -> {
+                if (!v.isEnable()) return;
+                Class<?> executorClass;
+                try {
+                    executorClass = Class.forName("com.tty.ari.commands" + "." + k, true, this.getClass().getClassLoader());
+                } catch (ClassNotFoundException e) {
+                    this.getLog().error("Error while constructing instruction. {} class not found!", k);
+                    return;
+                }
+                Object executorInstance;
+                try {
+                    executorInstance = executorClass.getDeclaredConstructor().newInstance();
+                } catch (Exception e) {
+                    this.getLog().error(e, "Error while constructing executor for instruction: {}", k);
+                    return;
+                }
+                if (executorInstance instanceof SuperHandsomeCommand cmd) {
+                    try {
+                        LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) cmd.toBrigadier();
+                        commands.register(node, v.getUsage());
+                        this.getLog().debug("register command: {}", k);
+                    } catch (Exception e) {
+                        this.getLog().error(e, "Failed to register command: {}", k);
+                    }
+                }
+            });
+        });
     }
 
     private void registerBungeeListener() {
