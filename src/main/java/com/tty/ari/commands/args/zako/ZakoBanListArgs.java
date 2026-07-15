@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +37,14 @@ public class ZakoBanListArgs extends RequiredArgumentCommand<Integer> {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        Build_Zako_Ban_List(sender, Integer.parseInt(args[2]));
+        int pageNum;
+        try {
+            pageNum = Integer.parseInt(args[2]);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error")));
+            pageNum = 1;
+        }
+        Build_Zako_Ban_List(sender, pageNum);
     }
 
     @Override
