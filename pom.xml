@@ -182,6 +182,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-artifact</artifactId>
+            <version>3.9.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.tty</groupId>
             <artifactId>api</artifactId>
             <version>1.0.2</version>
