@@ -37,7 +37,8 @@ public class DamageTrackerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
-        DAMAGE_TRACKER.clearRecords(event.getEntity());
+        if (!(event.getEntity() instanceof Player player)) return;
+        DAMAGE_TRACKER.clearRecords(player);
     }
 
     @EventHandler

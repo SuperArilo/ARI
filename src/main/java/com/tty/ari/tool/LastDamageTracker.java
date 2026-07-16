@@ -39,18 +39,6 @@ public class LastDamageTracker {
      */
     public void clearRecords(Entity victim) {
         this.records.remove(victim);
-        Iterator<Map.Entry<Entity, List<DamageRecord>>> it = this.records.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Entity, List<DamageRecord>> entry = it.next();
-            List<DamageRecord> list = entry.getValue();
-            list.removeIf(r -> {
-                Entity damager = r.damager();
-                return damager != null && damager.equals(victim);
-            });
-            if (list.isEmpty()) {
-                it.remove();
-            }
-        }
     }
 
     public void removeAll() {
@@ -176,6 +164,7 @@ public class LastDamageTracker {
         Entity directEntity = damageSource.getDirectEntity();
 
         Entity resolvedAttacker = causingEntity;
+        ItemStack weapon = null;
 
         // 喷溅药水
         if (directEntity instanceof ThrownPotion || causingEntity instanceof ThrownPotion) {
@@ -189,23 +178,31 @@ public class LastDamageTracker {
             if (cloud.getSource() instanceof Entity source) {
                 resolvedAttacker = source;
             } else {
-                List<DamageRecord> records = this.getRecords(victim);
-                if (!records.isEmpty()) {
-                    DamageRecord lastRecord = records.getLast();
-                    long timeDiff = System.currentTimeMillis() - lastRecord.timestamp();
-                    if (timeDiff < 2000) {
-                        resolvedAttacker = lastRecord.damager();
+                UUID ownerId = cloud.getOwnerUniqueId();
+                if (ownerId != null) {
+                    Entity owner = Bukkit.getServer().getEntity(ownerId);
+                    if (owner != null) {
+                        resolvedAttacker = owner;
                     }
                 }
             }
-        }
-        // 弹射物
-        if (directEntity instanceof Projectile projectile) {
-            if (projectile.getShooter() instanceof Entity shooter) {
-                resolvedAttacker = shooter;
+            if (resolvedAttacker == null) {
+                resolvedAttacker = this.findAttackerByHistory(victim);
             }
         }
 
+        if (directEntity instanceof Projectile projectile) {
+            if (projectile.getShooter() instanceof Entity shooter) {
+                resolvedAttacker = shooter;
+            } else {
+                resolvedAttacker = this.findAttackerByHistory(victim);
+                if (resolvedAttacker == null) {
+                    resolvedAttacker = projectile;
+                }
+            }
+        }
+
+        // TNT / 矿车
         if (directEntity instanceof TNTPrimed tnt) {
             resolvedAttacker = (tnt.getSource() instanceof Entity source) ? source : tnt;
         } else if (causingEntity instanceof TNTPrimed tnt) {
@@ -224,26 +221,19 @@ public class LastDamageTracker {
             }
         }
 
-        boolean isIndirectDamage = this.isIndirectDamage(event.getCause());
+        boolean isIndirectDamage = this.isIndirectDamage(cause);
 
-        if (isIndirectDamage
-                && !(resolvedAttacker instanceof LivingEntity)
-                && !(resolvedAttacker instanceof TNTPrimed)
-                && !(resolvedAttacker instanceof ExplosiveMinecart)) {
+        if (isIndirectDamage && !(resolvedAttacker instanceof LivingEntity) && !(resolvedAttacker instanceof TNTPrimed) && !(resolvedAttacker instanceof ExplosiveMinecart)) {
 
-            List<DamageRecord> records = this.getRecords(victim);
-            if (!records.isEmpty()) {
-                DamageRecord lastRecord = records.getLast();
+            DamageRecord lastRecord = this.getLastRecord(victim);
+            if (lastRecord != null) {
                 long timeDiff = System.currentTimeMillis() - lastRecord.timestamp();
-                long threshold = switch (cause) {
-                    case MAGIC, POISON, WITHER -> 1500L;
-                    case THORNS, LIGHTNING, SONIC_BOOM, CUSTOM -> 1000L;
-                    case FIRE_TICK, FIRE, FALL, FALLING_BLOCK, FREEZE -> 5000L;
-                    case BLOCK_EXPLOSION, ENTITY_EXPLOSION -> 3000L;
-                    default -> 2000L;
-                };
+                long threshold = getIndirectDamageThreshold(cause);
                 if (timeDiff < threshold) {
                     resolvedAttacker = lastRecord.damager();
+                    if (lastRecord.weapon() != null) {
+                        weapon = lastRecord.weapon();
+                    }
                     this.log(victim, cause, timeDiff, threshold, resolvedAttacker);
                 }
             }
@@ -251,11 +241,63 @@ public class LastDamageTracker {
             this.log(victim, cause, null, null, resolvedAttacker);
         }
 
+        if (weapon == null) {
+            weapon = this.getWeapon(resolvedAttacker, directEntity, causingEntity);
+        }
+
         if (!this.checkInvolvesPlayer(victim, resolvedAttacker, directEntity)) return;
 
-        this.records.computeIfAbsent(victim, k -> new CopyOnWriteArrayList<>())
-                .add(new DamageRecord(System.currentTimeMillis(), resolvedAttacker, event.getFinalDamage(), victim.getLocation(),
-                        this.getWeapon(resolvedAttacker, directEntity, causingEntity)));
+        if (resolvedAttacker == null) {
+            List<DamageRecord> existing = this.records.get(victim);
+            boolean hasValidAttacker = false;
+            if (existing != null) {
+                for (DamageRecord r : existing) {
+                    if (r.damager() != null) {
+                        hasValidAttacker = true;
+                        break;
+                    }
+                }
+            }
+            if (hasValidAttacker) return;
+        }
+
+        this.records.computeIfAbsent(victim, k -> new CopyOnWriteArrayList<>()).add(new DamageRecord(System.currentTimeMillis(), resolvedAttacker, event.getFinalDamage(), victim.getLocation(), weapon));
+    }
+
+    @Nullable
+    private Entity findAttackerByHistory(Entity victim) {
+        List<DamageRecord> records = this.records.get(victim);
+        if (records == null || records.isEmpty()) return null;
+        for (int i = records.size() - 1; i >= 0; i--) {
+            DamageRecord r = records.get(i);
+            if (r.damager() != null) {
+                return r.damager();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取受害者最近一条伤害记录（可能为 null）
+     */
+    @Nullable
+    private DamageRecord getLastRecord(Entity victim) {
+        List<DamageRecord> records = this.records.get(victim);
+        if (records == null || records.isEmpty()) return null;
+        return records.getLast();
+    }
+
+    /**
+     * 间接伤害回退时间阈值（毫秒）
+     */
+    private long getIndirectDamageThreshold(EntityDamageEvent.DamageCause cause) {
+        return switch (cause) {
+            case MAGIC, POISON, WITHER -> 1500L;
+            case THORNS, LIGHTNING, SONIC_BOOM, CUSTOM -> 1000L;
+            case FIRE_TICK, FIRE, FALL, FALLING_BLOCK, FREEZE -> 5000L;
+            case BLOCK_EXPLOSION, ENTITY_EXPLOSION -> 3000L;
+            default -> 2000L;
+        };
     }
 
     private void log(Entity victim, EntityDamageEvent.DamageCause cause, Long timeDiff, Long threshold, Entity attacker) {
@@ -268,17 +310,16 @@ public class LastDamageTracker {
             String victimName = victim.getName();
             if (attacker == null) return;
             Ari.instance.getScheduler().runAtEntity(attacker, t ->
-                Ari.instance.getLog().debug("victim: {}, damage_type: {}, time_difference: {} ms (threshold: {} ms), attacker: {}, location: x: {}, y: {}, z: {}",
-                    victimName,
-                    cause.name(),
-                    timeDiff,
-                    threshold,
-                    attacker.getName(),
-                    x,
-                    y,
-                    z
-                ), null);
+                    Ari.instance.getLog().debug("victim: {}, damage_type: {}, time_difference: {} ms (threshold: {} ms), attacker: {}, location: x: {}, y: {}, z: {}",
+                            victimName,
+                            cause.name(),
+                            timeDiff,
+                            threshold,
+                            attacker.getName(),
+                            x,
+                            y,
+                            z
+                    ), null);
         }, null);
     }
-
 }
