@@ -1,6 +1,5 @@
 package com.tty.ari.listener.player;
 
-import com.google.gson.reflect.TypeToken;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.scheduler.RunTask;
 import com.tty.ari.Ari;
@@ -145,8 +144,6 @@ public class PlayerTabListener implements Listener {
         this.footers.clear();
         this.groupLines.clear();
         this.groupOrder.clear();
-
-        TypeToken<List<String>> listType = new TypeToken<>() {};
 
         this.headers.addAll(tabListConfig.getLayoutHeader());
         this.footers.addAll(tabListConfig.getLayoutFooter());
