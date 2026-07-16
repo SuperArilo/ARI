@@ -1,7 +1,7 @@
 package com.tty.ari.states;
 
 import com.tty.api.state.StateService;
-import com.tty.api.task.CancellableTask;
+import com.tty.api.scheduler.RunTask;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.AttackBarConfig;
@@ -45,7 +45,7 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
         state.setRunning(true);
         Damageable target = state.getTarget();
         Ari.instance.getScheduler().run(g -> {
-            Consumer<CancellableTask> consumer = task -> {
+            Consumer<RunTask> consumer = task -> {
                 double currentHealth = target.getHealth();
                 state.updateSaveHealth(currentHealth);
                 bar.color(this.getMobBarColor(target));
@@ -83,7 +83,7 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
 
     @Override
     protected void onServiceAbort(AttackBossBarState state) {
-        state.getTask().cancel();
+        state.getRunTask().cancel();
         state.setOver(true);
     }
 
@@ -94,9 +94,9 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
             if (bar != null) {
                 state.getOwner().hideBossBar(bar);
             }
-            CancellableTask task = state.getTask();
-            if (task != null) {
-                task.cancel();
+            RunTask runTask = state.getRunTask();
+            if (runTask != null) {
+                runTask.cancel();
             }
             state.setOver(true);
         }

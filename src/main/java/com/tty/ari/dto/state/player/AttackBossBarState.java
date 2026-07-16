@@ -1,7 +1,7 @@
 package com.tty.ari.dto.state.player;
 
 import com.tty.api.state.AsyncState;
-import com.tty.api.task.CancellableTask;
+import com.tty.api.scheduler.RunTask;
 import com.tty.ari.Ari;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,13 +31,13 @@ public class AttackBossBarState extends AsyncState {
     private double saveHealth;
 
     @Getter
-    private volatile CancellableTask task;
+    private volatile RunTask runTask;
 
     public AttackBossBarState(Entity owner, @NotNull Damageable target) {
         super(owner, Integer.MAX_VALUE);
         this.target = target;
         this.saveHealth = target.getHealth();
-        this.task = this.createTask();
+        this.runTask = this.createTask();
     }
 
     public void updateSaveHealth(double newHealth) {
@@ -46,20 +46,20 @@ public class AttackBossBarState extends AsyncState {
 
     public void setDamage(float damage) {
         this.damage = damage;
-        if (this.task != null) {
-            this.task.cancel();
-            this.task = this.createTask();
+        if (this.runTask != null) {
+            this.runTask.cancel();
+            this.runTask = this.createTask();
         }
     }
 
-    private synchronized CancellableTask createTask() {
+    private synchronized RunTask createTask() {
         return Ari.instance.getScheduler().runAtRegionLater(this.getOwner().getLocation(), i -> {
             if (this.bar != null) {
                 this.getOwner().hideBossBar(Objects.requireNonNull(this.bar));
                 this.setBar(null);
             }
             this.setOver(true);
-            this.task = null;
+            this.runTask = null;
         }, 30L);
     }
 

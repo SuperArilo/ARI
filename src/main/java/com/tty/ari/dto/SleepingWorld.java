@@ -32,9 +32,9 @@ public class SleepingWorld {
             this.timeManager.setAddTick(Math.min(this.getSleepPlayers() * this.getTickIncrement(), this.getMaxTickIncrement()));
             this.sendTipsActionBar();
         }
-        if (this.timeManager.getTask() != null && condition) {
+        if (this.timeManager.getRunTask() != null && condition) {
             this.timeManager.cancelTask();
-        } else if(this.timeManager.getTask() == null && !condition) {
+        } else if(this.timeManager.getRunTask() == null && !condition) {
             this.skipNightOver = false;
             this.timeManager.timeAutomaticallyPasses(10, i -> {
                 for (Player player : this.world.getPlayers()) {

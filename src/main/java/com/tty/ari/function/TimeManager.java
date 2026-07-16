@@ -1,7 +1,7 @@
 package com.tty.ari.function;
 
 import com.tty.ari.Ari;
-import com.tty.api.task.CancellableTask;
+import com.tty.api.scheduler.RunTask;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.World;
@@ -18,7 +18,7 @@ public class TimeManager {
     @Getter
     private volatile long addTick;
     @Getter
-    private  CancellableTask task;
+    private RunTask runTask;
 
     private final long[] counter = {0};
 
@@ -35,7 +35,7 @@ public class TimeManager {
     }
 
     public void timeSet(long tick, Consumer<Long> consumer) {
-        this.task = Ari.instance.getScheduler().runAtFixedRate(
+        this.runTask = Ari.instance.getScheduler().runAtFixedRate(
                 i -> {
                 long currentTime = this.world.getTime();
                 long delta = (tick - currentTime + 24000) % 24000;
@@ -66,7 +66,7 @@ public class TimeManager {
     }
 
     public void timeAutomaticallyPasses(long delayRate, Consumer<Long> consumer) {
-        this.task = Ari.instance.getScheduler().runAtFixedRate(
+        this.runTask = Ari.instance.getScheduler().runAtFixedRate(
                 t -> {
                 long newTime = this.world.getTime() + this.addTick;
                 this.world.setFullTime(newTime);
@@ -87,9 +87,9 @@ public class TimeManager {
     }
 
     public void cancelTask() {
-        if(this.task != null) {
-            this.task.cancel();
-            this.task = null;
+        if(this.runTask != null) {
+            this.runTask.cancel();
+            this.runTask = null;
         }
     }
 

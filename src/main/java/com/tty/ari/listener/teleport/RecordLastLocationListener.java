@@ -1,6 +1,6 @@
 package com.tty.ari.listener.teleport;
 
-import com.tty.api.Scheduler;
+import com.tty.api.scheduler.Scheduler;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.dto.SpawnLocation;

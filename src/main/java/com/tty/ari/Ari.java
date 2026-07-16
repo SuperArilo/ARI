@@ -3,7 +3,7 @@ package com.tty.ari;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.ConfigurationManager;
-import com.tty.api.Scheduler;
+import com.tty.api.scheduler.Scheduler;
 import com.tty.api.StatusManager;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.configuration.BaseConfiguration;

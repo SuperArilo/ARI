@@ -2,7 +2,7 @@ package com.tty.ari.listener.player;
 
 import com.google.gson.reflect.TypeToken;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
-import com.tty.api.task.CancellableTask;
+import com.tty.api.scheduler.RunTask;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.TabListConfig;
 import com.tty.ari.dto.tab.TabGroup;
@@ -21,7 +21,7 @@ public class PlayerTabListener implements Listener {
 
     private boolean isWarning = false;
 
-    private CancellableTask task;
+    private RunTask runTask;
 
     // 每次更新 tab 的周期，单位 tick
     private int updateInterval;
@@ -43,7 +43,7 @@ public class PlayerTabListener implements Listener {
             return;
         }
 
-        this.task = Ari.instance.getScheduler().runAtFixedRate(
+        this.runTask = Ari.instance.getScheduler().runAtFixedRate(
                 i -> this.updateTab(new ArrayList<>(Bukkit.getServer().getOnlinePlayers())),
                 1L,
                 this.updateInterval
@@ -51,9 +51,9 @@ public class PlayerTabListener implements Listener {
     }
 
     private void stop() {
-        if (this.task != null) {
-            this.task.cancel();
-            this.task = null;
+        if (this.runTask != null) {
+            this.runTask.cancel();
+            this.runTask = null;
         }
     }
 

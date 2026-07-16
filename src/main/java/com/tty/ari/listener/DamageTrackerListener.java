@@ -1,7 +1,7 @@
 package com.tty.ari.listener;
 
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
-import com.tty.api.task.CancellableTask;
+import com.tty.api.scheduler.RunTask;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.AttackBarConfig;
 import com.tty.ari.tool.LastDamageTracker;
@@ -21,7 +21,7 @@ public class DamageTrackerListener implements Listener {
 
     public static final LastDamageTracker DAMAGE_TRACKER = new LastDamageTracker();
 
-    private CancellableTask cleanTask;
+    private RunTask cleanRunTask;
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntity(EntityDamageEvent event) {
@@ -45,17 +45,17 @@ public class DamageTrackerListener implements Listener {
     public void onPluginReload(WhenPluginConfigReloadCompleteEvent event) {
         if (!event.getPlugin().equals(Ari.instance)) return;
         DAMAGE_TRACKER.removeAll();
-        if (this.cleanTask != null) {
-            this.cleanTask.cancel();
-            this.cleanTask = null;
+        if (this.cleanRunTask != null) {
+            this.cleanRunTask.cancel();
+            this.cleanRunTask = null;
         }
-        this.cleanTask = this.createCleanTask();
+        this.cleanRunTask = this.createCleanTask();
     }
 
-    private CancellableTask createCleanTask() {
-        if (this.cleanTask != null) {
-            this.cleanTask.cancel();
-            this.cleanTask = null;
+    private RunTask createCleanTask() {
+        if (this.cleanRunTask != null) {
+            this.cleanRunTask.cancel();
+            this.cleanRunTask = null;
         }
         AttackBarConfig attackBarConfig = Ari.instance.getConfigurationManager().get(AttackBarConfig.class);
         return Ari.instance.getScheduler().runAtFixedRate(i -> {
