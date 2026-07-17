@@ -23,19 +23,19 @@ public class DamageTrackerListener implements Listener {
 
     private RunTask cleanRunTask;
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntity(EntityDamageEvent event) {
         if (Ari.instance.getConfigurationManager().get(AttackBarConfig.class).getExcludedEntities().stream().anyMatch(i -> i.equalsIgnoreCase(event.getEntity().getType().name()))) return;
         DAMAGE_TRACKER.addRecord(event);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         DAMAGE_TRACKER.clearRecords(player);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDeath(EntityDeathEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         DAMAGE_TRACKER.clearRecords(player);
