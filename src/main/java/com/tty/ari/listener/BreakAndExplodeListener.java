@@ -127,9 +127,10 @@ public class BreakAndExplodeListener implements Listener {
         for (String s : list) {
             result.add(s.toUpperCase());
         }
-        //硬编码添加旋风人相关
-        result.add("WIND_CHARGE");
-        result.add("BREEZE_WIND_CHARGE");
+        //硬编码添加旋风人和末影龙
+        result.add(EntityType.WIND_CHARGE.name());
+        result.add(EntityType.BREEZE_WIND_CHARGE.name());
+        result.add(EntityType.ENDER_DRAGON.name());
         return result;
     }
 
