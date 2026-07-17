@@ -42,6 +42,7 @@ public class ari extends LiteralArgumentCommand {
             new Server(),
             new About(),
             new afk(),
+            new vanish(),
             new Reload()
         );
     }

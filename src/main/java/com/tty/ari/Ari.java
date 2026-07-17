@@ -207,6 +207,7 @@ public class Ari extends AbstractJavaPlugin {
         list.add(new PlayerChatService(20L, 1L, true));
         list.add(new MaintenanceBossBarService(20L, 1L, true));
         list.add(new AttackBossBarService(5L, 1L, true));
+        list.add(new PlayerVanishService(10L, 1L, false));
         return list;
     }
 
