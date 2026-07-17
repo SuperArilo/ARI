@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -120,6 +121,16 @@ public class PlayerVanishService extends StateService<State> implements Listener
             if (!(state.getOwner() instanceof Player player)) continue;
             this.showForPlayer(player, quitPlayer);
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPotionEffectRemove(EntityPotionEffectEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (this.isNotHaveState(player)) return;
+        if (!event.getModifiedType().equals(PotionEffectType.NIGHT_VISION)) return;
+        EntityPotionEffectEvent.Action action = event.getAction();
+        if (action != EntityPotionEffectEvent.Action.REMOVED && action != EntityPotionEffectEvent.Action.CLEARED) return;
+        event.setCancelled(true);
     }
 
     private void hide(Player player) {

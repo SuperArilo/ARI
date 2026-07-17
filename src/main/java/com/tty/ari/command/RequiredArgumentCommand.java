@@ -3,6 +3,7 @@ package com.tty.ari.command;
 import com.tty.api.command.BaseRequiredArgumentCommand;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
+import com.tty.ari.states.PlayerVanishService;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -54,8 +55,8 @@ public abstract class RequiredArgumentCommand<T> extends BaseRequiredArgumentCom
         Collection<? extends Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
         if (onlinePlayers.isEmpty()) return Collections.emptySet();
         Set<String> otherPlayers = onlinePlayers.stream()
+                .filter(i -> Ari.instance.getStatusManager().get(PlayerVanishService.class).isNotHaveState(i) && !sender.getName().equals(i.getName()))
                 .map(Player::getName)
-                .filter(name -> !(sender instanceof Player) || !name.equalsIgnoreCase(sender.getName()))
                 .collect(Collectors.toSet());
         if (args.length == 1) return otherPlayers;
         return PublicFunctionUtils.tabList(args[1], otherPlayers);

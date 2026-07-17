@@ -2,22 +2,17 @@ package com.tty.ari.states;
 
 import com.tty.api.StatusManager;
 import com.tty.api.state.StateService;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
+import com.tty.api.event.PlayerEnterAFKEvent;
+import com.tty.api.event.PlayerLeaveAFKEvent;
 import com.tty.ari.dto.state.player.PlayerAFKState;
 import com.tty.ari.states.gui.GuiEditFunctionStateService;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.states.teleport.PreTeleportStateService;
 import com.tty.ari.states.teleport.RandomTpStateService;
 import com.tty.ari.states.teleport.TeleportStateService;
-import com.tty.ari.tool.ConfigUtils;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import java.time.Duration;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class PlayerAFKService extends StateService<PlayerAFKState> {
 
@@ -76,21 +71,24 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
         }
 
         state.addStandCount();
-        if (state.isAFK()) {
-            if (!state.isSent()) {
-                Ari.instance.getLog().debug("player {} afk status: {}.", player.getName(), state.isAFK());
-                state.setSent(true);
-                this.sendTitle(player);
-                ConfigUtils.t("server.player.afk.player-leave", player).thenAccept(msg -> Bukkit.getServer().broadcast(msg));
+        Ari.instance.getScheduler().run(i -> {
+            if (state.isAFK()) {
+                if (!state.isSent()) {
+                    if (!new PlayerEnterAFKEvent(player).callEvent()) {
+                        state.resetStandCount();
+                    } else {
+                        state.setSent(true);
+                        Ari.instance.getLog().debug("player {} afk status: {}.", player.getName(), state.isAFK());
+                    }
+                }
+            } else {
+                if (state.isSent()) {
+                    Bukkit.getServer().getPluginManager().callEvent(new PlayerLeaveAFKEvent(player));
+                    state.setSent(false);
+                }
             }
-        } else {
-            if (state.isSent()) {
-                player.clearTitle();
-                ConfigUtils.t("server.player.afk.player-back", player).thenAccept(msg -> Bukkit.getServer().broadcast(msg));
-                state.setSent(false);
-            }
-        }
-        state.setRunning(false);
+            state.setRunning(false);
+        });
     }
 
     @Override
@@ -125,27 +123,6 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
                 Ari.instance.getLog().debug("plugin reload, remove player {} afk status.", player.getName());
             }
         }
-    }
-
-    private void sendTitle(Player player) {
-        CompletableFuture<Component> breakHintFuture = ConfigUtils.t("server.player.afk.break-hint");
-        CompletableFuture<Component> titleFuture = ConfigUtils.t("server.player.afk.title", player);
-        CompletableFuture<List<Component>> tListFuture = ConfigUtils.tAsList("server.player.afk.sub-title", player);
-
-        CompletableFuture.allOf(breakHintFuture, titleFuture, tListFuture).thenRunAsync(() -> {
-
-            List<Component> list = tListFuture.join();
-
-            Ari.instance.getScheduler().runAtEntity(player, i ->
-                player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
-                    titleFuture.join(),
-                    list.get(PublicFunctionUtils.randomGenerator(0, list.size() - 1)).append(breakHintFuture.join()),
-                    Duration.ofMillis(500),
-                    Duration.ofMillis(Integer.MAX_VALUE),
-                    Duration.ofMillis(500))
-                ),
-        null);
-        }, Ari.instance.getExecutorAsync());
     }
 
 }

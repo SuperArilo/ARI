@@ -1,13 +1,20 @@
 package com.tty.ari.listener.player;
 
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
+import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
+import com.tty.api.event.PlayerEnterAFKEvent;
+import com.tty.api.event.PlayerLeaveAFKEvent;
 import com.tty.ari.dto.state.player.PlayerAFKState;
 import com.tty.ari.states.PlayerAFKService;
+import com.tty.ari.states.PlayerVanishService;
+import com.tty.ari.tool.ConfigUtils;
 import io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import io.papermc.paper.event.player.PlayerPickItemEvent;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,7 +25,51 @@ import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 public class PlayerAFKStatusListener implements Listener {
+
+    @EventHandler
+    public void onEnter(PlayerEnterAFKEvent event) {
+        Player player = event.getPlayer();
+
+        if (!Ari.instance.getStatusManager().get(PlayerVanishService.class).isNotHaveState(player)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        CompletableFuture<Component> breakHintFuture = ConfigUtils.t("server.player.afk.break-hint");
+        CompletableFuture<Component> titleFuture = ConfigUtils.t("server.player.afk.title", player);
+        CompletableFuture<List<Component>> tListFuture = ConfigUtils.tAsList("server.player.afk.sub-title", player);
+        CompletableFuture<Component> message = ConfigUtils.t("server.player.afk.player-leave", player);
+
+        CompletableFuture.allOf(breakHintFuture, titleFuture, tListFuture, message).thenRunAsync(() -> {
+            List<Component> list = tListFuture.join();
+            Ari.instance.getScheduler().runAtEntity(player, i -> {
+                player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
+                        titleFuture.join(),
+                        list.get(PublicFunctionUtils.randomGenerator(0, list.size() - 1)).append(breakHintFuture.join()),
+                        Duration.ofMillis(500),
+                        Duration.ofMillis(Integer.MAX_VALUE),
+                        Duration.ofMillis(500))
+                );
+                Bukkit.getServer().broadcast(message.join());
+            }, null);
+        }, Ari.instance.getExecutorAsync());
+    }
+
+    @EventHandler
+    public void onLeave(PlayerLeaveAFKEvent event) {
+        Player player = event.getPlayer();
+        ConfigUtils.t("server.player.afk.player-back", player).thenAccept(msg -> {
+            if (Ari.instance.getStatusManager().get(PlayerVanishService.class).isNotHaveState(player)) {
+                Bukkit.getServer().broadcast(msg);
+            }
+            player.clearTitle();
+        });
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerAttack(PrePlayerAttackEntityEvent event) {
@@ -37,28 +88,32 @@ public class PlayerAFKStatusListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
+
         Location from = event.getFrom();
         Location to = event.getTo();
 
-        boolean lookChange = from.getYaw() != to.getYaw() || from.getPitch() != to.getPitch();
-        boolean posChange = from.getX() != to.getX() || from.getY() != to.getY() || from.getZ() != to.getZ();
+        boolean lookChanged = from.getYaw() != to.getYaw() || from.getPitch() != to.getPitch();
+        boolean posChanged = from.getX() != to.getX() || from.getY() != to.getY() || from.getZ() != to.getZ();
 
         if (this.isAFK(player)) {
-            if (lookChange || posChange) {
+            if (lookChanged) {
                 this.reset(player);
-            }
-            if (posChange) {
+                if (posChanged) {
+                    event.setTo(new Location(from.getWorld(), from.getX(), from.getY(), from.getZ(), to.getYaw(), to.getPitch()));
+                }
+            } else if (posChanged) {
                 event.setCancelled(true);
-                event.setTo(new Location(from.getWorld(), from.getX(), from.getY(), from.getZ(), to.getYaw(), to.getPitch()));
+                event.setTo(from);
             }
         } else {
-            if (posChange || lookChange) {
+            if (posChanged || lookChanged) {
                 this.reset(player);
             }
         }
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

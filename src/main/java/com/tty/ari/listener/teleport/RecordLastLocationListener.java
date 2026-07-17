@@ -4,7 +4,7 @@ import com.tty.api.scheduler.Scheduler;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.dto.SpawnLocation;
-import com.tty.ari.dto.event.CustomPlayerRespawnEvent;
+import com.tty.api.event.PlayerRespawnForFoliaEvent;
 import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -46,7 +46,7 @@ public class RecordLastLocationListener implements Listener {
                 player.setRespawnLocation(location);
                 respawnLocation = location;
             }
-            Bukkit.getPluginManager().callEvent(new CustomPlayerRespawnEvent(player, respawnLocation, player.getLocation()));
+            Bukkit.getPluginManager().callEvent(new PlayerRespawnForFoliaEvent(player, respawnLocation, player.getLocation()));
         }, null);
     }
 
@@ -63,7 +63,7 @@ public class RecordLastLocationListener implements Listener {
     }
 
     @EventHandler
-    public void onRespawnOnFolia(CustomPlayerRespawnEvent event) {
+    public void onRespawnOnFolia(PlayerRespawnForFoliaEvent event) {
         if (!Scheduler.isFolia()) return;
         Player player = event.getPlayer();
         Location respawnLocation = event.getRespawnLocation();
