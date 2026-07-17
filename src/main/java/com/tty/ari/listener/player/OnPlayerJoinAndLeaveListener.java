@@ -1,6 +1,7 @@
 package com.tty.ari.listener.player;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tty.api.StatusManager;
 import com.tty.api.enumType.Operator;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.repository.EntityRepository;
@@ -36,11 +37,9 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class OnPlayerJoinAndLeaveListener implements Listener {
 
@@ -213,17 +212,19 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        StatusManager manager = Ari.instance.getStatusManager();
         if(this.messageOnLeave) {
             event.quitMessage(null);
             ConfigUtils.t("server.message.on-leave", player).thenAccept(i -> Ari.instance.getScheduler().run(t -> Bukkit.broadcast(i)));
         }
-        List<PlayerSaveState> states = Ari.instance.getStatusManager().get(PlayerSaveDataStateService.class).getStates(player);
-        if (!states.isEmpty()) {
-            states.getFirst().setCount(new AtomicInteger(Integer.MAX_VALUE));
-        }
-        for (GuiState state : Ari.instance.getStatusManager().get(GuiManagerStateService.class).getStates(player)) {
+
+        for (PlayerSaveState state : manager.get(PlayerSaveDataStateService.class).getStates(player)) {
             state.setOver(true);
         }
+        for (GuiState state : manager.get(GuiManagerStateService.class).getStates(player)) {
+            state.setOver(true);
+        }
+
         PlayerCache.removePlayer(player.getUniqueId());
     }
 
