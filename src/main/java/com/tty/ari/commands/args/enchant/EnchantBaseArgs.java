@@ -8,6 +8,7 @@ import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import lombok.Data;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -87,6 +88,13 @@ public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
         }
 
         ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) {
+            itemMeta = Bukkit.getServer().getItemFactory().getItemMeta(itemStack.getType());
+            if (itemMeta == null) {
+                ConfigUtils.t("function.enchant.can-not-apply-item", player).thenAccept(sender::sendMessage);
+                return;
+            }
+        }
         itemMeta.addEnchant(enchantment, level, forceLevel);
         itemStack.setItemMeta(itemMeta);
 
