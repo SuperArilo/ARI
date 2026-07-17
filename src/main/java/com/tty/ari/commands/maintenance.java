@@ -13,7 +13,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @CommandMeta(displayName = "maintenance", permission = "ari.command.maintenance", tokenLength = 1, allowConsole = true)
@@ -31,29 +30,29 @@ public class maintenance extends LiteralArgumentCommand {
         service.setMaintenance(!service.isMaintenance());
 
         Component component = ConfigUtils.tAfter("server.maintenance." + (service.isMaintenance() ? "on-enable" : "on-disable"));
-        for (Player player : new ArrayList<>(Bukkit.getServer().getOnlinePlayers())) {
+        boolean isMaintenance = service.isMaintenance();
+
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             if (player.isOp()) {
                 player.sendMessage(component);
-                if (service.isMaintenance()) {
+                if (isMaintenance) {
                     service.addState(new MaintenanceBossBarState(player));
                 } else {
                     service.stopStateByOwner(player);
                 }
                 continue;
             }
-            if (service.isMaintenance()) {
+            if (isMaintenance) {
                 ConfigUtils.t("server.maintenance.to-player", player).thenAccept(player::sendMessage);
-                Ari.instance.getScheduler().runAtEntityLater(
-                        player,
-                        i -> {
-                            if (!player.isOnline()) return;
-                            player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
-                        },
-                        () -> {},
-                        this.getMaintenanceKickDelay() * 20L);
+                Ari.instance.getScheduler().runAtEntityLater(player, i -> {
+                    if (!player.isOnline() || !service.isMaintenance() || player.isOp()) return;
+                    player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
+                },
+                null, this.getMaintenanceKickDelay() * 20L);
             }
         }
-        if(!(sender instanceof Player)) {
+
+        if (!(sender instanceof Player)) {
             sender.sendMessage(component);
         }
     }
