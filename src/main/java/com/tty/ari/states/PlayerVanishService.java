@@ -9,17 +9,24 @@ import com.tty.ari.tool.ConfigUtils;
 import fr.skytasul.glowingentities.GlowingEntities;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.Collection;
 
 public class PlayerVanishService extends StateService<State> implements Listener {
 
@@ -40,6 +47,12 @@ public class PlayerVanishService extends StateService<State> implements Listener
     protected void loopExecution(State state) {
         if (!(state.getOwner() instanceof Player player) || !player.isOnline()) {
             state.setOver(true);
+            return;
+        }
+
+        GameMode gameMode = player.getGameMode();
+        if (gameMode.equals(GameMode.SURVIVAL) || gameMode.equals(GameMode.ADVENTURE)) {
+            player.setAllowFlight(true);
         }
     }
 
@@ -133,6 +146,26 @@ public class PlayerVanishService extends StateService<State> implements Listener
         event.setCancelled(true);
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onTarget(EntityTargetLivingEntityEvent event) {
+        if (event.getTarget() instanceof Player player && !this.isNotHaveState(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player player)) return;
+        if (this.isNotHaveState(player)) return;
+        if (!( event.getEntity() instanceof Mob mob)) return;
+
+        Ari.instance.getScheduler().runAtEntityLater(mob, i -> {
+            if (mob.isValid() && mob.getTarget() == player) {
+                mob.setTarget(null);
+            }
+        }, null, 20L);
+    }
+
     private void hide(Player player) {
         Bukkit.getServer().getOnlinePlayers().stream().filter(i -> !i.equals(player)).forEach(p -> this.hideForPlayer(player, p));
     }
@@ -172,12 +205,18 @@ public class PlayerVanishService extends StateService<State> implements Listener
         player.setAllowFlight(true);
         player.setFlying(true);
         Ari.instance.getNbtManager().setNbt(PlayerNbt.VANISH, player, PersistentDataType.BOOLEAN, true);
+        Collection<Entity> nearby = player.getNearbyEntities(24, 24, 24);
+        for (Entity entity : nearby) {
+            if (entity instanceof Mob mob && mob.getTarget() == player) {
+                mob.setTarget(null);
+            }
+        }
     }
 
     private void removeEffect(Player player) {
         player.removePotionEffect(PotionEffectType.NIGHT_VISION);
         player.setFlying(false);
-        player.setAllowFlight(false);
+        player.setAllowFlight(player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR);
     }
 
 }
