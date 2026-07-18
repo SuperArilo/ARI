@@ -49,6 +49,7 @@
 | 🛍️ `背包检查编辑`       | 可检查编辑指定玩家(或离线)的背包 `/inv <player_name>`           |
 | 🛠️ `服务器维护模式`      | 启动服务器维护模式 `/maintenance`                         |
 | 🚵🏻‍♀️ `AFK 模式`   | 开启自己或指定玩家的 AFK 模式 `/AFK <player_name>`           |
+| 🫥 `全局隐身`          | 开启全局隐身模式来观察服务器里的玩家 `/vanish`                     |
 ## 🗯️ 权限列表
 | 功能                            | 描述                  |
 |-------------------------------|---------------------|
@@ -73,6 +74,7 @@
 | `ari.command.inv`             | 可查看和编辑指定玩家的背包       |
 | `ari.command.afk`             | 玩家可自己开启 AFK 模式      |
 | `ari.command.afk.player`      | 开启指定玩家的 AFK 模式      |
+| `ari.command.vanish`          | 开启全局隐身模式            |
 | `ari.command.reload`          | 重载插件配置              |
 | `ari.command.maintenance`     | 启动服务器维护模式           |
 | `ari.count.home.<数量>`         | 设置玩家可拥有的最大家数量限制     |
