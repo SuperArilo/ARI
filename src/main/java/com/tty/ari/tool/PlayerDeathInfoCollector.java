@@ -181,9 +181,7 @@ public class PlayerDeathInfoCollector {
      * 玩家死于间接伤害，但之前曾被其他攻击者攻击
      * 如果玩家被直接秒杀，不算注定
      */
-    private boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records,
-                                       Entity victim, Entity firstAttacker, Entity lastAttacker,
-                                       EntityDamageEvent.DamageCause deathCause) {
+    private boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records, Entity victim, Entity firstAttacker, Entity lastAttacker, EntityDamageEvent.DamageCause deathCause) {
         
         if (records.size() == 1) {
             LastDamageTracker.DamageRecord last = records.getLast();
@@ -231,8 +229,7 @@ public class PlayerDeathInfoCollector {
         return false;
     }
 
-    private boolean evaluateEscape(Entity victim, Entity killer, Location firstAttackLocation, Location deathLocation,
-                                   EntityDamageEvent.DamageCause cause) {
+    private boolean evaluateEscape(Entity victim, Entity killer, Location firstAttackLocation, Location deathLocation, EntityDamageEvent.DamageCause cause) {
 
         if (victim.equals(killer)) return false;
 

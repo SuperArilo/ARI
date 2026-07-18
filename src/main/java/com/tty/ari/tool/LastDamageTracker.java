@@ -125,12 +125,16 @@ public class LastDamageTracker {
                     }
                     case Item dropped -> weapon = dropped.getItemStack();
                     case Projectile projectile -> {
-                        if (projectile.getShooter() instanceof LivingEntity shooter && Bukkit.isOwnedByCurrentRegion(shooter)) {
+                        switch (projectile) {
+                            case Arrow arrow -> weapon = arrow.getItemStack();
+                            case SpectralArrow spectralArrow -> weapon = spectralArrow.getItemStack();
+                            case Firework firework -> weapon = firework.getItem();
+                            case ThrowableProjectile throwable -> weapon = throwable.getItem();
+                            default -> {}
+                        }
+                        if (weapon == null && projectile.getShooter() instanceof LivingEntity shooter) {
                             EntityEquipment equipment = shooter.getEquipment();
                             if (equipment != null) weapon = equipment.getItemInMainHand();
-                        }
-                        if (weapon == null && projectile instanceof Trident trident) {
-                            weapon = trident.getItemStack();
                         }
                     }
                     default -> {}
