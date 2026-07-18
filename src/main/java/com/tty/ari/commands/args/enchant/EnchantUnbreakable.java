@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-@CommandMeta(displayName = "force level (boolean)", permission = "ari.command.enchant", tokenLength = 5)
+@CommandMeta(displayName = "unbreakable (boolean)", permission = "ari.command.enchant", tokenLength = 6)
 @ArgumentCommand
-public class EnchantForceLevel extends EnchantBaseArgs<Boolean> {
+public class EnchantUnbreakable extends EnchantBaseArgs<Boolean> {
 
     @Override
     protected @NotNull ArgumentType<Boolean> argumentType() {
@@ -30,7 +30,7 @@ public class EnchantForceLevel extends EnchantBaseArgs<Boolean> {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new EnchantUnbreakable());
+        return List.of();
     }
 
     @Override
