@@ -1,5 +1,6 @@
 package com.tty.ari.states;
 
+import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
 import com.tty.api.NbtManager;
 import com.tty.api.state.State;
 import com.tty.api.state.StateService;
@@ -7,6 +8,7 @@ import com.tty.ari.Ari;
 import com.tty.ari.enumType.PlayerNbt;
 import com.tty.ari.tool.ConfigUtils;
 import fr.skytasul.glowingentities.GlowingEntities;
+import io.papermc.paper.event.player.PlayerPickItemEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -20,8 +22,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -164,6 +165,62 @@ public class PlayerVanishService extends StateService<State> implements Listener
                 mob.setTarget(null);
             }
         }, null, 20L);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
+        Player player = event.getPlayer();
+        if (!this.isNotHaveState(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBucketFill(PlayerBucketFillEvent event) {
+        Player player = event.getPlayer();
+        if (!this.isNotHaveState(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBedEnter(PlayerBedEnterEvent event) {
+        Player player = event.getPlayer();
+        if (!this.isNotHaveState(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onConsume(PlayerItemConsumeEvent event) {
+        Player player = event.getPlayer();
+        if (!this.isNotHaveState(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onDropItem(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+        if (!this.isNotHaveState(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPickItem(PlayerPickItemEvent event) {
+        Player player = event.getPlayer();
+        if (!this.isNotHaveState(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPickupExperience(PlayerPickupExperienceEvent event) {
+        Player player = event.getPlayer();
+        if (!this.isNotHaveState(player)) {
+            event.setCancelled(true);
+        }
     }
 
     private void hide(Player player) {
