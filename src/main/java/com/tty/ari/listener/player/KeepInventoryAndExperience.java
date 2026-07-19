@@ -10,7 +10,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class KeepInventoryAndExperience implements Listener {
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getPlayer();
         FileConfiguration config = Ari.instance.getConfig();
