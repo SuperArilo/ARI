@@ -1,10 +1,12 @@
 package com.tty.ari.tool;
 
 import com.google.common.reflect.TypeToken;
+import com.tty.api.scheduler.RunTask;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.lang.DeathMessageLang;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -16,6 +18,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import static com.tty.ari.listener.DamageTrackerListener.DAMAGE_TRACKER;
 
@@ -90,7 +94,7 @@ public class PlayerDeathInfoCollector {
 
     }
 
-    public DeathInfo collect(PlayerDeathEvent event) {
+    public CompletableFuture<DeathInfo> collect(PlayerDeathEvent event) {
         DeathInfo info = new DeathInfo();
         info.victim = event.getEntity();
         info.deathTime = System.currentTimeMillis();
@@ -108,70 +112,72 @@ public class PlayerDeathInfoCollector {
         List<LastDamageTracker.DamageRecord> records = DAMAGE_TRACKER.getRecords(info.victim);
         Ari.instance.getLog().debug("damage records count: {}", records.size());
 
-        if (!records.isEmpty()) {
-            Entity firstAttacker = null;
-            Entity lastAttacker = null;
-            ItemStack lastWeapon = null;
-            Location firstAttackLocation = null;
+        if (records.isEmpty()) {
+            info.killer = event.getDamageSource().getCausingEntity();
+            if (info.killer instanceof LivingEntity e) {
+                EntityEquipment eq = e.getEquipment();
+                info.weapon = eq == null ? null : eq.getItemInMainHand();
+            }
+            Ari.instance.getLog().debug("fallback analysis used, killer: {}", info.killer != null ? info.killer.getType().name() : "null");
+            return CompletableFuture.completedFuture(info);
+        }
 
-            // 遍历所有记录，寻找第一个攻击者和最后一个攻击者
-            for (LastDamageTracker.DamageRecord r : records) {
-                Entity damager = r.damager();
-                if (damager == null) continue;
+        List<CompletableFuture<Entity>> futures = new ArrayList<>(records.size());
+        for (LastDamageTracker.DamageRecord r : records) {
+            Entity damager = r.damager();
+            if (damager == null) {
+                futures.add(CompletableFuture.completedFuture(null));
+            } else {
+                futures.add(this.resolveAttacker(damager));
+            }
+        }
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenApplyAsync(v -> {
 
-                Entity actual = this.resolveAttacker(damager);
+            List<Entity> attackers = new ArrayList<>();
+
+            Entity first = null;
+            Entity last = null;
+            ItemStack weapon = null;
+            Location firstLocation = null;
+
+            for (int i = 0; i < records.size(); i++) {
+                LastDamageTracker.DamageRecord r = records.get(i);
+                Entity actual = futures.get(i).join();
                 if (actual == null) continue;
 
-                // 记录第一个攻击者
-                if (firstAttacker == null) {
-                    firstAttacker = actual;
-                    firstAttackLocation = r.location();
-                    Ari.instance.getLog().debug("first attacker resolved: {}", actual.getType().name());
+                attackers.add(actual);
+                if (first == null) {
+                    first = actual;
+                    firstLocation = r.location();
                 }
-
-                // 更新最后一个攻击者
-                lastAttacker = actual;
-                lastWeapon = r.weapon();
-                Ari.instance.getLog().debug("last attacker updated: {}", actual.getType().name());
+                last = actual;
+                weapon = r.weapon();
             }
 
-            if (lastAttacker != null) {
-                info.killer = lastAttacker;
-                info.weapon = lastWeapon;
-
-                // 首先判断是否试图逃跑
-                info.isEscapeAttempt = this.evaluateEscape(info.victim, info.killer, firstAttackLocation, info.victim.getLocation(), info.deathCause);
-
-                // 判断是否为"注定"死亡
-                info.isDestine = this.determineIfDestine(records, info.victim, firstAttacker, lastAttacker, info.deathCause);
-
-                Ari.instance.getLog().debug("combat analysis success, killer: {}, weapon: {}", info.killer.getType().name(), info.weapon != null ? info.weapon.getType().name() : "null");
-                Ari.instance.getLog().debug("escape attempt: {}, destine: {}", info.isEscapeAttempt, info.isDestine);
-
-                // 后备武器获取
+            if (last != null) {
+                info.killer = last;
+                info.weapon = weapon;
+                info.isEscapeAttempt = this.evaluateEscape(info.victim, info.killer, firstLocation, info.victim.getLocation(), info.deathCause);
+                info.isDestine = this.determineIfDestine(records, info.victim, first, last, info.deathCause, attackers);
                 if (info.weapon == null && info.killer instanceof LivingEntity living) {
                     EntityEquipment eq = living.getEquipment();
                     if (eq != null) {
                         info.weapon = eq.getItemInMainHand();
-                        Ari.instance.getLog().debug("weapon retrieved from killer's equipment: {}", info.weapon.getType().name());
                     }
                 }
 
-                return info;
+                Ari.instance.getLog().debug("combat analysis success, killer: {}, weapon: {}", info.killer.getType().name(), info.weapon != null ? info.weapon.getType().name() : "null");
+            } else {
+                info.killer = event.getDamageSource().getCausingEntity();
+                if (info.killer instanceof LivingEntity e) {
+                    EntityEquipment eq = e.getEquipment();
+                    info.weapon = eq == null ? null : eq.getItemInMainHand();
+                }
+                Ari.instance.getLog().debug("fallback analysis used (no valid attacker)");
             }
-        }
-
-        info.killer = event.getDamageSource().getCausingEntity();
-
-        if (info.killer instanceof LivingEntity e) {
-            EntityEquipment eq = e.getEquipment();
-            info.weapon = eq == null ? null : eq.getItemInMainHand();
-        }
-
-        //无法判断是否为"注定"，默认为false
-        Ari.instance.getLog().debug("fallback analysis used, killer: {}", info.killer != null ? info.killer.getType().name() : "null");
-
-        return info;
+            Ari.instance.getLog().debug("escape attempt: {}, destine: {}", info.isEscapeAttempt, info.isDestine);
+            return info;
+        }, Ari.instance.getExecutorSync());
     }
 
     /**
@@ -181,16 +187,21 @@ public class PlayerDeathInfoCollector {
      * 玩家死于间接伤害，但之前曾被其他攻击者攻击
      * 如果玩家被直接秒杀，不算注定
      */
-    private boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records, Entity victim, Entity firstAttacker, Entity lastAttacker, EntityDamageEvent.DamageCause deathCause) {
-        
+    private boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records,
+                                       Entity victim,
+                                       Entity first,
+                                       Entity last,
+                                       EntityDamageEvent.DamageCause deathCause,
+                                       List<Entity> resolvedAttackers) {
+
         if (records.size() == 1) {
-            LastDamageTracker.DamageRecord last = records.getLast();
-            if (last != null && victim instanceof Damageable && victim instanceof Attributable attributable) {
-                double damage = last.damage();
+            LastDamageTracker.DamageRecord lastRecord = records.getLast();
+            if (lastRecord != null && victim instanceof Damageable && victim instanceof Attributable attributable) {
+                double damage = lastRecord.damage();
                 AttributeInstance attribute = attributable.getAttribute(Attribute.MAX_HEALTH);
                 if (attribute != null) {
-                    double value = attribute.getValue();
-                    if (damage >= value) {
+                    double maxHealth = attribute.getValue();
+                    if (damage >= maxHealth) {
                         Ari.instance.getLog().debug("destine: instant kill, not destine");
                         return false;
                     }
@@ -198,33 +209,23 @@ public class PlayerDeathInfoCollector {
             }
         }
 
-        // 统计不同的攻击者数量
-        Set<Entity> uniqueAttackers = new HashSet<>();
-        for (LastDamageTracker.DamageRecord record : records) {
-            Entity damager = record.damager();
-            if (damager == null) continue;
-            Entity attacker = this.resolveAttacker(damager);
-            if (attacker != null) {
-                uniqueAttackers.add(attacker);
-            }
-        }
+        Set<Entity> attackers = new HashSet<>(resolvedAttackers);
+        attackers.remove(null);
 
-        // 如果有多个不同的攻击者，就是"注定"（被围攻）
-        if (uniqueAttackers.size() > 1) {
-            Ari.instance.getLog().debug("destine: attacked by {} unique attackers", uniqueAttackers.size());
+        if (attackers.size() > 1) {
+            Ari.instance.getLog().debug("destine: attacked by {} unique attackers", attackers.size());
             return true;
         }
 
-        // 如果是间接伤害死亡
-        boolean isIndirectDamage = this.isIndirectDamageCause(deathCause);
-        if (isIndirectDamage) {
-            if (firstAttacker != null && lastAttacker != null) {
+        boolean isIndirect = this.isIndirectDamageCause(deathCause);
+        if (isIndirect) {
+            if (first != null && last != null && !first.equals(last)) {
                 Ari.instance.getLog().debug("destine: indirect damage from different attacker");
                 return true;
             }
+
         }
 
-        // 其他情况：非"注定"
         Ari.instance.getLog().debug("destine: not destine (direct combat, single attacker)");
         return false;
     }
@@ -261,15 +262,54 @@ public class PlayerDeathInfoCollector {
         return escaped;
     }
 
-    private Entity resolveAttacker(Entity damager) {
-        if (damager instanceof Projectile projectile) {
-            if (projectile.getShooter() instanceof Entity shooter) return shooter;
-            UUID owner = projectile.getOwnerUniqueId();
-            if (owner != null && PlayerCache.getPlayer(owner) instanceof Entity entity) {
-                return entity;
+    private CompletableFuture<Entity> resolveAttacker(Entity damager) {
+        if (!(damager instanceof Projectile projectile)) return CompletableFuture.completedFuture(damager);
+
+        if (!projectile.isValid()) CompletableFuture.completedFuture(null);
+        try {
+            Entity shooter = projectile.getShooter() instanceof Entity s ? s : null;
+            if (shooter != null) {
+                return CompletableFuture.completedFuture(shooter);
             }
+            UUID owner = projectile.getOwnerUniqueId();
+            if (owner != null) {
+                OfflinePlayer ownerEntity = PlayerCache.getPlayer(owner);
+                if (ownerEntity instanceof Entity t && t.isValid()) {
+                    return CompletableFuture.completedFuture(t);
+                }
+            }
+            return CompletableFuture.completedFuture(damager);
+        } catch (Throwable t) {
+            Ari.instance.getLog().error(t);
         }
-        return damager;
+
+        CompletableFuture<Entity> future = new CompletableFuture<>();
+        Consumer<RunTask> task = i -> {
+            Entity result = damager;
+            try {
+                if (projectile.isValid() && !projectile.isDead()) {
+                    if (projectile.getShooter() instanceof Entity s) {
+                        result = s;
+                    } else {
+                        UUID owner = projectile.getOwnerUniqueId();
+                        if (owner != null) {
+                            OfflinePlayer ownerEntity = PlayerCache.getPlayer(owner);
+                            if (ownerEntity instanceof Entity t && t.isValid()) {
+                                result = t;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ignored) {}
+            future.complete(result);
+        };
+        if (projectile.isValid() || !projectile.isDead()) {
+            Ari.instance.getScheduler().runAtEntity(projectile, task, null);
+        } else {
+            Ari.instance.getScheduler().runAtRegion(projectile.getLocation(), task);
+        }
+
+        return future;
     }
 
     /**

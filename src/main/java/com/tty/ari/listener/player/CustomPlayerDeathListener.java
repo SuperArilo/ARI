@@ -28,53 +28,55 @@ public class CustomPlayerDeathListener implements Listener {
     public void onDeath(PlayerDeathEvent event) {
         if (!Ari.instance.getConfig().getBoolean("server.custom-death", false)) return;
         event.deathMessage(null);
-        PlayerDeathInfoCollector.DeathInfo info = collector.collect(event);
-        Ari.instance.getLog().debug(info.toString());
+        collector.collect(event).thenComposeAsync(info -> {
+            Ari.instance.getLog().debug(info.toString());
 
-        ComponentTool tool = Ari.instance.getComponentTool();
-        boolean isSuicide = (info.victim.equals(info.killer) && info.killer instanceof Player);
+            ComponentTool tool = Ari.instance.getComponentTool();
+            boolean isSuicide = (info.victim.equals(info.killer) && info.killer instanceof Player);
 
-        CompletableFuture<Component> victimFuture = CompletableFuture.supplyAsync(() -> info.victim).thenComposeAsync(victim -> {
-            if (victim == null) return CompletableFuture.completedFuture(Component.empty());
-            return tool.setEntityHoverText(victim);
-        }, Ari.instance.getExecutorAsync()).exceptionally(e -> {
-            Ari.instance.getLog().error(e);
-            return null;
-        });
-
-        CompletableFuture<Component> killerFuture;
-        if (isSuicide) {
-            killerFuture = CompletableFuture.completedFuture(tool.text(Ari.DATA_SERVICE.getValue("base.on-player.self")));
-        } else {
-            killerFuture = CompletableFuture.supplyAsync(() -> info.killer).thenComposeAsync(killer -> {
-                if (killer == null) return CompletableFuture.completedFuture(Component.empty());
-                return tool.setEntityHoverText(killer);
+            CompletableFuture<Component> victimFuture = CompletableFuture.supplyAsync(() -> info.victim, Ari.instance.getExecutorAsync()).thenComposeAsync(victim -> {
+                if (victim == null) return CompletableFuture.completedFuture(Component.empty());
+                return tool.setEntityHoverText(victim);
             }, Ari.instance.getExecutorAsync()).exceptionally(e -> {
-                Ari.instance.getLog().error(e);
-                return null;
+                Ari.instance.getLog().error("Failed to build victim hover text", e);
+                return Component.empty();
             });
-        }
 
-        CompletableFuture<Component> weaponFuture = tool.setHoverItemText(info.weapon);
-        CompletableFuture<String> messageFuture = this.getDeathMessage(info, event);
+            CompletableFuture<Component> killerFuture;
+            if (isSuicide) {
+                killerFuture = CompletableFuture.completedFuture(tool.text(Ari.DATA_SERVICE.getValue("base.on-player.self")));
+            } else {
+                killerFuture = CompletableFuture.supplyAsync(() -> info.killer, Ari.instance.getExecutorAsync()).thenComposeAsync(killer -> {
+                    if (killer == null) return CompletableFuture.completedFuture(Component.empty());
+                    return tool.setEntityHoverText(killer);
+                }, Ari.instance.getExecutorAsync()).exceptionally(e -> {
+                    Ari.instance.getLog().error("Failed to build killer hover text", e);
+                    return Component.empty();
+                });
+            }
 
-        CompletableFuture.allOf(killerFuture, victimFuture, weaponFuture, messageFuture).thenRunAsync(() -> {
-            Component killComp = killerFuture.join();
-            Component victimComp = victimFuture.join();
-            Component weaponComp = weaponFuture.join();
-            String message = messageFuture.join();
+            CompletableFuture<Component> weaponFuture = tool.setHoverItemText(info.weapon);
+            CompletableFuture<String> messageFuture = this.getDeathMessage(info, event);
 
-            Component deathMsg = tool.text(message, Map.of(
-                    PlaceholderPlayerDeath.KILLER_UNRESOLVED.getType(), killComp,
-                    PlaceholderPlayerDeath.VICTIM_UNRESOLVED.getType(), victimComp,
-                    PlaceholderPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), weaponComp
-            ));
+            return CompletableFuture.allOf(killerFuture, victimFuture, weaponFuture, messageFuture).thenRunAsync(() -> {
 
-            Bukkit.getServer().broadcast(deathMsg);
-        }, Ari.instance.getExecutorAsync()).exceptionally(e -> {
+                Component killComp = killerFuture.join();
+                Component victimComp = victimFuture.join();
+                Component weaponComp = weaponFuture.join();
+                String message = messageFuture.join();
+
+                Component deathMsg = tool.text(message, Map.of(
+                        PlaceholderPlayerDeath.KILLER_UNRESOLVED.getType(), killComp,
+                        PlaceholderPlayerDeath.VICTIM_UNRESOLVED.getType(), victimComp,
+                        PlaceholderPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), weaponComp
+                ));
+
+                Bukkit.getServer().broadcast(deathMsg);
+            }, Ari.instance.getExecutorAsync());
+        }, Ari.instance.getExecutorAsync()).exceptionallyAsync(e -> {
             Ari.instance.getLog().error(e);
             return null;
-        });
+        }, Ari.instance.getExecutorAsync());
     }
 
     private CompletableFuture<String> getDeathMessage(PlayerDeathInfoCollector.DeathInfo info, PlayerDeathEvent event) {
