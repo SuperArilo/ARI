@@ -1,12 +1,10 @@
 package com.tty.ari.commands.sub;
 
-import com.tty.ari.Ari;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.api.event.WhenPluginExecuteReloadCommandEvent;
+import com.tty.ari.Ari;
 import com.tty.ari.command.LiteralArgumentCommand;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -22,8 +20,8 @@ public class Reload extends LiteralArgumentCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
+        Ari.instance.reload(sender);
         sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.reload.doing")));
-        Bukkit.getPluginManager().callEvent(new WhenPluginExecuteReloadCommandEvent(Ari.instance, sender));
     }
 
     @Override
