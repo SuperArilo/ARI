@@ -52,7 +52,7 @@ public class TeleportStateService extends StateService<State> {
             }
         }
 
-        if (this.hasMoved(owner) || this.hasLostHealth(player)) {
+        if (this.hasMoved(player) || this.hasLostHealth(player) || player.isInsideVehicle() || !player.getPassengers().isEmpty()) {
             owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.break"), player));
             state.setOver(true);
             return;
