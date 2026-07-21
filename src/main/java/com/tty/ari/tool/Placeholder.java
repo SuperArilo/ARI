@@ -288,7 +288,7 @@ public class Placeholder extends BasePlaceholder {
                 .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
                 .thenApply(i -> {
                     if (i == null) return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.none"));
-                    return Component.text(TimeFormatUtils.format(i.getEndTime() - System.currentTimeMillis()));
+                    return Component.text(TimeFormatUtils.format(Math.max(0, i.getEndTime() - System.currentTimeMillis())));
                 }))
         ));
         registry.register(PlaceholderDefinition.of(
