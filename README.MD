@@ -51,41 +51,43 @@
 | 🚵🏻‍♀️ `AFK 模式`   | 开启自己或指定玩家的 AFK 模式 `/AFK <player_name>`           |
 | 🫥 `全局隐身`          | 开启全局隐身模式来观察服务器里的玩家 `/vanish`                     |
 ## 🗯️ 权限列表
-| 功能                            | 描述                  |
-|-------------------------------|---------------------|
-| `ari.command.home`            | 打开自己的家列表            |
-| `ari.command.sethome`         | 设置家位置               |
-| `ari.command.warp`            | 打开服务器公共传送点          |
-| `ari.command.setwarp`         | 设置公共传送点             |
-| `ari.command.back`            | 返回上一次传送位置           |
-| `ari.command.tpa`             | 传送到其他玩家             |
-| `ari.command.tpahere`         | 请求其他玩家传送到自己         |
-| `ari.command.tpaaccept`       | 接受传送请求              |
-| `ari.command.tparefuse`       | 拒绝传送请求              |
-| `ari.command.spawn`           | 传送至出生点              |
-| `ari.command.setspawn`        | 设置出生点               |
-| `ari.command.rtp`             | 随机传送                |
-| `ari.command.time`            | 控制时间流逝              |
-| `ari.command.itemname`        | 修改物品名称              |
-| `ari.command.itemlore`        | 修改物品描述              |
-| `ari.command.itemshow`        | 展示物品                |
-| `ari.command.zako`            | 服务器玩家设置             |
-| `ari.command.enchant`         | 使用自定义附魔             |
-| `ari.command.inv`             | 可查看和编辑指定玩家的背包       |
-| `ari.command.afk`             | 玩家可自己开启 AFK 模式      |
-| `ari.command.afk.player`      | 开启指定玩家的 AFK 模式      |
-| `ari.command.vanish`          | 开启全局隐身模式            |
-| `ari.command.reload`          | 重载插件配置              |
-| `ari.command.maintenance`     | 启动服务器维护模式           |
-| `ari.count.home.<数量>`         | 设置玩家可拥有的最大家数量限制     |
-| `ari.count.warp.<数量>`         | 指定玩家可添加地标的最大数量      |
-| `ari.keep-inventory`          | 玩家死亡时保留背包内的物品       |
-| `ari.keep-experience`         | 玩家死亡时保留经验值和等级       |
-| `ari.cooldown.<传送类型>`         | 指定某种传送类型没有CD时间      |
-| `ari.totem.inventory-trigger` | 可将不死图腾放在背包里直接使用     |
-| `ari.skip-command-cooldown`   | 可跳过指令冷却时间限制         |
-| `ari.pass-spam`               | 为指定玩家跳过滥发消息被踢出服务器   |
-| `ari.pass-afk`                | 可将指定玩家或组永不处于 AFK 模式 |
+| 功能                              | 描述                  |
+|---------------------------------|---------------------|
+| `ari.command.home`              | 打开自己的家列表            |
+| `ari.command.sethome`           | 设置家位置               |
+| `ari.command.warp`              | 打开服务器公共传送点          |
+| `ari.command.setwarp`           | 设置公共传送点             |
+| `ari.command.back`              | 返回上一次传送位置           |
+| `ari.command.tpa`               | 传送到其他玩家             |
+| `ari.command.tpahere`           | 请求其他玩家传送到自己         |
+| `ari.command.tpaaccept`         | 接受传送请求              |
+| `ari.command.tparefuse`         | 拒绝传送请求              |
+| `ari.command.spawn`             | 传送至出生点              |
+| `ari.command.setspawn`          | 设置出生点               |
+| `ari.command.rtp`               | 随机传送                |
+| `ari.command.time`              | 控制时间流逝              |
+| `ari.command.itemname`          | 修改物品名称              |
+| `ari.command.itemlore`          | 修改物品描述              |
+| `ari.command.itemshow`          | 展示物品                |
+| `ari.command.zako`              | 服务器玩家设置             |
+| `ari.command.enchant`           | 使用自定义附魔             |
+| `ari.command.enderchest`        | 快捷打开自己的末影箱          |
+| `ari.command.enderchest.player` | 打开指定玩家的末影箱          |
+| `ari.command.inv`               | 可查看和编辑指定玩家的背包       |
+| `ari.command.afk`               | 玩家可自己开启 AFK 模式      |
+| `ari.command.afk.player`        | 开启指定玩家的 AFK 模式      |
+| `ari.command.vanish`            | 开启全局隐身模式            |
+| `ari.command.reload`            | 重载插件配置              |
+| `ari.command.maintenance`       | 启动服务器维护模式           |
+| `ari.count.home.<数量>`           | 设置玩家可拥有的最大家数量限制     |
+| `ari.count.warp.<数量>`           | 指定玩家可添加地标的最大数量      |
+| `ari.keep-inventory`            | 玩家死亡时保留背包内的物品       |
+| `ari.keep-experience`           | 玩家死亡时保留经验值和等级       |
+| `ari.cooldown.<传送类型>`           | 指定某种传送类型没有CD时间      |
+| `ari.totem.inventory-trigger`   | 可将不死图腾放在背包里直接使用     |
+| `ari.skip-command-cooldown`     | 可跳过指令冷却时间限制         |
+| `ari.pass-spam`                 | 为指定玩家跳过滥发消息被踢出服务器   |
+| `ari.pass-afk`                  | 可将指定玩家或组永不处于 AFK 模式 |
 ## 🛠️ 安装指南
 
 ### 环境要求
