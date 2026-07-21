@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import com.baomidou.mybatisplus.core.MybatisSqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -143,7 +143,8 @@ public class SQLInstance {
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
         configuration.addInterceptor(interceptor);
 
-        factory = new SqlSessionFactoryBuilder().build(configuration);
+        this.factory = new MybatisSqlSessionFactoryBuilder().build(configuration);
+
     }
 
     private String getTablePrefix() {
