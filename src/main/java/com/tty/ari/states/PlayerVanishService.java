@@ -5,6 +5,7 @@ import com.tty.api.NbtManager;
 import com.tty.api.state.State;
 import com.tty.api.state.StateService;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.enumType.PlayerNbt;
 import com.tty.ari.tool.ConfigUtils;
 import fr.skytasul.glowingentities.GlowingEntities;
@@ -28,6 +29,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Collection;
+import java.util.List;
 
 public class PlayerVanishService extends StateService<State> implements Listener {
 
@@ -272,8 +274,26 @@ public class PlayerVanishService extends StateService<State> implements Listener
 
     private void removeEffect(Player player) {
         player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-        player.setFlying(false);
-        player.setAllowFlight(player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR);
+        List<String> nodes = Ari.instance.getConfigurationManager().get(FunctionConfig.class).getVanishFlyPermissionNodes();
+        boolean hasPerm = false;
+        for (String node : nodes) {
+            if (Ari.PERMISSION_SERVICE.hasPermission(player, node)) {
+                hasPerm = true;
+                break;
+            }
+        }
+
+        boolean keepFlight = player.isOp()
+                || player.getGameMode() == GameMode.CREATIVE
+                || player.getGameMode() == GameMode.SPECTATOR
+                || hasPerm;
+
+        if (keepFlight) {
+            player.setAllowFlight(true);
+        } else {
+            player.setFlying(false);
+            player.setAllowFlight(false);
+        }
     }
 
 }

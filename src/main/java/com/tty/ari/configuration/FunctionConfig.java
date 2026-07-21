@@ -10,6 +10,7 @@ import com.tty.ari.enumType.FilePath;
 import com.tty.ari.enumType.TeleportType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Map;
 
 public class FunctionConfig extends AllowDownloadConfiguration {
@@ -52,6 +53,14 @@ public class FunctionConfig extends AllowDownloadConfiguration {
 
     public SpawnLocation getSpawnLocation() {
         return this.getValue("spawn.location", new TypeToken<SpawnLocation>(){}.getType(), null);
+    }
+
+    public boolean vanishIsEnable() {
+        return this.getBool("vanish.enable", false);
+    }
+
+    public List<String> getVanishFlyPermissionNodes() {
+        return this.getStringList("vanish.fly-permission-nodes");
     }
 
 }

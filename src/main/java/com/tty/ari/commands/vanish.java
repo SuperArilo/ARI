@@ -6,6 +6,7 @@ import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.state.State;
 import com.tty.ari.Ari;
 import com.tty.ari.command.LiteralArgumentCommand;
+import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.states.PlayerVanishService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -34,7 +35,7 @@ public class vanish extends LiteralArgumentCommand {
 
     @Override
     protected boolean isEnableInGame() {
-        return true;
+        return Ari.instance.getConfigurationManager().get(FunctionConfig.class).vanishIsEnable();
     }
 
 }
