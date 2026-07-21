@@ -1,6 +1,8 @@
 package com.tty.ari.gui.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.google.common.reflect.TypeToken;
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
@@ -25,6 +27,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,9 +56,10 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     @Override
     protected @NotNull List<ItemStack> beforeRenderDataItem(List<ServerHome> data) {
+        ComponentTool tool = Ari.instance.getComponentTool();
         List<ItemStack> list = new ArrayList<>();
-
         List<String> rawLore = ((BaseDataMenu) this.getBaseMenu()).getDataItems().getLore();
+        Type type = new TypeToken<Map<String, Object>>() {}.getType();
 
         for (ServerHome ph : data) {
             ItemStack itemStack = this.createItemStack(ph.getShowMaterial());
@@ -69,7 +73,22 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             }
 
             List<TextComponent> textComponents = new ArrayList<>();
-            Location location = FormatUtils.parseLocation(ph.getLocation());
+            String strLocation = ph.getLocation();
+            Location location;
+            try {
+                Map<String, Object> s = Ari.instance.getConfigurationManager().convertTo(strLocation, type);
+                if (s != null) {
+                    location = Location.deserialize(s);
+                } else {
+                    location = FormatUtils.parseLocation(ph.getLocation());
+                }
+            } catch (Exception e) {
+                Ari.instance.getLog().error(e);
+                if (this.getOfflinePlayer() instanceof Player player) {
+                    player.sendMessage(tool.text(Ari.DATA_SERVICE.getValue("base.on-error"),  player));
+                }
+                continue;
+            }
 
             Map<String, Component> types = new HashMap<>();
             types.put(IconKeyType.ID.getKey(), Component.text(ph.getHomeId()));
@@ -79,14 +98,14 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
 
             for (String line : rawLore) {
-                textComponents.add(Ari.instance.getComponentTool().text(line, types));
+                textComponents.add(tool.text(line, types));
             }
 
             this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_DATA_ID, itemStack, PersistentDataType.STRING, ph.getHomeId());
             this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, FunctionType.DATA.getName());
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(Ari.instance.getComponentTool().text(ph.getHomeName(), this.getOfflinePlayer()));
+            itemMeta.displayName(tool.text(ph.getHomeName(), this.getOfflinePlayer()));
             itemMeta.lore(textComponents);
 
             if (ph.isTopSlot()) {

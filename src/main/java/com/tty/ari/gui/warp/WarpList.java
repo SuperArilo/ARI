@@ -1,6 +1,8 @@
 package com.tty.ari.gui.warp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.google.common.reflect.TypeToken;
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
@@ -27,6 +29,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -53,8 +56,10 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     @Override
     protected @NotNull List<ItemStack> beforeRenderDataItem(List<ServerWarp> data) {
+        ComponentTool tool = Ari.instance.getComponentTool();
         List<ItemStack> list = new ArrayList<>();
         List<String> rawLore = ((BaseDataMenu) this.getBaseMenu()).getDataItems().getLore();
+        Type type = new TypeToken<Map<String, Object>>() {}.getType();
 
         for (ServerWarp serverWarp : data) {
             ItemStack itemStack = this.createItemStack(serverWarp.getShowMaterial());
@@ -68,7 +73,21 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             }
 
             List<TextComponent> textComponents = new ArrayList<>();
-            Location location = FormatUtils.parseLocation(serverWarp.getLocation());
+            Location location;
+            try {
+                Map<String, Object> s = Ari.instance.getConfigurationManager().convertTo(serverWarp.getLocation(), type);
+                if (s != null) {
+                    location = Location.deserialize(s);
+                } else {
+                    location = FormatUtils.parseLocation(serverWarp.getLocation());
+                }
+            } catch (Exception e) {
+                Ari.instance.getLog().error(e);
+                if (this.getOfflinePlayer() instanceof Player player) {
+                    player.sendMessage(tool.text(Ari.DATA_SERVICE.getValue("base.on-error"),  player));
+                }
+                continue;
+            }
 
             boolean hasPermission = serverWarp.getPermission() == null ||
                     serverWarp.getPermission().isEmpty() ||
@@ -80,24 +99,24 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             types.put(IconKeyType.X.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getX())));
             types.put(IconKeyType.Y.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getY())));
             types.put(IconKeyType.Z.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
-            types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
+            types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld() == null ? "":location.getWorld().getName()));
 
-            types.put(IconKeyType.PLAYER_NAME.getKey(), Ari.instance.getComponentTool().text(PlayerCache.getPlayer(UUID.fromString(serverWarp.getCreateBy())).getName()));
+            types.put(IconKeyType.PLAYER_NAME.getKey(), tool.text(PlayerCache.getPlayer(UUID.fromString(serverWarp.getCreateBy())).getName()));
             Double cost = serverWarp.getCost();
-            types.put(IconKeyType.COST.getKey(), Ari.instance.getComponentTool().text(cost == null || cost == 0 || Ari.ECONOMY_SERVICE.isNull() ? baseFree : cost + Ari.ECONOMY_SERVICE.getNamePlural()));
-            types.put(IconKeyType.TOP_SLOT.getKey(), Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
-            types.put(IconKeyType.PERMISSION.getKey(), Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue(hasPermission ? "base.yes_re":"base.no_re")));
+            types.put(IconKeyType.COST.getKey(), tool.text(cost == null || cost == 0 || Ari.ECONOMY_SERVICE.isNull() ? baseFree : cost + Ari.ECONOMY_SERVICE.getNamePlural()));
+            types.put(IconKeyType.TOP_SLOT.getKey(), tool.text(Ari.DATA_SERVICE.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
+            types.put(IconKeyType.PERMISSION.getKey(), tool.text(Ari.DATA_SERVICE.getValue(hasPermission ? "base.yes_re":"base.no_re")));
 
 
             for (String s : rawLore) {
-                textComponents.add(Ari.instance.getComponentTool().text(s, types));
+                textComponents.add(tool.text(s, types));
             }
 
             this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_DATA_ID, itemStack, PersistentDataType.STRING, serverWarp.getWarpId());
             this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, FunctionType.DATA.getName());
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(Ari.instance.getComponentTool().text(serverWarp.getWarpName(), this.getOfflinePlayer()));
+            itemMeta.displayName(tool.text(serverWarp.getWarpName(), this.getOfflinePlayer()));
             itemMeta.lore(textComponents);
 
             if (serverWarp.isTopSlot()) {

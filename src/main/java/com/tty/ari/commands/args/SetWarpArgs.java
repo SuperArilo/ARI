@@ -84,7 +84,7 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
                             serverWarp.setWarpId(warpId);
                             serverWarp.setWarpName(warpId);
                             serverWarp.setCreateBy(player.getUniqueId().toString());
-                            serverWarp.setLocation(player.getLocation().toString());
+                            serverWarp.setLocation(Ari.instance.getConfigurationManager().jsonToString(player.getLocation().serialize()));
                             serverWarp.setShowMaterial(PublicFunctionUtils.checkIsItem(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()).name());
                             futureWarp.complete(serverWarp);
                         }

@@ -5,6 +5,7 @@ import com.tty.ari.Migration;
 import com.tty.ari.sql_version.V1Tables;
 import com.tty.ari.sql_version.V2UpdatePreSlot;
 import com.tty.ari.sql_version.V3UpdateZakoAddRemark;
+import com.tty.ari.sql_version.V4UpdateWarpAndHomeLocation;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -76,7 +77,12 @@ public record MigrationManager(SQLType sqlType, String tablePrefix, DataSource d
     }
 
     private List<Migration> getMigrations() {
-        return List.of(new V1Tables(), new V2UpdatePreSlot(), new V3UpdateZakoAddRemark());
+        return List.of(
+                new V1Tables(),
+                new V2UpdatePreSlot(),
+                new V3UpdateZakoAddRemark(),
+                new V4UpdateWarpAndHomeLocation()
+        );
     }
 
 }

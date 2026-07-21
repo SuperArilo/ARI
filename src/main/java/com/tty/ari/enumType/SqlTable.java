@@ -10,7 +10,7 @@ public enum SqlTable {
                 description VARCHAR(255)
             )
         """),
-    PLAYER("""
+    PLAYERS("""
                 CREATE TABLE IF NOT EXISTS ${tablePrefix}players (
                 id INTEGER PRIMARY KEY ${autoIncrement},
                 player_name varchar(64) NOT NULL,
@@ -21,7 +21,7 @@ public enum SqlTable {
                 name_prefix varchar(128) DEFAULT NULL,
                 name_suffix varchar(128) DEFAULT NULL)
             """),
-    HOME("""
+    PLAYER_HOME("""
                 CREATE TABLE IF NOT EXISTS ${tablePrefix}player_home (
                 id INTEGER PRIMARY KEY ${autoIncrement},
                 home_id VARCHAR(128) NOT NULL,
@@ -31,7 +31,7 @@ public enum SqlTable {
                 show_material VARCHAR(128) NOT NULL,
                 top_slot boolean NOT NULL DEFAULT 0)
             """),
-    WARP("""
+    WARPS("""
                 CREATE TABLE IF NOT EXISTS ${tablePrefix}warps (
                 id INTEGER PRIMARY KEY ${autoIncrement},
                 warp_id VARCHAR(128) NOT NULL,

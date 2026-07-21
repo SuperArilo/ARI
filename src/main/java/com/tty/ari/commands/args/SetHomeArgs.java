@@ -73,7 +73,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
                 serverHome.setHomeId(homeId);
                 serverHome.setHomeName(homeId);
                 serverHome.setPlayerUUID(player.getUniqueId().toString());
-                serverHome.setLocation(player.getLocation().toString());
+                serverHome.setLocation(Ari.instance.getConfigurationManager().jsonToString(player.getLocation().serialize()));
                 serverHome.setShowMaterial(PublicFunctionUtils.checkIsItem(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()).name());
                 buildHomeFuture.complete(serverHome);
             });
@@ -86,7 +86,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
             return ConfigUtils.t("function.home.create-success", player).thenAccept(sender::sendMessage);
         }).exceptionally(ex -> {
             Ari.instance.getLog().error(ex, "create home error");
-            ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);
+            player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
             return null;
         });
 
