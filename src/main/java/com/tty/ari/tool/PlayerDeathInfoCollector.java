@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static com.tty.ari.listener.DamageTrackerListener.DAMAGE_TRACKER;
@@ -100,7 +101,7 @@ public class PlayerDeathInfoCollector {
 
     }
 
-    public CompletableFuture<DeathInfo> collect(PlayerDeathEvent event) {
+    public DeathInfo collect(PlayerDeathEvent event) {
         DeathInfo info = new DeathInfo();
         info.victim = event.getEntity();
         info.deathTime = System.currentTimeMillis();
@@ -125,65 +126,57 @@ public class PlayerDeathInfoCollector {
                 info.weapon = eq == null ? null : eq.getItemInMainHand();
             }
             Ari.instance.getLog().debug("fallback analysis used, killer: {}", info.killer != null ? info.killer.getType().name() : "null");
-            return CompletableFuture.completedFuture(info);
-        }
-
-        List<CompletableFuture<Entity>> futures = new ArrayList<>(records.size());
-        for (LastDamageTracker.DamageRecord r : records) {
-            Entity damager = r.damager();
-            if (damager == null) {
-                futures.add(CompletableFuture.completedFuture(null));
-            } else {
-                futures.add(this.resolveAttacker(damager));
-            }
-        }
-        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenApplyAsync(v -> {
-
-            List<Entity> attackers = new ArrayList<>();
-
-            Entity first = null;
-            Entity last = null;
-            ItemStack weapon = null;
-            Location firstLocation = null;
-
-            for (int i = 0; i < records.size(); i++) {
-                LastDamageTracker.DamageRecord r = records.get(i);
-                Entity actual = futures.get(i).join();
-                if (actual == null) continue;
-
-                attackers.add(actual);
-                if (first == null) {
-                    first = actual;
-                    firstLocation = r.location();
-                }
-                last = actual;
-                weapon = r.weapon();
-            }
-
-            if (last != null) {
-                info.killer = last;
-                info.weapon = weapon;
-                info.isEscapeAttempt = this.evaluateEscape(info.victim, info.killer, firstLocation, info.victim.getLocation(), info.deathCause);
-                info.isDestine = this.determineIfDestine(records, info.victim, first, last, info.deathCause, attackers);
-                if (info.weapon == null && info.killer instanceof LivingEntity living) {
-                    EntityEquipment eq = living.getEquipment();
-                    if (eq != null) {
-                        info.weapon = eq.getItemInMainHand();
-                    }
-                }
-
-                Ari.instance.getLog().debug("combat analysis success, killer: {}, weapon: {}", info.killer.getType().name(), info.weapon != null ? info.weapon.getType().name() : "null");
-            } else {
-                info.killer = event.getDamageSource().getCausingEntity();
-                if (info.killer instanceof LivingEntity e) {
-                    EntityEquipment eq = e.getEquipment();
-                    info.weapon = eq == null ? null : eq.getItemInMainHand();
-                }
-                Ari.instance.getLog().debug("fallback analysis used (no valid attacker)");
-            }
-            Ari.instance.getLog().debug("escape attempt: {}, destine: {}", info.isEscapeAttempt, info.isDestine);
             return info;
-        }, Ari.instance.getExecutorSync());
+        }
+
+        List<Entity> resolvedAttackers = new ArrayList<>();
+        Entity first = null;
+        Entity last = null;
+        ItemStack weapon = null;
+        Location firstLocation = null;
+
+        for (LastDamageTracker.DamageRecord record : records) {
+
+            Entity actual = null;
+            try {
+                actual = this.resolveAttacker(record.damager()).get(20, TimeUnit.MILLISECONDS);
+            } catch (Exception e) {
+                Ari.instance.getLog().error(e);
+            }
+            if (actual == null) continue;
+
+            resolvedAttackers.add(actual);
+            if (first == null) {
+                first = actual;
+                firstLocation = record.location();
+            }
+            last = actual;
+            weapon = record.weapon();
+        }
+
+        if (last != null) {
+            info.killer = last;
+            info.weapon = weapon;
+            info.isEscapeAttempt = this.evaluateEscape(info.victim, info.killer, firstLocation, info.victim.getLocation(), info.deathCause);
+            info.isDestine = this.determineIfDestine(records, info.victim, first, last, info.deathCause, resolvedAttackers);
+            if (info.weapon == null && info.killer instanceof LivingEntity living) {
+                EntityEquipment eq = living.getEquipment();
+                if (eq != null) {
+                    info.weapon = eq.getItemInMainHand();
+                }
+            }
+            Ari.instance.getLog().debug("combat analysis success, killer: {}, weapon: {}", info.killer.getType().name(), info.weapon != null ? info.weapon.getType().name() : "null");
+        } else {
+            info.killer = event.getDamageSource().getCausingEntity();
+            if (info.killer instanceof LivingEntity e) {
+                EntityEquipment eq = e.getEquipment();
+                info.weapon = eq == null ? null : eq.getItemInMainHand();
+            }
+            Ari.instance.getLog().debug("fallback analysis used (no valid attacker)");
+        }
+
+        Ari.instance.getLog().debug("escape attempt: {}, destine: {}", info.isEscapeAttempt, info.isDestine);
+        return info;
     }
 
     /**

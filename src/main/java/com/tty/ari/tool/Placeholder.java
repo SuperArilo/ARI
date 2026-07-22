@@ -38,6 +38,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 
 import static com.tty.ari.listener.teleport.RecordLastLocationListener.TELEPORT_LAST_LOCATION;
 
@@ -318,7 +319,7 @@ public class Placeholder extends BasePlaceholder {
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderShowItem.SHOW_ITEM,
-                PlaceholderResolve.ofPlayer(player -> Ari.instance.getComponentTool().setHoverItemText(player.getInventory().getItemInMainHand()))
+                PlaceholderResolve.ofPlayer(player -> CompletableFuture.completedFuture(Ari.instance.getComponentTool().setHoverItemText(player.getInventory().getItemInMainHand())))
         ));
     }
 
