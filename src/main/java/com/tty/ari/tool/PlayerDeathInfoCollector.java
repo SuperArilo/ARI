@@ -189,7 +189,7 @@ public class PlayerDeathInfoCollector {
     private boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records, Entity victim, EntityDamageEvent.DamageCause deathCause, List<Entity> resolvedAttackers) {
 
         if (records.size() == 1) {
-            LastDamageTracker.DamageRecord lastRecord = records.get(records.size() - 1);
+            LastDamageTracker.DamageRecord lastRecord = records.getFirst();
             if (lastRecord != null && victim instanceof Damageable && victim instanceof Attributable attributable) {
                 double damage = lastRecord.damage();
                 AttributeInstance attribute = attributable.getAttribute(Attribute.MAX_HEALTH);
