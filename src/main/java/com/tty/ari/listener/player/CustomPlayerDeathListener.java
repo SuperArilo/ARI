@@ -20,13 +20,11 @@ import java.util.Map;
 
 public class CustomPlayerDeathListener implements Listener {
 
-    private final PlayerDeathInfoCollector collector = new PlayerDeathInfoCollector();
-
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         if (!Ari.instance.getConfig().getBoolean("server.custom-death", false)) return;
 
-        PlayerDeathInfoCollector.DeathInfo info = collector.collect(event);
+        PlayerDeathInfoCollector.DeathInfo info = PlayerDeathInfoCollector.collect(event);
         Ari.instance.getLog().debug(info.toString());
 
         ComponentTool tool = Ari.instance.getComponentTool();

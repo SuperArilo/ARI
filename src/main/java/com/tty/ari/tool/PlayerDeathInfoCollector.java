@@ -27,15 +27,6 @@ import static com.tty.ari.listener.DamageTrackerListener.DAMAGE_TRACKER;
 
 public class PlayerDeathInfoCollector {
 
-    private static final double RANGED_ESCAPE_DISTANCE = 20.0;
-    private static final double MELEE_ESCAPE_DISTANCE = 5.0;
-
-    private static final Set<EntityDamageEvent.DamageCause> DIRECT_COMBAT_CAUSES = Set.of(
-            EntityDamageEvent.DamageCause.ENTITY_ATTACK,
-            EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK,
-            EntityDamageEvent.DamageCause.PROJECTILE
-    );
-
     public static class DeathInfo {
 
         public Player victim;
@@ -101,7 +92,7 @@ public class PlayerDeathInfoCollector {
 
     }
 
-    public DeathInfo collect(PlayerDeathEvent event) {
+    public static DeathInfo collect(PlayerDeathEvent event) {
         DeathInfo info = new DeathInfo();
         info.victim = event.getEntity();
         info.deathTime = System.currentTimeMillis();
@@ -129,7 +120,7 @@ public class PlayerDeathInfoCollector {
             return info;
         }
 
-        List<Entity> resolvedAttackers = new ArrayList<>();
+        List<Entity> attackers = new ArrayList<>();
         Entity first = null;
         Entity last = null;
         ItemStack weapon = null;
@@ -139,13 +130,13 @@ public class PlayerDeathInfoCollector {
 
             Entity actual = null;
             try {
-                actual = this.resolveAttacker(record.damager()).get(20, TimeUnit.MILLISECONDS);
+                actual = resolveAttacker(record.damager()).get(20, TimeUnit.MILLISECONDS);
             } catch (Exception e) {
-                Ari.instance.getLog().error(e);
+                Ari.instance.getLog().warn("query attacker timeout. skip...");
             }
             if (actual == null) continue;
 
-            resolvedAttackers.add(actual);
+            attackers.add(actual);
             if (first == null) {
                 first = actual;
                 firstLocation = record.location();
@@ -157,8 +148,8 @@ public class PlayerDeathInfoCollector {
         if (last != null) {
             info.killer = last;
             info.weapon = weapon;
-            info.isEscapeAttempt = this.evaluateEscape(info.victim, info.killer, firstLocation, info.victim.getLocation(), info.deathCause);
-            info.isDestine = this.determineIfDestine(records, info.victim, info.deathCause, resolvedAttackers);
+            info.isEscapeAttempt = evaluateEscape(info.victim, info.killer, firstLocation, info.victim.getLocation(), info.deathCause);
+            info.isDestine = determineIfDestine(records, info.victim, info.deathCause, attackers);
             if (info.weapon == null && info.killer instanceof LivingEntity living) {
                 EntityEquipment eq = living.getEquipment();
                 if (eq != null) {
@@ -186,7 +177,7 @@ public class PlayerDeathInfoCollector {
      * 玩家死于间接伤害，但之前曾被其他攻击者攻击
      * 如果玩家被直接秒杀，不算注定
      */
-    private boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records, Entity victim, EntityDamageEvent.DamageCause deathCause, List<Entity> resolvedAttackers) {
+    private static boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records, Entity victim, EntityDamageEvent.DamageCause deathCause, List<Entity> resolvedAttackers) {
 
         if (records.size() == 1) {
             LastDamageTracker.DamageRecord lastRecord = records.getFirst();
@@ -211,7 +202,7 @@ public class PlayerDeathInfoCollector {
             return true;
         }
 
-        boolean isIndirect = this.isIndirectDamageCause(deathCause);
+        boolean isIndirect = isIndirectDamageCause(deathCause);
         if (isIndirect && !attackers.isEmpty()) {
             Ari.instance.getLog().debug("destine: indirect damage with attacker(s)");
             return true;
@@ -222,18 +213,12 @@ public class PlayerDeathInfoCollector {
             long firstTime = records.getFirst().timestamp();
             long lastTime = records.getLast().timestamp();
             long duration = lastTime - firstTime;
-            if (duration <= 2000 && !attackers.isEmpty()) {
-                Ari.instance.getLog().debug("destine: damage duration {} ms within window {} ms", duration, 2000);
-                return true;
-            }
+            return duration <= 3000 && !attackers.isEmpty();
         }
-
-        // 5. 其余情况返回 false
-        Ari.instance.getLog().debug("destine: not destine (direct combat, no attacker, or long time span)");
         return false;
     }
 
-    private boolean evaluateEscape(Entity victim, Entity killer, Location firstAttackLocation, Location deathLocation, EntityDamageEvent.DamageCause cause) {
+    private static boolean evaluateEscape(Entity victim, Entity killer, Location firstAttackLocation, Location deathLocation, EntityDamageEvent.DamageCause cause) {
 
         if (victim.equals(killer)) return false;
 
@@ -247,13 +232,12 @@ public class PlayerDeathInfoCollector {
             return false;
         }
 
-        // 根据伤害类型调整距离阈值
         double escapeDistance;
-        if (DIRECT_COMBAT_CAUSES.contains(cause)) {
-            // 直接战斗：远程或近战
-            escapeDistance = cause == EntityDamageEvent.DamageCause.PROJECTILE ? RANGED_ESCAPE_DISTANCE : MELEE_ESCAPE_DISTANCE;
+        if (isDirectCombatCauses(cause)) {
+            // 直接战斗
+            escapeDistance = cause == EntityDamageEvent.DamageCause.PROJECTILE ? 20.0 : 5.0;
         } else {
-            // 间接伤害：使用中等阈值
+            // 间接伤害
             escapeDistance = 15.0;
         }
 
@@ -265,7 +249,7 @@ public class PlayerDeathInfoCollector {
         return escaped;
     }
 
-    private CompletableFuture<Entity> resolveAttacker(Entity damager) {
+    private static CompletableFuture<Entity> resolveAttacker(Entity damager) {
         if (!(damager instanceof Projectile projectile)) return CompletableFuture.completedFuture(damager);
 
         if (!projectile.isValid()) CompletableFuture.completedFuture(null);
@@ -318,12 +302,20 @@ public class PlayerDeathInfoCollector {
     /**
      * 判断是否为间接伤害原因
      */
-    private boolean isIndirectDamageCause(EntityDamageEvent.DamageCause cause) {
+    private static boolean isIndirectDamageCause(EntityDamageEvent.DamageCause cause) {
         return switch (cause) {
-            case MAGIC, POISON, WITHER, THORNS, FIRE_TICK, FIRE, LIGHTNING, SONIC_BOOM,
+            case LAVA, MAGIC, POISON, WITHER, THORNS, FIRE_TICK, FIRE, LIGHTNING, SONIC_BOOM,
                  CUSTOM, FALL, FALLING_BLOCK, FREEZE, FLY_INTO_WALL,
                  BLOCK_EXPLOSION, ENTITY_EXPLOSION -> true;
             default -> false;
         };
     }
+
+    private static boolean isDirectCombatCauses(EntityDamageEvent.DamageCause cause) {
+        return switch (cause) {
+            case ENTITY_ATTACK, ENTITY_SWEEP_ATTACK, PROJECTILE -> true;
+            default -> false;
+        };
+    }
+
 }
