@@ -60,10 +60,10 @@ public class PlayerDeathInfoCollector {
             this.findMessages(basePath, killerName, type, pool, resolvedKeys);
             Ari.instance.getLog().debug("death message resolved keys: {}", String.join(", ", resolvedKeys));
             if (pool.isEmpty()) {
-                Ari.instance.getLog().warn("no death message found for keyPath: {}, isDestine: {}, basePath: {}, killerName: {}", keyPath, isDestine, basePath, killerName);
+                Ari.instance.getLog().debug("no death message found for keyPath: {}, isDestine: {}, basePath: {}, killerName: {}", keyPath, isDestine, basePath, killerName);
                 String killerKey = killerName != null ? basePath + "." + killerName : "null";
                 String publicKey = basePath + ".public";
-                Ari.instance.getLog().warn("attempted keys: {} and {}", killerKey, publicKey);
+                Ari.instance.getLog().debug("attempted keys: {} and {}", killerKey, publicKey);
             }
             return pool.isEmpty() ? "" : pool.get(PublicFunctionUtils.randomGenerator(0, pool.size() - 1));
         }
