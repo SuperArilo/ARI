@@ -158,7 +158,7 @@ public class PlayerDeathInfoCollector {
             info.killer = last;
             info.weapon = weapon;
             info.isEscapeAttempt = this.evaluateEscape(info.victim, info.killer, firstLocation, info.victim.getLocation(), info.deathCause);
-            info.isDestine = this.determineIfDestine(records, info.victim, first, last, info.deathCause, resolvedAttackers);
+            info.isDestine = this.determineIfDestine(records, info.victim, info.deathCause, resolvedAttackers);
             if (info.weapon == null && info.killer instanceof LivingEntity living) {
                 EntityEquipment eq = living.getEquipment();
                 if (eq != null) {
@@ -186,15 +186,10 @@ public class PlayerDeathInfoCollector {
      * 玩家死于间接伤害，但之前曾被其他攻击者攻击
      * 如果玩家被直接秒杀，不算注定
      */
-    private boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records,
-                                       Entity victim,
-                                       Entity first,
-                                       Entity last,
-                                       EntityDamageEvent.DamageCause deathCause,
-                                       List<Entity> resolvedAttackers) {
+    private boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records, Entity victim, EntityDamageEvent.DamageCause deathCause, List<Entity> resolvedAttackers) {
 
         if (records.size() == 1) {
-            LastDamageTracker.DamageRecord lastRecord = records.getLast();
+            LastDamageTracker.DamageRecord lastRecord = records.get(records.size() - 1);
             if (lastRecord != null && victim instanceof Damageable && victim instanceof Attributable attributable) {
                 double damage = lastRecord.damage();
                 AttributeInstance attribute = attributable.getAttribute(Attribute.MAX_HEALTH);
@@ -217,15 +212,24 @@ public class PlayerDeathInfoCollector {
         }
 
         boolean isIndirect = this.isIndirectDamageCause(deathCause);
-        if (isIndirect) {
-            if (first != null && last != null && !first.equals(last)) {
-                Ari.instance.getLog().debug("destine: indirect damage from different attacker");
-                return true;
-            }
-
+        if (isIndirect && !attackers.isEmpty()) {
+            Ari.instance.getLog().debug("destine: indirect damage with attacker(s)");
+            return true;
         }
 
-        Ari.instance.getLog().debug("destine: not destine (direct combat, single attacker)");
+
+        if (records.size() >= 2) {
+            long firstTime = records.getFirst().timestamp();
+            long lastTime = records.getLast().timestamp();
+            long duration = lastTime - firstTime;
+            if (duration <= 2000 && !attackers.isEmpty()) {
+                Ari.instance.getLog().debug("destine: damage duration {} ms within window {} ms", duration, 2000);
+                return true;
+            }
+        }
+
+        // 5. 其余情况返回 false
+        Ari.instance.getLog().debug("destine: not destine (direct combat, no attacker, or long time span)");
         return false;
     }
 
