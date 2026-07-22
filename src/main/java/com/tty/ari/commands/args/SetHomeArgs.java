@@ -3,6 +3,7 @@ package com.tty.ari.commands.args;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -86,7 +87,7 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
             return ConfigUtils.t("function.home.create-success", player).thenAccept(sender::sendMessage);
         }).exceptionally(ex -> {
             Ari.instance.getLog().error(ex, "create home error");
-            player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
+            player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
             return null;
         });
 

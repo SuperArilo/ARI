@@ -1,6 +1,7 @@
 package com.tty.ari.listener.player.check;
 
 import com.tty.api.AbstractJavaPlugin;
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.enumType.FunctionType;
@@ -199,8 +200,8 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         ItemStack itemStack = ItemStack.of(Material.valueOf(item.getMaterial()));
         Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, item.getType().getName());
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.displayName(Ari.instance.getComponentTool().text(item.getName()));
-        List<TextComponent> collect = item.getLore().stream().map(Ari.instance.getComponentTool()::text).toList();
+        itemMeta.displayName(ComponentTool.text(item.getName()));
+        List<TextComponent> collect = item.getLore().stream().map(ComponentTool::text).toList();
         itemMeta.lore(collect);
         itemStack.setItemMeta(itemMeta);
         return itemStack;

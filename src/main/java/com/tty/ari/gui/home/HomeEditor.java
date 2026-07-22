@@ -1,6 +1,7 @@
 package com.tty.ari.gui.home;
 
 import com.google.common.reflect.TypeToken;
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
@@ -61,7 +62,7 @@ public class HomeEditor extends BaseConfigInventory {
                         } catch (Exception e) {
                             this.getPlugin().getLog().error(e);
                             if (this.getOfflinePlayer() instanceof Player player) {
-                                player.sendMessage(this.getPlugin().getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
+                                player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
                                 location = new Location(player.getWorld(), 0, 0, 0);
                             } else {
                                 location = new Location(Bukkit.getWorlds().getFirst(), 0, 0 ,0);

@@ -1,5 +1,6 @@
 package com.tty.ari.listener.player;
 
+import com.tty.api.ComponentTool;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.ChatConfig;
 import com.tty.ari.dto.state.player.PlayerChatState;
@@ -31,7 +32,7 @@ public class CustomChatFormantListener implements Listener {
             }
         }
         event.renderer((source, sourceDisplayName, msg, viewer) ->
-                Ari.instance.getComponentTool().text(this.getPattern(source), player, Map.of(PlaceholderPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), PlaceholderPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
+                ComponentTool.text(this.getPattern(source), player, Map.of(PlaceholderPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), PlaceholderPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
     }
 
     private String getPattern(Player player) {

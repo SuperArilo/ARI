@@ -1,10 +1,11 @@
 package com.tty.ari.listener.player;
 
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
-import com.tty.api.utils.PublicFunctionUtils;
-import com.tty.ari.Ari;
+import com.tty.api.ComponentTool;
 import com.tty.api.event.PlayerEnterAFKEvent;
 import com.tty.api.event.PlayerLeaveAFKEvent;
+import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.ari.Ari;
 import com.tty.ari.dto.state.player.PlayerAFKState;
 import com.tty.ari.states.PlayerAFKService;
 import com.tty.ari.states.PlayerVanishService;
@@ -48,7 +49,7 @@ public class PlayerAFKStatusListener implements Listener {
         CompletableFuture.allOf(breakHintFuture, titleFuture, tListFuture, message).thenRunAsync(() -> {
             List<Component> list = tListFuture.join();
             Ari.instance.getScheduler().runAtEntity(player, i -> {
-                player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
+                player.showTitle(ComponentTool.setPlayerTitle(
                         titleFuture.join(),
                         list.get(PublicFunctionUtils.randomGenerator(0, list.size() - 1)).append(breakHintFuture.join()),
                         Duration.ofMillis(500),

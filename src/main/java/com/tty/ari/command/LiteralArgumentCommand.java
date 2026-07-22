@@ -1,5 +1,6 @@
 package com.tty.ari.command;
 
+import com.tty.api.ComponentTool;
 import com.tty.api.command.BaseLiteralArgumentCommand;
 import com.tty.ari.Ari;
 import net.kyori.adventure.text.Component;
@@ -14,12 +15,12 @@ public abstract class LiteralArgumentCommand extends BaseLiteralArgumentCommand 
 
     @Override
     protected @NotNull Component tokenNotAllow() {
-        return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.public.fail"));
+        return ComponentTool.text(Ari.DATA_SERVICE.getValue("function.public.fail"));
     }
 
     @Override
     protected @NotNull Component onlyUseInGame() {
-        return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.public.not-player"));
+        return ComponentTool.text(Ari.DATA_SERVICE.getValue("function.public.not-player"));
     }
 
     @Override
@@ -29,12 +30,12 @@ public abstract class LiteralArgumentCommand extends BaseLiteralArgumentCommand 
 
     @Override
     protected @NotNull Component disableInGame() {
-        return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.command.disabled"));
+        return ComponentTool.text(Ari.DATA_SERVICE.getValue("base.command.disabled"));
     }
 
     @Override
     protected @NotNull Component taskAlreadyExits() {
-        return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.task.already-exits"));
+        return ComponentTool.text(Ari.DATA_SERVICE.getValue("base.task.already-exits"));
     }
 
 }

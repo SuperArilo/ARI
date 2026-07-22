@@ -1,5 +1,6 @@
 package com.tty.ari.listener.player;
 
+import com.tty.api.ComponentTool;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.api.scheduler.RunTask;
 import com.tty.ari.Ari;
@@ -81,7 +82,7 @@ public class PlayerTabListener implements Listener {
                 buildComponent(this.headers, player),
                 buildComponent(this.footers, player)
         );
-        player.playerListName(Ari.instance.getComponentTool().text(group.line().prefix() + player.getName() + group.line().suffix()));
+        player.playerListName(ComponentTool.text(group.line().prefix() + player.getName() + group.line().suffix()));
         try {
             player.setPlayerListOrder(order);
         } catch (Exception e) {
@@ -118,7 +119,7 @@ public class PlayerTabListener implements Listener {
 
     private Component buildComponent(List<String> lines, Player player) {
         if (lines.isEmpty()) return Component.empty();
-        return Component.join(NEW_LINE, lines.stream().map(line -> Ari.instance.getComponentTool().text(line, player)).toList());
+        return Component.join(NEW_LINE, lines.stream().map(line -> ComponentTool.text(line, player)).toList());
     }
 
     private void reorderTabList() {

@@ -1,5 +1,6 @@
 package com.tty.ari.listener;
 
+import com.tty.api.ComponentTool;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.lang.LangConfig;
@@ -23,7 +24,7 @@ public class OnPluginReloadListener implements Listener {
             Ari.PLACEHOLDER.setInstance(Ari.instance.getConfigurationManager().get(LangConfig.class));
             Ari.BUNGEECACHE.shutdown();
             PlayerCache.clean();
-            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.reload.success")));
+            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.reload.success")));
         }
     }
 }

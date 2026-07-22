@@ -1,5 +1,6 @@
 package com.tty.ari.gui;
 
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.gui.BaseInventory;
 import com.tty.ari.Ari;
@@ -48,7 +49,7 @@ public class EnderChestEdit extends BaseInventory {
         this.getPlugin().getScheduler().runAsync(i -> {
             NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.monitoree.getUniqueId().toString());
             if (data == null) {
-                this.surveillant.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                this.surveillant.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                 Ari.instance.getLog().error("uuid is not exist.", this.monitoree.getName());
                 return;
             }
@@ -71,7 +72,7 @@ public class EnderChestEdit extends BaseInventory {
         }
         NBTFileHandle data = Ari.NBT_DATA_SERVICE.getData(this.monitoree.getUniqueId().toString());
         if (data == null) {
-            this.surveillant.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            this.surveillant.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             this.getPlugin().getLog().error("uuid is not exist.", this.monitoree.getName());
             return;
         }

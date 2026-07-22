@@ -1,5 +1,6 @@
 package com.tty.ari.commands.args.tpa;
 
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -38,7 +39,7 @@ public class TpaHereArgs extends TpaBaseLiteralLiteralArgument {
         Player player = Ari.instance.getServer().getPlayerExact(args[1]);
 
         if (player == null) {
-            owner.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner));
+            owner.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner));
             return;
         }
 

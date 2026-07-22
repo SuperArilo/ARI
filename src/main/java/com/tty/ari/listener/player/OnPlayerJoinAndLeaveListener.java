@@ -1,6 +1,7 @@
 package com.tty.ari.listener.player;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tty.api.ComponentTool;
 import com.tty.api.StatusManager;
 import com.tty.api.enumType.Operator;
 import com.tty.api.event.WhenPluginConfigReloadCompleteEvent;
@@ -59,7 +60,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             banPlayer = repository.get(wrapper, PartitionKey.global()).get(2, TimeUnit.SECONDS);
         } catch (Exception e) {
             Ari.instance.getLog().error(e, "query ban list error on uuid {}", uuid.toString());
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             return;
         }
         if (banPlayer == null) return;
@@ -83,7 +84,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             return;
         }
         if (Ari.instance.getStatusManager().get(GuiManagerStateService.class).getAllStates().stream().anyMatch(t -> (t instanceof OnCheckPlayerGuiState state && state.getMonitoree().getUniqueId().equals(offlinePlayer.getUniqueId())))) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
         }
     }
 
@@ -99,7 +100,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             instance = repository.get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()), PartitionKey.global()).get(3, TimeUnit.SECONDS);
         } catch (Exception e) {
             Ari.instance.getLog().error(e, "check whitelist on uuid {} error.", uuid.toString());
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             return;
         }
         if (instance == null) {
@@ -112,7 +113,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                     repository.create(n, PartitionKey.global()).join();
                 } catch (Exception e) {
                     Ari.instance.getLog().error(e, "player uuid {} login error.", uuid.toString());
-                    event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
+                    event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error")));
                 }
             } else {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, ConfigUtils.t("server.message.on-whitelist-login").join());
@@ -159,7 +160,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
         }).whenComplete((i, ex) -> {
             if (ex != null) {
                 Ari.instance.getLog().error(ex);
-                Ari.instance.getScheduler().run(r -> player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error"))));
+                Ari.instance.getScheduler().run(r -> player.kick(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error"))));
                 return;
             }
 
@@ -193,7 +194,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 if(this.isPlayerInsideBlock(player)) {
                     Ari.instance.getLog().debug("player {} inside block, teleport safe location.", player.getName());
                     Location safeLocation = this.findSafeLocationAbove(player.getLocation());
-                    Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.teleport.not-safe-location"), player)));
+                    Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.teleport.not-safe-location"), player)));
                 }
             }, () -> Ari.instance.getLog().error("error on player join server."));
 

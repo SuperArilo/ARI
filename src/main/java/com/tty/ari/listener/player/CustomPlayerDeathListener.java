@@ -27,21 +27,20 @@ public class CustomPlayerDeathListener implements Listener {
         PlayerDeathInfoCollector.DeathInfo info = PlayerDeathInfoCollector.collect(event);
         Ari.instance.getLog().debug(info.toString());
 
-        ComponentTool tool = Ari.instance.getComponentTool();
         boolean isSuicide = false;
         if (info.victim != null) {
             isSuicide = (info.victim.equals(info.killer) && info.killer instanceof Player);
         }
-        Component victim = info.victim == null ? Component.empty():tool.setEntityHoverText(info.victim);
+        Component victim = info.victim == null ? Component.empty():ComponentTool.setEntityHoverText(info.victim);
         Component killer;
         if (isSuicide) {
-            killer = tool.text(Ari.DATA_SERVICE.getValue("base.on-player.self"));
+            killer = ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.self"));
         } else {
-            killer = info.killer == null ? Component.empty():tool.setEntityHoverText(info.killer);
+            killer = info.killer == null ? Component.empty():ComponentTool.setEntityHoverText(info.killer);
         }
-        Component weapon = tool.setHoverItemText(info.weapon);
+        Component weapon = ComponentTool.setHoverItemText(info.weapon);
         String messageFuture = this.getDeathMessage(info, event);
-        Component deathMsg = tool.text(messageFuture, Map.of(
+        Component deathMsg = ComponentTool.text(messageFuture, Map.of(
                 PlaceholderPlayerDeath.KILLER_UNRESOLVED.getType(), killer,
                 PlaceholderPlayerDeath.VICTIM_UNRESOLVED.getType(), victim,
                 PlaceholderPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), weapon

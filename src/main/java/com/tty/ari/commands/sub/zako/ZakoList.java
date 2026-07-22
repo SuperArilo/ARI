@@ -1,6 +1,7 @@
 package com.tty.ari.commands.sub.zako;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -46,7 +47,7 @@ public class ZakoList extends LiteralArgumentCommand {
         .thenCompose(v -> Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class).getList(pageNum, 10, new LambdaQueryWrapper<>(WhitelistInstance.class).orderByDesc(WhitelistInstance::getAddTime), PartitionKey.global())).thenCompose(result -> {
             List<WhitelistInstance> records = result.records();
             if (records.isEmpty()) {
-                Ari.instance.getScheduler().run(i -> sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.page-change.none-next"))));
+                Ari.instance.getScheduler().run(i -> sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.page-change.none-next"))));
                 return CompletableFuture.completedFuture(null);
             }
 

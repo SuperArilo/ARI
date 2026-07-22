@@ -2,6 +2,7 @@ package com.tty.ari.listener.warp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.enumType.FunctionType;
@@ -54,18 +55,18 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
         switch (type) {
             case RENAME -> {
                 if(!this.isContentValid(message) || warpConfig.checkWarpNickName().contains(message)) {
-                    player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
+                    player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
                     return false;
                 }
                 if(message.length() > warpConfig.getWarpNameLength()) {
-                    player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
+                    player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
                     return false;
                 }
                 data.setWarpName(message);
             }
             case PERMISSION -> {
                 if(!this.isValidPermissionNode(message)) {
-                    player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.permission.permission-error")));
+                    player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.permission.permission-error")));
                     return false;
                 }
                 data.setPermission(message);
@@ -75,7 +76,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
                     Double i = Double.parseDouble(message);
                     data.setCost(i);
                 } catch (NumberFormatException e) {
-                    player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error")));
+                    player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error")));
                     return false;
                 }
             }
@@ -86,7 +87,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
 
     @Override
     public void whenTimeout(Player player) {
-        player.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
+        player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
     }
 
     @Override
@@ -123,7 +124,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
 
             Location newLocation = player.getLocation();
             warpEditor.getWarp().setLocation(newLocation.toString());
-            clickMeta.displayName(Ari.instance.getComponentTool().text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
+            clickMeta.displayName(ComponentTool.text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
             clickItem.setItemMeta(clickMeta);
 
         });
@@ -165,7 +166,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
             for (FunctionItems v : warpEditor.getBaseMenu().getFunctionItems().values()) {
                 if (v.getType().equals(FunctionType.TOP_SLOT)) {
                     List<String> lore = v.getLore();
-                    List<TextComponent> list = lore.stream().map(p -> Ari.instance.getComponentTool().text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue(currentEditWarp.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
+                    List<TextComponent> list = lore.stream().map(p -> ComponentTool.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentTool.text(Ari.DATA_SERVICE.getValue(currentEditWarp.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
                     clickMeta.lore(list);
                     clickItem.setItemMeta(clickMeta);
                 }
@@ -206,7 +207,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
             return;
         }
         if (type.equals(FunctionType.PERMISSION) && event.getClick().isRightClick()) {
-            clickMeta.displayName(Ari.instance.getComponentTool().text(""));
+            clickMeta.displayName(ComponentTool.text(""));
             clickItem.setItemMeta(clickMeta);
             currentEditWarp.setPermission(null);
             CompletableFuture.completedFuture(null);
@@ -228,17 +229,17 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
 
     @Override
     public @NotNull Component whenPending() {
-        return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.save.ing"));
+        return ComponentTool.text(Ari.DATA_SERVICE.getValue("base.save.ing"));
     }
 
     @Override
     public @NotNull Component whenDone() {
-        return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.save.done"));
+        return ComponentTool.text(Ari.DATA_SERVICE.getValue("base.save.done"));
     }
 
     @Override
     public @NotNull Component whenError() {
-        return Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.save.error"));
+        return ComponentTool.text(Ari.DATA_SERVICE.getValue("base.save.error"));
     }
 
 }

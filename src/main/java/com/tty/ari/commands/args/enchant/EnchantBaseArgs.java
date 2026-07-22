@@ -1,5 +1,6 @@
 package com.tty.ari.commands.args.enchant;
 
+import com.tty.api.ComponentTool;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.enumType.lang.PlaceholderEnchant;
@@ -51,7 +52,7 @@ public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
         try {
             level = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
-            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error")));
+            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error")));
             level = 0;
         }
         boolean forceEnchant = false;

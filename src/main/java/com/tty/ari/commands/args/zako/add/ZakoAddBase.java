@@ -1,6 +1,7 @@
 package com.tty.ari.commands.args.zako.add;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tty.api.ComponentTool;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
@@ -50,7 +51,7 @@ public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
         }).whenComplete((v, ex) -> {
             if (ex != null) {
                 Ari.instance.getLog().error(ex);
-                sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
+                sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             }
         });
     }

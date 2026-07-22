@@ -3,14 +3,15 @@ package com.tty.ari.commands.args.zako;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.tty.ari.Ari;
-import com.tty.api.repository.PartitionKey;
-import com.tty.ari.command.RequiredArgumentCommand;
-import com.tty.ari.entity.ServerPlayer;
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
+import com.tty.api.repository.PartitionKey;
 import com.tty.api.utils.PublicFunctionUtils;
+import com.tty.ari.Ari;
+import com.tty.ari.command.RequiredArgumentCommand;
+import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerCache;
 import net.kyori.adventure.text.Component;
@@ -52,7 +53,7 @@ public class ZakoInfoArgs extends RequiredArgumentCommand<String> {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
 
         if (offlinePlayer == null) {
-            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             return;
         }
 

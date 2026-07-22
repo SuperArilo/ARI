@@ -1,5 +1,6 @@
 package com.tty.ari.commands.sub;
 
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -21,7 +22,7 @@ public class Reload extends LiteralArgumentCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         Ari.instance.reload(sender);
-        sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("function.reload.doing")));
+        sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.reload.doing")));
     }
 
     @Override

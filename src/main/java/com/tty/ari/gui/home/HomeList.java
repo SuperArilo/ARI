@@ -56,7 +56,6 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     @Override
     protected @NotNull List<ItemStack> beforeRenderDataItem(List<ServerHome> data) {
-        ComponentTool tool = Ari.instance.getComponentTool();
         List<ItemStack> list = new ArrayList<>();
         List<String> rawLore = ((BaseDataMenu) this.getBaseMenu()).getDataItems().getLore();
         Type type = new TypeToken<Map<String, Object>>() {}.getType();
@@ -85,7 +84,7 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             } catch (Exception e) {
                 Ari.instance.getLog().error(e);
                 if (this.getOfflinePlayer() instanceof Player player) {
-                    player.sendMessage(tool.text(Ari.DATA_SERVICE.getValue("base.on-error"),  player));
+                    player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error"),  player));
                 }
                 continue;
             }
@@ -98,14 +97,14 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
 
             for (String line : rawLore) {
-                textComponents.add(tool.text(line, types));
+                textComponents.add(ComponentTool.text(line, types));
             }
 
             this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_DATA_ID, itemStack, PersistentDataType.STRING, ph.getHomeId());
             this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, FunctionType.DATA.getName());
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(tool.text(ph.getHomeName(), this.getOfflinePlayer()));
+            itemMeta.displayName(ComponentTool.text(ph.getHomeName(), this.getOfflinePlayer()));
             itemMeta.lore(textComponents);
 
             if (ph.isTopSlot()) {

@@ -1,8 +1,9 @@
 package com.tty.ari.dto;
 
+import com.tty.api.ComponentTool;
+import com.tty.api.enumType.TimePeriod;
 import com.tty.ari.Ari;
 import com.tty.ari.function.TimeManager;
-import com.tty.api.enumType.TimePeriod;
 import com.tty.ari.tool.ConfigUtils;
 import lombok.Getter;
 import org.bukkit.GameRule;
@@ -41,7 +42,7 @@ public class SleepingWorld {
                     if (this.playerCondition(player.getWorld()) || !player.isSleeping() || !player.isDeeplySleeping()) continue;
                     ConfigUtils.t("server.time.skip-to-night", player).thenAccept(result ->
                             Ari.instance.getScheduler().runAtEntity(player, b ->
-                                    player.showTitle(Ari.instance.getComponentTool().setPlayerTitle(
+                                    player.showTitle(ComponentTool.setPlayerTitle(
                                         timeManager.tickToTime(i),
                                         result,
                                         Duration.ZERO,

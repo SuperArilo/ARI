@@ -1,5 +1,6 @@
 package com.tty.ari.commands;
 
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -46,7 +47,7 @@ public class maintenance extends LiteralArgumentCommand {
                 ConfigUtils.t("server.maintenance.to-player", player).thenAccept(player::sendMessage);
                 Ari.instance.getScheduler().runAtEntityLater(player, i -> {
                     if (!player.isOnline() || !service.isMaintenance() || player.isOp()) return;
-                    player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
+                    player.kick(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
                 },
                 null, this.getMaintenanceKickDelay() * 20L);
             }

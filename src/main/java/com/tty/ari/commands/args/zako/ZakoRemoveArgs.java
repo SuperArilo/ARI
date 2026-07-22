@@ -3,6 +3,7 @@ package com.tty.ari.commands.args.zako;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -48,7 +49,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
 
         if (offlinePlayer == null) {
-            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             return;
         }
 
@@ -58,7 +59,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
         LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
         repository.delete(wrapper, PartitionKey.global()).thenAccept(count -> {
             if (offlinePlayer instanceof Player player) {
-                Ari.instance.getScheduler().runAtEntity(player, i-> player.kick(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
+                Ari.instance.getScheduler().runAtEntity(player, i-> player.kick(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
             }
             String key = "function.zako.whitelist-remove-" + (count == 1 ? "success":"failure");
             if (sender instanceof Player p) {
@@ -68,7 +69,7 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
             }
         }).exceptionally(i -> {
             Ari.instance.getLog().error(i);
-            sender.sendMessage(Ari.instance.getComponentTool().text(Ari.DATA_SERVICE.getValue("base.on-error")));
+            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error")));
             return null;
         });
 
