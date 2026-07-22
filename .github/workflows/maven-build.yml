@@ -44,7 +44,11 @@ jobs:
           cd ..
 
       - name: SET VERSION FROM TAG
-        run: mvn versions:set -DnewVersion=${{ steps.tag.outputs.TAG }} -DgenerateBackupPoms=false
+        id: version
+        run: |
+          TAG=${GITHUB_REF_NAME#v}
+          echo "VERSION=$TAG" >> $GITHUB_OUTPUT
+          mvn versions:set -DnewVersion=$TAG -DgenerateBackupPoms=false
 
       - name: BUILD
         run: mvn clean package -DskipTests -DoutputDirectory=target
@@ -59,7 +63,7 @@ jobs:
       - name: COLLECT PRODUCTS
         run: |
           mkdir -p build-artifacts
-          VERSION=${{ steps.tag.outputs.TAG }}
+          VERSION=${{ steps.version.outputs.VERSION }}
           cp target/ari-*.jar build-artifacts/ari-${VERSION}.jar
 
       - name: UPLOAD
@@ -75,17 +79,36 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
-      - name: DOWNLOAD
+      - name: CHECKOUT CODE
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: DOWNLOAD ARTIFACTS
         uses: actions/download-artifact@v4
         with:
           name: jar-files
           path: build-artifacts
 
+      - name: GENERATE CHANGELOG
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --latest --strip header
+        env:
+          OUTPUT: CHANGES.md
+
+      - name: READ CHANGELOG CONTENT
+        id: read_changelog
+        run: |
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          cat CHANGES.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: CREATE RELEASE
-        id: create_release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: build-artifacts/*.jar
-          generate_release_notes: true
+          body: ${{ steps.read_changelog.outputs.body }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
