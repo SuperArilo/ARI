@@ -5,10 +5,7 @@ import com.tty.ari.Ari;
 import com.tty.ari.configuration.GameActionConfig;
 import com.tty.ari.dto.state.action.PlayerSitActionState;
 import com.tty.ari.tool.ConfigUtils;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
@@ -18,21 +15,28 @@ import org.bukkit.block.data.type.Slab;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.bukkit.util.VoxelShape;
 
 import java.util.List;
 
-public class PlayerSitActionStateService extends StateService<PlayerSitActionState> {
+public class PlayerSitActionStateService extends StateService<PlayerSitActionState> implements Listener {
 
     private List<String> disableBlockList;
 
-    private final Object disableBlockListLock = new Object();
+    private final Object lock = new Object();
 
     public PlayerSitActionStateService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance);
         this.disableBlockList = this.getDisableList();
+        Bukkit.getServer().getPluginManager().registerEvents(this, Ari.instance);
     }
 
     @Override
@@ -48,7 +52,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         Block sitBlock = state.getSitBlock();
         String sitBlockName = sitBlock.getType().name();
 
-        synchronized (this.disableBlockListLock) {
+        synchronized (this.lock) {
             if (this.disableBlockList.contains(sitBlockName)) {
                 Ari.instance.getLog().debug("player {} interact the block {} is disabled", playerName, sitBlockName);
                 return false;
@@ -150,8 +154,38 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
 
     @Override
     public void onReload() {
-        synchronized (this.disableBlockListLock) {
+        synchronized (this.lock) {
             this.disableBlockList = this.getDisableList();
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (!Ari.instance.getConfigurationManager().get(GameActionConfig.class).isSitEnable()) return;
+
+        Player player = event.getPlayer();
+        // 只处理主手
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        // 动作不匹配或旁观模式
+        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || player.getGameMode().equals(GameMode.SPECTATOR)) return;
+        // 手持空
+        if (event.getItem() != null ||
+                !player.getInventory().getItemInMainHand().isEmpty() ||
+                !player.getInventory().getItemInOffHand().isEmpty()) return;
+        // 点击的方块不存在
+        Block clickedBlock = event.getClickedBlock();
+        if (clickedBlock == null) return;
+        // 玩家已经骑乘实体
+        if (player.getVehicle() != null) return;
+        this.addState(new PlayerSitActionState(player, clickedBlock));
+    }
+
+    @EventHandler
+    public void onPlayer(PlayerToggleSneakEvent event) {
+        Player player = event.getPlayer();
+        if (this.isNotHaveState(player) && !event.isSneaking()) return;
+        for (PlayerSitActionState state : this.getStates(player)) {
+            state.setOver(true);
         }
     }
 

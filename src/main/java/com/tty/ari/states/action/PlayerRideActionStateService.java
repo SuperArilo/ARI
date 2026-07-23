@@ -1,16 +1,26 @@
 package com.tty.ari.states.action;
 
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.GameActionConfig;
 import com.tty.ari.dto.state.action.PlayerRideActionState;
 import com.tty.api.state.StateService;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
-public class PlayerRideActionStateService extends StateService<PlayerRideActionState> {
+public class PlayerRideActionStateService extends StateService<PlayerRideActionState> implements Listener {
 
     public PlayerRideActionStateService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance);
+        Bukkit.getServer().getPluginManager().registerEvents(this, Ari.instance);
     }
 
     @Override
@@ -95,4 +105,29 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
     @Override
     public void onReload() {
     }
+
+    @EventHandler
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        if (!Ari.instance.getConfigurationManager().get(GameActionConfig.class).isPlayerSitPlayerEnable()) return;
+        // 只处理主手
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        Player player = event.getPlayer();
+        // 玩家必须空手且不是旁观模式
+        if (!player.getInventory().getItemInMainHand().getType().equals(Material.AIR)
+                || player.getGameMode().equals(GameMode.SPECTATOR)) return;
+        // 被点击的实体必须是玩家
+        if (!(event.getRightClicked() instanceof Player clickedPlayer)) return;
+
+        this.addState(new PlayerRideActionState(player, clickedPlayer));
+    }
+
+    @EventHandler
+    public void onPlayer(PlayerToggleSneakEvent event) {
+        Player player = event.getPlayer();
+        if (this.isNotHaveState(player) && !event.isSneaking()) return;
+        for (PlayerRideActionState state : this.getStates(player)) {
+            state.setOver(true);
+        }
+    }
+
 }

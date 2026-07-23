@@ -155,7 +155,6 @@ public class Ari extends AbstractJavaPlugin {
                 new OnPluginReloadListener(),
                 new PlayerTabListener(),
                 new CustomChatFormantListener(),
-                new PlayerActionListener(),
                 new KeepInventoryAndExperience(),
                 new CustomPlayerDeathListener(),
                 new BreakAndExplodeListener(),
