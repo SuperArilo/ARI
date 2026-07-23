@@ -1,6 +1,5 @@
 package com.tty.ari.listener.player.check;
 
-import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.ComponentTool;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.dto.gui.FunctionItems;
@@ -35,8 +34,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit> {
 
-    public InventoryCheckListener(@NotNull AbstractJavaPlugin plugin, @NotNull GuiKeyEnum guiType) {
-        super(plugin, guiType);
+    public InventoryCheckListener(@NotNull GuiKeyEnum guiType) {
+        super(Ari.instance, guiType);
     }
 
     @Override
