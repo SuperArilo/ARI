@@ -54,13 +54,14 @@ public class AttackBossBarState extends AsyncState {
 
     private synchronized RunTask createTask() {
         return Ari.instance.getScheduler().runAtRegionLater(this.getOwner().getLocation(), i -> {
+            if (i.isCancelled()) return;
             if (this.bar != null) {
                 this.getOwner().hideBossBar(Objects.requireNonNull(this.bar));
                 this.setBar(null);
             }
             this.setOver(true);
             this.runTask = null;
-        }, 30L);
+        }, 40L);
     }
 
 }

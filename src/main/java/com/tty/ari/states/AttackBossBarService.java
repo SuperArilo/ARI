@@ -44,10 +44,11 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
         }
         state.setRunning(true);
         Damageable target = state.getTarget();
+
         Ari.instance.getScheduler().run(g -> {
             Consumer<RunTask> consumer = task -> {
-                double currentHealth = target.getHealth();
-                state.updateSaveHealth(currentHealth);
+                double effectiveHealth = getEffectiveHealth(target);
+                state.updateSaveHealth(effectiveHealth);
                 bar.color(this.getMobBarColor(target));
                 bar.progress(this.getTargetCurrentHealthProgress(target));
                 bar.name(this.buildTitle(target));
@@ -63,12 +64,16 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
 
     @Override
     protected void abortAddState(AttackBossBarState state) {
-
     }
 
     @Override
     protected void passAddState(AttackBossBarState state) {
-        BossBar bossBar = BossBar.bossBar(buildTitle(state.getTarget()), this.getTargetCurrentHealthProgress(state.getTarget()), this.getMobBarColor(state.getTarget()), BossBar.Overlay.NOTCHED_10);
+        BossBar bossBar = BossBar.bossBar(
+                buildTitle(state.getTarget()),
+                this.getTargetCurrentHealthProgress(state.getTarget()),
+                this.getMobBarColor(state.getTarget()),
+                BossBar.Overlay.NOTCHED_10
+        );
         state.setBar(bossBar);
         state.getOwner().showBossBar(bossBar);
     }
@@ -102,30 +107,56 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
         }
     }
 
-    private double getTargetHealthRatio(Damageable damageable) {
+    private double getMaxHealth(Damageable damageable) {
         if (!(damageable instanceof Attributable attr)) return 1.0;
         AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
-        double maxHealth = Math.max(1, attribute == null ? 1 : attribute.getValue());
-        return Math.clamp(damageable.getHealth(), 0, maxHealth) / maxHealth;
+        return attribute == null ? 1.0 : attribute.getValue();
+    }
+
+    private double getEffectiveHealth(Damageable damageable) {
+        return damageable.getHealth() + damageable.getAbsorptionAmount();
+    }
+
+    private double getEffectiveHealthRatio(Damageable damageable) {
+        double effective = getEffectiveHealth(damageable);
+        double max = getMaxHealth(damageable);
+        return Math.min(effective, max) / Math.max(1, max);
+    }
+
+    private float getTargetCurrentHealthProgress(Damageable damageable) {
+        return (float) getEffectiveHealthRatio(damageable);
+    }
+
+    private BossBar.Color getMobBarColor(Damageable damageable) {
+        double ratio = getEffectiveHealthRatio(damageable);
+        if (ratio >= 0.7f) return BossBar.Color.GREEN;
+        if (ratio >= 0.3f) return BossBar.Color.YELLOW;
+        return BossBar.Color.RED;
     }
 
     private Component buildTitle(Damageable entity) {
-        if (!(entity instanceof Attributable attr)) return Component.empty();
-        AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
-        double maxHealth = attribute == null ? 1 : attribute.getValue();
+        if (!(entity instanceof Attributable)) return Component.empty();
+        double maxHealth = getMaxHealth(entity);
         double currentHealth = Math.clamp(entity.getHealth(), 0, maxHealth);
-        double healthRatio = currentHealth / Math.max(1, maxHealth);
-        return ConfigUtils.tAfter(
-                "server.boss-bar.player-attack",
-                Map.of(
+        double absorption = entity.getAbsorptionAmount();
+        double effectiveHealth = currentHealth + absorption;
+        double effectiveRatio = Math.min(effectiveHealth, maxHealth) / Math.max(1, maxHealth);
+
+        Component health;
+        if (absorption > 0) {
+            health = Component.empty()
+                    .append(Component.text(FormatUtils.formatTwoDecimalPlaces(currentHealth)))
+                    .append(Component.text(" + " + FormatUtils.formatTwoDecimalPlaces(absorption)).color(TextColor.color(0xFFFF55)));
+        } else {
+            health = Component.text(FormatUtils.formatTwoDecimalPlaces(currentHealth));
+        }
+        health = health.color(getMobHealthTextColor(effectiveRatio));
+
+        return ConfigUtils.tAfter("server.boss-bar.player-attack", Map.of(
                         PlaceholderPlayerDamageBar.MOB_UNRESOLVED.getType(), entity.name(),
-                        PlaceholderPlayerDamageBar.MOB_CURRENT_HEALTH_UNRESOLVED.getType(),
-                        Component.text(FormatUtils.formatTwoDecimalPlaces(currentHealth))
-                                .color(this.getMobHealthTextColor(healthRatio)),
+                        PlaceholderPlayerDamageBar.MOB_CURRENT_HEALTH_UNRESOLVED.getType(), health,
                         PlaceholderPlayerDamageBar.MOB_MAX_HEALTH_UNRESOLVED.getType(),
-                        Component.text(FormatUtils.formatTwoDecimalPlaces(maxHealth))
-                )
-        );
+                        Component.text(FormatUtils.formatTwoDecimalPlaces(maxHealth))));
     }
 
     private TextColor getMobHealthTextColor(double ratio) {
@@ -133,20 +164,4 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
         if (ratio >= 0.3f) return TextColor.color(0xFFFF55);
         return TextColor.color(0xFF5555);
     }
-
-    private BossBar.Color getMobBarColor(Damageable damageable) {
-        if (!(damageable instanceof Attributable attr)) return BossBar.Color.GREEN;
-        AttributeInstance attribute = attr.getAttribute(Attribute.MAX_HEALTH);
-        double maxHealth = attribute == null ? 1 : attribute.getValue();
-
-        double ratio = damageable.getHealth() / Math.max(1, maxHealth);
-        if (ratio >= 0.7f) return BossBar.Color.GREEN;
-        if (ratio >= 0.3f) return BossBar.Color.YELLOW;
-        return BossBar.Color.RED;
-    }
-
-    private float getTargetCurrentHealthProgress(Damageable damageable) {
-        return (float) Math.max(0, this.getTargetHealthRatio(damageable));
-    }
-
 }
