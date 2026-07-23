@@ -54,7 +54,7 @@ public class AttackBossBarService extends StateService<AttackBossBarState> {
                 state.setRunning(false);
             };
             if (!target.isDead() && target.isValid()) {
-                Ari.instance.getScheduler().runAtEntity(target, consumer, null);
+                Ari.instance.getScheduler().runAtEntity(target, consumer, () -> state.setOver(true));
             } else {
                 Ari.instance.getScheduler().runAtRegion(target.getLocation(), consumer);
             }

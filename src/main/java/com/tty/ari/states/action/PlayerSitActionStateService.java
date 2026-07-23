@@ -1,5 +1,6 @@
 package com.tty.ari.states.action;
 
+import com.tty.api.scheduler.RunTask;
 import com.tty.api.state.StateService;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.GameActionConfig;
@@ -26,6 +27,7 @@ import org.bukkit.util.Vector;
 import org.bukkit.util.VoxelShape;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class PlayerSitActionStateService extends StateService<PlayerSitActionState> implements Listener {
 
@@ -44,7 +46,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         Player owner = (Player) state.getOwner();
         String playerName = owner.getName();
         //判断玩家是否已经 sit 了
-        if (!this.getStates(owner).isEmpty()) {
+        if (!this.isNotHaveState(owner)) {
             Ari.instance.getLog().debug("player {} is sited. skip...", playerName);
             return false;
         }
@@ -97,7 +99,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         }
 
         state.setRunning(true);
-        Ari.instance.getScheduler().runAtEntity(owner, i -> {
+        Consumer<RunTask> task = i -> {
             boolean b = !owner.isDead() &&
                     !owner.isFlying() &&
                     !owner.isSleeping() &&
@@ -108,7 +110,13 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
                 state.setOver(true);
             }
             state.setRunning(false);
-        }, null);
+        };
+        if (owner.isDead() || !owner.isValid()) {
+            Ari.instance.getScheduler().runAtRegion(owner.getLocation(), task);
+        } else {
+            Ari.instance.getScheduler().runAtEntity(owner, task, () -> state.setOver(true));
+        }
+
     }
 
     @Override

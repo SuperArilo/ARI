@@ -1,5 +1,6 @@
 package com.tty.ari.states.action;
 
+import com.tty.api.scheduler.RunTask;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.GameActionConfig;
 import com.tty.ari.dto.state.action.PlayerRideActionState;
@@ -15,6 +16,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.EquipmentSlot;
+
+import java.util.function.Consumer;
 
 public class PlayerRideActionStateService extends StateService<PlayerRideActionState> implements Listener {
 
@@ -48,7 +51,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
         Entity toolEntity = state.getTool_entity();
 
         state.setRunning(true);
-        Ari.instance.getScheduler().runAtEntity(toolEntity, i -> {
+        Consumer<RunTask> task = i -> {
             boolean b = toolEntity.getPassengers().isEmpty() ||
                     !toolEntity.isInsideVehicle() ||
                     beRidePlayer.isDead() ||
@@ -62,7 +65,14 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
                 state.setOver(true);
             }
             state.setRunning(false);
-        }, null);
+        };
+
+        if (toolEntity.isDead() || !toolEntity.isValid()) {
+            Ari.instance.getScheduler().runAtRegion(toolEntity.getLocation(), task);
+        } else {
+            Ari.instance.getScheduler().runAtEntity(toolEntity, task, () -> state.setOver(true));
+        }
+
     }
 
     @Override
