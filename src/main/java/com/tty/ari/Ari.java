@@ -195,8 +195,8 @@ public class Ari extends AbstractJavaPlugin {
         list.add(new PreTeleportStateService(20L, 1L, false));
         list.add(new TeleportStateService(20L, 1L, false));
         list.add(new CoolDownStateService(20L, 1L, true));
-        list.add(new PlayerSitActionStateService(20L, 1L, false));
-        list.add(new PlayerRideActionStateService(20L, 1L, false));
+        list.add(new PlayerSitActionStateService(5L, 1L, false));
+        list.add(new PlayerRideActionStateService(5L, 1L, false));
         list.add(new RandomTpStateService(20L, 1L, true));
         list.add(new GuiEditFunctionStateService(20L,1L, false));
         list.add(new PlayerAFKService(20L, 1L, true));
