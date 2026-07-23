@@ -8,7 +8,9 @@ public enum PlaceholderPlayer implements PlaceholderTypeEnum {
     PLAYER_WORLD("player_world"),
     PLAYER_LOCATION("player_location"),
     DEATH_LOCATION("death_location"),
-    SPAWN_LOCATION("spawn_location");
+    SPAWN_LOCATION("spawn_location"),
+    PLAYER_NAME_PREFIX("player_name_prefix"),
+    PLAYER_NAME_SUFFIX("player_name_suffix");
 
     private final String type;
 

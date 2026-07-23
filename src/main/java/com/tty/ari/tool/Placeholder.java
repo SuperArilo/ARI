@@ -24,6 +24,7 @@ import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.enumType.lang.*;
 import com.tty.ari.listener.player.PlayerSkipNight;
+import com.tty.ari.states.PlayerChatService;
 import com.tty.ari.states.teleport.PreTeleportStateService;
 import com.tty.ari.states.teleport.RandomTpStateService;
 import com.tty.ari.states.teleport.TeleportStateService;
@@ -322,6 +323,34 @@ public class Placeholder extends BasePlaceholder {
         registry.register(PlaceholderDefinition.of(
                 PlaceholderShowItem.SHOW_ITEM,
                 PlaceholderResolve.ofPlayer(player -> CompletableFuture.completedFuture(ComponentTool.setHoverItemText(player.getInventory().getItemInMainHand())))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderPlayer.PLAYER_NAME_PREFIX,
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> {
+                    String uuid = offlinePlayer.getUniqueId().toString();
+                    return Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<ServerPlayer>().eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global()).thenApply(serverPlayer -> {
+                        if (serverPlayer == null) return ComponentTool.text("", offlinePlayer);
+                        return ComponentTool.text(serverPlayer.getNamePrefix(), offlinePlayer);
+                    });
+                })
+        ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderPlayer.PLAYER_NAME_SUFFIX,
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> {
+                    String uuid = offlinePlayer.getUniqueId().toString();
+                    return Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<ServerPlayer>().eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global()).thenApply(serverPlayer -> {
+                        if (serverPlayer == null) return ComponentTool.text("", offlinePlayer);
+                        return ComponentTool.text(serverPlayer.getNameSuffix(), offlinePlayer);
+                    });
+                })
+        ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderPlayerChat.SOURCE_DISPLAY_NAME,
+                PlaceholderResolve.ofPlayer(player -> this.set(player.getName()))
+        ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderPlayerChat.CHAT_MESSAGE,
+                PlaceholderResolve.ofPlayer(player -> CompletableFuture.completedFuture(Ari.instance.getStatusManager().get(PlayerChatService.class).getStates(player).getFirst().getMessage()))
         ));
     }
 

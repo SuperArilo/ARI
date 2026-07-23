@@ -1,17 +1,14 @@
 package com.tty.ari.listener.player;
 
-import com.tty.api.ComponentTool;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.ChatConfig;
 import com.tty.ari.dto.state.player.PlayerChatState;
-import com.tty.ari.enumType.lang.PlaceholderPlayerChat;
 import com.tty.ari.states.PlayerChatService;
 import com.tty.ari.tool.ConfigUtils;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.Map;
@@ -19,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class CustomChatFormantListener implements Listener {
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true)
     public void playerSendMessage(AsyncChatEvent event) {
         Player player = event.getPlayer();
         ChatConfig chatConfig = Ari.instance.getConfigurationManager().get(ChatConfig.class);
@@ -31,8 +28,8 @@ public class CustomChatFormantListener implements Listener {
                 return;
             }
         }
-        event.renderer((source, sourceDisplayName, msg, viewer) ->
-                ComponentTool.text(this.getPattern(source), player, Map.of(PlaceholderPlayerChat.SOURCE_DISPLAY_NAME_UNRESOLVED.getType(), Component.text(source.getName()), PlaceholderPlayerChat.CHAT_MESSAGE_UNRESOLVED.getType(), msg)));
+        Component component = Ari.PLACEHOLDER.rawRender(this.getPattern(player), player).join();
+        event.renderer(((source, sourceDisplayName, message, viewer) -> component));
     }
 
     private String getPattern(Player player) {

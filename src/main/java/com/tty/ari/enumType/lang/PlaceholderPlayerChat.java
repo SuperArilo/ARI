@@ -4,8 +4,8 @@ import com.tty.api.enumType.PlaceholderTypeEnum;
 
 public enum PlaceholderPlayerChat implements PlaceholderTypeEnum {
 
-    SOURCE_DISPLAY_NAME_UNRESOLVED("source_display_name"),
-    CHAT_MESSAGE_UNRESOLVED("message");
+    SOURCE_DISPLAY_NAME("source_display_name"),
+    CHAT_MESSAGE("message");
 
     private final String type;
 
