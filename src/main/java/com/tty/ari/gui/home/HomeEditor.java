@@ -1,7 +1,5 @@
 package com.tty.ari.gui.home;
 
-import com.google.common.reflect.TypeToken;
-import com.tty.api.ComponentTool;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
@@ -13,7 +11,6 @@ import com.tty.ari.Ari;
 import com.tty.ari.configuration.home.HomeEditConfig;
 import com.tty.ari.entity.ServerHome;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -50,24 +47,7 @@ public class HomeEditor extends BaseConfigInventory {
                     case ICON -> item.setMaterial(this.home.getShowMaterial());
                     case RENAME -> item.setName(this.home.getHomeName());
                     case LOCATION -> {
-                        String strLocation = this.home.getLocation();
-                        Location location;
-                        try {
-                            Map<String, Object> o = this.getPlugin().getConfigurationManager().convertTo(strLocation, new TypeToken<Map<String, Object>>() {}.getType());
-                            if (o == null) {
-                                location = FormatUtils.parseLocation(strLocation);
-                            } else {
-                                location = Location.deserialize(o);
-                            }
-                        } catch (Exception e) {
-                            this.getPlugin().getLog().error(e);
-                            if (this.getOfflinePlayer() instanceof Player player) {
-                                player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
-                                location = new Location(player.getWorld(), 0, 0, 0);
-                            } else {
-                                location = new Location(Bukkit.getWorlds().getFirst(), 0, 0 ,0);
-                            }
-                        }
+                        Location location = FormatUtils.parseLocation(this.home.getLocation());
                         Map<IconKeyType, String> m = new HashMap<>();
                         m.put(IconKeyType.X, FormatUtils.formatTwoDecimalPlaces(location.getX()));
                         m.put(IconKeyType.Y, FormatUtils.formatTwoDecimalPlaces(location.getY()));

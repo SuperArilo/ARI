@@ -1,7 +1,6 @@
 package com.tty.ari.gui.warp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.google.common.reflect.TypeToken;
 import com.tty.api.ComponentTool;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
@@ -29,7 +28,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -58,7 +56,6 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
     protected @NotNull List<ItemStack> beforeRenderDataItem(List<ServerWarp> data) {
         List<ItemStack> list = new ArrayList<>();
         List<String> rawLore = ((BaseDataMenu) this.getBaseMenu()).getDataItems().getLore();
-        Type type = new TypeToken<Map<String, Object>>() {}.getType();
 
         for (ServerWarp serverWarp : data) {
             ItemStack itemStack = this.createItemStack(serverWarp.getShowMaterial());
@@ -72,21 +69,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             }
 
             List<TextComponent> textComponents = new ArrayList<>();
-            Location location;
-            try {
-                Map<String, Object> s = Ari.instance.getConfigurationManager().convertTo(serverWarp.getLocation(), type);
-                if (s != null) {
-                    location = Location.deserialize(s);
-                } else {
-                    location = FormatUtils.parseLocation(serverWarp.getLocation());
-                }
-            } catch (Exception e) {
-                Ari.instance.getLog().error(e);
-                if (this.getOfflinePlayer() instanceof Player player) {
-                    player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error"),  player));
-                }
-                continue;
-            }
+            Location location = FormatUtils.parseLocation(serverWarp.getLocation());
 
             boolean hasPermission = serverWarp.getPermission() == null ||
                     serverWarp.getPermission().isEmpty() ||
