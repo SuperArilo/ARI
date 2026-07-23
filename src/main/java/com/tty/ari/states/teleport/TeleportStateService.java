@@ -2,7 +2,7 @@ package com.tty.ari.states.teleport;
 
 import com.tty.api.ComponentTool;
 import com.tty.api.ConfigurationManager;
-import com.tty.api.state.State;
+import com.tty.api.state.AsyncState;
 import com.tty.api.state.StateService;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.FunctionConfig;
@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class TeleportStateService extends StateService<State> {
+public class TeleportStateService extends StateService<AsyncState> {
 
     private final Map<UUID, Double> initHealthMap = new HashMap<>();
     private final Map<UUID, Location> initLocationMap = new HashMap<>();
@@ -37,7 +37,8 @@ public class TeleportStateService extends StateService<State> {
     }
 
     @Override
-    protected void loopExecution(State state) {
+    protected void loopExecution(AsyncState state) {
+        state.setRunning(true);
         Entity owner = state.getOwner();
         if (!(owner instanceof Player player && player.isOnline())) {
             state.setOver(true);
@@ -70,12 +71,13 @@ public class TeleportStateService extends StateService<State> {
                             Duration.ofMillis(200)
                     ));
                     Ari.instance.getLog().debug("checking entity {} teleporting. count {}, max_count {}", owner.getName(), state.getCount(), state.getMax_count());
+                    state.setRunning(false);
                 }, null));
     }
 
 
     @Override
-    protected boolean canAddState(State state) {
+    protected boolean canAddState(AsyncState state) {
         Entity owner = state.getOwner();
         if (!(owner instanceof Player player && player.isOnline())) return false;
 
@@ -103,18 +105,18 @@ public class TeleportStateService extends StateService<State> {
     }
 
     @Override
-    protected void abortAddState(State state) {
+    protected void abortAddState(AsyncState state) {
 
     }
 
     @Override
-    protected void passAddState(State state) {
+    protected void passAddState(AsyncState state) {
         Entity owner = state.getOwner();
         this.addEntityInitData(owner);
     }
 
     @Override
-    protected void onEarlyExit(State state) {
+    protected void onEarlyExit(AsyncState state) {
         Entity owner = state.getOwner();
         owner.clearTitle();
         Ari.instance.getLog().debug("entity {} teleport state break.", owner.getName());
@@ -122,7 +124,7 @@ public class TeleportStateService extends StateService<State> {
     }
 
     @Override
-    protected void onFinished(State state) {
+    protected void onFinished(AsyncState state) {
         Entity owner = state.getOwner();
         owner.clearTitle();
         CoolDownStateService machine = Ari.instance.getStatusManager().get(CoolDownStateService.class);
@@ -164,7 +166,7 @@ public class TeleportStateService extends StateService<State> {
     }
 
     @Override
-    protected void onServiceAbort(State state) {
+    protected void onServiceAbort(AsyncState state) {
 
     }
 

@@ -10,6 +10,7 @@ import com.tty.api.service.placeholder.BasePlaceholder;
 import com.tty.api.service.placeholder.PlaceholderDefinition;
 import com.tty.api.service.placeholder.PlaceholderRegistry;
 import com.tty.api.service.placeholder.PlaceholderResolve;
+import com.tty.api.state.AsyncState;
 import com.tty.api.state.State;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.TimeFormatUtils;
@@ -171,7 +172,7 @@ public class Placeholder extends BasePlaceholder {
         registry.register(PlaceholderDefinition.of(
                 PlaceholderTeleport.TELEPORT_DELAY,
                 PlaceholderResolve.ofPlayer(player -> {
-                    List<State> states = Ari.instance.getStatusManager().get(TeleportStateService.class).getStates(player);
+                    List<AsyncState> states = Ari.instance.getStatusManager().get(TeleportStateService.class).getStates(player);
                     if (states.isEmpty()) return this.empty();
                     State first = states.getFirst();
                     return this.set(String.valueOf(first.getMax_count() - first.getCount().get()));

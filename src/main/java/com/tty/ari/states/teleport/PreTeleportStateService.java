@@ -23,6 +23,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
         Player owner = (Player) state.getOwner();
         Player target = (Player) state.getTarget();
 
+        state.setRunning(true);
         // 基本合法性检查
         if (target instanceof Player p && !p.isOnline()) {
             state.setOver(true);
@@ -30,10 +31,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
         }
 
         if (target == null) {
-            Ari.instance.getScheduler().runAtEntity(
-                    owner,
-                    i -> owner.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner)),
-                    null);
+            Ari.instance.getScheduler().run(i -> owner.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.teleport.unable-player"), owner)));
             state.setOver(true);
             return;
         }
@@ -44,6 +42,7 @@ public class PreTeleportStateService extends StateService<PreEntityToEntityState
             return;
         }
         Ari.instance.getLog().debug("checking player {} -> {} request. count {}, max_count {}", owner.getName(), target.getName(), state.getCount(), state.getMax_count());
+        state.setRunning(false);
     }
 
     @Override

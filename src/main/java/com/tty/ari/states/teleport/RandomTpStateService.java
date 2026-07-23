@@ -78,10 +78,7 @@ public class RandomTpStateService extends StateService<RandomTpState> {
                 || owner.isFlying()
                 || owner.isGliding()
                 || owner.isInsideVehicle()) {
-            Ari.instance.getScheduler().runAtEntity(
-                    owner,
-                    i -> owner.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.teleport.break"),owner)),
-                    null);
+            Ari.instance.getScheduler().run(i -> owner.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.teleport.break"),owner)));
             state.setOver(true);
             return;
         }
