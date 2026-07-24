@@ -3,13 +3,13 @@ package com.tty.ari;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.ConfigurationManager;
-import com.tty.api.scheduler.Scheduler;
 import com.tty.api.StatusManager;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.configuration.BaseConfiguration;
 import com.tty.api.dto.AliasItem;
 import com.tty.api.dto.CommandAlias;
 import com.tty.api.dto.TempRegisterService;
+import com.tty.api.scheduler.Scheduler;
 import com.tty.api.service.*;
 import com.tty.api.state.StateService;
 import com.tty.ari.configuration.*;
@@ -23,6 +23,7 @@ import com.tty.ari.configuration.warp.WarpEditGuiConfig;
 import com.tty.ari.configuration.warp.WarpGuiConfig;
 import com.tty.ari.dto.BungeeCache;
 import com.tty.ari.enumType.GuiType;
+import com.tty.ari.expansion.NickExpansion;
 import com.tty.ari.listener.*;
 import com.tty.ari.listener.bungee.GetServerListListener;
 import com.tty.ari.listener.home.EditHomeListener;
@@ -49,6 +50,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -208,6 +210,11 @@ public class Ari extends AbstractJavaPlugin {
         list.add(new AttackBossBarService(5L, 1L, true));
         list.add(new PlayerVanishService(5L, 1L, false));
         return list;
+    }
+
+    @Override
+    protected @Nullable List<PlaceholderExpansion> expansions() {
+        return List.of(new NickExpansion());
     }
 
     private void registerCommand() {
