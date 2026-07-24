@@ -1,9 +1,6 @@
 package com.tty.ari.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.tty.api.annotations.cache.CacheKey;
 import lombok.Data;
 
@@ -19,6 +16,8 @@ public class ServerPlayer {
     private Long firstLoginTime = 0L;
     private Long lastLoginOffTime = 0L;
     private Long totalOnlineTime = 0L;
-    private String namePrefix = "";
-    private String nameSuffix = "";
+    @TableField(value = "name_prefix", updateStrategy = FieldStrategy.ALWAYS)
+    private String namePrefix;
+    @TableField(value = "name_suffix", updateStrategy = FieldStrategy.ALWAYS)
+    private String nameSuffix;
 }

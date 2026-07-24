@@ -4,7 +4,8 @@ import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.ari.command.LiteralArgumentCommand;
-import com.tty.ari.commands.args.playername.NamePrefixArgs;
+import com.tty.ari.commands.sub.playername.prefix.ClearPrefix;
+import com.tty.ari.commands.sub.playername.prefix.SetPrefix;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class NamePrefix extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new NamePrefixArgs());
+        return List.of(new SetPrefix(), new ClearPrefix());
     }
 
     @Override
