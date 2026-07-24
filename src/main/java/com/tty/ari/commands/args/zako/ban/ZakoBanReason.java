@@ -67,11 +67,12 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
 
         if (offlinePlayer instanceof Player player) {
             List<State> states = Ari.instance.getStatusManager().get(PlayerVanishService.class).getStates(player);
-            if (states.isEmpty()) return;
-            for (State state : states) {
-                if (state.getOwner().equals(player)) {
-                    sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
-                    return;
+            if (!states.isEmpty()) {
+                for (State state : states) {
+                    if (state.getOwner().equals(player)) {
+                        sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                        return;
+                    }
                 }
             }
         }
