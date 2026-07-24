@@ -30,7 +30,8 @@ public class TeleportToPlayerArgs extends RequiredArgumentCommand<PlayerSelector
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        return this.getExcludeMePlayerList(sender, args);
+        if (args.length == 1) return RequiredArgumentCommand.getPlayerList(sender, "", true);
+        return RequiredArgumentCommand.getPlayerList(sender, args[1], true);
     }
 
     @Override

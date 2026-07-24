@@ -4,6 +4,7 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.ari.Ari;
+import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.commands.sub.tpa.TpaBaseLiteralLiteralArgument;
 import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
@@ -43,6 +44,7 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        return this.getExcludeMePlayerList(sender, args);
+        if (args.length == 1) return RequiredArgumentCommand.getPlayerList(sender, "", true);
+        return RequiredArgumentCommand.getPlayerList(sender, args[1], true);
     }
 }

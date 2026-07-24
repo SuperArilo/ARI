@@ -13,6 +13,7 @@ import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.gui.PlayerInventoryEdit;
+import com.tty.ari.states.PlayerVanishService;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.tool.PlayerCache;
 import org.bukkit.OfflinePlayer;
@@ -36,7 +37,8 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        return this.getExcludeMePlayerList(sender, args);
+        if (args.length == 1) return RequiredArgumentCommand.getPlayerList(sender, "", true);
+        return RequiredArgumentCommand.getPlayerList(sender, args[1], true);
     }
 
     @Override
@@ -46,6 +48,11 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
 
         if (offlinePlayer == null) {
+            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            return;
+        }
+
+        if (offlinePlayer instanceof Player p && !Ari.instance.getStatusManager().get(PlayerVanishService.class).isNotHaveState(p)) {
             sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             return;
         }

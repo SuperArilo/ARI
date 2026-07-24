@@ -11,8 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -53,19 +51,20 @@ public abstract class RequiredArgumentCommand<T> extends BaseRequiredArgumentCom
         return ComponentTool.text(Ari.DATA_SERVICE.getValue("base.task.already-exits"));
     }
 
-    protected CompletableFuture<Set<String>> getExcludeMePlayerList(CommandSender sender, String[] args) {
+    protected static CompletableFuture<Set<String>> getPlayerList(CommandSender sender, String content, boolean excludeMyself) {
         CompletableFuture<Set<String>> future = new CompletableFuture<>();
-        Collection<? extends Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
-        if (onlinePlayers.isEmpty()) return CompletableFuture.completedFuture(Collections.emptySet());
-        Set<String> otherPlayers = onlinePlayers.stream()
-                .filter(i -> Ari.instance.getStatusManager().get(PlayerVanishService.class).isNotHaveState(i) && !sender.getName().equals(i.getName()))
+        Set<String> collect = Bukkit.getServer().getOnlinePlayers().stream()
+                .filter(i -> {
+                    if (!excludeMyself) {
+                        return Ari.instance.getStatusManager().get(PlayerVanishService.class).isNotHaveState(i);
+                    } else {
+                        return Ari.instance.getStatusManager().get(PlayerVanishService.class).isNotHaveState(i) && !sender.getName().equals(i.getName());
+                    }
+                })
                 .map(Player::getName)
                 .collect(Collectors.toSet());
-        if (args.length == 1) {
-            future.complete(otherPlayers);
-        } else {
-            future.complete(PublicFunctionUtils.tabList(args[1], otherPlayers));
-        }
+        if (collect.isEmpty()) return CompletableFuture.completedFuture(Collections.emptySet());
+        future.complete(PublicFunctionUtils.tabList(content, collect));
         return future;
     }
 

@@ -8,22 +8,21 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.PartitionKey;
-import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerCache;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @CommandMeta(displayName = "name or uuid (string)", permission = "ari.command.zako.info", tokenLength = 3, allowConsole = true)
 @ArgumentCommand(isSuggests = true)
@@ -41,10 +40,8 @@ public class ZakoInfoArgs extends RequiredArgumentCommand<String> {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        Collection<? extends Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
-        Set<String> strings = onlinePlayers.stream().map(Player::getName).collect(Collectors.toSet());
-        if (onlinePlayers.isEmpty() || args.length != 3) return CompletableFuture.completedFuture(strings);
-        return CompletableFuture.completedFuture(PublicFunctionUtils.tabList(args[2], strings));
+        if (args.length == 2) return RequiredArgumentCommand.getPlayerList(sender, "", false);
+        return RequiredArgumentCommand.getPlayerList(sender, args[2], false);
     }
 
     @Override

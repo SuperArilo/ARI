@@ -6,18 +6,14 @@ import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.ari.command.RequiredArgumentCommand;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
-@CommandMeta(displayName = "player name or uuid (string)", permission = "ari.command.zako.ban", tokenLength = 4, allowConsole = true)
+@CommandMeta(displayName = "player name or uuid (string)", permission = "ari.command.zako.ban", tokenLength = 3, allowConsole = true)
 @ArgumentCommand(isSuggests = true)
 public class ZakoBanPlayer extends RequiredArgumentCommand<String> {
 
@@ -38,19 +34,8 @@ public class ZakoBanPlayer extends RequiredArgumentCommand<String> {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        Set<String> players = new ArrayList<>(Bukkit.getOnlinePlayers()).stream()
-                .map(Player::getName)
-                .filter(name -> !name.equals(sender.getName()))
-                .collect(Collectors.toSet());
-
-        if (args.length == 2 && players.isEmpty()) return CompletableFuture.completedFuture(Set.of("<player name or uuid (string)>"));
-        if (args.length == 2) return CompletableFuture.completedFuture(players);
-        String prefix = args[2];
-        Set<String> filtered = players.stream()
-                .filter(name -> name.startsWith(prefix))
-                .collect(Collectors.toSet());
-        if (filtered.isEmpty()) return CompletableFuture.completedFuture(Set.of("<player name or uuid (string)>"));
-        return CompletableFuture.completedFuture(filtered);
+        if (args.length == 2) return RequiredArgumentCommand.getPlayerList(sender, "", false);
+        return RequiredArgumentCommand.getPlayerList(sender, args[2], false);
     }
 
     @Override
