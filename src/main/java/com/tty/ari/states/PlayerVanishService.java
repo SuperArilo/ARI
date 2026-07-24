@@ -253,14 +253,22 @@ public class PlayerVanishService extends StateService<State> implements Listener
     }
 
     private void giveEffect(Player player) {
-        PotionEffect effect = new PotionEffect(
+        PotionEffect nightVersion = new PotionEffect(
                 PotionEffectType.NIGHT_VISION,
                 PotionEffect.INFINITE_DURATION,
                 0,
                 false,
                 false
         );
-        player.addPotionEffect(effect);
+        PotionEffect invisibility = new PotionEffect(
+                PotionEffectType.INVISIBILITY,
+                PotionEffect.INFINITE_DURATION,
+                0,
+                false,
+                false
+        );
+        player.addPotionEffect(nightVersion);
+        player.addPotionEffect(invisibility);
         player.setAllowFlight(true);
         player.setFlying(true);
         Ari.instance.getNbtManager().setNbt(PlayerNbt.VANISH, player, PersistentDataType.BOOLEAN, true);
@@ -274,6 +282,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
 
     private void removeEffect(Player player) {
         player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+        player.removePotionEffect(PotionEffectType.INVISIBILITY);
         List<String> nodes = Ari.instance.getConfigurationManager().get(FunctionConfig.class).getVanishFlyPermissionNodes();
         boolean hasPerm = false;
         for (String node : nodes) {
