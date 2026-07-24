@@ -82,7 +82,7 @@ public class PlayerTabListener implements Listener {
                 buildComponent(this.headers, player),
                 buildComponent(this.footers, player)
         );
-        player.playerListName(ComponentTool.text(group.line().prefix() + player.getName() + group.line().suffix()));
+        player.playerListName(ComponentTool.text(group.line().prefix() + player.getName() + group.line().suffix(), player));
         try {
             player.setPlayerListOrder(order);
         } catch (Exception e) {
