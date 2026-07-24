@@ -1,4 +1,4 @@
-package com.tty.ari.commands.sub.playername;
+package com.tty.ari.commands.sub.nick;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -16,9 +16,9 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-@CommandMeta(displayName = "player name or uuid (string)", permission = "ari.command.playername", tokenLength = 2, allowConsole = true)
+@CommandMeta(displayName = "player name or uuid (string)", permission = "ari.command.nick", tokenLength = 2, allowConsole = true)
 @ArgumentCommand(isSuggests = true)
-public class PlayerNameList extends RequiredArgumentCommand<String> {
+public class PlayerNickList extends RequiredArgumentCommand<String> {
 
     @Override
     protected @NotNull ArgumentType<String> argumentType() {
@@ -43,7 +43,7 @@ public class PlayerNameList extends RequiredArgumentCommand<String> {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new NamePrefix(), new NameSuffix());
+        return List.of(new NickPrefix(), new NickSuffix());
     }
 
     @Override

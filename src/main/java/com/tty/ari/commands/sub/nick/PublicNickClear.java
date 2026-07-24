@@ -1,4 +1,4 @@
-package com.tty.ari.commands.sub.playername;
+package com.tty.ari.commands.sub.nick;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.api.ComponentTool;
@@ -17,7 +17,7 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class PublicNameClear extends LiteralArgumentCommand {
+public abstract class PublicNickClear extends LiteralArgumentCommand {
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {

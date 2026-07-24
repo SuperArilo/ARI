@@ -1,4 +1,4 @@
-package com.tty.ari.commands.args.playername;
+package com.tty.ari.commands.args.nick;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class PublicPlayerNameSetArgs extends RequiredArgumentCommand<String> {
+public abstract class PublicNickSetArgs extends RequiredArgumentCommand<String> {
     @Override
     protected @NotNull ArgumentType<String> argumentType() {
         return StringArgumentType.greedyString();

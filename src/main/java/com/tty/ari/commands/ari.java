@@ -43,7 +43,7 @@ public class ari extends LiteralArgumentCommand {
             new About(),
             new afk(),
             new vanish(),
-            new PlayerName(),
+            new Nick(),
             new Reload()
         );
     }

@@ -1,24 +1,26 @@
-package com.tty.ari.commands;
+package com.tty.ari.commands.sub.nick.prefix;
 
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.ari.command.LiteralArgumentCommand;
-import com.tty.ari.commands.sub.playername.PlayerNameList;
+import com.tty.ari.commands.args.nick.SetPrefixArgs;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-@CommandMeta(displayName = "playername", permission = "ari.command.playername", tokenLength = 2, allowConsole = true)
+@CommandMeta(displayName = "set", permission = "ari.command.nick", tokenLength = 4, allowConsole = true)
 @LiteralCommand
-public class PlayerName extends LiteralArgumentCommand {
+public class SetPrefix extends LiteralArgumentCommand {
 
     @Override
-    public void execute(CommandSender sender, String[] args) {}
+    public void execute(CommandSender sender, String[] args) {
+
+    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new PlayerNameList());
+        return List.of(new SetPrefixArgs());
     }
 
     @Override

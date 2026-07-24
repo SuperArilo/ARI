@@ -1,25 +1,27 @@
-package com.tty.ari.commands.sub.playername;
+package com.tty.ari.commands.sub.nick;
 
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.ari.command.LiteralArgumentCommand;
-import com.tty.ari.commands.sub.playername.prefix.ClearPrefix;
-import com.tty.ari.commands.sub.playername.prefix.SetPrefix;
+import com.tty.ari.commands.sub.nick.suffix.ClearSuffix;
+import com.tty.ari.commands.sub.nick.suffix.SetSuffix;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-@CommandMeta(displayName = "prefix", permission = "ari.command.playername", tokenLength = 3, allowConsole = true)
+@CommandMeta(displayName = "suffix", permission = "ari.command.nick", tokenLength = 3, allowConsole = true)
 @LiteralCommand
-public class NamePrefix extends LiteralArgumentCommand {
+public class NickSuffix extends LiteralArgumentCommand {
 
     @Override
-    public void execute(CommandSender sender, String[] args) {}
+    public void execute(CommandSender sender, String[] args) {
+
+    }
 
     @Override
     public List<SuperHandsomeCommand> thenCommands() {
-        return List.of(new SetPrefix(), new ClearPrefix());
+        return List.of(new SetSuffix(), new ClearSuffix());
     }
 
     @Override
