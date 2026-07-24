@@ -105,10 +105,21 @@ jobs:
           cat CHANGES.md >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: CHECK PRE-RELEASE STATUS
+        id: check_prerelease
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ "$TAG" =~ -(alpha|beta|rc|pre)(\.[0-9]+)?$ ]]; then
+            echo "value=true" >> $GITHUB_OUTPUT
+          else
+            echo "value=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: CREATE RELEASE
         uses: softprops/action-gh-release@v3
         with:
           files: build-artifacts/*.jar
           body: ${{ steps.read_changelog.outputs.body }}
+          prerelease: ${{ steps.check_prerelease.outputs.value == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
