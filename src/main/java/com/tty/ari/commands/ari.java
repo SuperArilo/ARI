@@ -44,6 +44,7 @@ public class ari extends LiteralArgumentCommand {
             new afk(),
             new vanish(),
             new Nick(),
+            new TeleportToPlayer(),
             new Reload()
         );
     }
