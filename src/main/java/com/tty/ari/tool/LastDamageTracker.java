@@ -305,7 +305,7 @@ public class LastDamageTracker {
     }
 
     private void log(Entity victim, EntityDamageEvent.DamageCause cause, Long timeDiff, Long threshold, Entity attacker) {
-        if (victim == null) return;
+        if (victim == null || !Ari.instance.isDebug()) return;
         Ari.instance.getScheduler().runAtEntity(victim, i -> {
             Location location = victim.getLocation();
             double x = location.getX();
