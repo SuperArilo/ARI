@@ -72,77 +72,77 @@ public class Placeholder extends BasePlaceholder {
     private void register(PlaceholderRegistry registry) {
         registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.SERVER_VERSION,
-                PlaceholderResolve.ofWhenNull((() -> this.set(Bukkit.getName() + " " + Bukkit.getServer().getVersion())))
+                PlaceholderResolve.ofWhenNullSync((() -> Component.text(Bukkit.getName() + " " + Bukkit.getServer().getVersion())))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.PLUGIN_NAME,
-                PlaceholderResolve.ofWhenNull((() -> this.set(Ari.instance.getName())))
+                PlaceholderResolve.ofWhenNullSync((() -> Component.text(Ari.instance.getName())))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.PLUGIN_BRANCH,
-                PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.branch"))))
+                PlaceholderResolve.ofWhenNullSync((() -> Component.text(this.pluginInfo.getProperty("git.branch"))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.PLUGIN_BUILD_TIME,
-                PlaceholderResolve.ofWhenNull((() -> this.set(OffsetDateTime.parse(this.pluginInfo.getProperty("git.build.time")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
+                PlaceholderResolve.ofWhenNullSync((() -> Component.text(OffsetDateTime.parse(this.pluginInfo.getProperty("git.build.time")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.PLUGIN_BUILD_VERSION,
-                PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.build.version") + "-" + this.pluginInfo.getProperty("git.commit.id.abbrev"))))
+                PlaceholderResolve.ofWhenNullSync((() -> Component.text(this.pluginInfo.getProperty("git.build.version") + "-" + this.pluginInfo.getProperty("git.commit.id.abbrev"))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.PLUGIN_COMMIT_ID_ABBREV,
-                PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.commit.id.abbrev"))))
+                PlaceholderResolve.ofWhenNullSync((() -> Component.text(this.pluginInfo.getProperty("git.commit.id.abbrev"))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.PLUGIN_COMMIT_MESSAGE,
-                PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.commit.message.full"))))
+                PlaceholderResolve.ofWhenNullSync((() -> Component.text(this.pluginInfo.getProperty("git.commit.message.full"))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.PLUGIN_COMMIT_TIME,
-                PlaceholderResolve.ofWhenNull((() -> this.set(OffsetDateTime.parse(this.pluginInfo.getProperty("git.commit.time")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
+                PlaceholderResolve.ofWhenNullSync((() -> Component.text(OffsetDateTime.parse(this.pluginInfo.getProperty("git.commit.time")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.PLUGIN_COMMIT_USER_NAME,
-                PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.commit.user.name"))))
+                PlaceholderResolve.ofWhenNullSync((() -> Component.text(this.pluginInfo.getProperty("git.commit.user.name"))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.PLUGIN_GIT_TAG,
-                PlaceholderResolve.ofWhenNull((() -> this.set(this.pluginInfo.getProperty("git.tag"))))
+                PlaceholderResolve.ofWhenNullSync((() -> Component.text(this.pluginInfo.getProperty("git.tag"))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderServer.PLUGIN_DEBUG_STATUS,
-                PlaceholderResolve.ofWhenNull(()-> this.set(String.valueOf(Ari.instance.isDebug()))))
+                PlaceholderResolve.ofWhenNullSync(()-> Component.text(String.valueOf(Ari.instance.isDebug()))))
         );
         registry.register(PlaceholderDefinition.of(
                 PlaceholderTpa.TPA_SENDER,
-                PlaceholderResolve.ofPlayer(player -> {
+                PlaceholderResolve.ofPlayerSync(player -> {
                     List<PreEntityToEntityState> states = Ari.instance.getStatusManager().get(PreTeleportStateService.class).getStates(player);
-                    if (states.isEmpty()) return this.empty();
+                    if (states.isEmpty()) return Component.empty();
                     PreEntityToEntityState first = states.getFirst();
-                    return this.set(first.getOwner().getName());
+                    return Component.text(first.getOwner().getName());
                 })
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderTpa.TPA_BE_SENDER,
-                PlaceholderResolve.of(player -> {
+                PlaceholderResolve.ofSync(player -> {
                     List<PreEntityToEntityState> states = Ari.instance.getStatusManager().get(PreTeleportStateService.class).getStates(player);
-                    if (states.isEmpty()) return this.empty();
+                    if (states.isEmpty()) return Component.empty();
                     PreEntityToEntityState first = states.getFirst();
-                    return this.set(first.getTarget().getName());
-                }, offlinePlayer -> this.empty())
+                    return Component.text(first.getTarget().getName());
+                }, offlinePlayer -> Component.empty())
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayer.DEATH_LOCATION,
-                PlaceholderResolve.ofPlayer(player -> {
+                PlaceholderResolve.ofPlayerSync(player -> {
                     Location deathLocation = TELEPORT_LAST_LOCATION.get(player.getUniqueId());
-                    if (deathLocation == null) return this.empty();
-                    return this.set(FormatUtils.XYZText(deathLocation.getX(), deathLocation.getY(), deathLocation.getZ()));
+                    if (deathLocation == null) return Component.empty();
+                    return ComponentTool.text(FormatUtils.XYZText(deathLocation.getX(), deathLocation.getY(), deathLocation.getZ()), player);
                 })
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderTime.SLEEP_PLAYERS,
-                PlaceholderResolve.ofPlayer(player -> {
+                PlaceholderResolve.ofPlayerSync(player -> {
                     int sleepingCount = 0;
                     World world = player.getWorld();
                     for (Player p : world.getPlayers()) {
@@ -150,42 +150,42 @@ public class Placeholder extends BasePlaceholder {
                             sleepingCount++;
                         }
                     }
-                    return this.set(String.valueOf(sleepingCount));
+                    return ComponentTool.text(String.valueOf(sleepingCount));
                 })
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderTime.SKIP_NIGHT_TICK_INCREMENT,
-                PlaceholderResolve.ofPlayer(player -> {
+                PlaceholderResolve.ofPlayerSync(player -> {
                     World world = player.getWorld();
                     SleepingWorld sleepingWorld = PlayerSkipNight.SLEEPING_WORLD.get(world);
-                    return this.set(String.valueOf(sleepingWorld.getTimeManager().getAddTick()));
+                    return Component.text(String.valueOf(sleepingWorld.getTimeManager().getAddTick()));
                 })
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderRTP.RTP_SEARCH_COUNT,
-                PlaceholderResolve.ofPlayer(player -> {
+                PlaceholderResolve.ofPlayerSync(player -> {
                     List<RandomTpState> states = Ari.instance.getStatusManager().get(RandomTpStateService.class).getStates(player);
-                    if (states.isEmpty()) return this.empty();
+                    if (states.isEmpty()) return Component.empty();
                     RandomTpState first = states.getFirst();
-                    return this.set(String.valueOf(first.getMax_count() - first.getCount().get()));
+                    return Component.text(String.valueOf(first.getMax_count() - first.getCount().get()));
                 })
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderTeleport.TELEPORT_DELAY,
-                PlaceholderResolve.ofPlayer(player -> {
+                PlaceholderResolve.ofPlayerSync(player -> {
                     List<AsyncState> states = Ari.instance.getStatusManager().get(TeleportStateService.class).getStates(player);
-                    if (states.isEmpty()) return this.empty();
+                    if (states.isEmpty()) return Component.empty();
                     State first = states.getFirst();
-                    return this.set(String.valueOf(first.getMax_count() - first.getCount().get()));
+                    return Component.text(String.valueOf(first.getMax_count() - first.getCount().get()));
                 })
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayer.PLAYER_NAME,
-                PlaceholderResolve.of(
-                        player -> this.set(player.getName()),
+                PlaceholderResolve.ofSync(
+                        player -> Component.text(player.getName()),
                         offlinePlayer -> {
                             String name = offlinePlayer.getName();
-                            return this.set(name == null ? offlinePlayer.getUniqueId().toString():name);
+                            return Component.text(name == null ? offlinePlayer.getUniqueId().toString():name);
                         })
         ));
         registry.register(PlaceholderDefinition.of(
@@ -220,11 +220,11 @@ public class Placeholder extends BasePlaceholder {
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayer.PLAYER_WORLD,
-                PlaceholderResolve.ofPlayer(player -> this.set(player.getWorld().getName()))
+                PlaceholderResolve.ofPlayerSync(player -> Component.text(player.getWorld().getName()))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayer.PLAYER_LOCATION,
-                PlaceholderResolve.ofPlayer(player -> this.set(FormatUtils.XYZText(player.getX(), player.getY(), player.getZ())))
+                PlaceholderResolve.ofPlayerSync(player -> ComponentTool.text(FormatUtils.XYZText(player.getX(), player.getY(), player.getZ()), player))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderZakoInfo.ZAKO_WHITELIST_OPERATOR,
@@ -275,7 +275,7 @@ public class Placeholder extends BasePlaceholder {
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderMaintenance.MAINTENANCE_KICK_DEALY,
-                PlaceholderResolve.ofPlayer(player -> this.set(String.valueOf(Ari.instance.getConfig().getInt("server.maintenance.kick_delay", 10))))
+                PlaceholderResolve.ofPlayerSync(player -> Component.text(String.valueOf(Ari.instance.getConfig().getInt("server.maintenance.kick_delay", 10))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderBanPlayerType.BAN_T0TAL_TIME,
@@ -326,31 +326,29 @@ public class Placeholder extends BasePlaceholder {
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayer.PLAYER_NAME_PREFIX,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> {
+                PlaceholderResolve.ofOfflinePlayerSync(offlinePlayer -> {
                     String uuid = offlinePlayer.getUniqueId().toString();
-                    return Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global()).thenApply(serverPlayer -> {
-                        if (serverPlayer == null) return ComponentTool.text("", offlinePlayer);
-                        return ComponentTool.text(serverPlayer.getNamePrefix(), offlinePlayer);
-                    });
+                    ServerPlayer serverPlayer = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).getDirectFromCache(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global());
+                    if (serverPlayer == null) return ComponentTool.text("", offlinePlayer);
+                    return ComponentTool.text(serverPlayer.getNamePrefix(), offlinePlayer);
                 })
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayer.PLAYER_NAME_SUFFIX,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> {
+                PlaceholderResolve.ofOfflinePlayerSync(offlinePlayer -> {
                     String uuid = offlinePlayer.getUniqueId().toString();
-                    return Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global()).thenApply(serverPlayer -> {
-                        if (serverPlayer == null) return ComponentTool.text("", offlinePlayer);
-                        return ComponentTool.text(serverPlayer.getNameSuffix(), offlinePlayer);
-                    });
+                    ServerPlayer serverPlayer = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).getDirectFromCache(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global());
+                    if (serverPlayer == null) return ComponentTool.text("", offlinePlayer);
+                    return ComponentTool.text(serverPlayer.getNameSuffix(), offlinePlayer);
                 })
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayerChat.SOURCE_DISPLAY_NAME,
-                PlaceholderResolve.ofPlayer(player -> this.set(player.getName()))
+                PlaceholderResolve.ofPlayerSync(player -> Component.text(player.getName()))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayerChat.CHAT_MESSAGE,
-                PlaceholderResolve.ofPlayer(player -> CompletableFuture.completedFuture(Ari.instance.getStatusManager().get(PlayerChatService.class).getStates(player).getFirst().getMessage()))
+                PlaceholderResolve.ofPlayerSync(player -> Ari.instance.getStatusManager().get(PlayerChatService.class).getStates(player).getFirst().getMessage())
         ));
     }
 
