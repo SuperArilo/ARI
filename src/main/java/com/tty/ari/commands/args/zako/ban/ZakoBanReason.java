@@ -10,10 +10,12 @@ import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.enumType.Operator;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
+import com.tty.api.state.State;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.WhitelistInstance;
+import com.tty.ari.states.PlayerVanishService;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerCache;
 import org.bukkit.Bukkit;
@@ -57,16 +59,24 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length != 8) return;
-
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
-
         if (offlinePlayer == null) {
             sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             return;
         }
 
-        UUID uuid = offlinePlayer.getUniqueId();
+        if (offlinePlayer instanceof Player player) {
+            List<State> states = Ari.instance.getStatusManager().get(PlayerVanishService.class).getStates(player);
+            if (states.isEmpty()) return;
+            for (State state : states) {
+                if (state.getOwner().equals(player)) {
+                    sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                    return;
+                }
+            }
+        }
 
+        UUID uuid = offlinePlayer.getUniqueId();
         EntityRepository<BanPlayer> banRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         EntityRepository<WhitelistInstance> whitelistRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
 
@@ -84,11 +94,10 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
 
             long total = 0;
 
-            for (int i = 0; i < TIME_UNITS.length; i++) {
-                int index = 3 + i;
-                String aCase = TIME_UNITS[index].name().toLowerCase();
+            for (int i = 0; i < TIME_UNITS.length ; i++) {
+                String aCase = TIME_UNITS[i].name().toLowerCase();
                 try {
-                    String arg = args[index];
+                    String arg = args[3 + i];
                     if (arg.length() > 4) {
                         sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.number.exceed-limit") + " " + aCase));
                         return CompletableFuture.completedFuture(false);
@@ -111,7 +120,6 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
 
             LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
 
-
             return banRepository.create(banPlayer, PartitionKey.global()).thenApply(i -> {
                if(i == null) {
                    return false;
@@ -133,7 +141,7 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
                 });
             }
         }).exceptionally(e -> {
-            ConfigUtils.t("function.zako.add-failure").thenAccept(sender::sendMessage);
+            ConfigUtils.t("function.zako.zako-add-failure").thenAccept(sender::sendMessage);
             Ari.instance.getLog().error(e);
             return null;
         });
