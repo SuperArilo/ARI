@@ -37,7 +37,7 @@ public abstract class PublicNameClear extends LiteralArgumentCommand {
         }
         String uuid = offlinePlayer.getUniqueId().toString();
         EntityRepository<ServerPlayer> repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
-        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<ServerPlayer>().eq(ServerPlayer::getPlayerUUID, uuid);
+        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
         PartitionKey key = PartitionKey.global();
         repository.get(wrapper, key).thenCompose(serverPlayer -> {
             if (serverPlayer == null) {

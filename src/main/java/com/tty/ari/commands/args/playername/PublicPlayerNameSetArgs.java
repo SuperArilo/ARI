@@ -51,7 +51,7 @@ public abstract class PublicPlayerNameSetArgs extends RequiredArgumentCommand<St
         String uuid = offlinePlayer.getUniqueId().toString();
         String value = args[4];
         EntityRepository<ServerPlayer> repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
-        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<ServerPlayer>().eq(ServerPlayer::getPlayerUUID, uuid);
+        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
         PartitionKey key = PartitionKey.global();
         repository.get(wrapper, key).thenCompose(serverPlayer -> {
             if (serverPlayer == null) {

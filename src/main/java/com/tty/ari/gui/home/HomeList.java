@@ -46,7 +46,7 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
                 .getList(
                         this.pageNum,
                         ((BaseDataMenu)this.getBaseMenu()).getDataItems().getSlot().size(),
-                        new LambdaQueryWrapper<ServerHome>()
+                        new LambdaQueryWrapper<>(ServerHome.class)
                                 .eq(ServerHome::getPlayerUUID, this.getOfflinePlayer().getUniqueId().toString())
                                 .orderByDesc(ServerHome::isTopSlot),
                         PartitionKey.of(this.getOfflinePlayer().getUniqueId().toString())

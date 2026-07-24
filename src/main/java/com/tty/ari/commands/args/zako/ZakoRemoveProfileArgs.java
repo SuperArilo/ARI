@@ -54,9 +54,9 @@ public class ZakoRemoveProfileArgs extends RequiredArgumentCommand<String> {
             return;
         }
 
-        CompletableFuture<Integer> f1 = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).delete(new LambdaQueryWrapper<ServerPlayer>().eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global());
-        CompletableFuture<Integer> f2 = Ari.REPOSITORY_MANAGER.get(ServerHome.class).delete(new LambdaQueryWrapper<ServerHome>().eq(ServerHome::getPlayerUUID, uuid), PartitionKey.of(uuid));
-        CompletableFuture<Integer> f3 = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class).delete(new LambdaQueryWrapper<WhitelistInstance>().eq(WhitelistInstance::getPlayerUUID, uuid), PartitionKey.global());
+        CompletableFuture<Integer> f1 = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).delete(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global());
+        CompletableFuture<Integer> f2 = Ari.REPOSITORY_MANAGER.get(ServerHome.class).delete(new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, uuid), PartitionKey.of(uuid));
+        CompletableFuture<Integer> f3 = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class).delete(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid), PartitionKey.global());
 
         try {
             CompletableFuture.allOf(f1, f2, f3).join();

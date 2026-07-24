@@ -328,7 +328,7 @@ public class Placeholder extends BasePlaceholder {
                 PlaceholderPlayer.PLAYER_NAME_PREFIX,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> {
                     String uuid = offlinePlayer.getUniqueId().toString();
-                    return Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<ServerPlayer>().eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global()).thenApply(serverPlayer -> {
+                    return Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global()).thenApply(serverPlayer -> {
                         if (serverPlayer == null) return ComponentTool.text("", offlinePlayer);
                         return ComponentTool.text(serverPlayer.getNamePrefix(), offlinePlayer);
                     });
@@ -338,7 +338,7 @@ public class Placeholder extends BasePlaceholder {
                 PlaceholderPlayer.PLAYER_NAME_SUFFIX,
                 PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> {
                     String uuid = offlinePlayer.getUniqueId().toString();
-                    return Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<ServerPlayer>().eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global()).thenApply(serverPlayer -> {
+                    return Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global()).thenApply(serverPlayer -> {
                         if (serverPlayer == null) return ComponentTool.text("", offlinePlayer);
                         return ComponentTool.text(serverPlayer.getNameSuffix(), offlinePlayer);
                     });
