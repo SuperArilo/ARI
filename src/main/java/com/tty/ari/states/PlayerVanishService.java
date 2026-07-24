@@ -292,8 +292,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
             }
         }
 
-        boolean keepFlight = player.isOp()
-                || player.getGameMode() == GameMode.CREATIVE
+        boolean keepFlight = player.getGameMode() == GameMode.CREATIVE
                 || player.getGameMode() == GameMode.SPECTATOR
                 || hasPerm;
 
