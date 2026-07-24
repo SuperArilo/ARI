@@ -11,7 +11,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class NickExpansion extends PlaceholderExpansion {
 
@@ -36,7 +38,14 @@ public class NickExpansion extends PlaceholderExpansion {
 
         if (params.equals(PlaceholderPlayer.PLAYER_NAME_PREFIX.getType())
                 || params.equals(PlaceholderPlayer.PLAYER_NAME_SUFFIX.getType())) {
-            Component join = Ari.PLACEHOLDER.rawRender(PlaceholderTypeEnum.testBuild(params), player).orTimeout(20, TimeUnit.MILLISECONDS).join();
+            Component join = Component.empty();
+            try {
+                join = Ari.PLACEHOLDER.rawRender(PlaceholderTypeEnum.testBuild(params), player).get(20, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                if (e instanceof TimeoutException) {
+                    Ari.instance.getLog().debug(e);
+                }
+            }
             return MiniMessage.miniMessage().serializeOr(PAPIComponents.setPlaceholders(player, join), "");
         }
 
