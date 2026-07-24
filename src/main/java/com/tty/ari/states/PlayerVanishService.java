@@ -17,7 +17,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -108,7 +107,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event) {
         Player joinPlayer = event.getPlayer();
         NbtManager nbtManager = Ari.instance.getNbtManager();
@@ -116,24 +115,24 @@ public class PlayerVanishService extends StateService<State> implements Listener
             nbtManager.removeNbt(PlayerNbt.VANISH, joinPlayer);
             this.removeEffect(joinPlayer);
         }
-        if (!this.getStates(joinPlayer).isEmpty()) return;
+        if (this.getAllStates().isEmpty()) return;
         for (State state : this.getAllStates()) {
             if (!(state.getOwner() instanceof Player player)) continue;
             this.hideForPlayer(player, joinPlayer);
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true)
     public void onLeave(PlayerQuitEvent event) {
         Player quitPlayer = event.getPlayer();
-        if (!this.getStates(quitPlayer).isEmpty()) return;
+        if (this.getAllStates().isEmpty()) return;
         for (State state : this.getAllStates()) {
             if (!(state.getOwner() instanceof Player player)) continue;
             this.showForPlayer(player, quitPlayer);
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onPotionEffectRemove(EntityPotionEffectEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         if (this.isNotHaveState(player)) return;
@@ -143,14 +142,14 @@ public class PlayerVanishService extends StateService<State> implements Listener
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onTarget(EntityTargetLivingEntityEvent event) {
         if (event.getTarget() instanceof Player player && !this.isNotHaveState(player)) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player player)) return;
         if (this.isNotHaveState(player)) return;
@@ -163,7 +162,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         }, null, 20L);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onBucketEmpty(PlayerBucketEmptyEvent event) {
         Player player = event.getPlayer();
         if (!this.isNotHaveState(player)) {
@@ -171,7 +170,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onBucketFill(PlayerBucketFillEvent event) {
         Player player = event.getPlayer();
         if (!this.isNotHaveState(player)) {
@@ -179,7 +178,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onBedEnter(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
         if (!this.isNotHaveState(player)) {
@@ -187,7 +186,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onConsume(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
         if (!this.isNotHaveState(player)) {
@@ -195,7 +194,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onDropItem(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
         if (!this.isNotHaveState(player)) {
@@ -203,7 +202,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onPickItem(PlayerPickItemEvent event) {
         Player player = event.getPlayer();
         if (!this.isNotHaveState(player)) {
@@ -211,7 +210,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onPickupExperience(PlayerPickupExperienceEvent event) {
         Player player = event.getPlayer();
         if (!this.isNotHaveState(player)) {
@@ -220,16 +219,25 @@ public class PlayerVanishService extends StateService<State> implements Listener
     }
 
     private void hide(Player player) {
-        Bukkit.getServer().getOnlinePlayers().stream().filter(i -> !i.equals(player)).forEach(p -> this.hideForPlayer(player, p));
+        for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
+            if (player.equals(onlinePlayer)) continue;
+            this.hideForPlayer(player, onlinePlayer);
+        }
     }
 
     private void show(Player player) {
-        Bukkit.getServer().getOnlinePlayers().stream().filter(i -> !i.equals(player)).forEach(p -> this.showForPlayer(player, p));
+        for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
+            if (onlinePlayer.equals(player)) continue;
+            this.showForPlayer(player, onlinePlayer);
+        }
     }
 
     private void hideForPlayer(Player vanishPlayer, Player player) {
-        player.hidePlayer(Ari.instance, vanishPlayer);
+        if (!player.isOp()) {
+            player.hidePlayer(Ari.instance, vanishPlayer);
+        }
         try {
+            this.glowing.unsetGlowing(player, vanishPlayer);
             this.glowing.setGlowing(player, vanishPlayer, ChatColor.WHITE);
         } catch (ReflectiveOperationException e) {
             Ari.instance.getLog().error(e);
@@ -243,7 +251,6 @@ public class PlayerVanishService extends StateService<State> implements Listener
         } catch (ReflectiveOperationException e) {
             Ari.instance.getLog().error(e);
         }
-
     }
 
     private void giveEffect(Player player) {
