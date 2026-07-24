@@ -1,5 +1,6 @@
 package com.tty.ari.listener.player;
 
+import com.tty.api.ComponentTool;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.ChatConfig;
 import com.tty.ari.dto.state.player.PlayerChatState;
@@ -12,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CustomChatFormantListener implements Listener {
@@ -28,8 +30,14 @@ public class CustomChatFormantListener implements Listener {
                 return;
             }
         }
-        Component component = Ari.PLACEHOLDER.rawRender(this.getPattern(player), player).join();
-        event.renderer(((source, sourceDisplayName, message, viewer) -> component));
+        try {
+            Component component = Ari.PLACEHOLDER.rawRender(this.getPattern(player), player).get(20, TimeUnit.MILLISECONDS);
+            event.renderer(((source, sourceDisplayName, message, viewer) -> component));
+        } catch (Exception e) {
+            Ari.instance.getLog().error(e);
+            player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
+        }
+
     }
 
     private String getPattern(Player player) {
