@@ -48,7 +48,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         handler.addAsync(FunctionType.PLAYER_OFF_HAND, ((event, inventoryEdit, player) -> this.changeEquipment(event, inventoryEdit)));
         handler.addAsync(FunctionType.LOCATION, ((event, inventoryEdit, player) -> {
             if (inventoryEdit.getMonitoree() instanceof Player monitoree) {
-                Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), monitoree.getLocation());
+                Ari.TELEPORTING_SERVICE.teleport(player, monitoree.getLocation());
                 inventoryEdit.getInventory().close();
             }
             return CompletableFuture.completedFuture(null);

@@ -168,7 +168,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
             if(!player.hasPlayedBefore() && (config.getSpawnFirstJoin() && config.isEnable(TeleportType.SPAWN))) {
                 SpawnLocation spawnLocation = config.getSpawnLocation();
                 if (config.getSpawnLocation() != null) {
-                    Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), new Location(
+                    Ari.TELEPORTING_SERVICE.teleport(player, new Location(
                             Bukkit.getServer().getWorld(spawnLocation.getWorldName()),
                             spawnLocation.getX(),
                             spawnLocation.getY(),
@@ -194,7 +194,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
                 if(this.isPlayerInsideBlock(player)) {
                     Ari.instance.getLog().debug("player {} inside block, teleport safe location.", player.getName());
                     Location safeLocation = this.findSafeLocationAbove(player.getLocation());
-                    Ari.TELEPORTING_SERVICE.teleport(player, player.getLocation(), safeLocation).after(() -> player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.teleport.not-safe-location"), player)));
+                    Ari.TELEPORTING_SERVICE.teleport(player, safeLocation).after(() -> player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.teleport.not-safe-location"), player)));
                 }
             }, () -> Ari.instance.getLog().error("error on player join server."));
 

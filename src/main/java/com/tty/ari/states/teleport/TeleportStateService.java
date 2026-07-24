@@ -162,7 +162,7 @@ public class TeleportStateService extends StateService<AsyncState> {
                 return;
             }
         }
-        Ari.TELEPORTING_SERVICE.teleport(owner, owner.getLocation(), targetLocation).after(afterAction);
+        Ari.TELEPORTING_SERVICE.teleport(owner, targetLocation).after(afterAction);
     }
 
     @Override
