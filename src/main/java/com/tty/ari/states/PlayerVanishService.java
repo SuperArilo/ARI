@@ -1,6 +1,7 @@
 package com.tty.ari.states;
 
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
+import com.tty.api.ComponentTool;
 import com.tty.api.NbtManager;
 import com.tty.api.state.State;
 import com.tty.api.state.StateService;
@@ -8,11 +9,13 @@ import com.tty.ari.Ari;
 import com.tty.ari.configuration.FunctionConfig;
 import com.tty.ari.enumType.PlayerNbt;
 import com.tty.ari.tool.ConfigUtils;
+import com.tty.ari.tool.PlayerCache;
 import fr.skytasul.glowingentities.GlowingEntities;
 import io.papermc.paper.event.player.PlayerPickItemEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
@@ -208,6 +211,38 @@ public class PlayerVanishService extends StateService<State> implements Listener
         }
     }
 
+    @EventHandler
+    public void onInputCommand(PlayerCommandPreprocessEvent event) {
+        String message = event.getMessage();
+        if (message.startsWith("/kick ") || message.startsWith("/minecraft:kick ")) {
+            String[] args = message.split(" ");
+            if (args.length < 2) return;
+            OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
+            if (!(offlinePlayer instanceof Player player) || Ari.instance.getStatusManager().get(PlayerVanishService.class).getStates(player).isEmpty()) return;
+            event.setMessage("/kick null-" + Ari.instance.getName());
+        } else if (message.startsWith("/ban") || message.startsWith("/minecraft:ban")) {
+            String[] args = message.split(" ");
+            if (args.length < 2) return;
+            OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
+            if (!(offlinePlayer instanceof Player player) || Ari.instance.getStatusManager().get(PlayerVanishService.class).getStates(player).isEmpty()) return;
+            event.getPlayer().sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist"), player));
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerKick(PlayerKickEvent event) {
+        Player player = event.getPlayer();
+        if (this.getStates(player).isEmpty()) return;
+        PlayerKickEvent.Cause cause = event.getCause();
+        if (cause.equals(PlayerKickEvent.Cause.BANNED) ||
+                cause.equals(PlayerKickEvent.Cause.WHITELIST) ||
+                cause.equals(PlayerKickEvent.Cause.KICK_COMMAND) ||
+                cause.equals(PlayerKickEvent.Cause.IP_BANNED)) {
+            event.setCancelled(true);
+        }
+    }
+
     private void hide(Player player) {
         for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
             if (player.equals(onlinePlayer)) continue;
@@ -223,9 +258,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
     }
 
     private void hideForPlayer(Player vanishPlayer, Player player) {
-        if (!player.isOp()) {
-            player.hidePlayer(Ari.instance, vanishPlayer);
-        }
+        player.hidePlayer(Ari.instance, vanishPlayer);
         try {
             this.glowing.unsetGlowing(player, vanishPlayer);
             this.glowing.setGlowing(player, vanishPlayer, ChatColor.WHITE);
