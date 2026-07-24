@@ -121,17 +121,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
             this.hideForPlayer(player, joinPlayer);
         }
     }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onLeave(PlayerQuitEvent event) {
-        Player quitPlayer = event.getPlayer();
-        if (this.getAllStates().isEmpty()) return;
-        for (State state : this.getAllStates()) {
-            if (!(state.getOwner() instanceof Player player)) continue;
-            this.showForPlayer(player, quitPlayer);
-        }
-    }
-
+    
     @EventHandler
     public void onPotionEffectRemove(EntityPotionEffectEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
