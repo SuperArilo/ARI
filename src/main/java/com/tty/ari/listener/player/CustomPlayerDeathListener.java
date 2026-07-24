@@ -17,6 +17,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class CustomPlayerDeathListener implements Listener {
 
@@ -36,7 +38,9 @@ public class CustomPlayerDeathListener implements Listener {
         if (isSuicide) {
             killer = ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.self"));
         } else {
-            killer = info.killer == null ? Component.empty():ComponentTool.setEntityHoverText(info.killer);
+            CompletableFuture<Component> future = new CompletableFuture<>();
+            Ari.instance.getScheduler().runAtEntity(info.killer, i -> future.complete(info.killer == null ? Component.empty():ComponentTool.setEntityHoverText(info.killer)), null);
+            killer = future.orTimeout(20, TimeUnit.MILLISECONDS).join();
         }
         Component weapon = ComponentTool.setHoverItemText(info.weapon);
         String messageFuture = this.getDeathMessage(info, event);
