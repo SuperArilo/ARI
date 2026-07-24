@@ -31,13 +31,12 @@ public class CustomChatFormantListener implements Listener {
             }
         }
         try {
-            Component component = Ari.PLACEHOLDER.rawRender(this.getPattern(player), player).get(20, TimeUnit.MILLISECONDS);
+            Component component = Ari.PLACEHOLDER.rawRender(this.getPattern(player), player).get(500, TimeUnit.MILLISECONDS);
             event.renderer(((source, sourceDisplayName, message, viewer) -> component));
         } catch (Exception e) {
-            Ari.instance.getLog().error(e);
             player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
+            Ari.instance.getLog().error(e);
         }
-
     }
 
     private String getPattern(Player player) {
