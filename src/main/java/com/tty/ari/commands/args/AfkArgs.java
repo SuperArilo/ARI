@@ -32,7 +32,7 @@ public class AfkArgs extends RequiredArgumentCommand<PlayerSelectorArgumentResol
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        return CompletableFuture.completedFuture(this.getExcludeMePlayerList(sender, args));
+        return this.getExcludeMePlayerList(sender, args);
     }
 
     @Override

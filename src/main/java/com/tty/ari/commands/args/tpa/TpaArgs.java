@@ -43,6 +43,6 @@ public class TpaArgs extends TpaBaseLiteralLiteralArgument {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        return CompletableFuture.completedFuture(this.getExcludeMePlayerList(sender, args));
+        return this.getExcludeMePlayerList(sender, args);
     }
 }

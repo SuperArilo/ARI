@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -52,15 +53,20 @@ public abstract class RequiredArgumentCommand<T> extends BaseRequiredArgumentCom
         return ComponentTool.text(Ari.DATA_SERVICE.getValue("base.task.already-exits"));
     }
 
-    protected Set<String> getExcludeMePlayerList(CommandSender sender, String[] args) {
+    protected CompletableFuture<Set<String>> getExcludeMePlayerList(CommandSender sender, String[] args) {
+        CompletableFuture<Set<String>> future = new CompletableFuture<>();
         Collection<? extends Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
-        if (onlinePlayers.isEmpty()) return Collections.emptySet();
+        if (onlinePlayers.isEmpty()) return CompletableFuture.completedFuture(Collections.emptySet());
         Set<String> otherPlayers = onlinePlayers.stream()
                 .filter(i -> Ari.instance.getStatusManager().get(PlayerVanishService.class).isNotHaveState(i) && !sender.getName().equals(i.getName()))
                 .map(Player::getName)
                 .collect(Collectors.toSet());
-        if (args.length == 1) return otherPlayers;
-        return PublicFunctionUtils.tabList(args[1], otherPlayers);
+        if (args.length == 1) {
+            future.complete(otherPlayers);
+        } else {
+            future.complete(PublicFunctionUtils.tabList(args[1], otherPlayers));
+        }
+        return future;
     }
 
     protected boolean checkEntityId(String value) {
