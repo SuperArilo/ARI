@@ -17,8 +17,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 public class CustomPlayerDeathListener implements Listener {
 
@@ -29,19 +27,22 @@ public class CustomPlayerDeathListener implements Listener {
         PlayerDeathInfoCollector.DeathInfo info = PlayerDeathInfoCollector.collect(event);
         Ari.instance.getLog().debug(info.toString());
 
-        boolean isSuicide = false;
-        if (info.victim != null) {
-            isSuicide = (info.victim.equals(info.killer) && info.killer instanceof Player);
-        }
-        Component victim = info.victim == null ? Component.empty():ComponentTool.setEntityHoverText(info.victim);
+        boolean isSuicide = (info.victim.equals(info.killer) && info.killer instanceof Player);
+        Component victim = info.victim.displayName();
         Component killer;
+
         if (isSuicide) {
             killer = ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.self"));
         } else {
-            CompletableFuture<Component> future = new CompletableFuture<>();
-            Ari.instance.getScheduler().runAtEntity(info.killer, i -> future.complete(info.killer == null ? Component.empty():ComponentTool.setEntityHoverText(info.killer)), null);
-            killer = future.orTimeout(20, TimeUnit.MILLISECONDS).join();
+            if (info.killer == null) {
+                killer = Component.empty();
+            } else if (info.killer instanceof Player player) {
+                killer = player.displayName();
+            } else {
+                killer = Component.translatable(info.killer.getType().translationKey());
+            }
         }
+
         Component weapon = ComponentTool.setHoverItemText(info.weapon);
         String messageFuture = this.getDeathMessage(info, event);
         Component deathMsg = ComponentTool.text(messageFuture, Map.of(
