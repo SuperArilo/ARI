@@ -16,13 +16,14 @@ public class PlayerListener implements Listener {
         infinitytotem.INFINITY_TOTEM_PLAYER_LIST.remove(event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH)
     public void spam(PlayerKickEvent event) {
-        if (!event.getCause().equals(PlayerKickEvent.Cause.SPAM)) return;
+        PlayerKickEvent.Cause cause = event.getCause();
+        if (cause != PlayerKickEvent.Cause.SPAM && cause != PlayerKickEvent.Cause.TOO_MANY_PENDING_CHATS) return;
+
         Player player = event.getPlayer();
-        if (player.isOp() || Ari.PERMISSION_SERVICE.hasPermission(player, "ari.pass-spam")) {
-            event.setCancelled(true);
-        }
+        boolean canPass = player.isOp() || Ari.PERMISSION_SERVICE.hasPermission(player, "ari.pass-spam");
+        event.setCancelled(canPass);
     }
 
 }
