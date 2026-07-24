@@ -8,6 +8,7 @@ import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.ari.command.RequiredArgumentCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class PlayerNameList extends RequiredArgumentCommand<String> {
 
     @Override
     public CompletableFuture<Set<String>> tabSuggestions(CommandSender sender, String[] args) {
-        Set<@NotNull String> collect = Bukkit.getServer().getOnlinePlayers().stream().map(i -> i.getName()).collect(Collectors.toSet());
+        Set<@NotNull String> collect = Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toSet());
         if (args.length == 1 && collect.isEmpty()) return CompletableFuture.completedFuture(Set.of("<player name or uuid (string)>"));
         if (args.length == 1) return CompletableFuture.completedFuture(collect);
         String arg = args[1];
