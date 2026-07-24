@@ -50,12 +50,6 @@ public class PlayerVanishService extends StateService<State> implements Listener
     protected void loopExecution(State state) {
         if (!(state.getOwner() instanceof Player player) || !player.isOnline()) {
             state.setOver(true);
-            return;
-        }
-
-        GameMode gameMode = player.getGameMode();
-        if (gameMode.equals(GameMode.SURVIVAL) || gameMode.equals(GameMode.ADVENTURE)) {
-            player.setAllowFlight(true);
         }
     }
 
