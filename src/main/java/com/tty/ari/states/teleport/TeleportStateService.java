@@ -82,7 +82,12 @@ public class TeleportStateService extends StateService<AsyncState> {
         if (!(owner instanceof Player player && player.isOnline())) return false;
 
         if (!(state instanceof TeleportState ts) || !Ari.INTERACT_SERVICE.canTeleport(ts.getLocation(), player)) {
-            player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.teleport.no-permission")));
+            player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.teleport.no-permission"), player));
+            return false;
+        }
+
+        if (Ari.ATTACK_SERVICE.isInPvp(player)) {
+            player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("function.teleport.no-permission"), player));
             return false;
         }
 

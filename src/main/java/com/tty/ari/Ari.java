@@ -80,6 +80,7 @@ public class Ari extends AbstractJavaPlugin {
     public static FireworkService FIREWORK_SERVICE;
     public static TeleportingService TELEPORTING_SERVICE;
     public static InteractService INTERACT_SERVICE;
+    public static AttackService ATTACK_SERVICE;
     public static Placeholder PLACEHOLDER;
     public static BungeeCache BUNGEECACHE;
 
@@ -135,7 +136,8 @@ public class Ari extends AbstractJavaPlugin {
                 TempRegisterService.of("arilib", NBTDataService.class, i -> NBT_DATA_SERVICE = i),
                 TempRegisterService.of("arilib", FireworkService.class, i -> FIREWORK_SERVICE = i),
                 TempRegisterService.of("arilib", TeleportingService.class, i -> TELEPORTING_SERVICE = i),
-                TempRegisterService.of("arilib", InteractService.class, i -> INTERACT_SERVICE = i)
+                TempRegisterService.of("arilib", InteractService.class, i -> INTERACT_SERVICE = i),
+                TempRegisterService.of("arilib", AttackService.class, i -> ATTACK_SERVICE = i)
         );
     }
 

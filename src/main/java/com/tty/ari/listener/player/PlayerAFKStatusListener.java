@@ -41,6 +41,11 @@ public class PlayerAFKStatusListener implements Listener {
             return;
         }
 
+        if (Ari.ATTACK_SERVICE.isInPvp(player)) {
+            event.setCancelled(true);
+            return;
+        }
+
         CompletableFuture<Component> breakHintFuture = ConfigUtils.t("server.player.afk.break-hint");
         CompletableFuture<Component> titleFuture = ConfigUtils.t("server.player.afk.title", player);
         CompletableFuture<List<Component>> tListFuture = ConfigUtils.tAsList("server.player.afk.sub-title", player);
