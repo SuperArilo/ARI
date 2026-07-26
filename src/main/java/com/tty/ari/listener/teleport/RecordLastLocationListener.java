@@ -43,28 +43,27 @@ public class RecordLastLocationListener implements Listener {
         Ari.instance.getScheduler().runAtEntity(player, i -> {
             Location respawnLocation = player.getRespawnLocation();
             if (respawnLocation == null) {
-                respawnLocation = this.getRespawnLocation(player.getWorld());
+                Location location = this.getRespawnLocation(player.getWorld());
+                player.setRespawnLocation(location);
+                respawnLocation = location;
             }
-            PlayerRespawnForFoliaEvent respawn = new PlayerRespawnForFoliaEvent(player, respawnLocation, player.getLocation());
-            if (respawn.callEvent()) {
-                player.setRespawnLocation(respawnLocation);
-            }
+            Bukkit.getPluginManager().callEvent(new PlayerRespawnForFoliaEvent(player, respawnLocation, player.getLocation()));
         }, null);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void lastLocation(PlayerTeleportEvent event) {
         PlayerTeleportEvent.TeleportCause cause = event.getCause();
         if (!cause.equals(PlayerTeleportEvent.TeleportCause.PLUGIN)) return;
         TELEPORT_LAST_LOCATION.put(event.getPlayer().getUniqueId(), event.getFrom());
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void lastDeathLocation(PlayerDeathEvent event) {
         TELEPORT_LAST_LOCATION.put(event.getPlayer().getUniqueId(), event.getPlayer().getLocation());
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void onRespawnOnFolia(PlayerRespawnForFoliaEvent event) {
         if (!Scheduler.isFolia()) return;
         Player player = event.getPlayer();
