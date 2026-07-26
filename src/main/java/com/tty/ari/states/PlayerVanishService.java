@@ -11,7 +11,6 @@ import com.tty.ari.enumType.PlayerNbt;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerCache;
 import fr.skytasul.glowingentities.GlowingEntities;
-import io.papermc.paper.event.player.PlayerPickItemEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -204,7 +203,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
     }
 
     @EventHandler
-    public void onPickItem(PlayerPickItemEvent event) {
+    public void onPickItem(PlayerAttemptPickupItemEvent event) {
         Player player = event.getPlayer();
         if (!this.isNotHaveState(player)) {
             event.setCancelled(true);
