@@ -52,6 +52,11 @@ public class PlayerVanishService extends StateService<State> implements Listener
     protected void loopExecution(State state) {
         if (!(state.getOwner() instanceof Player player) || !player.isOnline()) {
             state.setOver(true);
+            return;
+        }
+        GameMode gameMode = player.getGameMode();
+        if (gameMode.equals(GameMode.ADVENTURE) || gameMode.equals(GameMode.SURVIVAL)) {
+            player.setAllowFlight(true);
         }
     }
 
@@ -313,7 +318,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         List<String> nodes = Ari.instance.getConfigurationManager().get(FunctionConfig.class).getVanishFlyPermissionNodes();
         boolean hasPerm = false;
         for (String node : nodes) {
-            if (Ari.PERMISSION_SERVICE.hasPermission(player, node)) {
+            if (Ari.PERMISSION_SERVICE.hasPermission(player, node) && !player.isOp()) {
                 hasPerm = true;
                 break;
             }
