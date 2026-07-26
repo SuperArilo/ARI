@@ -22,6 +22,7 @@ import com.tty.ari.enumType.TeleportType;
 import com.tty.ari.states.MaintenanceBossBarService;
 import com.tty.ari.states.PlayerAFKService;
 import com.tty.ari.states.PlayerSaveDataStateService;
+import com.tty.ari.states.PlayerVanishService;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerCache;
@@ -214,6 +215,12 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
     public void onPlayerLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         StatusManager manager = Ari.instance.getStatusManager();
+
+        if (!manager.get(PlayerVanishService.class).isNotHaveState(player)) {
+            event.quitMessage(null);
+            return;
+        }
+
         if(this.messageOnLeave) {
             event.quitMessage(null);
             ConfigUtils.t("server.message.on-leave", player).thenAccept(i -> Ari.instance.getScheduler().run(t -> Bukkit.broadcast(i)));
