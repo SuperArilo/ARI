@@ -146,13 +146,16 @@ public class PlayerVanishService extends StateService<State> implements Listener
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player player)) return;
         if (this.isNotHaveState(player)) return;
-        if (!( event.getEntity() instanceof Mob mob)) return;
-
-        Ari.instance.getScheduler().runAtEntityLater(mob, i -> {
-            if (mob.isValid() && mob.getTarget() == player) {
-                mob.setTarget(null);
-            }
-        }, null, 20L);
+        if (event.getEntity() instanceof Mob mob) {
+            Ari.instance.getScheduler().runAtEntityLater(mob, i -> {
+                if (mob.isValid() && mob.getTarget() == player) {
+                    mob.setTarget(null);
+                }
+            }, null, 20L);
+        } else if (event.getEntity() instanceof Player p) {
+            Ari.ATTACK_SERVICE.cancelPvpTag(p);
+            Ari.ATTACK_SERVICE.cancelPvpTag(player);
+        }
     }
 
     @EventHandler
@@ -302,7 +305,6 @@ public class PlayerVanishService extends StateService<State> implements Listener
                 mob.setTarget(null);
             }
         }
-        Ari.ATTACK_SERVICE.changePlayerPvpStatus(player, false);
     }
 
     private void removeEffect(Player player) {
