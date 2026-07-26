@@ -7,7 +7,7 @@ import com.tty.ari.enumType.FilePath;
 public class WarpGuiConfig extends GuiConfiguration<BaseDataMenu> {
 
     public WarpGuiConfig() {
-        super(FilePath.WARP_LIST_GUI.getPath());
+        super(FilePath.WARP_LIST_GUI.getFullPathInJar());
     }
 
 }

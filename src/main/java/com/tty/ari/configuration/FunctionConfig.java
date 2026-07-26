@@ -2,7 +2,6 @@ package com.tty.ari.configuration;
 
 import com.google.common.reflect.TypeToken;
 import com.tty.api.AbstractJavaPlugin;
-import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.SpawnLocation;
 import com.tty.ari.dto.rtp.RtpConfig;
@@ -13,10 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
-public class FunctionConfig extends AllowDownloadConfiguration {
+public class FunctionConfig extends BaseDownloadUrlConfig {
 
     public FunctionConfig() {
-        super(Ari.instance, FilePath.FUNCTION_CONFIG.getPath());
+        super(Ari.instance, FilePath.FUNCTION_CONFIG.getFullPathInJar());
     }
 
     public FunctionConfig(AbstractJavaPlugin plugin) {

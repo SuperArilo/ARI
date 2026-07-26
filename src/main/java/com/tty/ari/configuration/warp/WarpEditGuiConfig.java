@@ -5,7 +5,9 @@ import com.tty.ari.configuration.common.GuiConfiguration;
 import com.tty.ari.enumType.FilePath;
 
 public class WarpEditGuiConfig extends GuiConfiguration<BaseMenu> {
+
     public WarpEditGuiConfig() {
-        super(FilePath.WARP_EDIT_GUI.getPath());
+        super(FilePath.WARP_EDIT_GUI.getFullPathInJar());
     }
+
 }

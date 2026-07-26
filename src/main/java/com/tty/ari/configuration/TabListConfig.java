@@ -3,7 +3,6 @@ package com.tty.ari.configuration;
 import com.google.common.reflect.TypeToken;
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.configuration.AllowEnableConfiguration;
-import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
 import com.tty.ari.dto.tab.TabGroupLine;
 import com.tty.ari.enumType.FilePath;
@@ -11,10 +10,10 @@ import com.tty.ari.enumType.FilePath;
 import java.util.List;
 import java.util.Map;
 
-public class TabListConfig extends AllowDownloadConfiguration implements AllowEnableConfiguration {
+public class TabListConfig extends BaseDownloadUrlConfig implements AllowEnableConfiguration {
 
     public TabListConfig() {
-        super(Ari.instance, FilePath.TAB_LIST_CONFIG.getPath());
+        super(Ari.instance, FilePath.TAB_LIST_CONFIG.getFullPathInJar());
     }
 
     public TabListConfig(AbstractJavaPlugin plugin) {

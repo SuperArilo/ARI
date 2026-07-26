@@ -7,7 +7,7 @@ import com.tty.ari.enumType.FilePath;
 public class HomeEditConfig extends GuiConfiguration<BaseMenu> {
 
     public HomeEditConfig() {
-        super(FilePath.HOME_EDIT_GUI.getPath());
+        super(FilePath.HOME_EDIT_GUI.getFullPathInJar());
     }
 
 }

@@ -2,17 +2,17 @@ package com.tty.ari.configuration.warp;
 
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.configuration.AllowEnableConfiguration;
-import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.BaseDownloadUrlConfig;
 import com.tty.ari.configuration.common.TeleportConfiguration;
 import com.tty.ari.enumType.FilePath;
 
 import java.util.List;
 
-public class WarpConfig extends AllowDownloadConfiguration implements TeleportConfiguration, AllowEnableConfiguration {
+public class WarpConfig extends BaseDownloadUrlConfig implements TeleportConfiguration, AllowEnableConfiguration {
 
     public WarpConfig() {
-        super(Ari.instance, FilePath.WARP_CONFIG.getPath());
+        super(Ari.instance, FilePath.WARP_CONFIG.getFullPathInJar());
     }
 
     public WarpConfig(AbstractJavaPlugin plugin) {

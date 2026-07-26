@@ -2,16 +2,15 @@ package com.tty.ari.configuration;
 
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.configuration.AllowEnableConfiguration;
-import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
 import com.tty.ari.enumType.FilePath;
 
 import java.util.List;
 
-public class AttackBarConfig extends AllowDownloadConfiguration implements AllowEnableConfiguration {
+public class AttackBarConfig extends BaseDownloadUrlConfig implements AllowEnableConfiguration {
 
     public AttackBarConfig() {
-        super(Ari.instance, FilePath.ATTACK_BAR_CONFIG.getPath());
+        super(Ari.instance, FilePath.ATTACK_BAR_CONFIG.getFullPathInJar());
     }
 
     public AttackBarConfig(AbstractJavaPlugin plugin) {

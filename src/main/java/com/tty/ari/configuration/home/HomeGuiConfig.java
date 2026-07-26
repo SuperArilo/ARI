@@ -7,7 +7,7 @@ import com.tty.ari.enumType.FilePath;
 public class HomeGuiConfig extends GuiConfiguration<BaseDataMenu> {
 
     public HomeGuiConfig() {
-        super(FilePath.HOME_LIST_GUI.getPath());
+        super(FilePath.HOME_LIST_GUI.getFullPathInJar());
     }
 
 }

@@ -2,17 +2,17 @@ package com.tty.ari.configuration.home;
 
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.configuration.AllowEnableConfiguration;
-import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.BaseDownloadUrlConfig;
 import com.tty.ari.configuration.common.TeleportConfiguration;
 import com.tty.ari.enumType.FilePath;
 
 import java.util.List;
 
-public class HomeConfig extends AllowDownloadConfiguration implements TeleportConfiguration, AllowEnableConfiguration {
+public class HomeConfig extends BaseDownloadUrlConfig implements TeleportConfiguration, AllowEnableConfiguration {
 
     public HomeConfig() {
-        super(Ari.instance, FilePath.HOME_CONFIG.getPath());
+        super(Ari.instance, FilePath.HOME_CONFIG.getFullPathInJar());
     }
 
     public HomeConfig(AbstractJavaPlugin plugin) {

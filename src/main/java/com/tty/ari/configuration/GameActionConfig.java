@@ -1,16 +1,15 @@
 package com.tty.ari.configuration;
 
 import com.tty.api.AbstractJavaPlugin;
-import com.tty.api.configuration.AllowDownloadConfiguration;
 import com.tty.ari.Ari;
 import com.tty.ari.enumType.FilePath;
 
 import java.util.List;
 
-public class GameActionConfig extends AllowDownloadConfiguration {
+public class GameActionConfig extends BaseDownloadUrlConfig {
 
     public GameActionConfig() {
-        super(Ari.instance, FilePath.GAME_ACTION_CONFIG.getPath());
+        super(Ari.instance, FilePath.GAME_ACTION_CONFIG.getFullPathInJar());
     }
 
     public GameActionConfig(AbstractJavaPlugin plugin) {

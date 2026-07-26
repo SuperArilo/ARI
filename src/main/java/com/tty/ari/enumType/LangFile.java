@@ -4,17 +4,24 @@ import com.tty.api.enumType.FilePathEnum;
 
 public enum LangFile implements FilePathEnum {
 
-    LANG("lang/[lang].yml"),
-    DEATH_MESSAGE("lang/death-message/[lang].yml");
+    LANG("lang/[lang].yml", "[lang].yml"),
+    DEATH_MESSAGE("lang/death-message/[lang].yml", "[lang].yml");
 
-    private final String filePath;
+    private final String fullPathInJar;
+    private final String fullFileName;
 
-    LangFile(String filePath) {
-        this.filePath = filePath;
+    LangFile(String fullPathInJar, String fullFileName) {
+        this.fullPathInJar = fullPathInJar;
+        this.fullFileName = fullFileName;
     }
 
     @Override
-    public String getPath() {
-        return this.filePath;
+    public String getFullPathInJar() {
+        return this.fullPathInJar;
+    }
+
+    @Override
+    public String getFullFileName() {
+        return this.fullFileName;
     }
 }
