@@ -26,6 +26,10 @@ public class DamageTrackerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntity(EntityDamageEvent event) {
         if (Ari.instance.getConfigurationManager().get(AttackBarConfig.class).getExcludedEntities().stream().anyMatch(i -> i.equalsIgnoreCase(event.getEntity().getType().name()))) return;
+        Entity causingEntity = event.getDamageSource().getCausingEntity();
+        if (causingEntity instanceof Player a && event.getEntity() instanceof Player b) {
+            if (!Ari.ATTACK_SERVICE.canAttackPlayer(a, b)) return;
+        }
         DAMAGE_TRACKER.addRecord(event);
     }
 
