@@ -64,7 +64,7 @@ public class CustomPlayerDeathListener implements Listener {
                 String message = info.getRandomOfList(baseKey + targetKey + "." + weaponKey, info.isDestine);
 
                 if (info.isEscapeAttempt) {
-                    message += info.getRandomOfList(baseKey + "running-away");
+                    message += info.getRandomOfList(baseKey + "running-away", info.isDestine);
                 }
                 yield message;
             }
