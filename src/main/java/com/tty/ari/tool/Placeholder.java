@@ -350,6 +350,10 @@ public class Placeholder extends BasePlaceholder {
                 PlaceholderPlayerChat.CHAT_MESSAGE,
                 PlaceholderResolve.ofPlayerSync(player -> Ari.instance.getStatusManager().get(PlayerChatService.class).getStates(player).getFirst().getMessage())
         ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderPlayer.PLAYER_GAME_MODE,
+                PlaceholderResolve.ofPlayer(player -> CompletableFuture.completedFuture(Component.translatable(player.getGameMode().translationKey())))
+        ));
     }
 
 }
