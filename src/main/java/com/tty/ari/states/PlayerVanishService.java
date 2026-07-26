@@ -302,6 +302,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
                 mob.setTarget(null);
             }
         }
+        Ari.ATTACK_SERVICE.changePlayerPvpStatus(player, false);
     }
 
     private void removeEffect(Player player) {
