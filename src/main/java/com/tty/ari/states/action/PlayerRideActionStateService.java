@@ -116,7 +116,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
     public void onReload() {
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (!Ari.instance.getConfigurationManager().get(GameActionConfig.class).isPlayerSitPlayerEnable()) return;
         // 只处理主手
@@ -131,7 +131,7 @@ public class PlayerRideActionStateService extends StateService<PlayerRideActionS
         this.addState(new PlayerRideActionState(player, clickedPlayer));
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayer(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
         if (this.isNotHaveState(player) && !event.isSneaking()) return;

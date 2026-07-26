@@ -28,7 +28,7 @@ public class PlayerCommandCoolDownListener implements Listener {
     private int commandCoolDown;
     private boolean isEnable;
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void whenPlayerPreprocess(PlayerCommandPreprocessEvent event) {
         if (!this.isEnable) return;
         Player player = event.getPlayer();

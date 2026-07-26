@@ -167,7 +167,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!Ari.instance.getConfigurationManager().get(GameActionConfig.class).isSitEnable()) return;
 
@@ -188,7 +188,7 @@ public class PlayerSitActionStateService extends StateService<PlayerSitActionSta
         this.addState(new PlayerSitActionState(player, clickedBlock));
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayer(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
         if (this.isNotHaveState(player) && !event.isSneaking()) return;

@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class CustomPlayerDeathListener implements Listener {
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDeath(PlayerDeathEvent event) {
         if (!Ari.instance.getConfig().getBoolean("server.custom-death", false)) return;
 

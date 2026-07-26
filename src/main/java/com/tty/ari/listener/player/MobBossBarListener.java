@@ -25,7 +25,7 @@ public class MobBossBarListener implements Listener {
         return (damageable instanceof Boss);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
         if (!Ari.instance.getConfigurationManager().get(AttackBarConfig.class).isEnable()) return;
         Entity entity = event.getEntity();
@@ -63,7 +63,7 @@ public class MobBossBarListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void regainHealth(EntityRegainHealthEvent event) {
         if (!Ari.instance.getConfigurationManager().get(AttackBarConfig.class).isEnable()) return;
         Entity entity = event.getEntity();

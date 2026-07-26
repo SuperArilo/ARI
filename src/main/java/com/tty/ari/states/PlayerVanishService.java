@@ -219,7 +219,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onInputCommand(PlayerCommandPreprocessEvent event) {
         String message = event.getMessage();
         if (message.startsWith("/kick ") || message.startsWith("/minecraft:kick ")) {
@@ -238,7 +238,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerKick(PlayerKickEvent event) {
         Player player = event.getPlayer();
         if (this.getStates(player).isEmpty()) return;

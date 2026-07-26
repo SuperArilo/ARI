@@ -39,13 +39,13 @@ public class PlayerSkipNight implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void deepSleep(PlayerDeepSleepEvent event) {
         if (this.isDisabled()) return;
         this.update(event.getPlayer().getWorld());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void leave(PlayerBedLeaveEvent event) {
         if (this.isDisabled()) return;
         this.update(event.getPlayer().getWorld());
