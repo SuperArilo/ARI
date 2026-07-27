@@ -2,7 +2,6 @@ package com.tty.ari.commands.args;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -53,7 +52,7 @@ public class GameModeArgs extends RequiredArgumentCommand<String> {
         try {
             mode = GameMode.valueOf(args[1].toUpperCase());
         } catch (Exception e){
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.input-error")));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-edit.input-error"), player));
             return;
         }
         player.setGameMode(mode);

@@ -2,7 +2,6 @@ package com.tty.ari.listener.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
-import com.tty.api.ComponentTool;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.dto.gui.FunctionItems;
 import com.tty.api.enumType.FunctionType;
@@ -50,11 +49,11 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
         HomeConfig homeConfig = Ari.instance.getConfigurationManager().get(HomeConfig.class);
 
         if(!this.isContentValid(message) || homeConfig.getCheckHomeName().contains(message)) {
-            player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
+            player.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-error")));
             return false;
         }
         if(message.length() > homeConfig.getHomeNameLength()) {
-            player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
+            player.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-edit.rename.name-too-long")));
             return false;
         }
         ServerHome data = state.getData();
@@ -65,7 +64,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
 
     @Override
     public void whenTimeout(Player player) {
-        player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
+        player.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-edit.cancel")));
     }
 
     @Override
@@ -107,7 +106,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
             ItemMeta clickMeta = clickItem.getItemMeta();
             Location newLocation = player.getLocation();
             homeEditor.getHome().setLocation(newLocation.toString());
-            clickMeta.displayName(ComponentTool.text(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
+            clickMeta.displayName(Ari.instance.getEngine().directRender(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
             clickItem.setItemMeta(clickMeta);
 
         }));
@@ -144,7 +143,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
             for (FunctionItems v : homeEditor.getBaseMenu().getFunctionItems().values()) {
                 if (v.getType().equals(FunctionType.TOP_SLOT)) {
                     List<String> lore = v.getLore();
-                    List<Component> list = lore.stream().map(p -> ComponentTool.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentTool.text(Ari.DATA_SERVICE.getValue(homeEditor.getHome().isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
+                    List<Component> list = lore.stream().map(p -> Ari.instance.getEngine().directRender(p, Map.of(IconKeyType.TOP_SLOT.getKey(), Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue(homeEditor.getHome().isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
                     clickMeta.lore(list);
                     clickItem.setItemMeta(clickMeta);
                 }
@@ -183,17 +182,17 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
 
     @Override
     public @NotNull Component whenPending() {
-        return ComponentTool.text(Ari.DATA_SERVICE.getValue("base.save.ing"));
+        return Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.save.ing"));
     }
 
     @Override
     public @NotNull Component whenDone() {
-        return ComponentTool.text(Ari.DATA_SERVICE.getValue("base.save.done"));
+        return Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.save.done"));
     }
 
     @Override
     public @NotNull Component whenError() {
-        return ComponentTool.text(Ari.DATA_SERVICE.getValue("base.save.error"));
+        return Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.save.error"));
     }
 
 }

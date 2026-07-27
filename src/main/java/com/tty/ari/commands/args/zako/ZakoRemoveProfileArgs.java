@@ -3,7 +3,6 @@ package com.tty.ari.commands.args.zako;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -43,14 +42,14 @@ public class ZakoRemoveProfileArgs extends RequiredArgumentCommand<String> {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
 
         if (offlinePlayer == null) {
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             return;
         }
 
         UUID uuid = offlinePlayer.getUniqueId();
 
         if (offlinePlayer instanceof Player player && player.isOnline()) {
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.fail-by-player-online")));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.fail-by-player-online")));
             return;
         }
 
@@ -60,9 +59,9 @@ public class ZakoRemoveProfileArgs extends RequiredArgumentCommand<String> {
 
         try {
             CompletableFuture.allOf(f1, f2, f3).join();
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.command.execute-success")));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.command.execute-success")));
         } catch (Exception e) {
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error")));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-error")));
             Ari.instance.getLog().error(e);
         }
 

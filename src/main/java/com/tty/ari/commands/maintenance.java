@@ -1,6 +1,5 @@
 package com.tty.ari.commands;
 
-import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -56,7 +55,7 @@ public class maintenance extends LiteralArgumentCommand {
                     RunTask runTask = Ari.instance.getScheduler().runAtEntityLater(player, i -> {
                         try {
                             if (!player.isOnline() || !service.isMaintenance() || player.isOp()) return;
-                            player.kick(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
+                            player.kick(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.data-changed")));
                         } finally {
                             this.playerTaskMap.remove(player);
                         }

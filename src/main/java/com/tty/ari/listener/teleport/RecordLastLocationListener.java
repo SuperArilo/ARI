@@ -1,6 +1,5 @@
 package com.tty.ari.listener.teleport;
 
-import com.tty.api.ComponentTool;
 import com.tty.api.event.PlayerRespawnForFoliaEvent;
 import com.tty.api.scheduler.Scheduler;
 import com.tty.ari.Ari;
@@ -100,7 +99,7 @@ public class RecordLastLocationListener implements Listener {
         if (!Ari.instance.getConfigurationManager().get(FunctionConfig.class).isEnable(TeleportType.BACK)) return;
         ConfigUtils.t("teleport.tips-back", player).thenAccept(i ->
                 Ari.instance.getScheduler().runAtEntity(player, t ->
-                        player.sendMessage(ComponentTool.setClickEventText(i, ClickEvent.runCommand("/" + Ari.instance.getName() + " back"))), null));
+                        player.sendMessage(Ari.instance.getEngine().setClickEventText(i, ClickEvent.runCommand("/" + Ari.instance.getName() + " back"))), null));
     }
 
     public Location getRespawnLocation(@NotNull World world) {

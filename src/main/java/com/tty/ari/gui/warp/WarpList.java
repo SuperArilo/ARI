@@ -1,7 +1,6 @@
 package com.tty.ari.gui.warp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.tty.api.ComponentTool;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
@@ -82,22 +81,22 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
             types.put(IconKeyType.Z.getKey(), Component.text(FormatUtils.formatTwoDecimalPlaces(location.getZ())));
             types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld() == null ? "":location.getWorld().getName()));
 
-            types.put(IconKeyType.PLAYER_NAME.getKey(), ComponentTool.text(PlayerCache.getPlayer(UUID.fromString(serverWarp.getCreateBy())).getName()));
+            types.put(IconKeyType.PLAYER_NAME.getKey(), Ari.instance.getEngine().directRender(PlayerCache.getPlayer(UUID.fromString(serverWarp.getCreateBy())).getName()));
             Double cost = serverWarp.getCost();
-            types.put(IconKeyType.COST.getKey(), ComponentTool.text(cost == null || cost == 0 || Ari.ECONOMY_SERVICE.isNull() ? baseFree : cost + Ari.ECONOMY_SERVICE.getNamePlural()));
-            types.put(IconKeyType.TOP_SLOT.getKey(), ComponentTool.text(Ari.DATA_SERVICE.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
-            types.put(IconKeyType.PERMISSION.getKey(), ComponentTool.text(Ari.DATA_SERVICE.getValue(hasPermission ? "base.yes_re":"base.no_re")));
+            types.put(IconKeyType.COST.getKey(), Ari.instance.getEngine().directRender(cost == null || cost == 0 || Ari.ECONOMY_SERVICE.isNull() ? baseFree : cost + Ari.ECONOMY_SERVICE.getNamePlural()));
+            types.put(IconKeyType.TOP_SLOT.getKey(), Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue(serverWarp.isTopSlot() ? "base.yes_re":"base.no_re")));
+            types.put(IconKeyType.PERMISSION.getKey(), Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue(hasPermission ? "base.yes_re":"base.no_re")));
 
 
             for (String s : rawLore) {
-                textComponents.add(ComponentTool.text(s, types));
+                textComponents.add(Ari.instance.getEngine().directRender(s, types));
             }
 
             this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_DATA_ID, itemStack, PersistentDataType.STRING, serverWarp.getWarpId());
             this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, FunctionType.DATA.getName());
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(ComponentTool.text(serverWarp.getWarpName(), this.getOfflinePlayer()));
+            itemMeta.displayName(Ari.instance.getEngine().directRender(serverWarp.getWarpName(), this.getOfflinePlayer()));
             itemMeta.lore(textComponents);
 
             if (serverWarp.isTopSlot()) {

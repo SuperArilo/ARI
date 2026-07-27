@@ -3,7 +3,6 @@ package com.tty.ari.commands.args.nick;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.tty.api.ComponentTool;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
@@ -45,7 +44,7 @@ public abstract class PublicNickSetArgs extends RequiredArgumentCommand<String> 
     protected void setValue(CommandSender sender,  String[] args, PlaceholderPlayer placeholder) {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
         if (offlinePlayer == null) {
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             return;
         }
         String uuid = offlinePlayer.getUniqueId().toString();
@@ -70,13 +69,13 @@ public abstract class PublicNickSetArgs extends RequiredArgumentCommand<String> 
             };
         }).thenAccept(status -> {
             if (status) {
-                sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.command.execute-success")));
+                sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.command.execute-success"), offlinePlayer));
             } else {
-                Component append = ComponentTool.text(Ari.DATA_SERVICE.getValue("base.command.execute-success")).append(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                Component append = Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.command.execute-success"), offlinePlayer).append(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.not-exist"), offlinePlayer));
                 sender.sendMessage(append);
             }
         }).exceptionally(e -> {
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error")));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-error"), offlinePlayer));
             Ari.instance.getLog().error(e);
             return null;
         });

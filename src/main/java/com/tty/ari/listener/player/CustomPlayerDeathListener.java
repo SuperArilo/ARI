@@ -1,6 +1,5 @@
 package com.tty.ari.listener.player;
 
-import com.tty.api.ComponentTool;
 import com.tty.ari.Ari;
 import com.tty.ari.enumType.lang.PlaceholderPlayerDeath;
 import com.tty.ari.tool.PlayerDeathInfoCollector;
@@ -32,7 +31,7 @@ public class CustomPlayerDeathListener implements Listener {
         Component killer;
 
         if (isSuicide) {
-            killer = ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.self"));
+            killer = Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.self"));
         } else {
             if (info.killer == null) {
                 killer = Component.empty();
@@ -43,9 +42,9 @@ public class CustomPlayerDeathListener implements Listener {
             }
         }
 
-        Component weapon = ComponentTool.setHoverItemText(info.weapon);
+        Component weapon = Ari.instance.getEngine().setHoverItemText(info.weapon);
         String messageFuture = this.getDeathMessage(info, event);
-        Component deathMsg = ComponentTool.text(messageFuture, Map.of(
+        Component deathMsg = Ari.instance.getEngine().directRender(messageFuture, Map.of(
                 PlaceholderPlayerDeath.KILLER_UNRESOLVED.getType(), killer,
                 PlaceholderPlayerDeath.VICTIM_UNRESOLVED.getType(), victim,
                 PlaceholderPlayerDeath.KILLER_ITEM_UNRESOLVED.getType(), weapon

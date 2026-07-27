@@ -1,7 +1,6 @@
 package com.tty.ari.states;
 
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
-import com.tty.api.ComponentTool;
 import com.tty.api.NbtManager;
 import com.tty.api.state.State;
 import com.tty.api.state.StateService;
@@ -232,7 +231,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
             if (args.length < 2) return;
             OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
             if (!(offlinePlayer instanceof Player player) || Ari.instance.getStatusManager().get(PlayerVanishService.class).getStates(player).isEmpty()) return;
-            event.getPlayer().sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist"), player));
+            event.getPlayer().sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.not-exist"), player));
             event.setCancelled(true);
         }
     }

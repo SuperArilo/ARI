@@ -3,7 +3,6 @@ package com.tty.ari.commands.args.zako.ban;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -61,7 +60,7 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
         if (args.length != 8) return;
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[2]);
         if (offlinePlayer == null) {
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             return;
         }
 
@@ -70,7 +69,7 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
             if (!states.isEmpty()) {
                 for (State state : states) {
                     if (state.getOwner().equals(player)) {
-                        sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                        sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                         return;
                     }
                 }
@@ -100,14 +99,14 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
                 try {
                     String arg = args[3 + i];
                     if (arg.length() > 4) {
-                        sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.number.exceed-limit") + " " + aCase));
+                        sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-edit.number.exceed-limit") + " " + aCase));
                         return CompletableFuture.completedFuture(false);
                     }
                     int value = Integer.parseInt(arg);
                     if (value < 0) return CompletableFuture.completedFuture(false);
                     total = Math.addExact(total, TIME_UNITS[i].toMillis(value));
                 } catch (Exception e) {
-                    sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error") + " " + aCase));
+                    sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error") + " " + aCase));
                     return CompletableFuture.completedFuture(false);
                 }
             }
@@ -132,7 +131,7 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
             if (status) {
                 OfflinePlayer kickPlayer = PlayerCache.getPlayer(uuid);
                 if (kickPlayer instanceof Player player) {
-                    Ari.instance.getScheduler().runAtEntity(player, i -> player.kick(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"), player)),  null);
+                    Ari.instance.getScheduler().runAtEntity(player, i -> player.kick(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"), player)),  null);
                 }
                 ConfigUtils.t("function.zako.banned", kickPlayer).thenAccept(m -> {
                     Bukkit.getServer().getOnlinePlayers().stream().filter(i -> !i.equals(kickPlayer)).forEach(i -> i.sendMessage(m));

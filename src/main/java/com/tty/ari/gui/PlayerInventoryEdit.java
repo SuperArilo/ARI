@@ -1,7 +1,6 @@
 package com.tty.ari.gui;
 
 import com.tty.api.AbstractJavaPlugin;
-import com.tty.api.ComponentTool;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.gui.BaseMenu;
 import com.tty.api.dto.gui.FunctionItems;
@@ -65,7 +64,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
 
     @Override
     protected @NotNull Component title() {
-        return ComponentTool.text(this.getBaseMenu().getTitle(), this.monitoree);
+        return Ari.instance.getEngine().directRender(this.getBaseMenu().getTitle(), this.monitoree);
     }
 
     @Override
@@ -87,7 +86,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
                     ItemStack itemStack = ItemStack.of(Material.valueOf(value.getMaterial()));
                     if (!(itemStack.getItemMeta() instanceof SkullMeta skullMeta)) break;
                     skullMeta.setPlayerProfile(this.monitoree.getPlayerProfile());
-                    skullMeta.displayName(ComponentTool.text(this.monitoree.getName()));
+                    skullMeta.displayName(Ari.instance.getEngine().directRender(this.monitoree.getName()));
                     itemStack.setItemMeta(skullMeta);
                     value.setItemStack(itemStack);
                 }
@@ -265,10 +264,10 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
             ItemStack itemStack = ItemStack.of(Material.valueOf(item.getMaterial().toUpperCase()));
             Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, FunctionType.PLAYER_EXPERIENCE.getName());
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(ComponentTool.text(this.replaceKey(item.getName(), map), this.getOfflinePlayer()));
+            itemMeta.displayName(Ari.instance.getEngine().directRender(this.replaceKey(item.getName(), map), this.getOfflinePlayer()));
             List<Component> c = new ArrayList<>();
             for (String s : item.getLore()) {
-                c.add(ComponentTool.text(this.replaceKey(s, map)));
+                c.add(Ari.instance.getEngine().directRender(this.replaceKey(s, map)));
             }
             itemMeta.lore(c);
             itemStack.setItemMeta(itemMeta);
@@ -297,11 +296,11 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
             ItemStack itemStack = ItemStack.of(Material.valueOf(item.getMaterial().toUpperCase()));
             Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, item.getType().name());
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(ComponentTool.text(item.getName()));
+            itemMeta.displayName(Ari.instance.getEngine().directRender(item.getName()));
             if (location != null) {
                 List<Component> components = new ArrayList<>();
                 for (String string : item.getLore()) {
-                    components.add(ComponentTool.text(this.replaceKey(string, map)));
+                    components.add(Ari.instance.getEngine().directRender(this.replaceKey(string, map)));
                 }
                 itemMeta.lore(components);
             } else {
@@ -324,7 +323,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
                 itemStack = ItemStack.of(Material.valueOf(item.getMaterial()));
                 Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, type.getName());
                 ItemMeta itemMeta = itemStack.getItemMeta();
-                itemMeta.displayName(ComponentTool.text(item.getName(), this.getOfflinePlayer()));
+                itemMeta.displayName(Ari.instance.getEngine().directRender(item.getName(), this.getOfflinePlayer()));
                 itemStack.setItemMeta(itemMeta);
             }
             for (Integer i : item.getSlot()) {

@@ -1,7 +1,6 @@
 package com.tty.ari.gui.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.tty.api.ComponentTool;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
@@ -78,14 +77,14 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
             types.put(IconKeyType.WORLD_NAME.getKey(), Component.text(location.getWorld().getName()));
 
             for (String line : rawLore) {
-                textComponents.add(ComponentTool.text(line, types));
+                textComponents.add(Ari.instance.getEngine().directRender(line, types));
             }
 
             this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_DATA_ID, itemStack, PersistentDataType.STRING, ph.getHomeId());
             this.getPlugin().getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, FunctionType.DATA.getName());
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.displayName(ComponentTool.text(ph.getHomeName(), this.getOfflinePlayer()));
+            itemMeta.displayName(Ari.instance.getEngine().directRender(ph.getHomeName(), this.getOfflinePlayer()));
             itemMeta.lore(textComponents);
 
             if (ph.isTopSlot()) {

@@ -1,6 +1,5 @@
 package com.tty.ari.listener.player;
 
-import com.tty.api.ComponentTool;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.ChatConfig;
 import com.tty.ari.dto.state.player.PlayerChatState;
@@ -31,10 +30,10 @@ public class CustomChatFormantListener implements Listener {
             }
         }
         try {
-            Component component = Ari.PLACEHOLDER.rawRender(this.getPattern(player), player).get(500, TimeUnit.MILLISECONDS);
+            Component component = Ari.instance.getEngine().render(this.getPattern(player), player).get(500, TimeUnit.MILLISECONDS);
             event.renderer(((source, sourceDisplayName, message, viewer) -> component));
         } catch (Exception e) {
-            player.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error"), player));
+            player.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-error"), player));
             Ari.instance.getLog().error(e);
         }
     }

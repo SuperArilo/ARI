@@ -1,7 +1,6 @@
 package com.tty.ari.commands.args;
 
 import com.mojang.brigadier.arguments.ArgumentType;
-import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -40,7 +39,7 @@ public class AfkArgs extends RequiredArgumentCommand<PlayerSelectorArgumentResol
     public void execute(CommandSender sender, String[] args) {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
         if (!(offlinePlayer instanceof Player player)) {
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.unable-player")));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.unable-player"), offlinePlayer));
             return;
         }
         for (PlayerAFKState state : Ari.instance.getStatusManager().get(PlayerAFKService.class).getStates(player)) {
@@ -50,7 +49,7 @@ public class AfkArgs extends RequiredArgumentCommand<PlayerSelectorArgumentResol
                 state.afkNow();
             }
         }
-        sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.command.execute-success")));
+        sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.command.execute-success"), offlinePlayer));
     }
 
     @Override

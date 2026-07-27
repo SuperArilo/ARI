@@ -11,6 +11,7 @@ import com.tty.api.dto.CommandAlias;
 import com.tty.api.dto.TempRegisterService;
 import com.tty.api.scheduler.Scheduler;
 import com.tty.api.service.*;
+import com.tty.api.service.placeholder.PlaceholderRegistry;
 import com.tty.api.state.StateService;
 import com.tty.ari.configuration.*;
 import com.tty.ari.configuration.home.HomeConfig;
@@ -81,7 +82,6 @@ public class Ari extends AbstractJavaPlugin {
     public static TeleportingService TELEPORTING_SERVICE;
     public static InteractService INTERACT_SERVICE;
     public static AttackService ATTACK_SERVICE;
-    public static Placeholder PLACEHOLDER;
     public static BungeeCache BUNGEECACHE;
 
     public static Metrics METRICS;
@@ -102,7 +102,6 @@ public class Ari extends AbstractJavaPlugin {
 
         this.registerCommand();
 
-        PLACEHOLDER = new Placeholder(this);
         BUNGEECACHE = new BungeeCache(this);
         this.initMetrics();
     }
@@ -124,9 +123,6 @@ public class Ari extends AbstractJavaPlugin {
         }
         if (BUNGEECACHE != null) {
             BUNGEECACHE.shutdown();
-        }
-        if (PLACEHOLDER != null) {
-            PLACEHOLDER.close();
         }
     }
 
@@ -220,6 +216,11 @@ public class Ari extends AbstractJavaPlugin {
     @Override
     protected @Nullable List<PlaceholderExpansion> expansions() {
         return List.of(new NickExpansion());
+    }
+
+    @Override
+    protected @Nullable PlaceholderRegistry placeholders() {
+        return Placeholder.register();
     }
 
     private void registerCommand() {

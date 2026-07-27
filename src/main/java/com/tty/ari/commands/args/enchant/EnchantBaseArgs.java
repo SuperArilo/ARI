@@ -1,6 +1,5 @@
 package com.tty.ari.commands.args.enchant;
 
-import com.tty.api.ComponentTool;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.enumType.lang.PlaceholderEnchant;
@@ -41,18 +40,19 @@ public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
     }
 
     protected ResultArgs parseArgs(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) return null;
         if (args.length < 3) return null;
         String enchantArg = args[1];
         Enchantment enchantParse = this.parseEnchant(enchantArg);
         if (enchantParse == null) {
-            ConfigUtils.t("function.enchant.not-exist", (Player) sender).thenAccept(sender::sendMessage);
+            ConfigUtils.t("function.enchant.not-exist", player).thenAccept(sender::sendMessage);
             return null;
         }
         int level;
         try {
             level = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error")));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-edit.number.format-error"), player));
             level = 0;
         }
         boolean forceEnchant = false;
@@ -115,6 +115,8 @@ public abstract class EnchantBaseArgs <T> extends RequiredArgumentCommand<T> {
         itemStack.setItemMeta(itemMeta);
 
         String value = Ari.DATA_SERVICE.getValue("enchantment." + enchantment.key().value());
-        sender.sendMessage(ConfigUtils.tAfter("function.enchant.enchant-success", Map.of(PlaceholderEnchant.ENCHANT_NAME_UNRESOLVED.getType(), Component.text(value), PlaceholderEnchant.ENCHANT_LEVEL_UNRESOLVED.getType(), Component.text(level))));
+        sender.sendMessage(ConfigUtils.tAfter("function.enchant.enchant-success",
+                Map.of(PlaceholderEnchant.ENCHANT_NAME_UNRESOLVED.getType(), Component.text(value),
+                        PlaceholderEnchant.ENCHANT_LEVEL_UNRESOLVED.getType(), Component.text(level))));
     }
 }

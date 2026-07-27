@@ -2,7 +2,6 @@ package com.tty.ari.commands.args;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -74,7 +73,7 @@ public class TimeArgs extends RequiredArgumentCommand<String> {
             player.sendMessage("no content " + timePeriod + "in lang");
             return;
         }
-        player.sendMessage(ComponentTool.text(value, Map.of(PlaceholderTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.tAfter("server.time.name." + period.getDescription()))));
+        player.sendMessage(Ari.instance.getEngine().directRender(value, player, Map.of(PlaceholderTime.EXECUTE_TARGET_TIME.getType(), ConfigUtils.tAfter("server.time.name." + period.getDescription()))));
     }
 
     @Override

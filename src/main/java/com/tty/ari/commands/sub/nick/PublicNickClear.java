@@ -1,7 +1,6 @@
 package com.tty.ari.commands.sub.nick;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.tty.api.ComponentTool;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.repository.EntityRepository;
 import com.tty.api.repository.PartitionKey;
@@ -32,7 +31,7 @@ public abstract class PublicNickClear extends LiteralArgumentCommand {
     public void setValue(CommandSender sender, String[] args, PlaceholderPlayer placeholder) {
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
         if (offlinePlayer == null) {
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
             return;
         }
         String uuid = offlinePlayer.getUniqueId().toString();
@@ -56,13 +55,13 @@ public abstract class PublicNickClear extends LiteralArgumentCommand {
             };
         }).thenAccept(status -> {
             if (status) {
-                sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.command.execute-success")));
+                sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.command.execute-success")));
             } else {
-                Component append = ComponentTool.text(Ari.DATA_SERVICE.getValue("base.command.execute-success")).append(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                Component append = Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.command.execute-success")).append(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                 sender.sendMessage(append);
             }
         }).exceptionally(e -> {
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-error")));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-error")));
             Ari.instance.getLog().error(e);
             return null;
         });

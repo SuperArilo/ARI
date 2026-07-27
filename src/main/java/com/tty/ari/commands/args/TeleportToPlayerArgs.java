@@ -1,7 +1,6 @@
 package com.tty.ari.commands.args;
 
 import com.mojang.brigadier.arguments.ArgumentType;
-import com.tty.api.ComponentTool;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
@@ -39,7 +38,7 @@ public class TeleportToPlayerArgs extends RequiredArgumentCommand<PlayerSelector
         if (!(sender instanceof Player player)) return;
         OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
         if (!(offlinePlayer instanceof Player target)) {
-            sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.unable-player"), player));
+            sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.unable-player"), player));
             return;
         }
         Ari.TELEPORTING_SERVICE.teleport(player, target.getLocation());

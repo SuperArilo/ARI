@@ -3,7 +3,7 @@ package com.tty.ari.enumType.lang;
 import com.tty.api.enumType.PlaceholderTypeEnum;
 
 public enum PlaceholderShowItem implements PlaceholderTypeEnum {
-    SHOW_ITEM("show_item");
+    SHOW_ITEM_UNRESOLVED("show_item");
 
     private final String type;
 

@@ -1,7 +1,6 @@
 package com.tty.ari.states.gui;
 
 import com.google.common.reflect.TypeToken;
-import com.tty.api.ComponentTool;
 import com.tty.api.state.GuiEditFunctionState;
 import com.tty.api.state.StateService;
 import com.tty.ari.Ari;
@@ -46,7 +45,7 @@ public class GuiEditFunctionStateService extends StateService<GuiEditFunctionSta
         Player owner = (Player) state.getOwner();
         int i = Ari.DATA_SERVICE.getValue("server.gui-edit-timeout", new TypeToken<Integer>(){}.getType());
         owner.showTitle(
-                ComponentTool.setPlayerTitle(
+                Ari.instance.getEngine().playerTitle(
                         Ari.DATA_SERVICE.getValue("base.on-edit.title"),
                         Ari.DATA_SERVICE.getValue("base.on-edit.sub-title"),
                         Duration.ofMillis(1000),
@@ -63,7 +62,7 @@ public class GuiEditFunctionStateService extends StateService<GuiEditFunctionSta
     @Override
     protected void onFinished(GuiEditFunctionState state) {
         Player owner = (Player) state.getOwner();
-        owner.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-edit.timeout-cancel")));
+        owner.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-edit.timeout-cancel")));
         owner.clearTitle();
         Ari.instance.getLog().debug("player {} edit status timeout.", owner.getName());
     }
