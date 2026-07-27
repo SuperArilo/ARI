@@ -125,6 +125,9 @@ public class Ari extends AbstractJavaPlugin {
         if (BUNGEECACHE != null) {
             BUNGEECACHE.shutdown();
         }
+        if (PLACEHOLDER != null) {
+            PLACEHOLDER.close();
+        }
     }
 
     @Override
