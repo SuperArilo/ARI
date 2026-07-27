@@ -43,7 +43,7 @@ public class PlayerActionState extends AsyncState {
                     cloud.setInvulnerable(true);
                     cloud.setGravity(false);
                     cloud.setInvisible(true);
-                    cloud.setParticle(Particle.DUST, new Particle.DustOptions(Color.fromRGB(0, 0, 0), 0f));
+                    cloud.setParticle(Particle.FALLING_DUST, null);
                     i.accept(cloud);
                 }
             }
