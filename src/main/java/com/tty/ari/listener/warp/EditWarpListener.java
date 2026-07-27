@@ -24,7 +24,6 @@ import com.tty.ari.states.gui.GuiEditFunctionStateService;
 import com.tty.ari.states.gui.GuiManagerStateService;
 import com.tty.ari.tool.ConfigUtils;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -166,7 +165,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
             for (FunctionItems v : warpEditor.getBaseMenu().getFunctionItems().values()) {
                 if (v.getType().equals(FunctionType.TOP_SLOT)) {
                     List<String> lore = v.getLore();
-                    List<TextComponent> list = lore.stream().map(p -> ComponentTool.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentTool.text(Ari.DATA_SERVICE.getValue(currentEditWarp.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
+                    List<Component> list = lore.stream().map(p -> ComponentTool.text(p, Map.of(IconKeyType.TOP_SLOT.getKey(), ComponentTool.text(Ari.DATA_SERVICE.getValue(currentEditWarp.isTopSlot() ? "base.yes_re" : "base.no_re"))))).toList();
                     clickMeta.lore(list);
                     clickItem.setItemMeta(clickMeta);
                 }

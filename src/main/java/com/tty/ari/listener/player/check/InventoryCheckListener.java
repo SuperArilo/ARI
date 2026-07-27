@@ -13,7 +13,7 @@ import com.tty.ari.dto.state.GuiState;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
 import com.tty.ari.gui.PlayerInventoryEdit;
 import com.tty.ari.states.gui.GuiManagerStateService;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -30,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
 
 public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit> {
 
@@ -200,7 +199,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
         Ari.instance.getNbtManager().setNbt(NbtGuiValue.GUI_FUNCTION_ICON, itemStack, PersistentDataType.STRING, item.getType().getName());
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.displayName(ComponentTool.text(item.getName()));
-        List<TextComponent> collect = item.getLore().stream().map(ComponentTool::text).toList();
+        List<Component> collect = item.getLore().stream().map(ComponentTool::text).toList();
         itemMeta.lore(collect);
         itemStack.setItemMeta(itemMeta);
         return itemStack;

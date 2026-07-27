@@ -17,7 +17,6 @@ import com.tty.ari.Ari;
 import com.tty.ari.configuration.home.HomeGuiConfig;
 import com.tty.ari.entity.ServerHome;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -68,7 +67,7 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
                 continue;
             }
 
-            List<TextComponent> textComponents = new ArrayList<>();
+            List<Component> textComponents = new ArrayList<>();
             Location location = FormatUtils.parseLocation(ph.getLocation());
 
             Map<String, Component> types = new HashMap<>();

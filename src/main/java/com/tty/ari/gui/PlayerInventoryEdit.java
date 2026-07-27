@@ -21,7 +21,6 @@ import de.tr7zw.nbtapi.iface.ReadWriteNBTCompoundList;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -300,7 +299,7 @@ public class PlayerInventoryEdit extends BaseConfigInventory {
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.displayName(ComponentTool.text(item.getName()));
             if (location != null) {
-                List<TextComponent> components = new ArrayList<>();
+                List<Component> components = new ArrayList<>();
                 for (String string : item.getLore()) {
                     components.add(ComponentTool.text(this.replaceKey(string, map)));
                 }

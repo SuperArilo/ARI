@@ -19,7 +19,6 @@ import com.tty.ari.configuration.warp.WarpGuiConfig;
 import com.tty.ari.entity.ServerWarp;
 import com.tty.ari.tool.PlayerCache;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -68,7 +67,7 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
                 continue;
             }
 
-            List<TextComponent> textComponents = new ArrayList<>();
+            List<Component> textComponents = new ArrayList<>();
             Location location = FormatUtils.parseLocation(serverWarp.getLocation());
 
             boolean hasPermission = serverWarp.getPermission() == null ||

@@ -10,7 +10,7 @@ import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.enumType.lang.PlaceholderPlayer;
 import com.tty.ari.tool.PlayerCache;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
@@ -58,7 +58,7 @@ public abstract class PublicNickClear extends LiteralArgumentCommand {
             if (status) {
                 sender.sendMessage(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.command.execute-success")));
             } else {
-                TextComponent append = ComponentTool.text(Ari.DATA_SERVICE.getValue("base.command.execute-success")).append(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
+                Component append = ComponentTool.text(Ari.DATA_SERVICE.getValue("base.command.execute-success")).append(ComponentTool.text(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));
                 sender.sendMessage(append);
             }
         }).exceptionally(e -> {
