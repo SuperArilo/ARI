@@ -262,7 +262,9 @@ public class LastDamageTracker {
                     }
                 }
             }
-            if (hasValidAttacker) return;
+            if (hasValidAttacker) {
+                resolvedAttacker = this.findAttackerByHistory(victim);
+            }
         }
 
         this.records.computeIfAbsent(victim, k -> new CopyOnWriteArrayList<>()).add(new DamageRecord(System.currentTimeMillis(), resolvedAttacker, event.getFinalDamage(), victim.getLocation(), weapon));
