@@ -28,6 +28,7 @@ import org.bukkit.event.player.*;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerAFKStatusListener implements Listener {
 
@@ -56,7 +57,7 @@ public class PlayerAFKStatusListener implements Listener {
         CompletableFuture<Component> message = ConfigUtils.t("server.player.afk.player-leave", player);
 
         CompletableFuture.allOf(breakHintFuture, titleFuture, tListFuture, message).thenRunAsync(() -> {
-            List<Component> list = tListFuture.join();
+            List<Component> list = tListFuture.orTimeout(20, TimeUnit.MICROSECONDS).join();
             Ari.instance.getScheduler().runAtEntity(player, i -> {
                 player.showTitle(Ari.instance.getEngine().playerTitle(
                         titleFuture.join(),
