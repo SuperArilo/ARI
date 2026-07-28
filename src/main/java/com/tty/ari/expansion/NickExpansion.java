@@ -36,7 +36,7 @@ public class NickExpansion extends PlaceholderExpansion {
         if (player == null) return null;
 
         if (params.equals(PlaceholderPlayer.PLAYER_NAME_PREFIX.getType()) || params.equals(PlaceholderPlayer.PLAYER_NAME_SUFFIX.getType())) {
-            Component join = Component.empty();
+            Component join = Component.text("null");
             try {
                 join = Ari.instance.getEngine().render(PlaceholderTypeEnum.testBuild(params), player).get(20, TimeUnit.MILLISECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
