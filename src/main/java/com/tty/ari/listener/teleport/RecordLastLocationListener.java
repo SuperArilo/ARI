@@ -39,7 +39,7 @@ public class RecordLastLocationListener implements Listener {
         if (event.getInventory().getType() != InventoryType.CRAFTING || !player.isDead() || !player.isConnected() || player.getHealth() > 0) return;
         // do stuff
         if (!Scheduler.isFolia()) return;
-        Ari.instance.getScheduler().runAtEntity(player, i -> {
+        Ari.instance.getScheduler().runAtEntityLater(player, i -> Ari.instance.getScheduler().runAtRegion(player.getRespawnLocation(), t -> {
             Location respawnLocation = player.getRespawnLocation();
             if (respawnLocation == null) {
                 Location location = this.getRespawnLocation(player.getWorld());
@@ -47,7 +47,7 @@ public class RecordLastLocationListener implements Listener {
                 respawnLocation = location;
             }
             Bukkit.getPluginManager().callEvent(new PlayerRespawnForFoliaEvent(player, respawnLocation, player.getLocation()));
-        }, null);
+        }), null, 1L);
     }
 
     @EventHandler
