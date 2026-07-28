@@ -3,10 +3,9 @@ package com.tty.ari.expansion;
 import com.tty.api.enumType.PlaceholderTypeEnum;
 import com.tty.ari.Ari;
 import com.tty.ari.enumType.lang.PlaceholderPlayer;
-import me.clip.placeholderapi.PAPIComponents;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,8 +35,7 @@ public class NickExpansion extends PlaceholderExpansion {
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
         if (player == null) return null;
 
-        if (params.equals(PlaceholderPlayer.PLAYER_NAME_PREFIX.getType())
-                || params.equals(PlaceholderPlayer.PLAYER_NAME_SUFFIX.getType())) {
+        if (params.equals(PlaceholderPlayer.PLAYER_NAME_PREFIX.getType()) || params.equals(PlaceholderPlayer.PLAYER_NAME_SUFFIX.getType())) {
             Component join = Component.empty();
             try {
                 join = Ari.instance.getEngine().render(PlaceholderTypeEnum.testBuild(params), player).get(20, TimeUnit.MILLISECONDS);
@@ -46,7 +44,7 @@ public class NickExpansion extends PlaceholderExpansion {
                     Ari.instance.getLog().debug(e);
                 }
             }
-            return MiniMessage.miniMessage().serializeOr(PAPIComponents.setPlaceholders(player, join), "");
+            return LegacyComponentSerializer.legacySection().serialize(join);
         }
 
         return null;
