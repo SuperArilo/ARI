@@ -72,6 +72,7 @@ public class MobBossBarListener implements Listener {
         if (records.isEmpty()) return;
         LastDamageTracker.DamageRecord last = records.getLast();
         if (!(last.damager() instanceof Player player)) return;
+        if (Math.abs(last.timestamp() - System.currentTimeMillis()) > 5000L) return;
 
         AttackBossBarService service = Ari.instance.getStatusManager().get(AttackBossBarService.class);
         AttackBossBarState barState = null;
