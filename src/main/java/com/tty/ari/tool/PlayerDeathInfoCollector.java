@@ -1,29 +1,22 @@
 package com.tty.ari.tool;
 
 import com.google.common.reflect.TypeToken;
-import com.tty.api.scheduler.RunTask;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.lang.DeathMessageLang;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import static com.tty.ari.listener.DamageTrackerListener.DAMAGE_TRACKER;
-
 
 public class PlayerDeathInfoCollector {
 
@@ -87,7 +80,6 @@ public class PlayerDeathInfoCollector {
                 resolvedKeys.add(publicKey);
             }
         }
-
     }
 
     public static DeathInfo collect(PlayerDeathEvent event) {
@@ -110,10 +102,6 @@ public class PlayerDeathInfoCollector {
 
         if (records.isEmpty()) {
             info.killer = event.getDamageSource().getCausingEntity();
-            if (info.killer instanceof LivingEntity e) {
-                EntityEquipment eq = e.getEquipment();
-                info.weapon = eq == null ? null : eq.getItemInMainHand();
-            }
             Ari.instance.getLog().debug("fallback analysis used, killer: {}", info.killer != null ? info.killer.getType().name() : "null");
             return info;
         }
@@ -125,13 +113,7 @@ public class PlayerDeathInfoCollector {
         Location firstLocation = null;
 
         for (LastDamageTracker.DamageRecord record : records) {
-
-            Entity actual = null;
-            try {
-                actual = resolveAttacker(record.damager()).get(20, TimeUnit.MILLISECONDS);
-            } catch (Exception e) {
-                Ari.instance.getLog().warn("query attacker timeout. skip...");
-            }
+            Entity actual = record.damager();
             if (actual == null) continue;
 
             attackers.add(actual);
@@ -148,19 +130,10 @@ public class PlayerDeathInfoCollector {
             info.weapon = weapon;
             info.isEscapeAttempt = evaluateEscape(info.victim, info.killer, firstLocation, info.victim.getLocation(), info.deathCause);
             info.isDestine = determineIfDestine(records, info.victim, info.deathCause, attackers);
-            if (info.weapon == null && info.killer instanceof LivingEntity living) {
-                EntityEquipment eq = living.getEquipment();
-                if (eq != null) {
-                    info.weapon = eq.getItemInMainHand();
-                }
-            }
+
             Ari.instance.getLog().debug("combat analysis success, killer: {}, weapon: {}", info.killer.getType().name(), info.weapon != null ? info.weapon.getType().name() : "null");
         } else {
             info.killer = event.getDamageSource().getCausingEntity();
-            if (info.killer instanceof LivingEntity e) {
-                EntityEquipment eq = e.getEquipment();
-                info.weapon = eq == null ? null : eq.getItemInMainHand();
-            }
             Ari.instance.getLog().debug("fallback analysis used (no valid attacker)");
         }
 
@@ -168,13 +141,6 @@ public class PlayerDeathInfoCollector {
         return info;
     }
 
-    /**
-     * 判断是否为注定死亡
-     * 玩家试图逃跑但被杀死
-     * 玩家被多个不同攻击者围攻致死
-     * 玩家死于间接伤害，但之前曾被其他攻击者攻击
-     * 如果玩家被直接秒杀，不算注定
-     */
     private static boolean determineIfDestine(List<LastDamageTracker.DamageRecord> records, Entity victim, EntityDamageEvent.DamageCause deathCause, List<Entity> resolvedAttackers) {
 
         if (records.size() == 1) {
@@ -206,7 +172,6 @@ public class PlayerDeathInfoCollector {
             return true;
         }
 
-
         if (records.size() >= 2) {
             long firstTime = records.getFirst().timestamp();
             long lastTime = records.getLast().timestamp();
@@ -232,10 +197,8 @@ public class PlayerDeathInfoCollector {
 
         double escapeDistance;
         if (isDirectCombatCauses(cause)) {
-            // 直接战斗
             escapeDistance = cause == EntityDamageEvent.DamageCause.PROJECTILE ? 20.0 : 5.0;
         } else {
-            // 间接伤害
             escapeDistance = 15.0;
         }
 
@@ -247,59 +210,6 @@ public class PlayerDeathInfoCollector {
         return escaped;
     }
 
-    private static CompletableFuture<Entity> resolveAttacker(Entity damager) {
-        if (!(damager instanceof Projectile projectile)) return CompletableFuture.completedFuture(damager);
-
-        if (!projectile.isValid()) CompletableFuture.completedFuture(null);
-        try {
-            Entity shooter = projectile.getShooter() instanceof Entity s ? s : null;
-            if (shooter != null) {
-                return CompletableFuture.completedFuture(shooter);
-            }
-            UUID owner = projectile.getOwnerUniqueId();
-            if (owner != null) {
-                OfflinePlayer ownerEntity = PlayerCache.getPlayer(owner);
-                if (ownerEntity instanceof Entity t && t.isValid()) {
-                    return CompletableFuture.completedFuture(t);
-                }
-            }
-            return CompletableFuture.completedFuture(damager);
-        } catch (Throwable t) {
-            Ari.instance.getLog().error(t);
-        }
-
-        CompletableFuture<Entity> future = new CompletableFuture<>();
-        Consumer<RunTask> task = i -> {
-            Entity result = damager;
-            try {
-                if (projectile.isValid() && !projectile.isDead()) {
-                    if (projectile.getShooter() instanceof Entity s) {
-                        result = s;
-                    } else {
-                        UUID owner = projectile.getOwnerUniqueId();
-                        if (owner != null) {
-                            OfflinePlayer ownerEntity = PlayerCache.getPlayer(owner);
-                            if (ownerEntity instanceof Entity t && t.isValid()) {
-                                result = t;
-                            }
-                        }
-                    }
-                }
-            } catch (Exception ignored) {}
-            future.complete(result);
-        };
-        if (projectile.isValid() || !projectile.isDead()) {
-            Ari.instance.getScheduler().runAtEntity(projectile, task, null);
-        } else {
-            Ari.instance.getScheduler().runAtRegion(projectile.getLocation(), task);
-        }
-
-        return future;
-    }
-
-    /**
-     * 判断是否为间接伤害原因
-     */
     private static boolean isIndirectDamageCause(EntityDamageEvent.DamageCause cause) {
         return switch (cause) {
             case LAVA, MAGIC, POISON, WITHER, THORNS, FIRE_TICK, FIRE, LIGHTNING, SONIC_BOOM,
@@ -315,5 +225,4 @@ public class PlayerDeathInfoCollector {
             default -> false;
         };
     }
-
 }
