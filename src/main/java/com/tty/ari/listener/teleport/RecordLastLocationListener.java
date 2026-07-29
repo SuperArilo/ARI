@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 public class RecordLastLocationListener implements Listener {
 
     //保存的玩家上一个传送位置
@@ -39,15 +38,24 @@ public class RecordLastLocationListener implements Listener {
         if (event.getInventory().getType() != InventoryType.CRAFTING || !player.isDead() || !player.isConnected() || player.getHealth() > 0) return;
         // do stuff
         if (!Scheduler.isFolia()) return;
-        Ari.instance.getScheduler().runAtEntityLater(player, i -> Ari.instance.getScheduler().runAtRegion(player.getRespawnLocation(), t -> {
-            Location respawnLocation = player.getRespawnLocation();
-            if (respawnLocation == null) {
-                Location location = this.getRespawnLocation(player.getWorld());
-                player.setRespawnLocation(location);
-                respawnLocation = location;
+        Ari.instance.getScheduler().runAtEntityLater(player, i -> {
+            if (!player.isOnline() || !player.isValid()) return;
+
+            Location currentRespawn = player.getRespawnLocation();
+
+            if (currentRespawn == null) {
+                currentRespawn = this.getRespawnLocation(player.getWorld());
+                player.setRespawnLocation(currentRespawn);
             }
-            Bukkit.getPluginManager().callEvent(new PlayerRespawnForFoliaEvent(player, respawnLocation, player.getLocation()));
-        }), null, 1L);
+
+            PlayerRespawnForFoliaEvent respawnEvent = new PlayerRespawnForFoliaEvent(player, currentRespawn, player.getLocation());
+            Bukkit.getPluginManager().callEvent(respawnEvent);
+
+            if (!respawnEvent.getRespawnLocation().equals(currentRespawn)) {
+                player.setRespawnLocation(respawnEvent.getRespawnLocation());
+            }
+        }, null, 1L);
+
     }
 
     @EventHandler
