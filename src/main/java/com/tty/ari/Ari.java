@@ -56,6 +56,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -93,8 +94,12 @@ public class Ari extends AbstractJavaPlugin {
 
     @Override
     protected void enabling() {
+        PluginManager pluginManager = Bukkit.getServer().getPluginManager();
+        if(!pluginManager.isPluginEnabled("arilib")) {
+            pluginManager.disablePlugin(this);
+            return;
+        }
         this.printLogo();
-
         SQL_INSTANCE = new SQLInstance();
         REPOSITORY_MANAGER = new RepositoryManager(this);
 
