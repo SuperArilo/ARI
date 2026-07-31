@@ -9,6 +9,7 @@ import com.tty.api.service.placeholder.PlaceholderRegistry;
 import com.tty.api.service.placeholder.PlaceholderResolve;
 import com.tty.api.state.AsyncState;
 import com.tty.api.state.State;
+import com.tty.api.utils.ColorConverterLegacy;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.TimeFormatUtils;
 import com.tty.ari.Ari;
@@ -338,7 +339,10 @@ public class Placeholder {
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayerChat.CHAT_MESSAGE,
-                PlaceholderResolve.ofPlayerSync(player -> MiniMessage.miniMessage().serialize(Ari.instance.getStatusManager().get(PlayerChatService.class).getStates(player).getFirst().getMessage()))
+                PlaceholderResolve.ofPlayerSync(player -> {
+                    String convert = ColorConverterLegacy.convert(MiniMessage.miniMessage().serialize(Ari.instance.getStatusManager().get(PlayerChatService.class).getStates(player).getFirst().getMessage()));
+                    return PlainTextComponentSerializer.plainText().serialize(MiniMessage.miniMessage().deserialize(convert));
+                })
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayer.PLAYER_GAME_MODE,
