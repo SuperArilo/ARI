@@ -1,4 +1,4 @@
-version: 1
+version: 1.1
 lang: cn
 data:
   # mysql, sqlite
@@ -42,6 +42,7 @@ server:
   # 开启阻止特定爆炸的破坏（伤害不会阻拦
   anti-explosion:
     enable: false
+    disable-spawn-fireworks: false
     pass-list:
       - "tnt"
   # 开启阻止耕地踩踏

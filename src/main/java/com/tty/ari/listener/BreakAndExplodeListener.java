@@ -29,6 +29,7 @@ public class BreakAndExplodeListener implements Listener {
     private boolean antiExplosion;
     private boolean antiTrampleFarmland;
     private boolean antiFireSpread;
+    private boolean disableSpawnFireworks;
 
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
@@ -37,7 +38,10 @@ public class BreakAndExplodeListener implements Listener {
         EntityType entityType = event.getEntityType();
         if (this.passExplosionList.contains(entityType.name())) return;
         event.blockList().clear();
-        Ari.FIREWORK_SERVICE.spawnFireworks(event.getLocation(), 1);
+        if (!this.disableSpawnFireworks) {
+            Ari.FIREWORK_SERVICE.spawnFireworks(event.getLocation(), 1);
+        }
+
     }
 
     @EventHandler
@@ -47,7 +51,10 @@ public class BreakAndExplodeListener implements Listener {
         if (material.isAir()) return;
         if (this.passExplosionList.contains(material.name())) return;
         event.blockList().clear();
-        Ari.FIREWORK_SERVICE.spawnFireworks(event.getBlock().getLocation().add(0.5, 2, 0.5), 1);
+        if (!this.disableSpawnFireworks) {
+            Ari.FIREWORK_SERVICE.spawnFireworks(event.getBlock().getLocation().add(0.5, 2, 0.5), 1);
+        }
+
     }
 
     @EventHandler
@@ -119,6 +126,7 @@ public class BreakAndExplodeListener implements Listener {
         this.antiExplosion = this.loadAntiExplosion();
         this.antiTrampleFarmland = this.loadAntiTrampleFarmland();
         this.antiFireSpread = this.loadAntiFireSpread();
+        this.disableSpawnFireworks = this.loadDisableSpawnFireworks();
     }
 
     private List<String> loadPassExplosionList() {
@@ -140,6 +148,10 @@ public class BreakAndExplodeListener implements Listener {
 
     private boolean loadAntiExplosion() {
         return Ari.instance.getConfig().getBoolean("server.anti-explosion.enable", false);
+    }
+
+    private boolean loadDisableSpawnFireworks() {
+        return Ari.instance.getConfig().getBoolean("server.anti-explosion.disable-spawn-fireworks", false);
     }
 
     private boolean loadAntiFireSpread() {
