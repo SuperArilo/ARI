@@ -220,13 +220,13 @@ public class PlayerVanishService extends StateService<State> implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onInputCommand(PlayerCommandPreprocessEvent event) {
         String message = event.getMessage();
-        if (message.startsWith("/kick ") || message.startsWith("/minecraft:kick ")) {
+        if (message.startsWith("/kick") || message.startsWith("/minecraft:kick")) {
             String[] args = message.split(" ");
             if (args.length < 2) return;
             OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
             if (!(offlinePlayer instanceof Player player) || Ari.instance.getStatusManager().get(PlayerVanishService.class).getStates(player).isEmpty()) return;
             event.setMessage("/kick null-" + Ari.instance.getName());
-        } else if (message.startsWith("/ban") || message.startsWith("/minecraft:ban")) {
+        } else if (message.startsWith("/ban") || message.startsWith("/minecraft:ban") || message.startsWith("/tp") || message.startsWith("/minecraft:tp")) {
             String[] args = message.split(" ");
             if (args.length < 2) return;
             OfflinePlayer offlinePlayer = PlayerCache.getPlayer(args[1]);
