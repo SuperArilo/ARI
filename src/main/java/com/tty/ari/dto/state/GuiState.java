@@ -8,11 +8,11 @@ import org.bukkit.entity.Entity;
 public class GuiState extends State {
 
     @Getter
-    private final BaseInventory menu;
+    private final BaseInventory baseInventory;
 
-    public GuiState(Entity owner, BaseInventory menu) {
+    public GuiState(Entity owner, BaseInventory baseInventory) {
         super(owner, Integer.MAX_VALUE);
-        this.menu = menu;
+        this.baseInventory = baseInventory;
     }
 
 }

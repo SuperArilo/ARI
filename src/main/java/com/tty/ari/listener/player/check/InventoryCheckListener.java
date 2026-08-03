@@ -108,7 +108,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             if (!(guiState instanceof OnCheckPlayerGuiState state)) continue;
             if (!state.getMonitoree().equals(holder.getMonitoree())) continue;
             if (menuConfig.getShortcutBar().contains(slot) && menuConfig.getPlayerInventory().contains(slot)) continue;
-            state.getMenu().getInventory().setItem(slot, newSlotItem != null ? newSlotItem.clone() : null);
+            state.getBaseInventory().getInventory().setItem(slot, newSlotItem != null ? newSlotItem.clone() : null);
         }
 
         event.getView().setCursor(newCursor);
@@ -184,7 +184,7 @@ public class InventoryCheckListener extends BaseGuiListener<PlayerInventoryEdit>
             for (GuiState guiState : service.getAllStates()) {
                 if (!(guiState instanceof OnCheckPlayerGuiState state)) continue;
                 if (!state.getMonitoree().equals(monitoree)) continue;
-                state.getMenu().getInventory().setItem(event.getSlot(), finalGuiItem.clone());
+                state.getBaseInventory().getInventory().setItem(event.getSlot(), finalGuiItem.clone());
             }
             event.getView().setCursor(finalCursor);
             return CompletableFuture.completedFuture(null);

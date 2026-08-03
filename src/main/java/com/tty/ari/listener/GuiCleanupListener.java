@@ -16,7 +16,7 @@ public class GuiCleanupListener implements Listener {
         if (!(event.getInventory().getHolder() instanceof BaseInventory baseInventory)) return;
         GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
         for (GuiState state : service.getStates(event.getPlayer())) {
-            if(state.getMenu().equals(baseInventory)) {
+            if(state.getBaseInventory().equals(baseInventory)) {
                 state.setOver(true);
             }
         }

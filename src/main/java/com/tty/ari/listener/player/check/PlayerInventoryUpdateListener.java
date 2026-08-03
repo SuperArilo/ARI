@@ -94,7 +94,7 @@ public class PlayerInventoryUpdateListener implements Listener {
         GuiManagerStateService service = Ari.instance.getStatusManager().get(GuiManagerStateService.class);
         Ari.instance.getScheduler().runLater(i -> {
             for (GuiState guiState : service.getAllStates()) {
-                if (!(guiState.getMenu() instanceof PlayerInventoryEdit editInventory) || !(guiState instanceof OnCheckPlayerGuiState state)) continue;
+                if (!(guiState.getBaseInventory() instanceof PlayerInventoryEdit editInventory) || !(guiState instanceof OnCheckPlayerGuiState state)) continue;
                 if (state.isUpdating()) continue;
                 if (!state.getMonitoree().equals(player) || !state.getOwner().equals(editInventory.getOfflinePlayer())) continue;
                 state.setUpdating(true);
