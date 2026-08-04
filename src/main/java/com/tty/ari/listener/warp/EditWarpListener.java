@@ -121,7 +121,7 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
             ItemMeta clickMeta = clickItem.getItemMeta();
 
             Location newLocation = player.getLocation();
-            warpEditor.getWarp().setLocation(newLocation.toString());
+            warpEditor.getWarp().setLocation(Ari.instance.getConfigurationManager().jsonToString(newLocation.serialize()));
             clickMeta.displayName(Ari.instance.getEngine().directRender(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
             clickItem.setItemMeta(clickMeta);
 

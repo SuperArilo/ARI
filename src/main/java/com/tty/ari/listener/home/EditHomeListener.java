@@ -105,7 +105,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
 
             ItemMeta clickMeta = clickItem.getItemMeta();
             Location newLocation = player.getLocation();
-            homeEditor.getHome().setLocation(newLocation.toString());
+            homeEditor.getHome().setLocation(Ari.instance.getConfigurationManager().jsonToString(newLocation.serialize()));
             clickMeta.displayName(Ari.instance.getEngine().directRender(FormatUtils.XYZText(newLocation.getX(), newLocation.getY(), newLocation.getZ())));
             clickItem.setItemMeta(clickMeta);
 
