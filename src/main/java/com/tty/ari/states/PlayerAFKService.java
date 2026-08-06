@@ -14,10 +14,37 @@ import com.tty.ari.states.teleport.TeleportStateService;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import static com.tty.ari.listener.DamageTrackerListener.DAMAGE_TRACKER;
+
 public class PlayerAFKService extends StateService<PlayerAFKState> {
+
+    private static final double MOVEMENT_THRESHOLD = 0.1;
 
     public PlayerAFKService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance);
+    }
+
+    public boolean canIntoAfkStatus(Player player) {
+        if (player.isFlying() ||
+                !player.isOnline() ||
+                player.isFrozen() ||
+                player.isDead() ||
+                player.isSleeping() ||
+                player.isDeeplySleeping()) return false;
+
+        if (!player.isOnGround() && player.getFallDistance() > 0) return false;
+
+        double velX = player.getVelocity().getX();
+        double velZ = player.getVelocity().getZ();
+        double velY = player.getVelocity().getY();
+
+        if (Math.abs(velX) > MOVEMENT_THRESHOLD || Math.abs(velZ) > MOVEMENT_THRESHOLD || Math.abs(velY) > MOVEMENT_THRESHOLD) return false;
+
+        if (!DAMAGE_TRACKER.getRecords(player).isEmpty()) return false;
+
+        if (player.isInsideVehicle()) return false;
+
+        return player.getFishHook() == null;
     }
 
     @Override
@@ -31,6 +58,7 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
 
     @Override
     protected void loopExecution(PlayerAFKState state) {
+
         if (!(state.getOwner() instanceof Player player) || !player.isOnline()) {
             Ari.instance.getLog().debug("player {} leave game, remove status.", state.getOwner().getName());
             state.setOver(true);
@@ -41,6 +69,7 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
             if (state.isSent()) {
                 player.clearTitle();
             }
+            state.resetStandCount();
             return;
         }
 
@@ -51,21 +80,19 @@ public class PlayerAFKService extends StateService<PlayerAFKState> {
         PreTeleportStateService preTeleportStateService = manager.get(PreTeleportStateService.class);
         TeleportStateService teleportStateService = manager.get(TeleportStateService.class);
 
-        boolean aboutOp = !player.isOp() && Ari.PERMISSION_SERVICE.hasPermission(player, "ari.pass-afk");
-
         if (!guiEditFunctionStateService.isNotHaveState(player) ||
                 !guiManagerStateService.isNotHaveState(player) ||
                 !randomTpStateService.isNotHaveState(player) ||
                 !preTeleportStateService.isNotHaveState(player) ||
                 !teleportStateService.isNotHaveState(player) ||
-                player.isDead() ||
-                aboutOp) {
+                !this.canIntoAfkStatus(player) ||
+                Ari.PERMISSION_SERVICE.hasPermission(player, "ari.pass-afk")) {
 
+            state.setRunning(false);
             if (state.isSent()) {
                 player.clearTitle();
             }
             state.resetStandCount();
-            state.setRunning(false);
             return;
 
         }
