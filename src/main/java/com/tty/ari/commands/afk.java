@@ -32,7 +32,7 @@ public class afk extends LiteralArgumentCommand {
 
     @Override
     protected boolean isEnableInGame() {
-        return true;
+        return Ari.instance.getConfig().getBoolean("server.afk.enable");
     }
 
 }
