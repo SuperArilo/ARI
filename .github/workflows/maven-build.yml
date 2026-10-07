@@ -76,7 +76,7 @@ jobs:
   create-release:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/v')
 
     steps:
       - name: CHECKOUT CODE
@@ -90,26 +90,64 @@ jobs:
           name: jar-files
           path: build-artifacts
 
+      - name: RESOLVE COMMIT RANGE
+        id: ranges
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+
+          PREV_TAG=""
+          REL_JSON=$(curl -fsSL -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases?per_page=20" 2>/dev/null || true)
+          if [ -n "$REL_JSON" ]; then
+            PREV_TAG=$(printf '%s' "$REL_JSON" | CURRENT_TAG="$TAG" python3 -c 'import json,os,sys; cur=os.environ["CURRENT_TAG"]; rels=[r for r in json.load(sys.stdin) if not r.get("draft") and r.get("tag_name")!=cur]; print(rels[0]["tag_name"] if rels else "")' || true)
+          fi
+          if [ -z "$PREV_TAG" ] || ! git rev-parse -q --verify "refs/tags/${PREV_TAG}" >/dev/null 2>&1; then
+            PREV_TAG=$(git describe --tags --abbrev=0 --match 'v[0-9]*' "${TAG}^" 2>/dev/null || true)
+          fi
+
+          if [ -n "$PREV_TAG" ]; then
+            echo "args=--strip all ${PREV_TAG}..${TAG}" >> "$GITHUB_OUTPUT"
+          else
+            echo "args=--strip all" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "prev_tag=${PREV_TAG}" >> "$GITHUB_OUTPUT"
+          echo "range=${PREV_TAG:-<first release>}..${TAG}"
+
       - name: GENERATE CHANGELOG
         uses: orhun/git-cliff-action@v4
         with:
           config: cliff.toml
-          args: --latest --strip header
+          args: ${{ steps.ranges.outputs.args }}
         env:
           OUTPUT: CHANGES.md
 
-      - name: READ CHANGELOG CONTENT
-        id: read_changelog
+      - name: BUILD RELEASE BODY
         run: |
-          echo "body<<EOF" >> $GITHUB_OUTPUT
-          cat CHANGES.md >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          VERSION="${{ steps.ranges.outputs.version }}"
+          TAG="${GITHUB_REF_NAME}"
+          PREV_TAG="${{ steps.ranges.outputs.prev_tag }}"
+
+          BODY=$(sed '/./,$!d' CHANGES.md)
+
+          {
+            printf '## ARI %s - %s\n\n%s\n' "$VERSION" "$(date -u +%F)" "$BODY"
+            if [ -n "$PREV_TAG" ]; then
+              printf '\n[完整改动对比](https://github.com/%s/compare/%s..%s)\n' \
+                "$GITHUB_REPOSITORY" "$PREV_TAG" "$TAG"
+            fi
+          } > RELEASE_BODY.md
 
       - name: CHECK PRE-RELEASE STATUS
         id: check_prerelease
         run: |
           TAG="${{ github.ref_name }}"
-          if [[ "$TAG" =~ -(alpha|beta|rc|pre)(\.[0-9]+)?$ ]]; then
+          if [[ "$TAG" =~ -(alpha|beta|rc|pre)([.-][0-9]+)?$ ]]; then
             echo "value=true" >> $GITHUB_OUTPUT
           else
             echo "value=false" >> $GITHUB_OUTPUT
@@ -119,7 +157,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           files: build-artifacts/*.jar
-          body: ${{ steps.read_changelog.outputs.body }}
+          body_path: RELEASE_BODY.md
           prerelease: ${{ steps.check_prerelease.outputs.value == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
