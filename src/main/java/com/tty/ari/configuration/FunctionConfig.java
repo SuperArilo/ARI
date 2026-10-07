@@ -62,4 +62,11 @@ public class FunctionConfig extends BaseDownloadUrlConfig {
         return this.getStringList("vanish.fly-permission-nodes");
     }
 
+    /**
+     * 开启/关闭隐身时是否广播伪造的退出/加入信息
+     */
+    public boolean vanishFakeMessage() {
+        return this.getBool("vanish.fake-message", true);
+    }
+
 }

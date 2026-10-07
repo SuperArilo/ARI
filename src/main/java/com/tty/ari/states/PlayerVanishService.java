@@ -10,6 +10,8 @@ import com.tty.ari.enumType.PlayerNbt;
 import com.tty.ari.tool.ConfigUtils;
 import com.tty.ari.tool.PlayerCache;
 import fr.skytasul.glowingentities.GlowingEntities;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -69,6 +71,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         this.hide(player);
         this.giveEffect(player);
         ConfigUtils.t("function.vanish.enable").thenAccept(player::sendMessage);
+        this.broadcastFakeMessage(player, false);
         Ari.instance.getLog().debug("player {} is vanish.", player.getName());
     }
 
@@ -79,6 +82,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         this.removeEffect(player);
         if (player.isOnline()) {
             ConfigUtils.t("function.vanish.disable").thenAccept(player::sendMessage);
+            this.broadcastFakeMessage(player, true);
         }
         Ari.instance.getLog().debug("player {} is show up.", player.getName());
     }
@@ -90,6 +94,7 @@ public class PlayerVanishService extends StateService<State> implements Listener
         this.removeEffect(player);
         if (player.isOnline()) {
             ConfigUtils.t("function.vanish.disable").thenAccept(player::sendMessage);
+            this.broadcastFakeMessage(player, true);
         }
         Ari.instance.getLog().debug("player {} is show up.", player.getName());
     }
@@ -246,6 +251,22 @@ public class PlayerVanishService extends StateService<State> implements Listener
                 cause.equals(PlayerKickEvent.Cause.KICK_COMMAND) ||
                 cause.equals(PlayerKickEvent.Cause.IP_BANNED)) {
             event.setCancelled(true);
+        }
+    }
+
+    /**
+     * 广播伪造的加入/退出信息，让其他玩家以为隐身玩家真的离开或进入了服务器
+     * @param player 隐身玩家
+     * @param join true 为加入信息，false 为退出信息
+     */
+    private void broadcastFakeMessage(Player player, boolean join) {
+        if (!Ari.instance.getConfigurationManager().get(FunctionConfig.class).vanishFakeMessage()) return;
+        String customPath = join ? "server.message.on-login" : "server.message.on-leave";
+        if (Ari.instance.getConfig().getBoolean(customPath, false)) {
+            ConfigUtils.t(customPath, player).thenAccept(i -> Ari.instance.getScheduler().run(t -> Bukkit.broadcast(i)));
+        } else {
+            String translationKey = join ? "multiplayer.player.joined" : "multiplayer.player.left";
+            Bukkit.broadcast(Component.translatable(translationKey, NamedTextColor.YELLOW, player.displayName()));
         }
     }
 
