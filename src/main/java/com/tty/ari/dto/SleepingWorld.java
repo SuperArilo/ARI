@@ -3,6 +3,7 @@ package com.tty.ari.dto;
 import com.tty.api.enumType.TimePeriod;
 import com.tty.ari.Ari;
 import com.tty.ari.function.TimeManager;
+import com.tty.ari.states.PlayerVanishService;
 import com.tty.ari.tool.ConfigUtils;
 import lombok.Getter;
 import org.bukkit.GameRule;
@@ -72,7 +73,10 @@ public class SleepingWorld {
     private boolean playerCondition(@NotNull World world) {
         Integer gameRuleValue = world.getGameRuleValue(GameRule.PLAYERS_SLEEPING_PERCENTAGE);
         if (gameRuleValue != null) {
-            var a = gameRuleValue * world.getPlayers().size();
+            //隐身玩家无法上床，不计入需要睡下的人数
+            PlayerVanishService vanishService = Ari.instance.getStatusManager().get(PlayerVanishService.class);
+            long total = world.getPlayers().stream().filter(vanishService::isNotHaveState).count();
+            var a = gameRuleValue * (int) total;
             //这个世界需要睡下的人
             int numSleepersNeeded = Math.max(a / 100, 1);
             //已经睡下的人
