@@ -141,7 +141,7 @@ jobs:
               printf '\n[完整改动对比](https://github.com/%s/compare/%s..%s)\n' \
                 "$GITHUB_REPOSITORY" "$PREV_TAG" "$TAG"
             fi
-          } > RELEASE_BODY.md
+          } | cat -s > RELEASE_BODY.md
 
       - name: CHECK PRE-RELEASE STATUS
         id: check_prerelease

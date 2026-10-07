@@ -39,6 +39,7 @@ commit_parsers = [
     { message = "^test", group = "Fixed" },
     { message = "^fix", group = "Fixed" },
     { message = "^.*: fix", group = "Fixed" },
+    { message = "^Merge ", skip = true },
     { message = "^.*", group = "Changed" },
 ]
 filter_commits = false
