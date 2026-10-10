@@ -88,6 +88,11 @@ public class Ari extends AbstractJavaPlugin {
     public static Metrics METRICS;
 
     @Override
+    protected @Nullable String getGithubAuthorLink() {
+        return "https://api.github.com/repos/SuperArilo/";
+    }
+
+    @Override
     protected void loading() {
         instance = this;
     }
