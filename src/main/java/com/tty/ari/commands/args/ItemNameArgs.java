@@ -47,6 +47,7 @@ public class ItemNameArgs extends RequiredArgumentCommand<String> {
         ItemMeta itemMeta = mainHand.getItemMeta();
         itemMeta.displayName(Ari.instance.getEngine().directRender(args[1], player));
         mainHand.setItemMeta(itemMeta);
+        player.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.command.execute-success"), player));
     }
 
     @Override

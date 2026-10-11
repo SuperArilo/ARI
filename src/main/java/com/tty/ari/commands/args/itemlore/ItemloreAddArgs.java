@@ -54,6 +54,7 @@ public class ItemloreAddArgs extends RequiredArgumentCommand<String> {
         lore.add(Ari.instance.getEngine().directRender(args[2], player));
         itemMeta.lore(lore);
         mainHand.setItemMeta(itemMeta);
+        player.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.command.execute-success"), player));
     }
 
     @Override
