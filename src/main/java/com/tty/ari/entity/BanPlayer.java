@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.tty.api.annotations.cache.CacheKey;
 import lombok.Data;
 
-@TableName("bad_list")
+@TableName("ban_list")
 @Data
 public class BanPlayer {
     @TableId(value = "id", type = IdType.AUTO)

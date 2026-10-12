@@ -6,6 +6,7 @@ import com.tty.ari.sql_version.V1Tables;
 import com.tty.ari.sql_version.V2UpdatePreSlot;
 import com.tty.ari.sql_version.V3UpdateZakoAddRemark;
 import com.tty.ari.sql_version.V4UpdateWarpAndHomeLocation;
+import com.tty.ari.sql_version.V5RenameBadListToBanList;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -81,7 +82,8 @@ public record MigrationManager(SQLType sqlType, String tablePrefix, DataSource d
                 new V1Tables(),
                 new V2UpdatePreSlot(),
                 new V3UpdateZakoAddRemark(),
-                new V4UpdateWarpAndHomeLocation()
+                new V4UpdateWarpAndHomeLocation(),
+                new V5RenameBadListToBanList()
         );
     }
 

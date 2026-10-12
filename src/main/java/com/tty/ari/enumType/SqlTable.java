@@ -52,7 +52,7 @@ public enum SqlTable {
                 remark TEXT)
             """),
     BAN_LIST("""
-            CREATE TABLE IF NOT EXISTS ${tablePrefix}bad_list (
+            CREATE TABLE IF NOT EXISTS ${tablePrefix}ban_list (
             id INTEGER PRIMARY KEY ${autoIncrement},
             player_uuid varchar(128) NOT NULL,
             operator varchar(128) NOT NULL,
