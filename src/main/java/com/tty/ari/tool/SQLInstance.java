@@ -47,7 +47,8 @@ public class SQLInstance {
             try {
                 sqlType = SQLType.valueOf(storageType.toUpperCase());
             } catch (IllegalArgumentException e) {
-                Ari.instance.getLog().error(e, "invalid data.storage-type '{}'; supported values: MYSQL, SQLITE", storageType);
+                Ari.instance.getLog().error(e, "invalid data.storage-type '{}'; supported values: MYSQL, SQLITE. Disabling plugin.", storageType);
+                Ari.instance.getServer().getPluginManager().disablePlugin(Ari.instance);
                 return;
             }
         }
