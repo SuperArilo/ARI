@@ -13,6 +13,7 @@ import com.tty.api.utils.ColorConverterLegacy;
 import com.tty.api.utils.FormatUtils;
 import com.tty.api.utils.TimeFormatUtils;
 import com.tty.ari.Ari;
+import com.tty.ari.configuration.lang.LangConfig;
 import com.tty.ari.dto.SleepingWorld;
 import com.tty.ari.dto.state.teleport.PreEntityToEntityState;
 import com.tty.ari.dto.state.teleport.RandomTpState;
@@ -355,6 +356,14 @@ public class Placeholder {
                         resolved = Component.empty();
                     }
                     return PlainTextComponentSerializer.plainText().serialize(resolved);
+                })
+        ));
+        registry.register(PlaceholderDefinition.of(
+                PlaceholderWorld.WORLD_WEATHER,
+                PlaceholderResolve.ofPlayerSync(player -> {
+                    World world = player.getWorld();
+                    String key = !world.hasStorm() ? "clear" : (world.isThundering() ? "thunder" : "rain");
+                    return Ari.instance.getConfigurationManager().get(LangConfig.class).getString("function.weather.type." + key, key);
                 })
         ));
 

@@ -46,6 +46,7 @@ public class ari extends LiteralArgumentCommand {
             new Nick(),
             new TeleportToPlayer(),
             new GameMode(),
+            new Weather(),
             new Reload()
         );
     }
