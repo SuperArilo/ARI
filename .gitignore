@@ -3,4 +3,5 @@
 /target/**
 /instance/target/**
 /lib/target/**
+${outputDirectory}
 dependency-reduced-pom.xml
