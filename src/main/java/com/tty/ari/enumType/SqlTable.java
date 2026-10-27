@@ -18,6 +18,7 @@ public enum SqlTable {
                 first_login_time BIGINT NULL DEFAULT 0,
                 last_login_off_time BIGINT NULL DEFAULT 0,
                 total_online_time BIGINT NULL DEFAULT 0,
+                ban_count INTEGER NOT NULL DEFAULT 0,
                 name_prefix varchar(128) DEFAULT NULL,
                 name_suffix varchar(128) DEFAULT NULL)
             """),

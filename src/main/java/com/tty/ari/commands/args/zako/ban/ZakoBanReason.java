@@ -13,6 +13,7 @@ import com.tty.api.state.State;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.BanPlayer;
+import com.tty.ari.entity.ServerPlayer;
 import com.tty.ari.entity.WhitelistInstance;
 import com.tty.ari.states.PlayerVanishService;
 import com.tty.ari.tool.ConfigUtils;
@@ -128,7 +129,7 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
                     }
                     return true;
                 });
-            });
+            }).thenCompose(banned -> banned ? this.increaseBanCount(uuid) : CompletableFuture.completedFuture(false));
         }).thenAccept(status -> {
             if (status) {
                 OfflinePlayer kickPlayer = PlayerCache.getPlayer(uuid);
@@ -146,6 +147,24 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
             ConfigUtils.t("function.zako.zako-add-failure").thenAccept(sender::sendMessage);
             Ari.instance.getLog().error(e);
             return null;
+        });
+    }
+
+    private CompletableFuture<Boolean> increaseBanCount(UUID uuid) {
+        EntityRepository<ServerPlayer> repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
+        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString());
+        return repository.get(wrapper, PartitionKey.global()).thenCompose(serverPlayer -> {
+            if (serverPlayer == null) {
+                Ari.instance.getLog().debug("player uuid {} has no profile, skip ban count.", uuid.toString());
+                return CompletableFuture.completedFuture(true);
+            }
+            serverPlayer.setBanCount((serverPlayer.getBanCount() == null ? 0 : serverPlayer.getBanCount()) + 1);
+            return repository.update(serverPlayer, wrapper, PartitionKey.global());
+        }).handle((updated, ex) -> {
+            if (ex != null) {
+                Ari.instance.getLog().warn(ex, "increase ban count of player uuid {} error.", uuid.toString());
+            }
+            return true;
         });
     }
 }

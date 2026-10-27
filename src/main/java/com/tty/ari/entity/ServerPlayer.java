@@ -16,6 +16,8 @@ public class ServerPlayer {
     private Long firstLoginTime = 0L;
     private Long lastLoginOffTime = 0L;
     private Long totalOnlineTime = 0L;
+    @TableField("ban_count")
+    private Integer banCount = 0;
     @TableField(value = "name_prefix", updateStrategy = FieldStrategy.ALWAYS)
     private String namePrefix;
     @TableField(value = "name_suffix", updateStrategy = FieldStrategy.ALWAYS)

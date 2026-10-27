@@ -215,6 +215,16 @@ public class Placeholder {
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
+                PlaceholderZakoInfo.BAN_COUNT,
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
+                        .get(ServerPlayer.class)
+                        .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
+                        .thenApply(i -> {
+                            if (i == null) return Ari.DATA_SERVICE.getValue("base.none");
+                            return String.valueOf(i.getBanCount() == null ? 0 : i.getBanCount());
+                        }))
+        ));
+        registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayer.PLAYER_WORLD,
                 PlaceholderResolve.ofPlayerSync(player -> player.getWorld().getName())
         ));
