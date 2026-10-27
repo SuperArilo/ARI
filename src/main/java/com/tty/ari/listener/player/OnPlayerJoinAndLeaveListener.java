@@ -52,6 +52,7 @@ public class OnPlayerJoinAndLeaveListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void banCheck(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
         EntityRepository<BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
         UUID uuid = event.getUniqueId();
         BanPlayer banPlayer;

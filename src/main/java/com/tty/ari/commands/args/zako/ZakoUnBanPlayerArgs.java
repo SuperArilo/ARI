@@ -55,7 +55,7 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
         LambdaQueryWrapper<BanPlayer> wrapper = new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString());
 
         repository.get(wrapper, PartitionKey.global()).thenCompose(banPlayer -> {
-            if (banPlayer == null) CompletableFuture.completedFuture(false);
+            if (banPlayer == null) return CompletableFuture.completedFuture(0);
             return repository.delete(wrapper, PartitionKey.global());
         }).thenAccept(count -> {
             if (count > 0) {

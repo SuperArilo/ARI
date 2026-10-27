@@ -120,12 +120,14 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
 
             LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
 
-            return banRepository.create(banPlayer, PartitionKey.global()).thenApply(i -> {
-               if(i == null) {
-                   return false;
-               }
-                whitelistRepository.delete(wrapper, PartitionKey.global());
-                return true;
+            return banRepository.create(banPlayer, PartitionKey.global()).thenCompose(created -> {
+                if (created == null) return CompletableFuture.completedFuture(false);
+                return whitelistRepository.delete(wrapper, PartitionKey.global()).handle((count, ex) -> {
+                    if (ex != null) {
+                        Ari.instance.getLog().warn(ex, "delete whitelist on ban uuid {} error.", uuid.toString());
+                    }
+                    return true;
+                });
             });
         }).thenAccept(status -> {
             if (status) {
