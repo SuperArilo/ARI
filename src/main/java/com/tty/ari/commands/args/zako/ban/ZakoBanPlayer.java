@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-@CommandMeta(displayName = "player name or uuid (string)", permission = "ari.command.zako.ban", tokenLength = 3, allowConsole = true)
+@CommandMeta(displayName = "player name or uuid (string)", permission = "ari.command.zako.ban", tokenLength = 8, allowConsole = true)
 @ArgumentCommand(isSuggests = true)
 public class ZakoBanPlayer extends RequiredArgumentCommand<String> {
 
