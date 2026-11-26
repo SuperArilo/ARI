@@ -1,14 +1,14 @@
 package com.tty.ari.commands.args.zako.ban;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.enumType.Operator;
-import com.tty.api.repository.EntityRepository;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.CachedRepository;
+import com.tty.api.persistence.query.Patch;
+import com.tty.api.persistence.query.Query;
 import com.tty.api.state.State;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
@@ -78,11 +78,11 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
         }
 
         UUID uuid = offlinePlayer.getUniqueId();
-        EntityRepository<BanPlayer> banRepository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
-        EntityRepository<WhitelistInstance> whitelistRepository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
+        CachedRepository<BanPlayer, Long> banRepository = Ari.REPOSITORY_MANAGER.bans();
+        CachedRepository<WhitelistInstance, Long> whitelistRepository = Ari.REPOSITORY_MANAGER.whitelist();
 
-        banRepository.get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global()).thenCompose(banPlayer -> {
-            boolean b = banPlayer == null;
+        banRepository.findOne(Query.of(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString())).thenCompose(banPlayer -> {
+            boolean b = banPlayer.isEmpty();
             return ConfigUtils.t("function.zako.had-banned").thenAccept(m -> {
                 if (!b) {
                     sender.sendMessage(m);
@@ -119,11 +119,11 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
             banPlayer.setStartTime(now);
             banPlayer.setEndTime(now + total);
 
-            LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
+            Query<WhitelistInstance> wrapper = Query.of(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
 
-            return banRepository.create(banPlayer, PartitionKey.global()).thenCompose(created -> {
+            return banRepository.insert(banPlayer).thenCompose(created -> {
                 if (created == null) return CompletableFuture.completedFuture(false);
-                return whitelistRepository.delete(wrapper, PartitionKey.global()).handle((count, ex) -> {
+                return whitelistRepository.delete(wrapper).handle((count, ex) -> {
                     if (ex != null) {
                         Ari.instance.getLog().warn(ex, "delete whitelist on ban uuid {} error.", uuid.toString());
                     }
@@ -151,15 +151,16 @@ public class ZakoBanReason extends RequiredArgumentCommand<String> {
     }
 
     private CompletableFuture<Boolean> increaseBanCount(UUID uuid) {
-        EntityRepository<ServerPlayer> repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
-        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString());
-        return repository.get(wrapper, PartitionKey.global()).thenCompose(serverPlayer -> {
-            if (serverPlayer == null) {
+        CachedRepository<ServerPlayer, Integer> repository = Ari.REPOSITORY_MANAGER.players();
+        Query<ServerPlayer> query = Query.of(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString());
+        return repository.findOne(query).thenCompose(serverPlayer -> {
+            if (serverPlayer.isEmpty()) {
                 Ari.instance.getLog().debug("player uuid {} has no profile, skip ban count.", uuid.toString());
                 return CompletableFuture.completedFuture(true);
             }
-            serverPlayer.setBanCount((serverPlayer.getBanCount() == null ? 0 : serverPlayer.getBanCount()) + 1);
-            return repository.update(serverPlayer, wrapper, PartitionKey.global());
+            int count = (serverPlayer.get().getBanCount() == null ? 0 : serverPlayer.get().getBanCount()) + 1;
+            return repository.update(query, Patch.of(ServerPlayer.class).set(ServerPlayer::getBanCount, count))
+                    .thenApply(updated -> updated > 0);
         }).handle((updated, ex) -> {
             if (ex != null) {
                 Ari.instance.getLog().warn(ex, "increase ban count of player uuid {} error.", uuid.toString());

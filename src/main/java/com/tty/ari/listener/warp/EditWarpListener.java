@@ -1,6 +1,5 @@
 package com.tty.ari.listener.warp;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.dto.gui.FunctionItems;
@@ -8,7 +7,7 @@ import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.gui.AsyncGuiClick;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.query.Query;
 import com.tty.api.state.GuiEditFunctionState;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
@@ -96,22 +95,21 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
             event.getInventory().close();
             Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
         });
-        registry.addAsync(FunctionType.DELETE, (event, warpEditor, player) -> {
-            LambdaQueryWrapper<ServerWarp> wrapper = new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpEditor.getWarp().getWarpId());
-            return Ari.REPOSITORY_MANAGER.get(ServerWarp.class).delete(wrapper, PartitionKey.global()).thenCompose(count -> {
-                if (count == 1) {
-                    return ConfigUtils.t("function.warp.delete-success", player).thenAccept(player::sendMessage).thenRun(() -> Ari.instance.getScheduler().run(ab -> {
-                                event.getInventory().close();
-                                Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
-                            }));
-                } else {
-                    return ConfigUtils.t("function.warp.not-found").thenAccept(player::sendMessage);
-                }
-            }).exceptionally(i -> {
-                Ari.instance.getLog().error(i, "deleting warp error");
-                return null;
-            });
-        });
+        registry.addAsync(FunctionType.DELETE, (event, warpEditor, player) -> Ari.REPOSITORY_MANAGER.warps()
+                .delete(Query.of(ServerWarp.class).eq(ServerWarp::getWarpId, warpEditor.getWarp().getWarpId()))
+                .thenCompose(count -> {
+            if (count == 1) {
+                return ConfigUtils.t("function.warp.delete-success", player).thenAccept(player::sendMessage).thenRun(() -> Ari.instance.getScheduler().run(ab -> {
+                            event.getInventory().close();
+                            Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new WarpList(player)));
+                        }));
+            } else {
+                return ConfigUtils.t("function.warp.not-found").thenAccept(player::sendMessage);
+            }
+        }).exceptionally(i -> {
+            Ari.instance.getLog().error(i, "deleting warp error");
+            return null;
+        }));
         registry.addSync(FunctionType.RENAME, (event, warpEditor, player) -> this.onPublic(FunctionType.RENAME, event, warpEditor, player));
         registry.addSync(FunctionType.COST, (event, warpEditor, player) -> this.onPublic(FunctionType.COST, event, warpEditor, player));
         registry.addSync(FunctionType.PERMISSION, (event, warpEditor, player) -> this.onPublic(FunctionType.PERMISSION, event, warpEditor, player));
@@ -147,14 +145,14 @@ public class EditWarpListener extends OnGuiEditListener<WarpEditor, ServerWarp> 
             warpEditor.getWarp().setShowMaterial(current.name());
 
         });
-        registry.addAsync(FunctionType.SAVE, (event, warpEditor, player) -> {
-            LambdaQueryWrapper<ServerWarp> wrapper = new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpEditor.getWarp().getWarpId());
-            return Ari.REPOSITORY_MANAGER.get(ServerWarp.class).update(warpEditor.getWarp(), wrapper, PartitionKey.global()).thenAccept(status -> {}).exceptionally(i -> {
-                Ari.instance.getLog().error(i, "saving warp error");
-                player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
-                return null;
-            });
-        });
+        registry.addAsync(FunctionType.SAVE, (event, warpEditor, player) -> Ari.REPOSITORY_MANAGER.warps()
+                .save(warpEditor.getWarp())
+                .thenAccept(status -> {})
+                .exceptionally(i -> {
+                    Ari.instance.getLog().error(i, "saving warp error");
+                    player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
+                    return null;
+                }));
         registry.addSync(FunctionType.TOP_SLOT, (event, warpEditor, player) -> {
             ItemStack clickItem = event.getCurrentItem();
             if (clickItem == null) return;

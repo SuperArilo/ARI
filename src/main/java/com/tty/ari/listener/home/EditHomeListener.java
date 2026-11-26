@@ -1,6 +1,5 @@
 package com.tty.ari.listener.home;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.reflect.TypeToken;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.dto.gui.FunctionItems;
@@ -8,7 +7,7 @@ import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.gui.AsyncGuiClick;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.query.Query;
 import com.tty.api.state.GuiEditFunctionState;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
@@ -75,19 +74,18 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
             event.getInventory().close();
             Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
         });
-        registry.addAsync(FunctionType.DELETE, (event, homeEditor, player) -> {
-            LambdaQueryWrapper<ServerHome> wrapper = new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getHomeId, homeEditor.getHome().getHomeId()).eq(ServerHome::getPlayerUUID, homeEditor.getHome().getPlayerUUID());
-            return Ari.REPOSITORY_MANAGER.get(ServerHome.class).delete(wrapper, PartitionKey.of(player.getUniqueId().toString())).thenCompose(count -> {
-                if (count == 1) {
-                    return ConfigUtils.t("function.home.delete-success", player).thenAccept(player::sendMessage).thenRun(() -> Ari.instance.getScheduler().run(j -> {
-                        event.getInventory().close();
-                        Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
-                    }));
-                } else {
-                    return ConfigUtils.t("function.home.not-found", player).thenAccept(player::sendMessage);
-                }
-            });
-        });
+        registry.addAsync(FunctionType.DELETE, (event, homeEditor, player) -> Ari.REPOSITORY_MANAGER.homesOf(player.getUniqueId())
+                .delete(Query.of(ServerHome.class).eq(ServerHome::getHomeId, homeEditor.getHome().getHomeId()))
+                .thenCompose(count -> {
+            if (count == 1) {
+                return ConfigUtils.t("function.home.delete-success", player).thenAccept(player::sendMessage).thenRun(() -> Ari.instance.getScheduler().run(j -> {
+                    event.getInventory().close();
+                    Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
+                }));
+            } else {
+                return ConfigUtils.t("function.home.not-found", player).thenAccept(player::sendMessage);
+            }
+        }));
         registry.addSync(FunctionType.RENAME, (event, homeEditor, player) -> {
             event.getInventory().close();
             Ari.instance.getStatusManager().get(GuiEditFunctionStateService.class).addState(
@@ -150,16 +148,14 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
             }
         });
         registry.addAsync(FunctionType.SAVE, (event, homeEditor, player) -> {
-            LambdaQueryWrapper<ServerHome> wrapper = new LambdaQueryWrapper<>(ServerHome.class)
-                    .eq(ServerHome::getHomeId, homeEditor.getHome().getHomeId())
-                    .eq(ServerHome::getPlayerUUID, homeEditor.getHome().getPlayerUUID());
-
-            return Ari.REPOSITORY_MANAGER.get(ServerHome.class).update(homeEditor.getHome(), wrapper, PartitionKey.of(player.getUniqueId().toString())).thenAccept(status -> {}).exceptionally(i -> {
-                Ari.instance.getLog().error(i, "save home error");
-                player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
-                return null;
-            });
-
+            return Ari.REPOSITORY_MANAGER.homesOf(player.getUniqueId())
+                    .save(homeEditor.getHome())
+                    .thenAccept(status -> {})
+                    .exceptionally(i -> {
+                        Ari.instance.getLog().error(i, "save home error");
+                        player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
+                        return null;
+                    });
         });
 
         return registry;

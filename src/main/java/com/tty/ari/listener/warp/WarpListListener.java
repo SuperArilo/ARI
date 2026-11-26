@@ -1,11 +1,10 @@
 package com.tty.ari.listener.warp;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.api.annotations.function_type.FunctionHandler;
 import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.listener.BaseGuiListener;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.query.Query;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.warp.WarpConfig;
@@ -50,12 +49,15 @@ public class WarpListListener extends BaseGuiListener<WarpList> {
             String warpId = Ari.instance.getNbtManager().getNbt(NbtGuiValue.GUI_DATA_ID, currentItem, PersistentDataType.STRING);
 
             //从数据库查询最新的
-            return Ari.REPOSITORY_MANAGER.get(ServerWarp.class).get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId), PartitionKey.global()).thenAccept((instance) -> {
-                if (instance == null) {
+            return Ari.REPOSITORY_MANAGER.warps()
+                    .findOne(Query.of(ServerWarp.class).eq(ServerWarp::getWarpId, warpId))
+                    .thenAccept(optional -> {
+                if (optional.isEmpty()) {
                     Ari.instance.getLog().error("can't find warpId: {}", warpId);
                     ConfigUtils.t("function.warp.not-found", player).thenAccept(player::sendMessage);
                     return;
                 }
+                ServerWarp instance = optional.get();
                 boolean isOwner = UUID.fromString(instance.getCreateBy()).equals(player.getUniqueId());
                 if (event.isLeftClick()) {
                     Location targetLocation = FormatUtils.parseLocation(instance.getLocation());

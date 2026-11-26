@@ -1,12 +1,11 @@
 package com.tty.ari.commands.sub;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.query.Query;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.dto.state.player.OnCheckPlayerGuiState;
@@ -63,8 +62,8 @@ public class InventoryCheck extends RequiredArgumentCommand<String> {
             return;
         }
 
-        Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()), PartitionKey.global())
-        .thenCompose(serverPlayer -> CompletableFuture.completedFuture(serverPlayer != null))
+        Ari.REPOSITORY_MANAGER.players().findOne(Query.of(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()))
+        .thenCompose(serverPlayer -> CompletableFuture.completedFuture(serverPlayer.isPresent()))
         .thenAccept(status -> {
             if (!status) {
                 sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.not-exist")));

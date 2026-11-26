@@ -1,13 +1,11 @@
 package com.tty.ari.commands.args.zako;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.api.repository.EntityRepository;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.query.Query;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.WhitelistInstance;
@@ -54,9 +52,9 @@ public class ZakoRemoveArgs extends RequiredArgumentCommand<String> {
 
         UUID uuid = offlinePlayer.getUniqueId();
 
-        EntityRepository<WhitelistInstance> repository = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class);
-        LambdaQueryWrapper<WhitelistInstance> wrapper = new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString());
-        repository.delete(wrapper, PartitionKey.global()).thenAccept(count -> {
+        Ari.REPOSITORY_MANAGER.whitelist()
+                .delete(Query.of(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()))
+                .thenAccept(count -> {
             if (offlinePlayer instanceof Player player) {
                 Ari.instance.getScheduler().runAtEntity(player, i-> player.kick(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.on-player.data-changed"))), null);
             }

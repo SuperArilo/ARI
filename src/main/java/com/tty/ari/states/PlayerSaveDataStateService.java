@@ -1,20 +1,20 @@
 package com.tty.ari.states;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tty.api.persistence.CachedRepository;
+import com.tty.api.persistence.query.Patch;
+import com.tty.api.persistence.query.Query;
+import com.tty.api.state.StateService;
 import com.tty.ari.Ari;
-import com.tty.api.repository.PartitionKey;
 import com.tty.ari.dto.state.player.PlayerSaveState;
 import com.tty.ari.entity.ServerPlayer;
-import com.tty.api.repository.EntityRepository;
-import com.tty.api.state.StateService;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerSaveDataStateService extends StateService<PlayerSaveState> {
-    
+
     public PlayerSaveDataStateService(long rate, long c, boolean isAsync) {
         super(rate, c, isAsync, Ari.instance);
     }
@@ -67,37 +67,43 @@ public class PlayerSaveDataStateService extends StateService<PlayerSaveState> {
 
         Player player = (Player) state.getOwner();
         boolean stopping = Bukkit.getServer().isStopping();
-        EntityRepository<ServerPlayer> repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
-
-        repository.setExecutionMode(!stopping);
         String uuid = player.getUniqueId().toString();
 
         long nowTime = System.currentTimeMillis();
         long onlineDuration = nowTime - state.getLoginTime();
 
-        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
+        CachedRepository<ServerPlayer, Integer> players = Ari.REPOSITORY_MANAGER.players();
+        Query<ServerPlayer> query = Query.of(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
 
-        repository.get(wrapper, PartitionKey.global()).thenCompose(serverPlayer -> {
-            if (serverPlayer == null) {
+        CompletableFuture<Void> save = players.findOne(query).thenCompose(existing -> {
+            if (existing.isEmpty()) {
                 Ari.instance.getLog().error("Player data not found: {}", uuid);
-                return CompletableFuture.completedFuture(false);
+                return CompletableFuture.<Void>completedFuture(null);
             }
-            serverPlayer.setTotalOnlineTime(serverPlayer.getTotalOnlineTime() + onlineDuration);
+            ServerPlayer serverPlayer = existing.get();
+            Patch<ServerPlayer> patch = Patch.of(ServerPlayer.class)
+                    .set(ServerPlayer::getTotalOnlineTime, serverPlayer.getTotalOnlineTime() + onlineDuration);
             if (!player.isOnline() || stopping) {
-                serverPlayer.setLastLoginOffTime(nowTime);
+                patch = patch.set(ServerPlayer::getLastLoginOffTime, nowTime);
             }
-            return repository.update(serverPlayer, wrapper, PartitionKey.global());
-        }).thenAccept(success -> {
-            if (success) {
-                Ari.instance.getLog().debug("Saved player data: {}", player.getName());
-            } else {
-                Ari.instance.getLog().error("Failed to save player data: {}", player.getName());
+            return players.update(query, patch).thenApply(count -> (Void) null);
+        }).thenAccept(v -> Ari.instance.getLog().debug("Saved player data: {}", player.getName()))
+          .exceptionally(ex -> {
+              Ari.instance.getLog().error(ex, "Error saving player data for {}", player.getName());
+              return null;
+          });
+
+        // 关服时同步等待，确保在连接池关闭前落库
+        if (stopping) {
+            try {
+                save.get(10, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                Ari.instance.getLog().error(e, "waiting for player data save failed");
             }
-        }).whenComplete((result, ex) -> {
-            if (ex != null) {
-                Ari.instance.getLog().error(ex, "Error saving player data for {}", player.getName());
-            }
-            if (repository.isAsync() && player.isOnline()) {
+        }
+
+        save.whenComplete((result, ex) -> {
+            if (!stopping && player.isOnline()) {
                 Ari.instance.getScheduler().runLater(i -> this.addState(new PlayerSaveState(player, System.currentTimeMillis())), 20L);
             } else {
                 Ari.instance.getLog().debug("skip player {} save event.", player.getName());

@@ -1,11 +1,10 @@
 package com.tty.ari.commands.sub.zako;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
 import com.tty.api.command.SuperHandsomeCommand;
 import com.tty.api.dto.ComponentListPage;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.query.Query;
 import com.tty.ari.Ari;
 import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.commands.args.zako.ZakoListArgs;
@@ -43,8 +42,8 @@ public class ZakoList extends LiteralArgumentCommand {
         String suggestCommand = "/" + Ari.instance.getName() +" zako info ";
 
         ConfigUtils.t("function.zako.list-requesting").thenAccept(component -> Ari.instance.getScheduler().run(i -> sender.sendMessage(component)))
-        .thenCompose(v -> Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class).getList(pageNum, 10, new LambdaQueryWrapper<>(WhitelistInstance.class).orderByDesc(WhitelistInstance::getAddTime), PartitionKey.global())).thenCompose(result -> {
-            List<WhitelistInstance> records = result.records();
+        .thenCompose(v -> Ari.REPOSITORY_MANAGER.whitelist().findPage(Query.of(WhitelistInstance.class).orderByDesc(WhitelistInstance::getAddTime), pageNum, 10)).thenCompose(page -> {
+            List<WhitelistInstance> records = page.records();
             if (records.isEmpty()) {
                 Ari.instance.getScheduler().run(i -> sender.sendMessage(Ari.instance.getEngine().directRender(Ari.DATA_SERVICE.getValue("base.page-change.none-next"))));
                 return CompletableFuture.completedFuture(null);
@@ -54,9 +53,9 @@ public class ZakoList extends LiteralArgumentCommand {
                     ConfigUtils.tAfter("function.zako.page-title.whitelist"),
                     baseCommand + (pageNum == 1 ? pageNum : pageNum - 1),
                     baseCommand + (pageNum + 1),
-                    (int) result.currentPage(),
-                    (int) result.totalPages(),
-                    (int) result.total());
+                    (int) page.currentPage(),
+                    (int) page.totalPages(),
+                    (int) page.total());
 
             List<CompletableFuture<Component>> lineFutures = new ArrayList<>();
 

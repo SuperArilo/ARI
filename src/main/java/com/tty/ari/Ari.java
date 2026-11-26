@@ -106,7 +106,11 @@ public class Ari extends AbstractJavaPlugin {
         }
         this.printLogo();
         SQL_INSTANCE = new SQLInstance();
-        REPOSITORY_MANAGER = new RepositoryManager(this);
+        if (SQL_INSTANCE.getFactory() == null) {
+            Bukkit.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        REPOSITORY_MANAGER = new RepositoryManager(this, SQL_INSTANCE);
 
         this.registerBungeeListener();
 
@@ -124,8 +128,7 @@ public class Ari extends AbstractJavaPlugin {
         }
 
         if (REPOSITORY_MANAGER != null) {
-            REPOSITORY_MANAGER.clearAllCache();
-            REPOSITORY_MANAGER.stop();
+            REPOSITORY_MANAGER.close();
         }
 
         if (SQL_INSTANCE != null) {

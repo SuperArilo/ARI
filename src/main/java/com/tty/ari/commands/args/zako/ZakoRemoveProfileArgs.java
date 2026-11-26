@@ -1,12 +1,11 @@
 package com.tty.ari.commands.args.zako;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.query.Query;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.ServerHome;
@@ -53,9 +52,9 @@ public class ZakoRemoveProfileArgs extends RequiredArgumentCommand<String> {
             return;
         }
 
-        CompletableFuture<Integer> f1 = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).delete(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global());
-        CompletableFuture<Integer> f2 = Ari.REPOSITORY_MANAGER.get(ServerHome.class).delete(new LambdaQueryWrapper<>(ServerHome.class).eq(ServerHome::getPlayerUUID, uuid), PartitionKey.of(uuid.toString()));
-        CompletableFuture<Integer> f3 = Ari.REPOSITORY_MANAGER.get(WhitelistInstance.class).delete(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid), PartitionKey.global());
+        CompletableFuture<Integer> f1 = Ari.REPOSITORY_MANAGER.players().delete(Query.of(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()));
+        CompletableFuture<Integer> f2 = Ari.REPOSITORY_MANAGER.homesOf(uuid).delete(Query.of(ServerHome.class));
+        CompletableFuture<Integer> f3 = Ari.REPOSITORY_MANAGER.whitelist().delete(Query.of(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()));
 
         try {
             CompletableFuture.allOf(f1, f2, f3).join();

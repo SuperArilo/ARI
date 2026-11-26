@@ -1,19 +1,17 @@
 package com.tty.ari.commands.args;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.api.repository.EntityRepository;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.CachedRepository;
+import com.tty.api.persistence.query.Query;
 import com.tty.api.utils.PublicFunctionUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.configuration.warp.WarpConfig;
 import com.tty.ari.entity.ServerWarp;
-import com.tty.ari.entity.cache.ServerWarpRepository;
 import com.tty.ari.tool.ConfigUtils;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
@@ -54,24 +52,15 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
             return;
         }
 
-        EntityRepository<ServerWarp> repo = Ari.REPOSITORY_MANAGER.get(ServerWarp.class);
-        ServerWarpRepository repository = (ServerWarpRepository) repo;
+        CachedRepository<ServerWarp, Long> warps = Ari.REPOSITORY_MANAGER.warps();
 
-        repository.queryCount(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getCreateBy, player.getUniqueId().toString())).thenCompose(result -> {
+        warps.count(Query.of(ServerWarp.class).eq(ServerWarp::getCreateBy, player.getUniqueId().toString())).thenCompose(count -> {
             int max = Ari.PERMISSION_SERVICE.getMaxCountInPermission(player, "warp");
-            if (result.total() + 1 > max) {
-                return ConfigUtils.t("function.warp.exceeds", player)
-                        .thenAccept(player::sendMessage)
-                        .thenApply(v -> false);
+            if (count + 1 > max) {
+                return ConfigUtils.t("function.warp.exceeds", player).thenAccept(player::sendMessage).thenApply(v -> null);
             }
-            return CompletableFuture.completedFuture(true);
-        }).thenCompose(shouldProceed -> {
-            if (!shouldProceed) {
-                return CompletableFuture.completedFuture(null);
-            }
-
-            return repository.get(new LambdaQueryWrapper<>(ServerWarp.class).eq(ServerWarp::getWarpId, warpId), PartitionKey.global()).thenCompose(existing -> {
-                if (existing != null) {
+            return warps.findOne(Query.of(ServerWarp.class).eq(ServerWarp::getWarpId, warpId)).thenCompose(existing -> {
+                if (existing.isPresent()) {
                     return ConfigUtils.t("function.warp.exist", player).thenAccept(player::sendMessage).thenApply(v -> null);
                 }
 
@@ -90,13 +79,13 @@ public class SetWarpArgs extends RequiredArgumentCommand<String> {
                         }
                 );
 
-                return futureWarp.thenCompose(i -> repository.create(i, PartitionKey.global()));
+                return futureWarp.thenCompose(warps::insert);
             });
-        }).thenCompose(created -> {
+        }).thenAccept(created -> {
             if (created == null) {
-                return CompletableFuture.completedFuture(null);
+                return;
             }
-            return ConfigUtils.t("function.warp.create-success", player).thenAccept(player::sendMessage);
+            ConfigUtils.t("function.warp.create-success", player).thenAccept(player::sendMessage);
         }).exceptionally(e -> {
             Ari.instance.getLog().error(e);
             ConfigUtils.t("base.on-error", player).thenAccept(player::sendMessage);

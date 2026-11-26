@@ -17,7 +17,7 @@ public class OnPluginReloadListener implements Listener {
             if (Ari.instance.isDebug()) {
                 Ari.SQL_INSTANCE.reconnect();
             }
-            Ari.REPOSITORY_MANAGER.clearAllCache();
+            Ari.REPOSITORY_MANAGER.clearAllCaches();
             Ari.instance.getStatusManager().reload();
             Ari.BUNGEECACHE.shutdown();
             PlayerCache.clean();

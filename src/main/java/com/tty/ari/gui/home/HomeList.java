@@ -1,6 +1,5 @@
 package com.tty.ari.gui.home;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
@@ -10,7 +9,7 @@ import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.gui.BaseDataItemConfigInventory;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.query.Query;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.home.HomeGuiConfig;
@@ -39,14 +38,11 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     @Override
     public CompletableFuture<PageResult<ServerHome>> requestData() {
-        return Ari.REPOSITORY_MANAGER.get(ServerHome.class)
-                .getList(
+        return Ari.REPOSITORY_MANAGER.homesOf(this.getOfflinePlayer().getUniqueId())
+                .findPage(
+                        Query.of(ServerHome.class).orderByDesc(ServerHome::isTopSlot),
                         this.pageNum,
-                        ((BaseDataMenu)this.getBaseMenu()).getDataItems().getSlot().size(),
-                        new LambdaQueryWrapper<>(ServerHome.class)
-                                .eq(ServerHome::getPlayerUUID, this.getOfflinePlayer().getUniqueId().toString())
-                                .orderByDesc(ServerHome::isTopSlot),
-                        PartitionKey.of(this.getOfflinePlayer().getUniqueId().toString())
+                        ((BaseDataMenu) this.getBaseMenu()).getDataItems().getSlot().size()
                 );
     }
 

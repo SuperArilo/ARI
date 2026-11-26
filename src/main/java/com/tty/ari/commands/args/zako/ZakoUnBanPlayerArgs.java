@@ -1,13 +1,12 @@
 package com.tty.ari.commands.args.zako;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.api.annotations.command.ArgumentCommand;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.api.repository.EntityRepository;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.CachedRepository;
+import com.tty.api.persistence.query.Query;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.BanPlayer;
@@ -51,12 +50,12 @@ public class ZakoUnBanPlayerArgs extends RequiredArgumentCommand<String> {
         }
 
         UUID uuid = offlinePlayer.getUniqueId();
-        EntityRepository<BanPlayer> repository = Ari.REPOSITORY_MANAGER.get(BanPlayer.class);
-        LambdaQueryWrapper<BanPlayer> wrapper = new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString());
+        CachedRepository<BanPlayer, Long> repository = Ari.REPOSITORY_MANAGER.bans();
+        Query<BanPlayer> query = Query.of(BanPlayer.class).eq(BanPlayer::getPlayerUUID, uuid.toString());
 
-        repository.get(wrapper, PartitionKey.global()).thenCompose(banPlayer -> {
-            if (banPlayer == null) return CompletableFuture.completedFuture(0);
-            return repository.delete(wrapper, PartitionKey.global());
+        repository.findOne(query).thenCompose(banPlayer -> {
+            if (banPlayer.isEmpty()) return CompletableFuture.completedFuture(0);
+            return repository.delete(query);
         }).thenAccept(count -> {
             if (count > 0) {
                 ConfigUtils.t("function.zako.ban-remove-success").thenAccept(sender::sendMessage);

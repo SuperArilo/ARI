@@ -1,11 +1,11 @@
 package com.tty.ari.commands.args.nick;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.tty.api.command.SuperHandsomeCommand;
-import com.tty.api.repository.EntityRepository;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.CachedRepository;
+import com.tty.api.persistence.query.Patch;
+import com.tty.api.persistence.query.Query;
 import com.tty.ari.Ari;
 import com.tty.ari.command.RequiredArgumentCommand;
 import com.tty.ari.entity.ServerPlayer;
@@ -49,22 +49,17 @@ public abstract class PublicNickSetArgs extends RequiredArgumentCommand<String> 
         }
         String uuid = offlinePlayer.getUniqueId().toString();
         String value = args[4];
-        EntityRepository<ServerPlayer> repository = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class);
-        LambdaQueryWrapper<ServerPlayer> wrapper = new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
-        PartitionKey key = PartitionKey.global();
-        repository.get(wrapper, key).thenCompose(serverPlayer -> {
-            if (serverPlayer == null) {
+        CachedRepository<ServerPlayer, Integer> players = Ari.REPOSITORY_MANAGER.players();
+        Query<ServerPlayer> query = Query.of(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
+        players.findOne(query).thenCompose(serverPlayer -> {
+            if (serverPlayer.isEmpty()) {
                 return CompletableFuture.completedFuture(false);
             }
             return switch (placeholder) {
-                case PLAYER_NAME_PREFIX -> {
-                    serverPlayer.setNamePrefix(value);
-                    yield repository.update(serverPlayer, wrapper, key);
-                }
-                case PLAYER_NAME_SUFFIX -> {
-                    serverPlayer.setNameSuffix(value);
-                    yield repository.update(serverPlayer, wrapper, key);
-                }
+                case PLAYER_NAME_PREFIX -> players.update(query,
+                        Patch.of(ServerPlayer.class).set(ServerPlayer::getNamePrefix, value)).thenApply(count -> count > 0);
+                case PLAYER_NAME_SUFFIX -> players.update(query,
+                        Patch.of(ServerPlayer.class).set(ServerPlayer::getNameSuffix, value)).thenApply(count -> count > 0);
                 default -> CompletableFuture.completedFuture(false);
             };
         }).thenAccept(status -> {

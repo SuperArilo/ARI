@@ -1,7 +1,6 @@
 package com.tty.ari.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.tty.api.annotations.cache.CacheKey;
 import lombok.Data;
 
 @Data
@@ -11,7 +10,6 @@ public class ServerPlayer {
     private Integer id;
     private String playerName;
     @TableField("player_uuid")
-    @CacheKey
     private String playerUUID;
     private Long firstLoginTime = 0L;
     private Long lastLoginOffTime = 0L;

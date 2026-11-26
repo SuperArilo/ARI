@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.tty.api.annotations.cache.CacheKey;
 import lombok.Data;
 
 @Data
@@ -13,12 +12,10 @@ public class WhitelistInstance {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     @TableField("player_uuid")
-    @CacheKey
     private String playerUUID;
     @TableField("add_time")
     private long addTime;
     @TableField("operator")
-    @CacheKey
     private String operator;
     @TableField("remark")
     private String remark = "";

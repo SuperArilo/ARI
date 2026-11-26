@@ -1,6 +1,5 @@
 package com.tty.ari.gui.warp;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.api.annotations.gui.GuiMeta;
 import com.tty.api.dto.PageResult;
 import com.tty.api.dto.gui.BaseDataMenu;
@@ -11,7 +10,7 @@ import com.tty.api.enumType.FunctionType;
 import com.tty.api.enumType.IconKeyType;
 import com.tty.api.enumType.NbtGuiValue;
 import com.tty.api.gui.BaseDataItemConfigInventory;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.query.Query;
 import com.tty.api.utils.FormatUtils;
 import com.tty.ari.Ari;
 import com.tty.ari.configuration.warp.WarpGuiConfig;
@@ -40,13 +39,11 @@ public class WarpList extends BaseDataItemConfigInventory<ServerWarp> {
 
     @Override
     public CompletableFuture<PageResult<ServerWarp>> requestData() {
-        return Ari.REPOSITORY_MANAGER.get(ServerWarp.class)
-                .getList(
+        return Ari.REPOSITORY_MANAGER.warps()
+                .findPage(
+                        Query.of(ServerWarp.class).orderByDesc(ServerWarp::isTopSlot),
                         this.pageNum,
-                        ((BaseDataMenu) this.getBaseMenu()).getDataItems().getSlot().size(),
-                        new LambdaQueryWrapper<>(ServerWarp.class)
-                                .orderByDesc(ServerWarp::isTopSlot),
-                        PartitionKey.global()
+                        ((BaseDataMenu) this.getBaseMenu()).getDataItems().getSlot().size()
                 );
     }
 

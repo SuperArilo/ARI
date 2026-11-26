@@ -1,8 +1,7 @@
 package com.tty.ari.tool;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tty.api.enumType.Operator;
-import com.tty.api.repository.PartitionKey;
+import com.tty.api.persistence.query.Query;
 import com.tty.api.service.impl.PlaceholderRegistryImpl;
 import com.tty.api.service.placeholder.PlaceholderDefinition;
 import com.tty.api.service.placeholder.PlaceholderRegistry;
@@ -186,43 +185,23 @@ public class Placeholder {
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderZakoInfo.FIRST_LOGIN_SERVER_TIME,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
-                        .get(ServerPlayer.class)
-                        .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                        .thenApply(i -> {
-                            if (i == null) return Ari.DATA_SERVICE.getValue("base.none");
-                            return TimeFormatUtils.format(i.getFirstLoginTime(), "yyyy-MM-dd HH:mm:ss");
-                        }))
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.players().findOne(Query.of(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
+                        .thenApply(i -> i.map(serverPlayer -> TimeFormatUtils.format(serverPlayer.getFirstLoginTime(), "yyyy-MM-dd HH:mm:ss")).orElseGet(() -> Ari.DATA_SERVICE.getValue("base.none"))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderZakoInfo.LAST_LOGIN_SERVER_TIME,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
-                        .get(ServerPlayer.class)
-                        .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                        .thenApply(i -> {
-                            if (i == null) return Ari.DATA_SERVICE.getValue("base.none");
-                            return TimeFormatUtils.format(i.getLastLoginOffTime(), "yyyy-MM-dd HH:mm:ss");
-                        }))
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.players().findOne(Query.of(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
+                        .thenApply(i -> i.map(serverPlayer -> TimeFormatUtils.format(serverPlayer.getLastLoginOffTime(), "yyyy-MM-dd HH:mm:ss")).orElseGet(() -> Ari.DATA_SERVICE.getValue("base.none"))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderZakoInfo.TOTAL_TIME_ON_SERVER,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
-                        .get(ServerPlayer.class)
-                        .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                        .thenApply(i -> {
-                            if (i == null) return Ari.DATA_SERVICE.getValue("base.none");
-                            return TimeFormatUtils.format(i.getTotalOnlineTime());
-                        }))
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.players().findOne(Query.of(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
+                        .thenApply(i -> i.map(serverPlayer -> TimeFormatUtils.format(serverPlayer.getTotalOnlineTime())).orElseGet(() -> Ari.DATA_SERVICE.getValue("base.none"))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderZakoInfo.BAN_COUNT,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
-                        .get(ServerPlayer.class)
-                        .get(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                        .thenApply(i -> {
-                            if (i == null) return Ari.DATA_SERVICE.getValue("base.none");
-                            return String.valueOf(i.getBanCount() == null ? 0 : i.getBanCount());
-                        }))
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.players().findOne(Query.of(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
+                        .thenApply(i -> i.map(serverPlayer -> String.valueOf(serverPlayer.getBanCount() == null ? 0 : serverPlayer.getBanCount())).orElseGet(() -> Ari.DATA_SERVICE.getValue("base.none"))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderPlayer.PLAYER_WORLD,
@@ -234,15 +213,13 @@ public class Placeholder {
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderZakoInfo.ZAKO_WHITELIST_OPERATOR,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
-                        .get(WhitelistInstance.class)
-                        .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.whitelist().findOne(Query.of(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                         .thenApply(whitelistInstance -> {
-                            if (whitelistInstance == null) return Ari.DATA_SERVICE.getValue("base.none");
+                            if (whitelistInstance.isEmpty()) return Ari.DATA_SERVICE.getValue("base.none");
                             String name;
-                            Operator operator = Operator.fromUuid(whitelistInstance.getOperator());
+                            Operator operator = Operator.fromUuid(whitelistInstance.get().getOperator());
                             if (operator == null) {
-                                name = PlayerCache.getPlayer(UUID.fromString(whitelistInstance.getOperator())).getName();
+                                name = PlayerCache.getPlayer(UUID.fromString(whitelistInstance.get().getOperator())).getName();
                             } else {
                                 name = operator.name();
                             }
@@ -251,13 +228,8 @@ public class Placeholder {
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderZakoInfo.ZAKO_WHITELIST_ADD_TIME,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
-                        .get(WhitelistInstance.class)
-                        .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                        .thenApply(i -> {
-                            if (i == null) return Ari.DATA_SERVICE.getValue("base.none");
-                            return TimeFormatUtils.format(i.getAddTime(), "yyyy-MM-dd HH:mm:ss");
-                        })
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.whitelist().findOne(Query.of(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
+                        .thenApply(i -> i.map(whitelistInstance -> TimeFormatUtils.format(whitelistInstance.getAddTime(), "yyyy-MM-dd HH:mm:ss")).orElseGet(() -> Ari.DATA_SERVICE.getValue("base.none")))
         )));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderZakoList.ZAKO_LIST_ITEM_NAME,
@@ -267,12 +239,10 @@ public class Placeholder {
                 })));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderZakoList.ZAKO_LIST_ITEM_REMARK,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER
-                        .get(WhitelistInstance.class)
-                        .get(new LambdaQueryWrapper<>(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.whitelist().findOne(Query.of(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> {
-                            if (i == null) return Ari.DATA_SERVICE.getValue("base.none");
-                            String remark = i.getRemark();
+                            if (i.isEmpty()) return Ari.DATA_SERVICE.getValue("base.none");
+                            String remark = i.get().getRemark();
                             if (remark == null || remark.isEmpty()) {
                                 return Ari.DATA_SERVICE.getValue("base.none");
                             }
@@ -285,43 +255,33 @@ public class Placeholder {
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderBanPlayerType.BAN_T0TAL_TIME,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
-                .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                .thenApply(i -> {
-                    if (i == null) return Ari.DATA_SERVICE.getValue("base.none");
-                    return TimeFormatUtils.format(i.getEndTime() - i.getStartTime());
-                }))
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.bans().findOne(Query.of(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
+                .thenApply(i -> i.map(banPlayer -> TimeFormatUtils.format(banPlayer.getEndTime() - banPlayer.getStartTime())).orElseGet(() -> Ari.DATA_SERVICE.getValue("base.none"))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderBanPlayerType.BAN_END_TIME,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
-                .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
-                .thenApply(i -> {
-                    if (i == null) return Ari.DATA_SERVICE.getValue("base.none");
-                    return TimeFormatUtils.format(Math.max(0, i.getEndTime() - System.currentTimeMillis()));
-                }))
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.bans().findOne(Query.of(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
+                .thenApply(i -> i.map(banPlayer -> TimeFormatUtils.format(Math.max(0, banPlayer.getEndTime() - System.currentTimeMillis()))).orElseGet(() -> Ari.DATA_SERVICE.getValue("base.none"))))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderBanPlayerType.BAN_REASON,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
-                        .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.bans().findOne(Query.of(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> {
-                            if (i == null) return Ari.DATA_SERVICE.getValue("base.none");
-                            return i.getReason();
+                            if (i.isEmpty()) return Ari.DATA_SERVICE.getValue("base.none");
+                            return i.get().getReason();
                         }))
         ));
         registry.register(PlaceholderDefinition.of(
                 PlaceholderBanPlayerType.BAN_OPERATOR,
-                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.get(BanPlayer.class)
-                        .get(new LambdaQueryWrapper<>(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()), PartitionKey.global())
+                PlaceholderResolve.ofOfflinePlayer(offlinePlayer -> Ari.REPOSITORY_MANAGER.bans().findOne(Query.of(BanPlayer.class).eq(BanPlayer::getPlayerUUID, offlinePlayer.getUniqueId().toString()))
                         .thenApply(i -> {
-                            if (i == null) return Ari.DATA_SERVICE.getValue("base.none");
+                            if (i.isEmpty()) return Ari.DATA_SERVICE.getValue("base.none");
                             String name;
-                            Operator operator = Operator.fromUuid(i.getOperator());
+                            Operator operator = Operator.fromUuid(i.get().getOperator());
                             if(operator != null) {
                                 name = operator.name();
                             } else {
-                                name = PlayerCache.getPlayer(UUID.fromString(i.getOperator())).getName();
+                                name = PlayerCache.getPlayer(UUID.fromString(i.get().getOperator())).getName();
                             }
                             return name;
                         }))
@@ -330,8 +290,12 @@ public class Placeholder {
                 PlaceholderPlayer.PLAYER_NAME_PREFIX,
                 PlaceholderResolve.ofOfflinePlayerSync(offlinePlayer -> {
                     String uuid = offlinePlayer.getUniqueId().toString();
-                    ServerPlayer serverPlayer = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).getDirectFromCache(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global());
-                    if (serverPlayer == null) return "";
+                    var query = Query.of(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
+                    ServerPlayer serverPlayer = Ari.REPOSITORY_MANAGER.players().peekOne(query).orElse(null);
+                    if (serverPlayer == null) {
+                        Ari.REPOSITORY_MANAGER.players().findOne(query);
+                        return "";
+                    }
                     return serverPlayer.getNamePrefix();
                 })
         ));
@@ -339,8 +303,12 @@ public class Placeholder {
                 PlaceholderPlayer.PLAYER_NAME_SUFFIX,
                 PlaceholderResolve.ofOfflinePlayerSync(offlinePlayer -> {
                     String uuid = offlinePlayer.getUniqueId().toString();
-                    ServerPlayer serverPlayer = Ari.REPOSITORY_MANAGER.get(ServerPlayer.class).getDirectFromCache(new LambdaQueryWrapper<>(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid), PartitionKey.global());
-                    if (serverPlayer == null) return "";
+                    var query = Query.of(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid);
+                    ServerPlayer serverPlayer = Ari.REPOSITORY_MANAGER.players().peekOne(query).orElse(null);
+                    if (serverPlayer == null) {
+                        Ari.REPOSITORY_MANAGER.players().findOne(query);
+                        return "";
+                    }
                     return serverPlayer.getNameSuffix();
                 })
         ));
