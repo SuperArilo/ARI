@@ -1,7 +1,6 @@
 package com.tty.ari.dto;
 
 import com.tty.api.state.AsyncState;
-import com.tty.api.state.State;
 import com.tty.ari.enumType.TeleportType;
 import lombok.Getter;
 import org.bukkit.Location;

@@ -78,7 +78,7 @@ public class PlayerSaveDataStateService extends StateService<PlayerSaveState> {
         CompletableFuture<Void> save = players.findOne(query).thenCompose(existing -> {
             if (existing.isEmpty()) {
                 Ari.instance.getLog().error("Player data not found: {}", uuid);
-                return CompletableFuture.<Void>completedFuture(null);
+                return CompletableFuture.completedFuture(null);
             }
             ServerPlayer serverPlayer = existing.get();
             Patch<ServerPlayer> patch = Patch.of(ServerPlayer.class)
@@ -86,7 +86,7 @@ public class PlayerSaveDataStateService extends StateService<PlayerSaveState> {
             if (!player.isOnline() || stopping) {
                 patch = patch.set(ServerPlayer::getLastLoginOffTime, nowTime);
             }
-            return players.update(query, patch).thenApply(count -> (Void) null);
+            return players.update(query, patch).thenApply(count -> null);
         }).thenAccept(v -> Ari.instance.getLog().debug("Saved player data: {}", player.getName()))
           .exceptionally(ex -> {
               Ari.instance.getLog().error(ex, "Error saving player data for {}", player.getName());

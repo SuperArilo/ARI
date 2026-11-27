@@ -11,7 +11,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
 
@@ -27,7 +26,7 @@ public abstract class ZakoAddBase<T> extends RequiredArgumentCommand<T> {
 
         Ari.REPOSITORY_MANAGER.whitelist().findOne(Query.of(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString())).thenCompose(s -> {
             if (s.isPresent()) {
-                return ConfigUtils.t("function.zako.zako-add-exist").thenAccept(sender::sendMessage).thenApply(v -> (WhitelistInstance) null);
+                return ConfigUtils.t("function.zako.zako-add-exist").thenAccept(sender::sendMessage).thenApply(v -> null);
             }
 
             WhitelistInstance instance = new WhitelistInstance();
