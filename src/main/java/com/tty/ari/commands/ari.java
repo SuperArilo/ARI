@@ -2,6 +2,7 @@ package com.tty.ari.commands;
 
 import com.tty.ari.command.LiteralArgumentCommand;
 import com.tty.ari.commands.sub.About;
+import com.tty.ari.commands.sub.Debug;
 import com.tty.ari.commands.sub.Reload;
 import com.tty.api.annotations.command.CommandMeta;
 import com.tty.api.annotations.command.LiteralCommand;
@@ -47,6 +48,7 @@ public class ari extends LiteralArgumentCommand {
             new TeleportToPlayer(),
             new GameMode(),
             new Weather(),
+            new Debug(),
             new Reload()
         );
     }
