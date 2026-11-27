@@ -53,7 +53,7 @@ public class ZakoRemoveProfileArgs extends RequiredArgumentCommand<String> {
         }
 
         CompletableFuture<Integer> f1 = Ari.REPOSITORY_MANAGER.players().delete(Query.of(ServerPlayer.class).eq(ServerPlayer::getPlayerUUID, uuid.toString()));
-        CompletableFuture<Integer> f2 = Ari.REPOSITORY_MANAGER.homesOf(uuid).delete(Query.of(ServerHome.class));
+        CompletableFuture<Integer> f2 = Ari.REPOSITORY_MANAGER.homes().forOwner(uuid).delete(Query.of(ServerHome.class));
         CompletableFuture<Integer> f3 = Ari.REPOSITORY_MANAGER.whitelist().delete(Query.of(WhitelistInstance.class).eq(WhitelistInstance::getPlayerUUID, uuid.toString()));
 
         try {

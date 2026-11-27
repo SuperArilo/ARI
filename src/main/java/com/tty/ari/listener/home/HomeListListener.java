@@ -43,7 +43,7 @@ public class HomeListListener extends BaseGuiListener<HomeList> {
             if (currentItem == null) return CompletableFuture.completedFuture(null);
 
             String homeId = Ari.instance.getNbtManager().getNbt(NbtGuiValue.GUI_DATA_ID, currentItem, PersistentDataType.STRING);
-            return Ari.REPOSITORY_MANAGER.homesOf(player.getUniqueId())
+            return Ari.REPOSITORY_MANAGER.homes().forOwner(player.getUniqueId())
                     .findOne(Query.of(ServerHome.class).eq(ServerHome::getHomeId, homeId))
                     .thenAccept(home -> {
                         if (home.isEmpty()) {

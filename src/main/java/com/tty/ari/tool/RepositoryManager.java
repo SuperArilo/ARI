@@ -4,11 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.tty.api.AbstractJavaPlugin;
 import com.tty.api.enumType.SQLType;
 import com.tty.api.persistence.CachedRepository;
-import com.tty.api.persistence.OwnedRepository;
-import com.tty.api.persistence.cache.CacheTrace;
 import com.tty.api.persistence.model.EntityModel;
 import com.tty.api.persistence.mybatis.MyBatisEntityStore;
-import com.tty.api.persistence.query.Query;
 import com.tty.ari.entity.BanPlayer;
 import com.tty.ari.entity.ServerHome;
 import com.tty.ari.entity.ServerPlayer;
@@ -23,7 +20,6 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -35,17 +31,6 @@ public final class RepositoryManager implements AutoCloseable {
     private final AbstractJavaPlugin plugin;
     private final ExecutorService dbExecutor;
 
-    private void logLookup(String entity, String kind, Query<?> query, int page, int size, boolean hit) {
-        if ("PAGE".equals(kind)) {
-            this.plugin.getLog().debug("[cache] {} {} {} {} page={} size={}", entity, kind, hit ? "HIT" : "MISS", query, page, size);
-        } else {
-            this.plugin.getLog().debug("[cache] {} {} {} {}", entity, kind, hit ? "HIT" : "MISS", query);
-        }
-    }
-
-    private void logInvalidate(String entity, int invalidated, int changes) {
-        this.plugin.getLog().debug("[cache] {} INVALIDATE keys={} changes={}", entity, invalidated, changes);
-    }
     private final CachedRepository<ServerHome, Long> homes;
     private final CachedRepository<ServerWarp, Long> warps;
     private final CachedRepository<ServerPlayer, Integer> players;
@@ -63,22 +48,11 @@ public final class RepositoryManager implements AutoCloseable {
         Supplier<SqlSessionFactory> factory = sql::getFactory;
         SQLType sqlType = sql.getSqlType();
 
-        CacheTrace cacheTrace = new CacheTrace() {
-            @Override
-            public void lookup(String entity, String kind, Query<?> query, int page, int size, boolean hit) {
-                RepositoryManager.this.logLookup(entity, kind, query, page, size, hit);
-            }
-
-            @Override
-            public void invalidate(String entity, int invalidated, int changes) {
-                RepositoryManager.this.logInvalidate(entity, invalidated, changes);
-            }
-        };
-        this.homes = new CachedRepository<>(this.store(EntityModel.grouped(ServerHome.class, ServerHome::getId, ServerHome::getPlayerUUID), HomeMapper.class, factory, sqlType), cacheTrace);
-        this.warps = new CachedRepository<>(this.store(EntityModel.shared(ServerWarp.class, ServerWarp::getId), WarpMapper.class, factory, sqlType), cacheTrace);
-        this.players = new CachedRepository<>(this.store(EntityModel.shared(ServerPlayer.class, ServerPlayer::getId), PlayersMapper.class, factory, sqlType), cacheTrace);
-        this.bans = new CachedRepository<>(this.store(EntityModel.shared(BanPlayer.class, BanPlayer::getId), BanPlayerMapper.class, factory, sqlType), cacheTrace);
-        this.whitelist = new CachedRepository<>(this.store(EntityModel.shared(WhitelistInstance.class, WhitelistInstance::getId), WhitelistMapper.class, factory, sqlType), cacheTrace);
+        this.homes = new CachedRepository<>(this.plugin.getLog(), this.store(EntityModel.grouped(ServerHome.class, ServerHome::getId, ServerHome::getPlayerUUID), HomeMapper.class, factory, sqlType));
+        this.warps = new CachedRepository<>(this.plugin.getLog(), this.store(EntityModel.shared(ServerWarp.class, ServerWarp::getId), WarpMapper.class, factory, sqlType));
+        this.players = new CachedRepository<>(this.plugin.getLog(), this.store(EntityModel.shared(ServerPlayer.class, ServerPlayer::getId), PlayersMapper.class, factory, sqlType));
+        this.bans = new CachedRepository<>(this.plugin.getLog(), this.store(EntityModel.shared(BanPlayer.class, BanPlayer::getId), BanPlayerMapper.class, factory, sqlType));
+        this.whitelist = new CachedRepository<>(this.plugin.getLog(), this.store(EntityModel.shared(WhitelistInstance.class, WhitelistInstance::getId), WhitelistMapper.class, factory, sqlType));
     }
 
     private <T, ID> MyBatisEntityStore<T, ID> store(EntityModel<T, ID> model, Class<? extends BaseMapper<T>> mapper, Supplier<SqlSessionFactory> factory, SQLType sqlType) {
@@ -87,10 +61,6 @@ public final class RepositoryManager implements AutoCloseable {
 
     public CachedRepository<ServerHome, Long> homes() {
         return this.homes;
-    }
-
-    public OwnedRepository<ServerHome, Long> homesOf(UUID player) {
-        return this.homes.forOwner(player.toString());
     }
 
     public CachedRepository<ServerWarp, Long> warps() {
@@ -130,4 +100,5 @@ public final class RepositoryManager implements AutoCloseable {
         }
         this.dbExecutor.shutdown();
     }
+
 }

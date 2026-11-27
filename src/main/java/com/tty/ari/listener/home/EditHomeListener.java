@@ -74,7 +74,7 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
             event.getInventory().close();
             Ari.instance.getStatusManager().get(GuiManagerStateService.class).addState(new GuiState(player, new HomeList(player)));
         });
-        registry.addAsync(FunctionType.DELETE, (event, homeEditor, player) -> Ari.REPOSITORY_MANAGER.homesOf(player.getUniqueId())
+        registry.addAsync(FunctionType.DELETE, (event, homeEditor, player) -> Ari.REPOSITORY_MANAGER.homes().forOwner(player.getUniqueId())
                 .delete(Query.of(ServerHome.class).eq(ServerHome::getHomeId, homeEditor.getHome().getHomeId()))
                 .thenCompose(count -> {
             if (count == 1) {
@@ -147,16 +147,14 @@ public class EditHomeListener extends OnGuiEditListener<HomeEditor, ServerHome> 
                 }
             }
         });
-        registry.addAsync(FunctionType.SAVE, (event, homeEditor, player) -> {
-            return Ari.REPOSITORY_MANAGER.homesOf(player.getUniqueId())
-                    .save(homeEditor.getHome())
-                    .thenAccept(status -> {})
-                    .exceptionally(i -> {
-                        Ari.instance.getLog().error(i, "save home error");
-                        player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
-                        return null;
-                    });
-        });
+        registry.addAsync(FunctionType.SAVE, (event, homeEditor, player) -> Ari.REPOSITORY_MANAGER.homes().forOwner(player.getUniqueId())
+                .save(homeEditor.getHome())
+                .thenAccept(status -> {})
+                .exceptionally(i -> {
+                    Ari.instance.getLog().error(i, "save home error");
+                    player.sendMessage(Ari.DATA_SERVICE.getValue("base.on-error"));
+                    return null;
+                }));
 
         return registry;
     }

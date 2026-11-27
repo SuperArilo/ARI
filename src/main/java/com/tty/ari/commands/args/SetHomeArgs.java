@@ -51,15 +51,15 @@ public class SetHomeArgs extends RequiredArgumentCommand<String> {
             return;
         }
 
-        OwnedRepository<ServerHome, Long> homes = Ari.REPOSITORY_MANAGER.homesOf(player.getUniqueId());
+        OwnedRepository<ServerHome, Long> homes = Ari.REPOSITORY_MANAGER.homes().forOwner(player.getUniqueId());
 
         homes.count(Query.of(ServerHome.class)).thenCompose(count -> {
             if (count + 1 > Ari.PERMISSION_SERVICE.getMaxCountInPermission(player, "home")) {
-                return ConfigUtils.t("function.home.exceeds", player).thenAccept(sender::sendMessage).thenApply(v -> (ServerHome) null);
+                return ConfigUtils.t("function.home.exceeds", player).thenAccept(sender::sendMessage).thenApply(v -> null);
             }
             return homes.findOne(Query.of(ServerHome.class).eq(ServerHome::getHomeId, homeId)).thenCompose(existing -> {
                 if (existing.isPresent()) {
-                    return ConfigUtils.t("function.home.exist", player).thenAccept(sender::sendMessage).thenApply(v -> (ServerHome) null);
+                    return ConfigUtils.t("function.home.exist", player).thenAccept(sender::sendMessage).thenApply(v -> null);
                 }
 
                 CompletableFuture<ServerHome> buildHomeFuture = new CompletableFuture<>();

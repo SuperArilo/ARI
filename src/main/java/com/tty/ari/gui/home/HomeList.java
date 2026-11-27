@@ -38,7 +38,7 @@ public class HomeList extends BaseDataItemConfigInventory<ServerHome> {
 
     @Override
     public CompletableFuture<PageResult<ServerHome>> requestData() {
-        return Ari.REPOSITORY_MANAGER.homesOf(this.getOfflinePlayer().getUniqueId())
+        return Ari.REPOSITORY_MANAGER.homes().forOwner(this.getOfflinePlayer().getUniqueId())
                 .findPage(
                         Query.of(ServerHome.class).orderByDesc(ServerHome::isTopSlot),
                         this.pageNum,
